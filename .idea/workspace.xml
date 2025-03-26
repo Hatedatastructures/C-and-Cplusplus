@@ -28,111 +28,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="1bb6cfa0-5aef-4de1-bab9-fb4e73e3243b" name="更改" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2024/text_03_01_0.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2024/text_11_16_0.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2024/text_11_17_0.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2024/text_11_17_1.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2024/text_11_17_2.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2024/text_11_17_3.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2024/text_11_18_0.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2024/text_11_18_1.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2024/text_11_22_0.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2024/text_11_22_1.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2024/text_11_24_0.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2024/text_11_24_1.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2024/text_11_25_0.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2024/text_11_27_0.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2024/text_11_27_1.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2024/text_11_28_0.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2024/text_11_28_1.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2024/text_12_01_0.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2024/text_12_02_0.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2024/text_12_02_1.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2024/text_12_03_0.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2024/text_12_06_0.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2024/text_12_08_0.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2024/text_12_09_0.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2024/text_12_10_0.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2024/text_12_12_0.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2024/text_12_13_0.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2024/text_12_14_0.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2024/text_12_15_0.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2024/text_12_16_0.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2024/text_12_16_1.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2024/text_12_16_2.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2024/text_12_17_0.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2024/text_12_17_1.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2024/text_12_17_2.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2024/text_12_18_0.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2024/text_12_18_1.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2024/text_12_18_2.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2024/text_12_18_3.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2024/text_12_20_0.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2024/text_12_20_1.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2024/text_12_20_2.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2024/text_12_20_3.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2024/text_12_21_0.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2024/text_12_22_0.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2024/text_12_22_1.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2024/text_12_22_3.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2024/text_12_24_0.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2024/text_12_24_1.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2024/text_12_25_0.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2024/text_12_27_0.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2024/text_12_29_0.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2025/output/text_01_04_0.exe" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2025/output/text_01_06_0.exe" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2025/output/text_01_06_1.exe" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2025/output/text_01_11_0.exe" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2025/output/text_01_22_1.exe" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2025/output/text_01_23_0.exe" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2025/output/text_01_23_1.exe" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2025/output/text_02_04_0.exe" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2025/output/text_02_06_0.exe" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2025/output/text_02_09_0.exe" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2025/output/text_02_11_0.exe" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2025/output/text_02_17_0.exe" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2025/output/text_02_18.exe" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2025/output/text_02_18_0.exe" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2025/output/text_02_19_0.exe" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2025/output/text_02_28_0.exe" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2025/output/text_03_01_0.exe" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2025/output/text_03_02_0.exe" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2025/output/text_03_03_0.exe" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2025/output/text_03_03_1.exe" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2025/output/text_03_06_0.exe" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2025/output/text_03_07_0.exe" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2025/output/text_03_08_0.exe" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2025/text_01_04_0.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2025/text_01_06_0.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2025/text_01_06_1.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2025/text_01_11_0.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2025/text_01_12_0.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2025/text_01_16_0.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2025/text_01_16_1.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2025/text_01_18_0.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2025/text_01_21_0.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2025/text_01_22_0.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2025/text_01_22_1.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2025/text_01_23_0.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2025/text_02_03_0.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2025/text_02_04_0.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2025/text_02_06_0.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2025/text_02_09_0.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2025/text_02_11_0.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2025/text_02_17_0.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2025/text_02_17_1.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2025/text_02_18_0.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2025/text_02_19_0.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2025/text_02_28_0.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2025/text_03_01_0.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2025/text_03_03_0.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2025/text_03_03_1.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2025/text_03_06_0.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2025/text_03_07_0.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2025/text_03_08_0.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2025/text_03_09_0.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.vscode/settings.json" beforeDir="false" afterPath="$PROJECT_DIR$/.vscode/settings.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -147,10 +44,10 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="file://$PROJECT_DIR$/2024/text_11_16_0.c" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/2025/3月份文件/text_03_34_0.cpp" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="ProblemsViewState">
-    <option name="selectedTabId" value="ProjectErrors" />
+    <option name="selectedTabId" value="CurrentFile" />
   </component>
   <component name="ProjectApplicationVersion">
     <option name="ide" value="CLion" />
@@ -166,30 +63,35 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "C/C++ 文件.text_01_06_0.c.executor": "Run",
-    "C/C++ 文件.text_03_13_1.c.executor": "Run",
-    "C/C++ 文件.text_11_16_0.c.executor": "Run",
-    "RunOnceActivity.RadMigrateCodeStyle": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.cidr.known.project.marker": "true",
-    "RunOnceActivity.readMode.enableVisualFormatting": "true",
-    "cf.first.check.clang-format": "false",
-    "cidr.known.project.marker": "true",
-    "git-widget-placeholder": "main",
-    "last_opened_file_path": "C:/Users/C1373/Desktop/code/2025/text_03_13_1.c",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "run.code.analysis.last.selected.profile": "pProject Default",
-    "settings.editor.selected.configurable": "settings.sync",
-    "structure.view.defaults.are.configured": "true",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;C/C++ 文件.text_01_06_0.c.executor&quot;: &quot;Run&quot;,
+    &quot;C/C++ 文件.text_03_13_1.c.executor&quot;: &quot;Run&quot;,
+    &quot;C/C++ 文件.text_11_16_0.c.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.RadMigrateCodeStyle&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.readMode.enableVisualFormatting&quot;: &quot;true&quot;,
+    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
+    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/C1373/Desktop/code/2025/text_03_13_1.c&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;run.code.analysis.last.selected.profile&quot;: &quot;pProject Default&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;settings.sync&quot;,
+    &quot;structure.view.defaults.are.configured&quot;: &quot;true&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  },
+  &quot;keyToStringList&quot;: {
+    &quot;com.intellij.ide.scratch.ScratchImplUtil$2/新建临时文件&quot;: [
+      &quot;C++&quot;
+    ]
   }
-}]]></component>
+}</component>
   <component name="RunManager" selected="C/C++ 文件.text_03_13_1.c">
     <configuration name="text_01_06_0.c" type="CppFileRunConfiguration" factoryName="CppFileRunConfiguration" temporary="true" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="code" TARGET_NAME="text_01_06_0.c" CONFIG_NAME="text_01_06_0.c">
       <option name="sourceFile" value="2025\text_01_06_0.c" />
@@ -246,8 +148,8 @@
       </method>
     </configuration>
     <list>
-      <item itemvalue="C/C++ 文件.text_01_06_0.c" />
       <item itemvalue="C/C++ 文件.text_03_13_1.c" />
+      <item itemvalue="C/C++ 文件.text_01_06_0.c" />
       <item itemvalue="C/C++ 文件.text_11_16_0.c" />
     </list>
     <recent_temporary>
@@ -293,6 +195,8 @@
       <workItem from="1741068350579" duration="39000" />
       <workItem from="1742019721683" duration="149000" />
       <workItem from="1742019950884" duration="149000" />
+      <workItem from="1742709698916" duration="149000" />
+      <workItem from="1742802570076" duration="120000" />
     </task>
     <servers />
   </component>
