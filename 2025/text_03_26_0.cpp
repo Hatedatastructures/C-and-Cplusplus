@@ -9,7 +9,7 @@ class list_wang
             public:
             typedef struct list_definition
             {
-                Linked_list_data data;
+                Linked_list_data* data;
                 list_definition* next;
                 list_definition* prev;
             }list_def;
