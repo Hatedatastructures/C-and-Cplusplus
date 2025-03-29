@@ -103,7 +103,7 @@ class Information_management
                 BOOL(*Enteralimit)(const void*, const void*);
             }inputs;
 
-            static inline uint8_t Enteralimit_student_long_compare(const uint64_t* data)
+            static uint8_t Enteralimit_student_long_compare(const uint64_t* data)
             {
                 uint8_t long_compare = 0;
                 uint64_t datas = *data;
@@ -254,21 +254,20 @@ class Information_management
                 return TRUE;
             }
         }
-        // BOOL student_list_stuinputS(std::string Promptwords, void* Input_variable)
-        // {
-        //     while (true)
-        //     {
-        //         std::cout << Promptwords << std::endl;
-        //         std::cin >> Input_variable;
-        //         if (std::cin.eof())
-        //         {
-        //             std::cout << "输入已结束。" << std::endl;
-        //             return FALSE;
-        //         }
-        //         std::cin.clear();
-        //         return TRUE;
-        //     }
-        // }
+        BOOL student_list_stuinputS(std::string Promptwords, void* Input_variable)
+        {
+            {
+                std::cout << Promptwords << std::endl;
+                std::cin >> Input_variable;
+                if (std::cin.eof())
+                {
+                    std::cout << "输入已结束。" << std::endl;
+                    return FALSE;
+                }
+                std::cin.clear();
+                return TRUE;
+            }
+        }
         void student_list_stuinput(student* Input_variables)
         {
             //输入检查
@@ -308,6 +307,7 @@ class Information_management
                         }
                         break;
                     }
+                    break;
                 }
                 
             }
