@@ -463,5 +463,7 @@ int main()
 {
     Information_management < int > Information_management_volume;
     Information_management_volume.Information_management_head_push_back();
+    Information_management_volume.Information_management_print(Information_management_volume.head);
+    delete Information_management_volume.head;
     return 0;
 }
