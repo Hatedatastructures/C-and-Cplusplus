@@ -288,13 +288,13 @@ namespace wz
                 _data[_size] = '\0';
             }
     };
-    class string_C_return
-    {
-        public:
-            typedef char Temporary_needs;
+    // class string_C_return
+    // {
+    //     public:
+    //         typedef char Temporary_needs;
 
         
-    };
+    // };
     std::ostream& operator<<(std::ostream& string_ostream,string &data_str) 
     {
         //当前没实现【】访问.可以用迭代器
