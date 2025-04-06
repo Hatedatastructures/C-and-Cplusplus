@@ -13,25 +13,30 @@ namespace wz
             //创建迭代器
             typedef char* iterator;
             //限定字符串最大值
-            // static const size_t nops = -1;
+            static const size_t nops = -1;
             iterator begin() 
             {
+                //返回第一个元素的地址
                 return _data;
             }
             iterator end()
             {
+                //返回最后一个元素的下一个位置
                 return _data + _size;
             }
             size_t size()const
             {
+                //返回有效字符串长度
                 return _size;
             }
             size_t capacity()const
             {
+                //返回容量
                 return _capacity;
             }
             char* c_str()const
             {
+                //返回C风格字符串
                 return _data;
             }
             string(const char* data_str = "")
@@ -53,6 +58,7 @@ namespace wz
             string(const string &data_str)
             :_data(nullptr),_size(data_str._size),_capacity(data_str._capacity)
             {
+                //拷贝构造函数，拿传入对象的变量初始化本地变量，对于涉及开辟内存的都要深拷贝
                 size_t capacity = data_str._capacity;
                 _data = new char[capacity + 1];
                 strcpy(_data,data_str._data);
@@ -66,6 +72,7 @@ namespace wz
             friend std::ostream& operator<<(std::ostream& string_ostream,string &data_str);
             string& operator=(const string &data_str)
             {
+                //防止无意义拷贝
                 if(this != &data_str)
                 {
                     delete [] _data;
@@ -92,7 +99,10 @@ namespace wz
             }
             char& operator[](const size_t& ergodic_value)
             {
+                //引用就是出了函数作用域还能用其他的变量名访问，不需要拷贝就能访问，所以可以直接返回引用减少内存开销
+                //在函数创建的变量出了函数作用域就不能访问了，这下才要返回拷贝值，如果返回引用就会未定义
                 return _data[ergodic_value];
+                //就像_data在外面就能访问它以及它的成员，所以这种就可以理解成出了函数作用域还在，进函数之前也能访问的就是引用
             }
             const char& operator[](const size_t& ergodic_value)const
             {
