@@ -94,6 +94,10 @@ namespace wz
             {
                 return _data[ergodic_value];
             }
+            const char& operator[](const size_t& ergodic_value)const
+            {
+                return _data[ergodic_value];
+            }
             string operator+(const string& cpp_str_)
             {
                 string _str_temp;
