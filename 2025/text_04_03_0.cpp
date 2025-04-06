@@ -51,12 +51,11 @@ namespace wz
                 }
             }
             string(const string &data_str)
-            :_data(nullptr),_size(0),_capacity(0)
+            :_data(nullptr),_size(data_str._size),_capacity(data_str._capacity)
             {
                 size_t capacity = data_str._capacity;
                 _data = new char[capacity + 1];
                 strcpy(_data,data_str._data);
-                _size = data_str._size;
                 _data[_size] = '\0';
             }
             ~string()
@@ -73,6 +72,7 @@ namespace wz
                     size_t capacity = data_str._capacity;
                     _data = new char[capacity + 1];
                     strcpy(_data,data_str._data);
+                    _capacity = data_str._capacity;
                     _size = data_str._size;
                     _data[_size] = '\0';
                 }
