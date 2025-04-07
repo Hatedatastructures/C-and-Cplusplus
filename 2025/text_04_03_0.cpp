@@ -443,5 +443,6 @@ int main()
     std::cout << "str3 size: " << str3.size() << std::endl;
     std::cout << "str3 capacity: " << str3.capacity() << std::endl;
     std::cout << "str3 after resize: " << str3.resize(21, '*') << std::endl;
+    //测试Linux上传GitHub
     return 0;
 }
