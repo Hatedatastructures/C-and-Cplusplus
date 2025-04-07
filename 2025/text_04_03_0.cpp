@@ -324,7 +324,7 @@ namespace wz
                 _data[_size] = '\0';
                 return *this;
             }
-            string& push_back(const char*& c_temp_str)
+            string& push_back(const char* c_temp_str)
             {
                 size_t len = strlen( c_temp_str );
                 size_t new_capacity = len + _size ;
@@ -414,14 +414,34 @@ int main()
 {
     wz::string str1("hello");
     wz::string str2("world");
+    
     wz::string str3 = str1 + str2;
     std::cout << "str3: " << str3 << std::endl;
     str3.push_back('!');
     const char* insert_str = "inserted";
     str3.nose_Insertion_substrings(insert_str);
     std::cout << "str3 after insertion: " << str3 << std::endl;
+
+
     size_t old_pos = strlen(insert_str);
     wz::string str4 = str3.str_withdraw(old_pos);
     std::cout << "str4: " << str4 << std::endl;
+
+
+    std::cout << str3.conversions_oldest() << std::endl;
+    std::cout << str3.conversions_few() << std::endl;
+
+
+    wz::string str5 = str3.str_withdraw_extremity(5);
+    std::cout << "str5: " << str5 << std::endl;
+
+
+    wz::string str6 = str3.str_withdraw_detail(5, 10);
+    std::cout << "str6: " << str6 << std::endl;
+
+
+    std::cout << "str3 size: " << str3.size() << std::endl;
+    std::cout << "str3 capacity: " << str3.capacity() << std::endl;
+    std::cout << "str3 after resize: " << str3.resize(21, '*') << std::endl;
     return 0;
 }
