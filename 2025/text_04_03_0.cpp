@@ -70,7 +70,7 @@ namespace wz
                 _capacity = _size = 0;
             }
             friend std::ostream& operator<<(std::ostream& string_ostream,string &data_str);
-            friend std::iostream& operator>>(std::iostream& string_istream,string &data_str);
+            friend std::istream& operator>>(std::istream& string_istream,string &data_str);
             string& operator=(const string &data_str)
             {
                 //防止无意义拷贝
@@ -127,7 +127,7 @@ namespace wz
                 if(_str_temp.Automatic_scaling(_str_temp_len) != true)
                 {
                     std::cout << "开辟内存失败！" << std::endl;
-                    return _str_temp;
+                    return string();
                 }
                 strcpy(_str_temp._data , _data);
                 strcpy(_str_temp._data + _size , cpp_str_._data);
@@ -173,11 +173,12 @@ namespace wz
                     std::cout << "开辟内存失败！" << std::endl;
                     return *this;
                 }
-                char* _c_nose_insert_substrings_temp = new char[new_nose_insert_substrings + 1];
+                char* _c_nose_insert_substrings_temp = new char[_capacity + 1];
                 //临时变量
-                strcpy(_c_nose_insert_substrings_temp,_data);
-                strcpy(_data , c_str_substring);
-                strcpy(_data + len , _c_nose_insert_substrings_temp);
+                memmove(_c_nose_insert_substrings_temp , _data , _size + 1);
+                memmove(_data , c_str_substring , len);
+                memmove(_data + len , _c_nose_insert_substrings_temp , _size + 1);
+                //比memcpy更安全，memcpy会覆盖原有数据，memmove会先拷贝到临时变量再拷贝到目标地址
                 _size = new_nose_insert_substrings;
                 _data[_size] = '\0';
                 delete [] _c_nose_insert_substrings_temp;
@@ -215,14 +216,14 @@ namespace wz
                 if(old_pos > _size)
                 {
                     std::cout << "提取位置越界！" << std::endl;
-                    return *this;
+                    return string();
                 }
                 string _str_withdraw_temp;
                 size_t _str_withdraw_temp_len = _size - old_pos;
                 if(_str_withdraw_temp.Automatic_scaling(_str_withdraw_temp_len) != true)
                 {
                     std::cout << "开辟内存失败！" << std::endl;
-                    return _str_withdraw_temp;
+                    return string();
                 }
                 strcpy(_str_withdraw_temp._data , _data + old_pos);
                 _str_withdraw_temp._size = _str_withdraw_temp_len;
@@ -235,14 +236,14 @@ namespace wz
                 if(old_begin > _size)
                 {
                     std::cout << "提取位置越界！" << std::endl;
-                    return *this;
+                    return string();
                 }
                 string _str_withdraw_extremity_temp;
                 size_t _str_withdraw_extremity_temp_len = _size - old_begin;
                 if(_str_withdraw_extremity_temp.Automatic_scaling(_str_withdraw_extremity_temp_len) != true)
                 {
                     std::cout << "开辟内存失败！" << std::endl;
-                    return _str_withdraw_extremity_temp;
+                    return string();
                 }
                 strcpy(_str_withdraw_extremity_temp._data , _data + old_begin);
                 _str_withdraw_extremity_temp._size = _str_withdraw_extremity_temp_len;
@@ -252,17 +253,17 @@ namespace wz
             string str_withdraw_detail(const size_t& old_begin ,const size_t& old_end)
             {
                 //提取字串到指定位置
-                if(old_begin > _size || old_end > _size)
+                if(old_begin > _size || old_end > _size || old_begin > old_end)
                 {
                     std::cout << "提取位置越界！" << std::endl;
-                    return *this;
+                    return string();
                 }
                 string _str_withdraw_detail_temp;
                 size_t _str_withdraw_detail_temp_len = old_end - old_begin;
                 if(_str_withdraw_detail_temp.Automatic_scaling(_str_withdraw_detail_temp_len) != true)
                 {
                     std::cout << "开辟内存失败！" << std::endl;
-                    return _str_withdraw_detail_temp;
+                    return string();
                 }
                 strcpy(_str_withdraw_detail_temp._data , _data + old_begin);
                 _str_withdraw_detail_temp._size = _str_withdraw_detail_temp_len;
@@ -286,10 +287,7 @@ namespace wz
                     _capacity = temporary_variable;
                     return true;
                 }
-                else
-                {
-                    return false;
-                }
+                return false;
             }
             string& push_back(const char& c_temp_str)
             {
