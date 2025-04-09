@@ -36,19 +36,19 @@ namespace wz
             }
             reverse_iterator rbegin()
             {
-                return _data + _size;
+                return _data + _size - 1;
             }
             reverse_iterator rend()
             {
-                return _data;
+                return _data - 1;
             }
             const_reverse_iterator crbegin()const
             {
-                return _data + _size;
+                return _data + _size - 1;
             }
             const_reverse_iterator crend()const
             {
-                return _data;
+                return _data - 1;
             }
 
             size_t size()const
@@ -96,6 +96,7 @@ namespace wz
                 delete [] _data;
                 _capacity = _size = 0;
             }
+            friend std::ostream& operator<<(std::ostream& string_ostream,const string &data_str);
             friend std::ostream& operator<<(std::ostream& string_ostream,string &data_str);
             friend std::istream& operator>>(std::istream& string_istream,string &data_str);
             string& operator=(const string &data_str)
@@ -407,10 +408,14 @@ namespace wz
                     return string();
                 }
                 string _rollback_temp;
+
+                // for(size_t i = _size - 1; i != nops; i--)
+                // {
+                //     _rollback_temp.push_back(_data[i]);
+                // }
                 for(string::const_reverse_iterator rollback = rbegin();rollback != rend();rollback--)
-                {   
+                {
                     _rollback_temp.push_back(*rollback);
-                    std::cout << *rollback << " ";
                 }
                 return _rollback_temp;
             }
@@ -422,10 +427,15 @@ namespace wz
                     std::cout << "回滚位置越界！" << std::endl;
                     return string();
                 }
-                for(string::const_reverse_iterator rollback = begin()+limit_end ; rollback != begin()+limit_begin;rollback--)
-                {   
+                // for(size_t i = limit_end - 1; i != limit_begin - 1; i--)
+                // {
+                //     //[]遍历
+                //     _rollback_linit_temp.push_back(_data[i]);
+                // } 
+
+                for(string::const_reverse_iterator rollback = _data + limit_end - 1;rollback != _data + limit_begin - 1;rollback--)
+                {
                     _rollback_linit_temp.push_back(*rollback);
-                    std::cout << *rollback << " ";
                 }
                 return _rollback_linit_temp;
             }
@@ -462,7 +472,15 @@ namespace wz
         }
         return string_ostream;
     }
-    std::istream& operator>>(std::istream& string_istream,string &data_str)
+    std::ostream& operator<<(std::ostream& string_ostream,const string &data_str) 
+    {
+        for(size_t i = 0;i < data_str._size;i++)
+        {
+            string_ostream << data_str._data[i];
+        }
+        return string_ostream;
+    }
+    std::istream& operator>>(std::istream& string_istream, string &data_str)
     {
         while(true)
         {
@@ -524,6 +542,17 @@ int main()
     str3.string_print();
     str3.string_print_reverse();
 
+    for(auto i :str3)
+    {
+        std::cout << i << " ";
+    }
+    std::cout << std::endl;
+
+    for(wz::string::const_iterator i = str3.begin();i != str3.end();i++)
+    {
+        std::cout << *i << " ";
+    }
+    std::cout << std::endl;
     //测试Linux上传GitHub
     return 0;
 }
