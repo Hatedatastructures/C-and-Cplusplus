@@ -12,18 +12,45 @@ namespace wz
         public:
             //创建迭代器
             typedef char* iterator;
+            typedef const char* const_iterator;
+            typedef char* reverse_iterator;
+            typedef const char* const_reverse_iterator;
+            //反向迭代器
             //限定字符串最大值
             static const size_t nops = -1;
             iterator begin() 
             {
-                //返回第一个元素的地址
                 return _data;
             }
             iterator end()
             {
-                //返回最后一个元素的下一个位置
                 return _data + _size;
             }
+            const_iterator cbegin()const
+            {
+                return _data;
+            }
+            const_iterator cend()const
+            {
+                return _data + _size;
+            }
+            reverse_iterator rbegin()
+            {
+                return _data + _size;
+            }
+            reverse_iterator rend()
+            {
+                return _data;
+            }
+            const_reverse_iterator crbegin()const
+            {
+                return _data + _size;
+            }
+            const_reverse_iterator crend()const
+            {
+                return _data;
+            }
+
             size_t size()const
             {
                 //返回有效字符串长度
@@ -372,6 +399,52 @@ namespace wz
                 std::swap(_capacity,data_str._capacity);
                 return *this;
             }
+            string rollback()
+            {
+                if(_size == 0)
+                {
+                    std::cout << "回滚失败，字符串为空！" << std::endl;
+                    return string();
+                }
+                string _rollback_temp;
+                for(string::const_reverse_iterator rollback = rbegin();rollback != rend();rollback--)
+                {   
+                    _rollback_temp.push_back(*rollback);
+                    std::cout << *rollback << " ";
+                }
+                return _rollback_temp;
+            }
+            string rollback_limit(const size_t& limit_begin , const size_t& limit_end)
+            {
+                string _rollback_linit_temp;
+                if(limit_begin > _size || limit_end > _size || limit_begin > limit_end ||_size == 0)
+                {
+                    std::cout << "回滚位置越界！" << std::endl;
+                    return string();
+                }
+                for(string::const_reverse_iterator rollback = begin()+limit_end ; rollback != begin()+limit_begin;rollback--)
+                {   
+                    _rollback_linit_temp.push_back(*rollback);
+                    std::cout << *rollback << " ";
+                }
+                return _rollback_linit_temp;
+            }
+            void string_print()
+            {
+                for(string::const_iterator originate = begin();originate != end();originate++)
+                {
+                    std::cout << *originate;
+                }
+                std::cout << std::endl;
+            }
+            void string_print_reverse()
+            {
+                for(string::const_reverse_iterator originate = rbegin();originate != rend();originate--)
+                {
+                    std::cout << *originate;
+                }
+                std::cout << std::endl;
+            }
     };
     // class string_C_return
     // {
@@ -383,7 +456,7 @@ namespace wz
     std::ostream& operator<<(std::ostream& string_ostream,string &data_str) 
     {
         //当前没实现【】访问.可以用迭代器
-        for(wz::string::iterator originate = data_str.begin();originate != data_str.end();originate++)
+        for(wz::string::const_iterator originate = data_str.begin();originate != data_str.end();originate++)
         {
             string_ostream << *originate;
         }
@@ -441,6 +514,16 @@ int main()
     std::cout << "str3 size: " << str3.size() << std::endl;
     std::cout << "str3 capacity: " << str3.capacity() << std::endl;
     std::cout << "str3 after resize: " << str3.resize(21, '*') << std::endl;
+
+
+    std::cout << "str3 after rollback: " << str3.rollback() << std::endl;
+
+
+    std::cout << "str3 after rollback_limit: " << str3.rollback_limit(5, 10) << std::endl;
+
+    str3.string_print();
+    str3.string_print_reverse();
+
     //测试Linux上传GitHub
     return 0;
 }
