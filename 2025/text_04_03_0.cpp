@@ -3,6 +3,13 @@
 //模拟string
 namespace wz
 {
+    /*
+    * 迭代器失效规则：
+    * - 所有改变容量（_capacity）的操作（如 push_back、insert、resize、operator+= 等）会导致所有迭代器失效。
+    * - 插入/删除元素且容量不变时，插入/删除点之后的正向迭代器失效，之前的迭代器保持有效。
+    * - 反向迭代器的失效规则与正向迭代器对称（插入/删除点之前的反向迭代器失效）。
+    * - 使用reserve函数时会返回一个新的首地址迭代器，根据使用情况自己改变迭代器位置。
+    */
     class string
     {
         private:
@@ -19,36 +26,36 @@ namespace wz
             //限定字符串最大值
             static const size_t nops = -1;
             iterator begin() 
-            {
-                return _data;
+            {  
+                return _data; 
             }
             iterator end()
-            {
-                return _data + _size;
+            {  
+                return _data + _size; 
             }
             const_iterator cbegin()const
-            {
-                return _data;
+            { 
+                return const_iterator(_data);
             }
             const_iterator cend()const
-            {
-                return _data + _size;
+            { 
+                return const_iterator(_data + _size); 
             }
             reverse_iterator rbegin()
             {
-                return _data + _size - 1;
+                return reverse_iterator(end()- 1);
             }
             reverse_iterator rend()
             {
-                return _data - 1;
+                return reverse_iterator(begin()- 1);
             }
             const_reverse_iterator crbegin()const
             {
-                return _data + _size - 1;
+                return const_reverse_iterator(cend()- 1);
             }
             const_reverse_iterator crend()const
             {
-                return _data - 1;
+                return const_reverse_iterator(cbegin()- 1);
             }
 
             size_t size()const
@@ -393,6 +400,15 @@ namespace wz
                 }
                 return *this;
             }
+            iterator reserve(const size_t& new_capacity)
+            {
+                if(Automatic_scaling(new_capacity) != true)
+                {
+                    std::cout << "开辟内存失败！" << std::endl;
+                }
+                return _data;
+                //返回首地址迭代器
+            }
             string& swap_s(string& data_str)
             {
                 std::swap(_data,data_str._data);
@@ -456,13 +472,6 @@ namespace wz
                 std::cout << std::endl;
             }
     };
-    // class string_C_return
-    // {
-    //     public:
-    //         typedef char Temporary_needs;
-
-        
-    // };
     std::ostream& operator<<(std::ostream& string_ostream,string &data_str) 
     {
         //当前没实现【】访问.可以用迭代器
