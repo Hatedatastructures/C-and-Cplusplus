@@ -605,6 +605,7 @@ namespace wang
                 size_t old_size = size_v();  // 先保存原来的元素数量
                 if ((size_t)(_capacity_pointer - _data_pointer) < new_capacity) 
                 {
+                    //涉及到迭代器失效问题，不能调用szie_v()函数，会释放未知空间
                     iterator new_data = new vector_t[new_capacity]; 
                     // 复制原先的数据
                     for (size_t i = 0; i < old_size; i++) 
@@ -670,6 +671,7 @@ namespace wang
 }
 int main()
 {
+    //警惕迭代器失效问题，在扩容数据，移动数据，提前更新迭代器，或者提前保存有效数据个数
     wang::vector<int> test(5,1);
     for(auto i: test)
     {
