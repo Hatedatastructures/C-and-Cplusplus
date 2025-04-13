@@ -24,465 +24,465 @@ namespace wz
     */
     class string
     {
-        private:
-            char *_data;
-            size_t _size;
-            size_t _capacity;
-        public:
-            //创建迭代器
-            typedef char* iterator;
-            typedef const char* const_iterator;
-            typedef char* reverse_iterator;
-            typedef const char* const_reverse_iterator;
-            //反向迭代器
-            //限定字符串最大值
-            static const size_t nops = -1;
-            iterator begin() 
-            {  
-                return _data; 
-            }
-            iterator end()
-            {  
-                return _data + _size; 
-            }
-            const_iterator cbegin()const
-            { 
-                return const_iterator(_data);
-            }
-            const_iterator cend()const
-            { 
-                return const_iterator(_data + _size); 
-            }
-            reverse_iterator rbegin()
-            {
-                return reverse_iterator(end()- 1);
-            }
-            reverse_iterator rend()
-            {
-                return reverse_iterator(begin()- 1);
-            }
-            const_reverse_iterator crbegin()const
-            {
-                return const_reverse_iterator(cend()- 1);
-            }
-            const_reverse_iterator crend()const
-            {
-                return const_reverse_iterator(cbegin()- 1);
-            }
+    private:
+        char *_data;
+        size_t _size;
+        size_t _capacity;
+    public:
+        //创建迭代器
+        typedef char* iterator;
+        typedef const char* const_iterator;
+        typedef char* reverse_iterator;
+        typedef const char* const_reverse_iterator;
+        //反向迭代器
+        //限定字符串最大值
+        static const size_t nops = -1;
+        iterator begin() 
+        {  
+            return _data; 
+        }
+        iterator end()
+        {  
+            return _data + _size; 
+        }
+        const_iterator cbegin()const
+        { 
+            return const_iterator(_data);
+        }
+        const_iterator cend()const
+        { 
+            return const_iterator(_data + _size); 
+        }
+        reverse_iterator rbegin()
+        {
+            return reverse_iterator(end()- 1);
+        }
+        reverse_iterator rend()
+        {
+            return reverse_iterator(begin()- 1);
+        }
+        const_reverse_iterator crbegin()const
+        {
+            return const_reverse_iterator(cend()- 1);
+        }
+        const_reverse_iterator crend()const
+        {
+            return const_reverse_iterator(cbegin()- 1);
+        }
 
-            size_t size()const
+        size_t size()const
+        {
+            //返回有效字符串长度
+            return _size;
+        }
+        size_t capacity()const
+        {
+            //返回容量
+            return _capacity;
+        }
+        char* c_str()const
+        {
+            //返回C风格字符串
+            return _data;
+        }
+        string(const char* data_str = "")
+        :_size(data_str == nullptr ? 0 : strlen(data_str)),_capacity(_size)
+        {
+            //传进来的字符串是常量字符串，不能直接修改，需要拷贝一份，并且常量字符串在数据段(常量区)浅拷贝会导致程序崩溃
+            if(data_str != nullptr)
             {
-                //返回有效字符串长度
-                return _size;
+                _data = new char[_capacity + 1];
+                strcpy(_data,data_str);
+                _data[_size] = '\0';
             }
-            size_t capacity()const
+            else
             {
-                //返回容量
-                return _capacity;
+                _data = new char[1];
+                _data[0] = '\0';
             }
-            char* c_str()const
+        }
+        string(const string &data_str)
+        :_data(nullptr),_size(data_str._size),_capacity(data_str._capacity)
+        {
+            //拷贝构造函数，拿传入对象的变量初始化本地变量，对于涉及开辟内存的都要深拷贝
+            size_t capacity = data_str._capacity;
+            _data = new char[capacity + 1];
+            strcpy(_data,data_str._data);
+            _data[_size] = '\0';
+        }
+        ~string()
+        {
+            delete [] _data;
+            _capacity = _size = 0;
+        }
+        friend std::ostream& operator<<(std::ostream& string_ostream,const string &data_str);
+        friend std::ostream& operator<<(std::ostream& string_ostream,string &data_str);
+        friend std::istream& operator>>(std::istream& string_istream,string &data_str);
+        string& operator=(const string &data_str)
+        {
+            //防止无意义拷贝
+            if(this != &data_str)
             {
-                //返回C风格字符串
-                return _data;
-            }
-            string(const char* data_str = "")
-            :_size(data_str == nullptr ? 0 : strlen(data_str)),_capacity(_size)
-            {
-                //传进来的字符串是常量字符串，不能直接修改，需要拷贝一份，并且常量字符串在数据段(常量区)浅拷贝会导致程序崩溃
-                if(data_str != nullptr)
-                {
-                    _data = new char[_capacity + 1];
-                    strcpy(_data,data_str);
-                    _data[_size] = '\0';
-                }
-                else
-                {
-                    _data = new char[1];
-                    _data[0] = '\0';
-                }
-            }
-            string(const string &data_str)
-            :_data(nullptr),_size(data_str._size),_capacity(data_str._capacity)
-            {
-                //拷贝构造函数，拿传入对象的变量初始化本地变量，对于涉及开辟内存的都要深拷贝
+                delete [] _data;
                 size_t capacity = data_str._capacity;
                 _data = new char[capacity + 1];
                 strcpy(_data,data_str._data);
+                _capacity = data_str._capacity;
+                _size = data_str._size;
                 _data[_size] = '\0';
             }
-            ~string()
+            return *this;
+        }
+        string& operator+=(const string& data_str)
+        {
+            size_t len = _size + data_str._size;
+            if(Automatic_scaling(len) != true)
             {
-                delete [] _data;
-                _capacity = _size = 0;
-            }
-            friend std::ostream& operator<<(std::ostream& string_ostream,const string &data_str);
-            friend std::ostream& operator<<(std::ostream& string_ostream,string &data_str);
-            friend std::istream& operator>>(std::istream& string_istream,string &data_str);
-            string& operator=(const string &data_str)
-            {
-                //防止无意义拷贝
-                if(this != &data_str)
-                {
-                    delete [] _data;
-                    size_t capacity = data_str._capacity;
-                    _data = new char[capacity + 1];
-                    strcpy(_data,data_str._data);
-                    _capacity = data_str._capacity;
-                    _size = data_str._size;
-                    _data[_size] = '\0';
-                }
+                std::cout << "开辟内存失败！" << std::endl;
                 return *this;
             }
-            string& operator+=(const string& data_str)
+            strcpy(_data + _size,data_str._data);
+            _size = _size + data_str._size;
+            _data[_size] = '\0';
+            return *this;
+        }
+        char& operator[](const size_t& ergodic_value)
+        {
+            //引用就是出了函数作用域还能用其他的变量名访问，不需要拷贝就能访问，所以可以直接返回引用减少内存开销
+            //在函数创建的变量出了函数作用域就不能访问了，这下才要返回拷贝值，如果返回引用就会未定义
+            if(ergodic_value >= _size)
             {
-                size_t len = _size + data_str._size;
-                if(Automatic_scaling(len) != true)
+                //如果越界了就返回第一个元素的引用
+                return _data[0];
+            }
+            return _data[ergodic_value]; //返回第ergodic_value个元素的引用
+            //就像_data在外面就能访问它以及它的成员，所以这种就可以理解成出了函数作用域还在，进函数之前也能访问的就是引用
+        }
+        const char& operator[](const size_t& ergodic_value)const
+        {
+            if(ergodic_value >= _size)
+            {
+                //如果越界了就返回第一个元素的引用
+                return _data[0];
+            }
+            return _data[ergodic_value]; 
+        }
+        string operator+(const string& cpp_str_)
+        {
+            string _str_temp;
+            size_t _str_temp_len = _size + cpp_str_._size;
+            if(_str_temp.Automatic_scaling(_str_temp_len) != true)
+            {
+                std::cout << "开辟内存失败！" << std::endl;
+                return string();
+            }
+            strcpy(_str_temp._data , _data);
+            strcpy(_str_temp._data + _size , cpp_str_._data);
+            _str_temp._size = _size + cpp_str_._size;
+            _str_temp._data[_str_temp._size] = '\0';
+            return _str_temp;
+        }
+        string& conversions_oldest()
+        {
+            //字符串转大写
+            for(string::iterator originate = _data; originate != _data + _size; originate++)
+            {
+                if(*originate >= 'a' && *originate <= 'z')
+                {
+                    *originate -= 32;
+                }
+            }
+            return *this;
+        }
+        string& conversions_few()
+        {
+            //字符串转小写
+            for(string::iterator originate = _data; originate != _data + _size; originate++)
+            {
+                if(*originate >= 'A' && *originate <= 'Z')
+                {
+                    *originate += 32;
+                }
+            }
+            return *this;
+        }
+        // size_t str_substring_kmp(const char*& c_str_substring)
+        // {
+        //     //查找子串
+        // }
+        string& nose_Insertion_substrings(const char*& c_str_substring)
+        {
+            //前部插入子串
+            size_t len = strlen(c_str_substring);
+            size_t new_nose_insert_substrings = _size + len;
+            if(Automatic_scaling(new_nose_insert_substrings) != true)
+            {
+                std::cout << "开辟内存失败！" << std::endl;
+                return *this;
+            }
+            char* _c_nose_insert_substrings_temp = new char[_capacity + 1];
+            //临时变量
+            memmove(_c_nose_insert_substrings_temp , _data , _size + 1);
+            memmove(_data , c_str_substring , len);
+            memmove(_data + len , _c_nose_insert_substrings_temp , _size + 1);
+            //比memcpy更安全，memcpy会覆盖原有数据，memmove会先拷贝到临时变量再拷贝到目标地址
+            _size = new_nose_insert_substrings;
+            _data[_size] = '\0';
+            delete [] _c_nose_insert_substrings_temp;
+            return *this;
+        }
+        string& interlocutory_Insertion_substrings(const char*& c_str_substring,const size_t& oid_pos)
+        {
+            //中间位置插入子串
+            if(oid_pos > _size)
+            {
+                std::cout << "插入位置越界！" << std::endl;
+                return *this;
+            }
+            size_t len = strlen(c_str_substring);
+            size_t new_interlocutory_insert_substrings = _size + len;
+            if(Automatic_scaling(new_interlocutory_insert_substrings) != true)
+            {
+                std::cout << "开辟内存失败！" << std::endl;
+                return *this;
+            }
+            char* _c_interlocutory_insert_substrings_temp = new char[new_interlocutory_insert_substrings + 1];
+            //临时变量
+            strcpy(_c_interlocutory_insert_substrings_temp,_data);
+            //从oid_pos开始插入
+            strcpy(_data + oid_pos, c_str_substring);
+            strcpy(_data + oid_pos + len , _c_interlocutory_insert_substrings_temp + oid_pos);
+            _size = new_interlocutory_insert_substrings;
+            _data[_size] = '\0';
+            delete [] _c_interlocutory_insert_substrings_temp;
+            return *this;
+        }
+        string str_withdraw(const size_t& old_pos)
+        {
+            //提取字串到'\0'
+            if(old_pos > _size)
+            {
+                std::cout << "提取位置越界！" << std::endl;
+                return string();
+            }
+            string _str_withdraw_temp;
+            size_t _str_withdraw_temp_len = _size - old_pos;
+            if(_str_withdraw_temp.Automatic_scaling(_str_withdraw_temp_len) != true)
+            {
+                std::cout << "开辟内存失败！" << std::endl;
+                return string();
+            }
+            strcpy(_str_withdraw_temp._data , _data + old_pos);
+            _str_withdraw_temp._size = _str_withdraw_temp_len;
+            _str_withdraw_temp._data[_str_withdraw_temp._size] = '\0';
+            return _str_withdraw_temp;
+        }
+        string str_withdraw_extremity(const size_t& old_begin)
+        {
+            //提取字串到末尾
+            if(old_begin > _size)
+            {
+                std::cout << "提取位置越界！" << std::endl;
+                return string();
+            }
+            string _str_withdraw_extremity_temp;
+            size_t _str_withdraw_extremity_temp_len = _size - old_begin;
+            if(_str_withdraw_extremity_temp.Automatic_scaling(_str_withdraw_extremity_temp_len) != true)
+            {
+                std::cout << "开辟内存失败！" << std::endl;
+                return string();
+            }
+            strcpy(_str_withdraw_extremity_temp._data , _data + old_begin);
+            _str_withdraw_extremity_temp._size = _str_withdraw_extremity_temp_len;
+            _str_withdraw_extremity_temp._data[_str_withdraw_extremity_temp._size] = '\0';
+            return _str_withdraw_extremity_temp;
+        }
+        string str_withdraw_detail(const size_t& old_begin ,const size_t& old_end)
+        {
+            //提取字串到指定位置
+            if(old_begin > _size || old_end > _size || old_begin > old_end)
+            {
+                std::cout << "提取位置越界！" << std::endl;
+                return string();
+            }
+            string _str_withdraw_detail_temp;
+            size_t _str_withdraw_detail_temp_len = old_end - old_begin;
+            if(_str_withdraw_detail_temp.Automatic_scaling(_str_withdraw_detail_temp_len) != true)
+            {
+                std::cout << "开辟内存失败！" << std::endl;
+                return string();
+            }
+            strcpy(_str_withdraw_detail_temp._data , _data + old_begin);
+            _str_withdraw_detail_temp._size = _str_withdraw_detail_temp_len;
+            _str_withdraw_detail_temp._data[_str_withdraw_detail_temp._size] = '\0';
+            return _str_withdraw_detail_temp;
+        }
+        bool Automatic_scaling(const size_t& temporary_variable)
+        {
+            //检查string空间大小，来分配内存
+            if(temporary_variable <= _capacity)
+            {
+                //防止无意义频繁拷贝
+                return true;
+            }
+            char* temporary_ = new char[temporary_variable+1];
+            if(temporary_)
+            {
+                strcpy(temporary_,_data);
+                delete[] _data;
+                _data = temporary_;
+                _capacity = temporary_variable;
+                return true;
+            }
+            return false;
+        }
+        string& push_back(const char& c_temp_str)
+        {
+            if(_size == _capacity)
+            {
+                size_t newcapacity = _capacity == 0 ? 2 :_capacity*2;
+                if(Automatic_scaling(newcapacity) != true)
                 {
                     std::cout << "开辟内存失败！" << std::endl;
                     return *this;
                 }
-                strcpy(_data + _size,data_str._data);
-                _size = _size + data_str._size;
-                _data[_size] = '\0';
-                return *this;
             }
-            char& operator[](const size_t& ergodic_value)
+            _data[_size] = c_temp_str;
+            ++_size;
+            _data[_size] = '\0';
+            return *this;
+        }
+        string& push_back(const string& cpp_temp_str)
+        {
+            size_t len = _size + cpp_temp_str._size;
+            if(len > _capacity)
             {
-                //引用就是出了函数作用域还能用其他的变量名访问，不需要拷贝就能访问，所以可以直接返回引用减少内存开销
-                //在函数创建的变量出了函数作用域就不能访问了，这下才要返回拷贝值，如果返回引用就会未定义
-                if(ergodic_value >= _size)
-                {
-                    //如果越界了就返回第一个元素的引用
-                    return _data[0];
-                }
-                return _data[ergodic_value]; //返回第ergodic_value个元素的引用
-                //就像_data在外面就能访问它以及它的成员，所以这种就可以理解成出了函数作用域还在，进函数之前也能访问的就是引用
-            }
-            const char& operator[](const size_t& ergodic_value)const
-            {
-                if(ergodic_value >= _size)
-                {
-                    //如果越界了就返回第一个元素的引用
-                    return _data[0];
-                }
-                return _data[ergodic_value]; 
-            }
-            string operator+(const string& cpp_str_)
-            {
-                string _str_temp;
-                size_t _str_temp_len = _size + cpp_str_._size;
-                if(_str_temp.Automatic_scaling(_str_temp_len) != true)
-                {
-                    std::cout << "开辟内存失败！" << std::endl;
-                    return string();
-                }
-                strcpy(_str_temp._data , _data);
-                strcpy(_str_temp._data + _size , cpp_str_._data);
-                _str_temp._size = _size + cpp_str_._size;
-                _str_temp._data[_str_temp._size] = '\0';
-                return _str_temp;
-            }
-            string& conversions_oldest()
-            {
-                //字符串转大写
-               for(string::iterator originate = _data; originate != _data + _size; originate++)
-                {
-                    if(*originate >= 'a' && *originate <= 'z')
-                    {
-                        *originate -= 32;
-                    }
-                }
-                return *this;
-            }
-            string& conversions_few()
-            {
-                //字符串转小写
-                for(string::iterator originate = _data; originate != _data + _size; originate++)
-                {
-                    if(*originate >= 'A' && *originate <= 'Z')
-                    {
-                        *originate += 32;
-                    }
-                }
-                return *this;
-            }
-            // size_t str_substring_kmp(const char*& c_str_substring)
-            // {
-            //     //查找子串
-            // }
-            string& nose_Insertion_substrings(const char*& c_str_substring)
-            {
-                //前部插入子串
-                size_t len = strlen(c_str_substring);
-                size_t new_nose_insert_substrings = _size + len;
-                if(Automatic_scaling(new_nose_insert_substrings) != true)
-                {
-                    std::cout << "开辟内存失败！" << std::endl;
-                    return *this;
-                }
-                char* _c_nose_insert_substrings_temp = new char[_capacity + 1];
-                //临时变量
-                memmove(_c_nose_insert_substrings_temp , _data , _size + 1);
-                memmove(_data , c_str_substring , len);
-                memmove(_data + len , _c_nose_insert_substrings_temp , _size + 1);
-                //比memcpy更安全，memcpy会覆盖原有数据，memmove会先拷贝到临时变量再拷贝到目标地址
-                _size = new_nose_insert_substrings;
-                _data[_size] = '\0';
-                delete [] _c_nose_insert_substrings_temp;
-                return *this;
-            }
-            string& interlocutory_Insertion_substrings(const char*& c_str_substring,const size_t& oid_pos)
-            {
-                //中间位置插入子串
-                if(oid_pos > _size)
-                {
-                    std::cout << "插入位置越界！" << std::endl;
-                    return *this;
-                }
-                size_t len = strlen(c_str_substring);
-                size_t new_interlocutory_insert_substrings = _size + len;
-                if(Automatic_scaling(new_interlocutory_insert_substrings) != true)
-                {
-                    std::cout << "开辟内存失败！" << std::endl;
-                    return *this;
-                }
-                char* _c_interlocutory_insert_substrings_temp = new char[new_interlocutory_insert_substrings + 1];
-                //临时变量
-                strcpy(_c_interlocutory_insert_substrings_temp,_data);
-                //从oid_pos开始插入
-                strcpy(_data + oid_pos, c_str_substring);
-                strcpy(_data + oid_pos + len , _c_interlocutory_insert_substrings_temp + oid_pos);
-                _size = new_interlocutory_insert_substrings;
-                _data[_size] = '\0';
-                delete [] _c_interlocutory_insert_substrings_temp;
-                return *this;
-            }
-            string str_withdraw(const size_t& old_pos)
-            {
-                //提取字串到'\0'
-                if(old_pos > _size)
-                {
-                    std::cout << "提取位置越界！" << std::endl;
-                    return string();
-                }
-                string _str_withdraw_temp;
-                size_t _str_withdraw_temp_len = _size - old_pos;
-                if(_str_withdraw_temp.Automatic_scaling(_str_withdraw_temp_len) != true)
-                {
-                    std::cout << "开辟内存失败！" << std::endl;
-                    return string();
-                }
-                strcpy(_str_withdraw_temp._data , _data + old_pos);
-                _str_withdraw_temp._size = _str_withdraw_temp_len;
-                _str_withdraw_temp._data[_str_withdraw_temp._size] = '\0';
-                return _str_withdraw_temp;
-            }
-            string str_withdraw_extremity(const size_t& old_begin)
-            {
-                //提取字串到末尾
-                if(old_begin > _size)
-                {
-                    std::cout << "提取位置越界！" << std::endl;
-                    return string();
-                }
-                string _str_withdraw_extremity_temp;
-                size_t _str_withdraw_extremity_temp_len = _size - old_begin;
-                if(_str_withdraw_extremity_temp.Automatic_scaling(_str_withdraw_extremity_temp_len) != true)
-                {
-                    std::cout << "开辟内存失败！" << std::endl;
-                    return string();
-                }
-                strcpy(_str_withdraw_extremity_temp._data , _data + old_begin);
-                _str_withdraw_extremity_temp._size = _str_withdraw_extremity_temp_len;
-                _str_withdraw_extremity_temp._data[_str_withdraw_extremity_temp._size] = '\0';
-                return _str_withdraw_extremity_temp;
-            }
-            string str_withdraw_detail(const size_t& old_begin ,const size_t& old_end)
-            {
-                //提取字串到指定位置
-                if(old_begin > _size || old_end > _size || old_begin > old_end)
-                {
-                    std::cout << "提取位置越界！" << std::endl;
-                    return string();
-                }
-                string _str_withdraw_detail_temp;
-                size_t _str_withdraw_detail_temp_len = old_end - old_begin;
-                if(_str_withdraw_detail_temp.Automatic_scaling(_str_withdraw_detail_temp_len) != true)
-                {
-                    std::cout << "开辟内存失败！" << std::endl;
-                    return string();
-                }
-                strcpy(_str_withdraw_detail_temp._data , _data + old_begin);
-                _str_withdraw_detail_temp._size = _str_withdraw_detail_temp_len;
-                _str_withdraw_detail_temp._data[_str_withdraw_detail_temp._size] = '\0';
-                return _str_withdraw_detail_temp;
-            }
-            bool Automatic_scaling(const size_t& temporary_variable)
-            {
-                //检查string空间大小，来分配内存
-                if(temporary_variable <= _capacity)
-                {
-                    //防止无意义频繁拷贝
-                    return true;
-                }
-                char* temporary_ = new char[temporary_variable+1];
-                if(temporary_)
-                {
-                    strcpy(temporary_,_data);
-                    delete[] _data;
-                    _data = temporary_;
-                    _capacity = temporary_variable;
-                    return true;
-                }
-                return false;
-            }
-            string& push_back(const char& c_temp_str)
-            {
-                if(_size == _capacity)
-                {
-                    size_t newcapacity = _capacity == 0 ? 2 :_capacity*2;
-                    if(Automatic_scaling(newcapacity) != true)
-                    {
-                        std::cout << "开辟内存失败！" << std::endl;
-                        return *this;
-                    }
-                }
-                _data[_size] = c_temp_str;
-                ++_size;
-                _data[_size] = '\0';
-                return *this;
-            }
-            string& push_back(const string& cpp_temp_str)
-            {
-                size_t len = _size + cpp_temp_str._size;
-                if(len > _capacity)
-                {
-                    size_t new_capacity = len;
-                    if(Automatic_scaling(new_capacity) != true)
-                    {
-                        std::cout << "开辟内存失败！" << std::endl;
-                        return *this;
-                    }
-                }
-                strcpy(_data+_size,cpp_temp_str._data);
-                _size =_size + cpp_temp_str._size;
-                _data[_size] = '\0';
-                return *this;
-            }
-            string& push_back(const char* c_temp_str)
-            {
-                size_t len = strlen( c_temp_str );
-                size_t new_capacity = len + _size ;
-                if(new_capacity >_capacity)
-                {
-                    if(Automatic_scaling( new_capacity) != true)
-                    {
-                        std::cout << "开辟内存失败！" << std::endl;
-                        return *this;
-                    }
-                }
-                strcpy(_data+_size , c_temp_str);
-                _size = _size + len;
-                _data[_size] = '\0';
-                return *this;
-            }
-            string& resize(const size_t& new_size ,const char& c_temp_str = '\0')
-            {
-                //扩展字符串长度
-                if(new_size >_capacity)
-                {
-                    //长度大于容量，重新开辟内存
-                    if(Automatic_scaling(new_size) != true)
-                    {
-                        std::cout << "开辟内存失败！" << std::endl;
-                        return *this;
-                    }
-                    for(string::iterator originate = _data + _size;originate != _data + new_size;originate++)
-                    {
-                        *originate = c_temp_str;
-                    }
-                    _size = new_size;
-                    _data[_size] = '\0';
-                }
-                else
-                {
-                    //如果新长度小于当前字符串长度，直接截断放'\0'
-                    _size = new_size;
-                    _data[_size] = '\0';
-                }
-                return *this;
-            }
-            iterator reserve(const size_t& new_capacity)
-            {
+                size_t new_capacity = len;
                 if(Automatic_scaling(new_capacity) != true)
                 {
                     std::cout << "开辟内存失败！" << std::endl;
+                    return *this;
                 }
-                return _data;
-                //返回首地址迭代器
             }
-            string& swap_s(string& data_str)
+            strcpy(_data+_size,cpp_temp_str._data);
+            _size =_size + cpp_temp_str._size;
+            _data[_size] = '\0';
+            return *this;
+        }
+        string& push_back(const char* c_temp_str)
+        {
+            size_t len = strlen( c_temp_str );
+            size_t new_capacity = len + _size ;
+            if(new_capacity >_capacity)
             {
-                std::swap(_data,data_str._data);
-                std::swap(_size,data_str._size);
-                std::swap(_capacity,data_str._capacity);
-                return *this;
-            }
-            string rollback()
-            {
-                if(_size == 0)
+                if(Automatic_scaling( new_capacity) != true)
                 {
-                    std::cout << "回滚失败，字符串为空！" << std::endl;
-                    return string();
+                    std::cout << "开辟内存失败！" << std::endl;
+                    return *this;
                 }
-                string _rollback_temp;
+            }
+            strcpy(_data+_size , c_temp_str);
+            _size = _size + len;
+            _data[_size] = '\0';
+            return *this;
+        }
+        string& resize(const size_t& new_size ,const char& c_temp_str = '\0')
+        {
+            //扩展字符串长度
+            if(new_size >_capacity)
+            {
+                //长度大于容量，重新开辟内存
+                if(Automatic_scaling(new_size) != true)
+                {
+                    std::cout << "开辟内存失败！" << std::endl;
+                    return *this;
+                }
+                for(string::iterator originate = _data + _size;originate != _data + new_size;originate++)
+                {
+                    *originate = c_temp_str;
+                }
+                _size = new_size;
+                _data[_size] = '\0';
+            }
+            else
+            {
+                //如果新长度小于当前字符串长度，直接截断放'\0'
+                _size = new_size;
+                _data[_size] = '\0';
+            }
+            return *this;
+        }
+        iterator reserve(const size_t& new_capacity)
+        {
+            if(Automatic_scaling(new_capacity) != true)
+            {
+                std::cout << "开辟内存失败！" << std::endl;
+            }
+            return _data;
+            //返回首地址迭代器
+        }
+        string& swap_s(string& data_str)
+        {
+            std::swap(_data,data_str._data);
+            std::swap(_size,data_str._size);
+            std::swap(_capacity,data_str._capacity);
+            return *this;
+        }
+        string rollback()
+        {
+            if(_size == 0)
+            {
+                std::cout << "回滚失败，字符串为空！" << std::endl;
+                return string();
+            }
+            string _rollback_temp;
 
-                // for(size_t i = _size - 1; i != nops; i--)
-                // {
-                //     _rollback_temp.push_back(_data[i]);
-                // }
-                for(string::const_reverse_iterator rollback = rbegin();rollback != rend();rollback--)
-                {
-                    _rollback_temp.push_back(*rollback);
-                }
-                return _rollback_temp;
-            }
-            string rollback_limit(const size_t& limit_begin , const size_t& limit_end)
+            // for(size_t i = _size - 1; i != nops; i--)
+            // {
+            //     _rollback_temp.push_back(_data[i]);
+            // }
+            for(string::const_reverse_iterator rollback = rbegin();rollback != rend();rollback--)
             {
-                string _rollback_linit_temp;
-                if(limit_begin > _size || limit_end > _size || limit_begin > limit_end ||_size == 0)
-                {
-                    std::cout << "回滚位置越界！" << std::endl;
-                    return string();
-                }
-                // for(size_t i = limit_end - 1; i != limit_begin - 1; i--)
-                // {
-                //     //[]遍历
-                //     _rollback_linit_temp.push_back(_data[i]);
-                // } 
+                _rollback_temp.push_back(*rollback);
+            }
+            return _rollback_temp;
+        }
+        string rollback_limit(const size_t& limit_begin , const size_t& limit_end)
+        {
+            string _rollback_linit_temp;
+            if(limit_begin > _size || limit_end > _size || limit_begin > limit_end ||_size == 0)
+            {
+                std::cout << "回滚位置越界！" << std::endl;
+                return string();
+            }
+            // for(size_t i = limit_end - 1; i != limit_begin - 1; i--)
+            // {
+            //     //[]遍历
+            //     _rollback_linit_temp.push_back(_data[i]);
+            // } 
 
-                for(string::const_reverse_iterator rollback = _data + limit_end - 1;rollback != _data + limit_begin - 1;rollback--)
-                {
-                    _rollback_linit_temp.push_back(*rollback);
-                }
-                return _rollback_linit_temp;
-            }
-            void string_print()
+            for(string::const_reverse_iterator rollback = _data + limit_end - 1;rollback != _data + limit_begin - 1;rollback--)
             {
-                for(string::const_iterator originate = begin();originate != end();originate++)
-                {
-                    std::cout << *originate;
-                }
-                std::cout << std::endl;
+                _rollback_linit_temp.push_back(*rollback);
             }
-            void string_print_reverse()
+            return _rollback_linit_temp;
+        }
+        void string_print()
+        {
+            for(string::const_iterator originate = begin();originate != end();originate++)
             {
-                for(string::const_reverse_iterator originate = rbegin();originate != rend();originate--)
-                {
-                    std::cout << *originate;
-                }
-                std::cout << std::endl;
+                std::cout << *originate;
             }
+            std::cout << std::endl;
+        }
+        void string_print_reverse()
+        {
+            for(string::const_reverse_iterator originate = rbegin();originate != rend();originate--)
+            {
+                std::cout << *originate;
+            }
+            std::cout << std::endl;
+        }
     };
     std::ostream& operator<<(std::ostream& string_ostream,string &data_str) 
     {
@@ -525,161 +525,234 @@ namespace wang
     template <typename vector_t>
     class vector
     {
-        public:
-            typedef vector_t*       iterator;
-            typedef const vector_t* const_iterator;
-            typedef vector_t*       reverse_iterator;
-            typedef const vector_t* const_reverse_iterator;
-        private:
-            iterator _data_pointer;     //指向数据的头
-            iterator _size_pointer;     //指向数据的尾
-            iterator _capacity_pointer; //指向容量的尾
-        public:
-            iterator begin()
+    public:
+        typedef vector_t*       iterator;
+        typedef const vector_t* const_iterator;
+        typedef vector_t*       reverse_iterator;
+        typedef const vector_t* const_reverse_iterator;
+    private:
+        iterator _data_pointer;     //指向数据的头
+        iterator _size_pointer;     //指向数据的尾
+        iterator _capacity_pointer; //指向容量的尾
+    public:
+        iterator begin()
+        {
+            return _data_pointer;
+        }
+        iterator end()
+        {
+            return _size_pointer;
+        }
+        size_t size_v()
+        {
+            return _size_pointer - _data_pointer;
+        }
+        size_t capacity_v()
+        {
+            return _capacity_pointer - _data_pointer;
+        }
+        size_t size_v() const
+        {
+            return _size_pointer - _data_pointer;
+        }
+        size_t capacity_v() const 
+        {
+            return _capacity_pointer - _data_pointer;
+        }
+        vector()
+        {
+            _data_pointer = nullptr;
+            _size_pointer = nullptr;
+            _capacity_pointer = nullptr;
+        }
+        vector(const size_t& sum_size , const vector_t& data = vector_t())
+        :_data_pointer(new vector_t[sum_size]),_size_pointer(_data_pointer + sum_size)
+        ,_capacity_pointer(_data_pointer + sum_size)
+        {
+            for(size_t i = 0;i < sum_size;i++)
             {
-                return _data_pointer;
+                _data_pointer[i] = data;
             }
-            iterator end()
+        }
+        vector_t& head_v()
+        {
+            return _data_pointer;
+        }
+        vector_t& tail_v()
+        {
+            return _size_pointer;
+        }
+        vector_t& find_v(const size_t& find_szie_)
+        {
+            return _data_pointer[find_szie_];
+        }
+        vector<vector_t>& Completion(const size_t& Completion_szie_ , const vector<vector_t>& Completion_temp_)
+        {
+            size_t Completion_temp_szie_ =size_v();
+            size_t Completion_capacity_  =capacity_v();
+            if(Completion_szie_ > Completion_capacity_)
             {
-                return _size_pointer;
-            }
-            size_t size_v()
-            {
-                return _size_pointer - _data_pointer;
-            }
-            size_t capacity_v()
-            {
-                return _capacity_pointer - _data_pointer;
-            }
-            size_t size_v() const
-            {
-                return _size_pointer - _data_pointer;
-            }
-            size_t capacity_v() const 
-            {
-                return _capacity_pointer - _data_pointer;
-            }
-            vector()
-            {
-                _data_pointer = nullptr;
-                _size_pointer = nullptr;
-                _capacity_pointer = nullptr;
-            }
-            vector(const size_t& sum_size , const vector_t& data = vector_t())
-            :_data_pointer(new vector_t[sum_size]),_size_pointer(_data_pointer + sum_size)
-            ,_capacity_pointer(_data_pointer + sum_size)
-            {
-                for(size_t i = 0;i < sum_size;i++)
+                resize(Completion_szie_);
+                for(size_t i = Completion_capacity_; i < Completion_szie_ ; i++)
                 {
-                    _data_pointer[i] = data;
+                    _data_pointer[i] = Completion_temp_;
                 }
             }
-            //需要实现：resize 函数 扩大 vector_t 个 内存
-            //返回头数据 ，返回尾数据 ，查找数据
-            //填充数据函数
-            //重载operator++() 返回迭代器，数据起始位置
-            vector(const vector<vector_t>& temp_data)
+            else
             {
-                _data_pointer = new vector_t [temp_data._capacity_pointer - temp_data._data_pointer];
-                for(size_t i = 0; i < (size_t)(temp_data._capacity_pointer - temp_data._data_pointer); i++)
+                if(Completion_szie_ > Completion_temp_szie_)
                 {
-                    _data_pointer[i] = temp_data._data_pointer[i];
-                }
-                _size_pointer = _data_pointer + (temp_data._size_pointer - temp_data._data_pointer);
-                _capacity_pointer = _data_pointer + (temp_data._capacity_pointer - temp_data._data_pointer);
-            }
-            ~vector()
-            {
-                delete[]_data_pointer;
-                _data_pointer = _size_pointer =_capacity_pointer =nullptr;
-            }
-            void swap_v(vector<vector_t>& temp_data)
-            {
-                std::swap(_data_pointer, temp_data._data_pointer);
-                std::swap(_size_pointer, temp_data._size_pointer);
-                std::swap(_capacity_pointer, temp_data._capacity_pointer);
-            }
-            iterator erase(iterator pos)
-            {
-                //删除元素
-                iterator temp = pos + 1;
-                while (temp != _size_pointer)
-                {
-                    //(temp-1)就是pos的位置，从pos位置开始覆盖，覆盖到倒数第1个结束，最后一个会被--屏蔽掉
-                    *(temp-1) = *temp;
-                    temp++;
-                }
-                --_size_pointer;
-                return pos;
-            }
-            vector<vector_t>& resize(const size_t& new_capacity)
-            {
-                size_t old_size = size_v();  // 先保存原来的元素数量
-                if ((size_t)(_capacity_pointer - _data_pointer) < new_capacity) 
-                {
-                    //涉及到迭代器失效问题，不能调用szie_v()函数，会释放未知空间
-                    iterator new_data = new vector_t[new_capacity]; 
-                    // 复制原先的数据
-                    for (size_t i = 0; i < old_size; i++) 
+                    for(size_t i = Completion_temp_szie_; i < Completion_szie_ ; i++)
                     {
-                        new_data[i] = _data_pointer[i];
-                    }
-                    delete [] _data_pointer;
-                    _data_pointer = new_data;
-                    _size_pointer = _data_pointer + old_size;  // 使用 old_size 来重建 _size_pointer
-                    _capacity_pointer = _data_pointer + new_capacity;
-                }
-                return *this;
-            }
-
-            // friend std::ostream& operator<< (std::ostream& vector_ostream,const vector<vector_t>& Dynamic_arrays_data);
-            vector_t& operator[](const size_t& _size_operator)
-            {
-                return _data_pointer[_size_operator];
-            }
-            const vector_t& operator[](const size_t& _size_operator)const 
-            {
-                return _data_pointer[_size_operator];
-            }
-            vector<vector_t>& operator=(const vector<vector_t>&vector_temp_)
-            {
-                if (this != &vector_temp_) 
-                {
-                    delete[] _data_pointer; // 释放原有内存
-                    size_t new_cap = vector_temp_.capacity_v();
-                    _data_pointer = new vector_t[new_cap];
-                    _size_pointer = _data_pointer + vector_temp_.size_v();
-                    _capacity_pointer = _data_pointer + new_cap;
-                    for (size_t i = 0; i < vector_temp_.size_v(); ++i) 
-                    {
-                        _data_pointer[i] = vector_temp_[i]; 
-                        // 深拷贝元素
+                        _data_pointer[i] = Completion_temp_;
                     }
                 }
-                return *this;
-            }
-            vector<vector_t>& push_back(const vector_t& push_back_temp_)
-            {
-                if(_size_pointer == _capacity_pointer)
+                else if (Completion_szie_ < Completion_temp_szie_)
                 {
-                    size_t push_banck_size_ = _data_pointer == nullptr ? 10 : (size_t)(_capacity_pointer-_data_pointer)*2;
-                    resize(push_banck_size_);
+                    _size_pointer = _data_pointer + Completion_szie_;
                 }
-                //注意—_szie_pointer是原生迭代器指针，需要解引用才能赋值
-                *_size_pointer = push_back_temp_;
-                _size_pointer++;
+            }
+            return *this;
+        }
+        vector(const vector<vector_t>& temp_data)
+        {
+            _data_pointer = new vector_t [temp_data._capacity_pointer - temp_data._data_pointer];
+            for(size_t i = 0; i < (size_t)(temp_data._capacity_pointer - temp_data._data_pointer); i++)
+            {
+                _data_pointer[i] = temp_data._data_pointer[i];
+            }
+            _size_pointer = _data_pointer + (temp_data._size_pointer - temp_data._data_pointer);
+            _capacity_pointer = _data_pointer + (temp_data._capacity_pointer - temp_data._data_pointer);
+        }
+        ~vector()
+        {
+            delete[]_data_pointer;
+            _data_pointer = _size_pointer =_capacity_pointer =nullptr;
+        }
+        void swap_v(vector<vector_t>& temp_data)
+        {
+            std::swap(_data_pointer, temp_data._data_pointer);
+            std::swap(_size_pointer, temp_data._size_pointer);
+            std::swap(_capacity_pointer, temp_data._capacity_pointer);
+        }
+        iterator erase(iterator pos)
+        {
+            //删除元素
+            iterator temp = pos + 1;
+            while (temp != _size_pointer)
+            {
+                //(temp-1)就是pos的位置，从pos位置开始覆盖，覆盖到倒数第1个结束，最后一个会被--屏蔽掉
+                *(temp-1) = *temp;
+                temp++;
+            }
+            --_size_pointer;
+            return pos;
+        }
+        vector<vector_t>& resize(const size_t& new_capacity)
+        {
+            size_t old_size = size_v();  // 先保存原来的元素数量
+            if ((size_t)(_capacity_pointer - _data_pointer) < new_capacity) 
+            {
+                //涉及到迭代器失效问题，不能调用szie_v()函数，会释放未知空间
+                iterator new_data = new vector_t[new_capacity]; 
+                // 复制原先的数据
+                for (size_t i = 0; i < old_size; i++) 
+                {
+                    new_data[i] = _data_pointer[i];
+                }
+                delete [] _data_pointer;
+                _data_pointer = new_data;
+                _size_pointer = _data_pointer + old_size;  // 使用 old_size 来重建 _size_pointer
+                _capacity_pointer = _data_pointer + new_capacity;
+            }
+            return *this;
+        }
+        vector_t& operator[](const size_t& _size_operator)
+        {
+            return _data_pointer[_size_operator];
+        }
+        const vector_t& operator[](const size_t& _size_operator)const 
+        {
+            return _data_pointer[_size_operator];
+        }
+        vector<vector_t>& operator=(const vector<vector_t>&vector_temp_)
+        {
+            if (this != &vector_temp_) 
+            {
+                delete[] _data_pointer; // 释放原有内存
+                size_t new_cap = vector_temp_.capacity_v();
+                _data_pointer = new vector_t[new_cap];
+                _size_pointer = _data_pointer + vector_temp_.size_v();
+                _capacity_pointer = _data_pointer + new_cap;
+                for (size_t i = 0; i < vector_temp_.size_v(); ++i) 
+                {
+                    _data_pointer[i] = vector_temp_[i]; 
+                    // 深拷贝元素
+                }
+            }
+            return *this;
+        }
+        vector<vector_t>& operator+=(const vector<vector_t>& _temp_)
+        {
+            if(_temp_.size_v() == 0|| _temp_._data_pointer == nullptr)
+            {
                 return *this;
             }
+            size_t _temp_szie_ = _temp_.size_v();
+            size_t _szie_ = size_v();
+            size_t _capacity_ = capacity_v();
+            if(_temp_szie_ + _szie_ > _capacity_)
+            {
+                resize(_temp_szie_ + _szie_);
+               
+            } 
+            size_t sum = 0;
+            for(size_t i = _szie_ ; i < (_temp_szie_ + _szie_); i++)
+            {
+                _data_pointer[i] = _temp_._data_pointer[sum++];
+            }
+            _size_pointer = _data_pointer + (_temp_szie_ + _szie_);
+            return *this;
+        }
+        vector<vector_t>& push_back(const vector_t& push_back_temp_)
+        {
+            if(_size_pointer == _capacity_pointer)
+            {
+                size_t push_banck_size_ = _data_pointer == nullptr ? 10 : (size_t)(_capacity_pointer-_data_pointer)*2;
+                resize(push_banck_size_);
+            }
+            //注意—_szie_pointer是原生迭代器指针，需要解引用才能赋值
+            *_size_pointer = push_back_temp_;
+            _size_pointer++;
+            return *this;
+        }
+        vector<vector_t>& pop_back(const vector_t& pop_back_temp_)
+        {
+            if(_size_pointer == _capacity_pointer)
+            {
+                size_t pop_banck_size_ = _data_pointer == nullptr ? 10 : (size_t)(_capacity_pointer-_data_pointer)*2;
+                resize(pop_banck_size_);
+            }
+            _size_pointer++;
+            for(size_t pop_back_for_szie = size_v();pop_back_for_szie>0;pop_back_for_szie--)
+            {
+                _data_pointer[pop_back_for_szie] = _data_pointer[pop_back_for_szie -1];
+            }
+            *_data_pointer = pop_back_temp_;
+            return *this;
+        }
+        template <typename Output_templates>
+        friend std::ostream& operator<< (std::ostream& vector_ostream, const vector<Output_templates>& Dynamic_arrays_data);
     };
-    // template <typename vector_t>
-    // std::ostream& operator<<(std::ostream& vector_ostream, const vector<vector_t>& Dynamic_arrays_data)
-    // {
-    //     for(int i = 0; i < Dynamic_arrays_data.size_v(); i++)
-    //     {
-    //         vector_ostream << Dynamic_arrays_data[i];
-    //     }
-    //     vector_ostream << std::endl;
-    // }
+    template <typename Output_templates>
+    std::ostream& operator<<(std::ostream& vector_ostream, const vector<Output_templates>& Dynamic_arrays_data)
+    {
+        for(size_t i = 0; i < Dynamic_arrays_data.size_v(); i++)
+        {
+            vector_ostream << Dynamic_arrays_data[i] << " ";
+        }
+        return vector_ostream;
+    }
 }
 int main()
 {
@@ -721,6 +794,24 @@ int main()
     {
         std::cout << i << " ";
     }
+    std::cout << std::endl;
+
+    name_test1.pop_back(s3);
+    for(const auto& i : name_test1 )
+    {
+        std::cout << i << " ";
+    }
+    std::cout << std::endl;
+
+    name_test1+=name_test;
+    for(const auto& i : name_test1 )
+    {
+        std::cout << i << " ";
+    }
+    std::cout << std::endl;
+
+    std::cout << name_test1 << std::endl;
     return 0;
 }
+
 ```
