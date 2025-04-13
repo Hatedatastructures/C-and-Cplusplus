@@ -654,8 +654,6 @@ namespace wang
             }
             return *this;
         }
-
-        // friend std::ostream& operator<< (std::ostream& vector_ostream,const vector<vector_t>& Dynamic_arrays_data);
         vector_t& operator[](const size_t& _size_operator)
         {
             return _data_pointer[_size_operator];
@@ -679,6 +677,28 @@ namespace wang
                     // 深拷贝元素
                 }
             }
+            return *this;
+        }
+        vector<vector_t>& operator+=(const vector<vector_t>& _temp_)
+        {
+            if(_temp_.size_v() == 0|| _temp_._data_pointer == nullptr)
+            {
+                return *this;
+            }
+            size_t _temp_szie_ = _temp_.size_v();
+            size_t _szie_ = size_v();
+            size_t _capacity_ = capacity_v();
+            if(_temp_szie_ + _szie_ > _capacity_)
+            {
+                resize(_temp_szie_ + _szie_);
+               
+            } 
+            size_t sum = 0;
+            for(size_t i = _szie_ ; i < (_temp_szie_ + _szie_); i++)
+            {
+                _data_pointer[i] = _temp_._data_pointer[sum++];
+            }
+            _size_pointer = _data_pointer + (_temp_szie_ + _szie_);
             return *this;
         }
         vector<vector_t>& push_back(const vector_t& push_back_temp_)
@@ -708,16 +728,18 @@ namespace wang
             *_data_pointer = pop_back_temp_;
             return *this;
         }
+        template <typename Output_templates>
+        friend std::ostream& operator<< (std::ostream& vector_ostream, const vector<Output_templates>& Dynamic_arrays_data);
     };
-    // template <typename vector_t>
-    // std::ostream& operator<<(std::ostream& vector_ostream, const vector<vector_t>& Dynamic_arrays_data)
-    // {
-    //     for(int i = 0; i < Dynamic_arrays_data.size_v(); i++)
-    //     {
-    //         vector_ostream << Dynamic_arrays_data[i];
-    //     }
-    //     vector_ostream << std::endl;
-    // }
+    template <typename Output_templates>
+    std::ostream& operator<<(std::ostream& vector_ostream, const vector<Output_templates>& Dynamic_arrays_data)
+    {
+        for(size_t i = 0; i < Dynamic_arrays_data.size_v(); i++)
+        {
+            vector_ostream << Dynamic_arrays_data[i] << " ";
+        }
+        return vector_ostream;
+    }
 }
 int main()
 {
@@ -766,6 +788,15 @@ int main()
     {
         std::cout << i << " ";
     }
+    std::cout << std::endl;
+
+    name_test1+=name_test;
+    for(const auto& i : name_test1 )
+    {
+        std::cout << i << " ";
+    }
+    std::cout << std::endl;
+
+    std::cout << name_test1 << std::endl;
     return 0;
 }
-//重载operator++() 返回迭代器，数据起始位置 重载+  重载+=  重载>> 重载<< 等
