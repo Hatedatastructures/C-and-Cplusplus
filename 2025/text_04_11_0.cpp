@@ -561,7 +561,6 @@ namespace wang
                 _data_pointer[i] = data;
             }
         }
-        //重载operator++() 返回迭代器，数据起始位置
         vector_t& head_v()
         {
             return _data_pointer;
@@ -760,5 +759,13 @@ int main()
     {
         std::cout << i << " ";
     }
+    std::cout << std::endl;
+
+    name_test1.pop_back(s3);
+    for(const auto& i : name_test1 )
+    {
+        std::cout << i << " ";
+    }
     return 0;
 }
+//重载operator++() 返回迭代器，数据起始位置 重载+  重载+=  重载>> 重载<< 等
