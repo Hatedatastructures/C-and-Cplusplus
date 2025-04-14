@@ -726,7 +726,15 @@ namespace wang
             _size_pointer++;
             return *this;
         }
-        vector<vector_t>& pop_back(const vector_t& pop_back_temp_)
+        vector<vector_t>& pop_back() 
+        {
+            if (_size_pointer > _data_pointer) 
+            { // 至少有一个元素
+                --_size_pointer; // 尾指针前移
+            }
+            return *this;
+        }
+        vector<vector_t>& head_back(const vector_t& pop_back_temp_)
         {
             if(_size_pointer == _capacity_pointer)
             {
@@ -796,7 +804,7 @@ int main()
     }
     std::cout << std::endl;
 
-    name_test1.pop_back(s3);
+    name_test1.head_back(s3);
     for(const auto& i : name_test1 )
     {
         std::cout << i << " ";
@@ -811,7 +819,9 @@ int main()
     std::cout << std::endl;
 
     std::cout << name_test1 << std::endl;
+    std::cout << name_test1.pop_back() << std::endl;
     return 0;
 }
+
 
 ```
