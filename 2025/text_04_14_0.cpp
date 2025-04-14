@@ -15,10 +15,34 @@ namespace wa
             //列表初始化
         }
     };
-    template <typename list_node_Type>
+    template <typename list_Node_Type>
+    class _list_iterator_
+    {
+        //迭代器类
+        typedef listNode<list_Node_Type> Node;
+        Node* _node;
+    public:
+        _list_iterator_(Node* node)
+        :_node(node)
+        {
+            //拿一个指针来构造迭代器
+        }
+        list_Node_Type& operator*()
+        {
+            //返回该节点的自定义类型的数据
+            return _node->_data;
+        }
+        _list_iterator_<list_Node_Type>& operator++()
+        {
+            //返回加之后的位置
+            _node = _node -> _next;
+            return *this;
+        }
+    };
+    template <typename list_Node_Type>
     class list
     {
-        typedef listNode<list_node_Type> Node;
+        typedef listNode<list_Node_Type> Node;
 
         Node* _head;
         void CreateHead()
@@ -27,12 +51,12 @@ namespace wa
             _head -> _prev = _head;
             _head -> _next = _head;
         }
-        public:
+    public:
         list()
         {
             CreateHead();
         }
-        void push_back(const list_node_Type& push_back_data)
+        void push_back(const list_Node_Type& push_back_data)
         {
             Node* tail = _head->_prev;
             Node* new_node = new Node(push_back_data); 
