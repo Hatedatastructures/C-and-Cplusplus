@@ -1,5 +1,6 @@
 #include <iostream>
 //模拟实现list
+//简单实现，没有考虑异常处理
 namespace wa
 { 
     template<typename list_Ndoe_Type>
