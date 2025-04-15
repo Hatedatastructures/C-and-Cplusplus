@@ -60,6 +60,12 @@ namespace wa
             return &(_node->_data);
         }
     };
+    template <typename iterator>
+    class _Reverse_list_iterator_
+    {
+        typedef typename iterator::Ref Ref;
+        typedef typename iterator::Ptr Ptr;
+    };
     template <typename list_Node_Type>
     class list
     {
@@ -76,6 +82,9 @@ namespace wa
     public:
         typedef _list_iterator_<list_Node_Type,list_Node_Type& ,list_Node_Type*> iterator;
         typedef _list_iterator_<list_Node_Type,const list_Node_Type&,const list_Node_Type*> const_iterator;
+
+        typedef _Reverse_list_iterator_<iterator> reverse_iterator;
+        typedef _Reverse_list_iterator_<const_iterator> reverse_const_iterator;
         list()
         {
             CreateHead();
