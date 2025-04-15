@@ -107,6 +107,24 @@ namespace wa
         {
             return const_iterator(_head);
         }
+
+
+        reverse_iterator rbegin()
+        {
+            return reverse_iterator(_head);
+        }
+        reverse_iterator rend()
+        {
+            return reverse_iterator(_head->_next);
+        }
+        reverse_const_iterator rcbegin()const
+        {
+            return reverse_const_iterator(_head);
+        }
+        reverse_const_iterator rcend()const
+        {
+            return reverse_const_iterator(_head->_next);
+        }
         void push_back(const list_Node_Type& push_back_data)
         {
             Node* tail = _head->_prev;
