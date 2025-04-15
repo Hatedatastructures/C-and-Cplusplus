@@ -31,21 +31,22 @@ namespace wa
         {
             //拿一个指针来构造迭代器
         }
-        Ref& operator*()
+        Ref operator*()
         {
             //返回该节点的自定义类型的数据
             return _node->_data;
         }
-        iterator& operator++()
+        _list_iterator_& operator++()
         {
             //先用再加，返回加之后的位置
             _node = _node -> _next;
             return *this;
+            //返回类型名，如果为迭代器就会因为const 报错
         }
-        iterator operator++(int)
+        _list_iterator_ operator++(int)
         {
             //先加再用返回加之前的位置
-            iterator temp = *this;
+            _list_iterator_ temp = *this;
             ++(*this);
             return temp;
         }
@@ -88,12 +89,12 @@ namespace wa
         {
             return iterator(_head);
         }
-        const_iterator begin()const
+        const_iterator cbegin()const
         {
             //因为_head为哨兵位，所以哨兵下一个结点为有效数据
             return const_iterator(_head ->_next);
         }
-        const_iterator end()const
+        const_iterator cend()const
         {
             return const_iterator(_head);
         }
@@ -116,7 +117,7 @@ int main()
     {
         test1.push_back(i);
     }
-    wa::list<int>::iterator it = test1.begin();
+    wa::list<int>::const_iterator it =test1.cbegin();
     while(it != test1.end())
     {
         std::cout << *it  << " ";
