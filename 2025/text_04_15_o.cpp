@@ -38,17 +38,29 @@ namespace wa
         }
         _list_iterator_& operator++()
         {
-            //先用再加，返回加之后的位置
+            //先加在用
             _node = _node -> _next;
-            return *this;
+            return _node;
             //返回类型名，如果为迭代器就会因为const 报错
         }
         _list_iterator_ operator++(int)
         {
-            //先加再用返回加之前的位置
-            _list_iterator_ temp = *this;
-            ++(*this);
+            //先用在加
+            _list_iterator_ temp = _node;
+            _node = _node->_next;
+            //把本体指向下一个位置
             return temp;
+        }
+        _list_iterator_ operator--()
+        {
+            _node = _node->_prev;
+            return _node;
+        }
+        _list_iterator_ operator--(int)
+        {
+            _list_iterator_ temp = _node;
+            _node = _node->_prev;
+            return _temp;
         }
         bool operator!= (const iterator& _iterator_temp_)
         {
@@ -63,8 +75,30 @@ namespace wa
     template <typename iterator>
     class _Reverse_list_iterator_
     {
+        //创建反向迭代器
         typedef typename iterator::Ref Ref;
         typedef typename iterator::Ptr Ptr;
+        typedef _Reverse_list_iterator_<iterator> _const_reverse_list_iterator;
+    public:
+        iterator _it;
+        _Reverse_list_iterator_(iterator it)
+        :_it(it)
+        {
+            ;
+        } 
+        Ref& operator*()
+        {
+            //因为反向迭代器起始位置在哨兵节点所以通过指向上一个来找到准确位置
+            //正好到rend位置停下来的时候已经遍历到rend位置
+            iterator temp(_it);
+            --(temp);
+            return *temp;
+        }
+        Ptr operator->()
+        {
+            //两者函数差不多可直接调用
+            return &(operator*());
+        }
     };
     template <typename list_Node_Type>
     class list
@@ -83,6 +117,7 @@ namespace wa
         typedef _list_iterator_<list_Node_Type,list_Node_Type& ,list_Node_Type*> iterator;
         typedef _list_iterator_<list_Node_Type,const list_Node_Type&,const list_Node_Type*> const_iterator;
 
+        //拿正向迭代器构造反向迭代器，可以直接调用 iterator 已经重载的运算符和函数，相当于在封装一层类
         typedef _Reverse_list_iterator_<iterator> reverse_iterator;
         typedef _Reverse_list_iterator_<const_iterator> reverse_const_iterator;
         list()
