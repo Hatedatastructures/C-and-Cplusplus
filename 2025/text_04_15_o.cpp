@@ -217,8 +217,8 @@ int main()
     wa::list<int>::reverse_const_iterator i = test1.rcbegin();
     while(i != test1.rcend())
     {
-        std::cout << *it << " ";
-        it++;
+        std::cout << *i << " ";
+        i++;
     }
     return 0;
 }
