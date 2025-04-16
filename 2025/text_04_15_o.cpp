@@ -25,6 +25,8 @@ namespace wa
         //迭代器类
         typedef listNode<list_Node_Type> Node;
         typedef _list_iterator_<list_Node_Type ,list_Node_Type& ,list_Node_Type*> iterator;
+        typedef Ref reference;
+        typedef Ptr pointer;
         Node* _node;
         _list_iterator_(Node* node)
         :_node(node)
@@ -76,8 +78,8 @@ namespace wa
     class _Reverse_list_iterator_
     {
         //创建反向迭代器
-        typedef typename iterator::Ref Ref;
-        typedef typename iterator::Ptr Ptr;
+        typedef typename iterator::reference Ref;
+        typedef typename iterator::pointer Ptr;
         typedef _Reverse_list_iterator_<iterator> _const_reverse_list_iterator;
     public:
         iterator _it;
