@@ -40,29 +40,29 @@ namespace wa
         {
             //先加在用
             _node = _node -> _next;
-            return _node;
+            return *this;
             //返回类型名，如果为迭代器就会因为const 报错
         }
         _list_iterator_ operator++(int)
         {
             //先用在加
-            _list_iterator_ temp = _node;
+            _list_iterator_ temp(_node);
             _node = _node->_next;
             //把本体指向下一个位置
             return temp;
         }
-        _list_iterator_ operator--()
+        _list_iterator_& operator--()
         {
             _node = _node->_prev;
-            return _node;
+            return *this;
         }
         _list_iterator_ operator--(int)
         {
-            _list_iterator_ temp = _node;
+            _list_iterator_ temp (_node);
             _node = _node->_prev;
-            return _temp;
+            return temp;
         }
-        bool operator!= (const iterator& _iterator_temp_)
+        bool operator!= (const _list_iterator_& _iterator_temp_)
         {
             //比较两个指针及其上一个和下一个指针地址
             return _node != _iterator_temp_._node;
@@ -98,6 +98,32 @@ namespace wa
         {
             //两者函数差不多可直接调用
             return &(operator*());
+        }
+        _Reverse_list_iterator_& operator++()
+        {
+            --_it;
+            return *this;
+        }
+        _Reverse_list_iterator_ operator++(int)
+        {
+            _Reverse_list_iterator_ _temp (_it);
+            --_it;
+            return _temp;
+        }
+        _Reverse_list_iterator_& operator--()
+        {
+            ++_it;
+            return *this;
+        }
+        _Reverse_list_iterator_ operator--(int)
+        {
+            _Reverse_list_iterator_ _temp (_it);
+            ++_it;
+            return _temp;
+        }
+        bool operator!=(const _const_reverse_list_iterator& _temp_)
+        {
+            return _it != _temp_._it;
         }
     };
     template <typename list_Node_Type>
@@ -146,19 +172,19 @@ namespace wa
 
         reverse_iterator rbegin()
         {
-            return reverse_iterator(_head);
+            return reverse_iterator(end());
         }
         reverse_iterator rend()
         {
-            return reverse_iterator(_head->_next);
+            return reverse_iterator(begin());
         }
         reverse_const_iterator rcbegin()const
         {
-            return reverse_const_iterator(_head);
+            return reverse_const_iterator(cend());
         }
         reverse_const_iterator rcend()const
         {
-            return reverse_const_iterator(_head->_next);
+            return reverse_const_iterator(cbegin());
         }
         void push_back(const list_Node_Type& push_back_data)
         {
@@ -180,11 +206,17 @@ int main()
         test1.push_back(i);
     }
     wa::list<int>::const_iterator it =test1.cbegin();
-    while(it != test1.end())
+    while(it != test1.cend())
     {
         std::cout << *it  << " ";
         it++;
     }
     std::cout << std::endl;
+    wa::list<int>::reverse_const_iterator i = test1.rcbegin();
+    while(i != test1.rcend())
+    {
+        std::cout << *it << " ";
+        it++;
+    }
     return 0;
 }
