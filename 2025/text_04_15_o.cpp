@@ -152,6 +152,20 @@ namespace wa
         {
             CreateHead();
         }
+        ~list()
+        {
+            clear();
+            delete _head;
+            _head = nullptr;
+        }
+        list(const list<list_Node_Type>& _list_data)
+        {
+            //拷贝构造
+        }
+        list& operator+(const list<list_Node_Type>& _lsit_temp)
+        {
+            //运算符重载
+        }
         iterator begin()
         {
             //因为_head为哨兵位，所以哨兵下一个结点为有效数据
@@ -170,8 +184,21 @@ namespace wa
         {
             return const_iterator(_head);
         }
-
-
+        size_t size()const
+		{
+			Node* cur = _head->_next;
+			size_t count = 0;
+			while (cur != _head)
+			{
+				count++;
+				cur = cur->_next;
+			}
+			return count;
+		}
+        bool empty()const
+		{
+			return _head->_next == _head;
+		}
         reverse_iterator rbegin()
         {
             return reverse_iterator(end());
@@ -188,16 +215,111 @@ namespace wa
         {
             return reverse_const_iterator(cbegin());
         }
+        /*
+        元素访问操作
+        */
+        list_Node_Type& front()
+		{
+			return _head->_next->_data;
+		}
+
+		const list_Node_Type& front()const
+		{
+			return _head->_next->_data;
+		}
+
+		list_Node_Type& back()
+		{
+			return _head->_prev->_data;
+		}
+
+		const list_Node_Type& back()const
+		{
+			return _head->_prev->_data;
+		}
+        /*
+        插入删除操作
+        */
         void push_back(const list_Node_Type& push_back_data)
         {
-            Node* tail = _head->_prev;
-            Node* new_node = new Node(push_back_data); 
-            //开辟内存拷贝把list_Node_Type类型赋值到_data里
-            tail->_next = new_node;
-            new_node->_prev = tail;
-            _head->_prev = new_node;
-            new_node->_next = _head;
+            insert(end(),push_back_data);
         }
+        void push_front(const list_Node_Type& push_front_data)
+        {
+            //插入到头
+            insert(begin(),push_front_data);
+        }
+        void pop_back() 
+		{ 
+            //删除尾
+			erase(--end()); 
+		}
+        void pop_front() 
+		{ 
+            //删除头
+			erase(begin()); 
+		}
+        iterator insert(iterator pos ,const list_Node_Type& val)
+        {
+            Node* Pnew_node = new Node(val);
+            //开辟新节点
+            Node* Pcur = pos._node;
+            //保存pos位置的值
+            Pnew_node->_prev = Pcur->_prev;
+            Pnew_node->_next = Pcur;
+            Pnew_node->_prev->_next = Pnew_node;
+            Pcur->_prev = Pnew_node;
+            return iterator(Pnew_node);
+        }
+        iterator erase(iterator pos)
+		{
+			// 找到待删除的节点
+			Node* pDel = pos._node;
+			Node* pRet = pDel->_next;
+
+			// 将该节点从链表中拆下来并删除
+			pDel->_prev->_next = pDel->_next;
+			pDel->_next->_prev = pDel->_prev;
+			delete pDel;
+
+			return iterator(pRet);
+		}
+        void resize(size_t newsize, const list_Node_Type& data = list_Node_Type())
+		{
+            //将data插入到链表中
+			size_t oldsize = size();
+			if (newsize <= oldsize)
+			{
+				// 有效元素个数减少到newsize
+				while (newsize < oldsize)
+				{
+					pop_back();
+					oldsize--;
+				}
+			}
+			else
+			{
+				while (oldsize < newsize)
+				{
+					push_back(data);
+					oldsize++;
+				}
+			}
+		}
+        void clear()
+		{
+            //循环释放资源
+			Node* cur = _head->_next;
+			// 采用头删除
+			while (cur != _head)
+			{
+				_head->_next = cur->_next;
+				delete cur;
+				cur = _head->_next;
+			}
+
+			_head->_next = _head->_prev = _head;
+		}
     };
 }
 int main()
@@ -220,5 +342,16 @@ int main()
         std::cout << *i << " ";
         i++;
     }
+    std::cout <<std::endl;
+
+    test1.pop_back(); 
+    wa::list<int>::const_iterator j =test1.cbegin();
+    while(j != test1.cend())
+    {
+        std::cout << *j  << " ";
+        j++;
+    }
+    std::cout << std::endl;
+    std::cout << test1.size() << std::endl;
     return 0;
 }
