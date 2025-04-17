@@ -195,6 +195,18 @@ namespace wa
             }
             return *this;
         }
+        list operator+(const list<list_Node_Type>& _list_temp_)
+        {
+            list<list_Node_Type> _return_temp_ (cbegin(),cend());
+            const_iterator _begin = _list_temp_.cbegin();
+            const_iterator _end  = _list_temp_.cend();
+            while(_begin != _end)
+            {
+                _return_temp_.push_back(*_begin);
+                ++_begin;
+            }
+            return _return_temp_;
+        }
         void swap(wa::list<list_Node_Type>& _swap_temp)
         {
             std::swap(_head,_swap_temp._head);
@@ -396,5 +408,15 @@ int main()
     }
     std::cout << std::endl;
     std::cout << test2.size() << std::endl;
+
+    wa::list<int> test3 = test2 + test1;
+    wa::list<int>::const_iterator k =test3.cbegin();
+    while(k != test3.cend())
+    {
+        std::cout << *k  << " ";
+        k++;
+    }
+    std::cout << std::endl;
+    std::cout << test3.size() << std::endl;
     return 0;
 }
