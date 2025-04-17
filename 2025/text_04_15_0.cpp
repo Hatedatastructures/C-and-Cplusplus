@@ -2,28 +2,28 @@
 //模拟实现list
 namespace wa
 { 
-    template<typename list_Ndoe_Type>
+    template<typename list_Ndoe_Type_>
     struct listNode
     {
         //节点类
-        listNode<list_Ndoe_Type>* _prev;
-        listNode<list_Ndoe_Type>* _next;
-        list_Ndoe_Type _data;
+        listNode<list_Ndoe_Type_>* _prev;
+        listNode<list_Ndoe_Type_>* _next;
+        list_Ndoe_Type_ _data;
 
-        listNode(const list_Ndoe_Type& data = list_Ndoe_Type())
+        listNode(const list_Ndoe_Type_& data = list_Ndoe_Type_())
         :_prev(nullptr), _next(nullptr), _data(data)
         {
             //列表初始化
         }
         
     };
-    template <typename list_Node_Type ,typename Ref ,typename Ptr >
+    template <typename list_Node_Type_iterator ,typename Ref ,typename Ptr >
     class _list_iterator_
     {
     public:
         //迭代器类
-        typedef listNode<list_Node_Type> Node;
-        typedef _list_iterator_<list_Node_Type ,list_Node_Type& ,list_Node_Type*> iterator;
+        typedef listNode<list_Node_Type_iterator> Node;
+        typedef _list_iterator_<list_Node_Type_iterator ,list_Node_Type_iterator& ,list_Node_Type_iterator*> iterator;
         typedef Ref reference;
         typedef Ptr pointer;
         Node* _node;
@@ -127,10 +127,10 @@ namespace wa
             return _it != _temp_._it;
         }
     };
-    template <typename list_Node_Type>
+    template <typename list_Node_Type_iterator>
     class list
     {
-        typedef listNode<list_Node_Type> Node;
+        typedef listNode<list_Node_Type_iterator> Node;
 
         Node* _head;
         //_head为哨兵位
@@ -141,8 +141,8 @@ namespace wa
             _head -> _next = _head;
         }
     public:
-        typedef _list_iterator_<list_Node_Type,list_Node_Type& ,list_Node_Type*> iterator;
-        typedef _list_iterator_<list_Node_Type,const list_Node_Type&,const list_Node_Type*> const_iterator;
+        typedef _list_iterator_<list_Node_Type_iterator,list_Node_Type_iterator& ,list_Node_Type_iterator*> iterator;
+        typedef _list_iterator_<list_Node_Type_iterator,const list_Node_Type_iterator&,const list_Node_Type_iterator*> const_iterator;
 
         //拿正向迭代器构造反向迭代器，可以直接调用 iterator 已经重载的运算符和函数，相当于在封装一层类
         typedef _Reverse_list_iterator_<iterator> reverse_iterator;
@@ -179,14 +179,14 @@ namespace wa
                 ++first;
             }
         }
-        list(const list<list_Node_Type>& _list_data)
+        list(const list<list_Node_Type_iterator>& _list_data)
         {
             //拷贝构造
             CreateHead();
-            list<list_Node_Type> _temp_ (_list_data.cbegin(),_list_data.cend());
+            list<list_Node_Type_iterator> _temp_ (_list_data.cbegin(),_list_data.cend());
             swap(_temp_);
         }
-        void swap(wa::list<list_Node_Type>& _swap_temp)
+        void swap(wa::list<list_Node_Type_iterator>& _swap_temp)
         {
             std::swap(_head,_swap_temp._head);
         }
@@ -242,33 +242,33 @@ namespace wa
         /*
         元素访问操作
         */
-        list_Node_Type& front()
+        list_Node_Type_iterator& front()
 		{
 			return _head->_next->_data;
 		}
 
-		const list_Node_Type& front()const
+		const list_Node_Type_iterator& front()const
 		{
 			return _head->_next->_data;
 		}
 
-		list_Node_Type& back()
+		list_Node_Type_iterator& back()
 		{
 			return _head->_prev->_data;
 		}
 
-		const list_Node_Type& back()const
+		const list_Node_Type_iterator& back()const
 		{
 			return _head->_prev->_data;
 		}
         /*
         插入删除操作
         */
-        void push_back(const list_Node_Type& push_back_data)
+        void push_back(const list_Node_Type_iterator& push_back_data)
         {
             insert(end(),push_back_data);
         }
-        void push_front(const list_Node_Type& push_front_data)
+        void push_front(const list_Node_Type_iterator& push_front_data)
         {
             //插入到头
             insert(begin(),push_front_data);
@@ -283,7 +283,7 @@ namespace wa
             //删除头
 			erase(begin()); 
 		}
-        iterator insert(iterator pos ,const list_Node_Type& val)
+        iterator insert(iterator pos ,const list_Node_Type_iterator& val)
         {
             Node* Pnew_node = new Node(val);
             //开辟新节点
@@ -308,7 +308,7 @@ namespace wa
 
 			return iterator(pRet);
 		}
-        void resize(size_t newsize, const list_Node_Type& data = list_Node_Type())
+        void resize(size_t newsize, const list_Node_Type_iterator& data = list_Node_Type_iterator())
 		{
             //将data插入到链表中
 			size_t oldsize = size();
@@ -344,7 +344,7 @@ namespace wa
 
 			_head->_next = _head->_prev = _head;
 		}
-        list& operator=(list<list_Node_Type> _lsit_temp)
+        list& operator=(list<list_Node_Type_iterator> _lsit_temp)
         {
             //运算符重载
             if( this != &_lsit_temp)
@@ -353,9 +353,9 @@ namespace wa
             }
             return *this;
         }
-        list operator+(const list<list_Node_Type>& _list_temp_)
+        list operator+(const list<list_Node_Type_iterator>& _list_temp_)
         {
-            list<list_Node_Type> _return_temp_ (cbegin(),cend());
+            list<list_Node_Type_iterator> _return_temp_ (cbegin(),cend());
             const_iterator _begin = _list_temp_.cbegin();
             const_iterator _end  = _list_temp_.cend();
             while(_begin != _end)
@@ -365,7 +365,7 @@ namespace wa
             }
             return _return_temp_;
         }
-        list& operator+=(const list<list_Node_Type>& _lsit_temp_)
+        list& operator+=(const list<list_Node_Type_iterator>& _lsit_temp_)
         {
             const_iterator _begin = _lsit_temp_.cbegin();
             const_iterator _end  = _lsit_temp_.cend();
