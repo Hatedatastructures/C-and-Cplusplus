@@ -186,38 +186,6 @@ namespace wa
             list<list_Node_Type> _temp_ (_list_data.cbegin(),_list_data.cend());
             swap(_temp_);
         }
-        list& operator=(list<list_Node_Type> _lsit_temp)
-        {
-            //运算符重载
-            if( this != &_lsit_temp)
-            {
-                swap(_lsit_temp);
-            }
-            return *this;
-        }
-        list operator+(const list<list_Node_Type>& _list_temp_)
-        {
-            list<list_Node_Type> _return_temp_ (cbegin(),cend());
-            const_iterator _begin = _list_temp_.cbegin();
-            const_iterator _end  = _list_temp_.cend();
-            while(_begin != _end)
-            {
-                _return_temp_.push_back(*_begin);
-                ++_begin;
-            }
-            return _return_temp_;
-        }
-        list& operator+=(const list<list_Node_Type>& _lsit_temp_)
-        {
-            const_iterator _begin = _lsit_temp_.cbegin();
-            const_iterator _end  = _lsit_temp_.cend();
-            while(_begin != _end)
-            {
-                push_back(*_begin);
-                ++_begin;
-            }
-            return *this;
-        }
         void swap(wa::list<list_Node_Type>& _swap_temp)
         {
             std::swap(_head,_swap_temp._head);
@@ -376,7 +344,69 @@ namespace wa
 
 			_head->_next = _head->_prev = _head;
 		}
+        list& operator=(list<list_Node_Type> _lsit_temp)
+        {
+            //运算符重载
+            if( this != &_lsit_temp)
+            {
+                swap(_lsit_temp);
+            }
+            return *this;
+        }
+        list operator+(const list<list_Node_Type>& _list_temp_)
+        {
+            list<list_Node_Type> _return_temp_ (cbegin(),cend());
+            const_iterator _begin = _list_temp_.cbegin();
+            const_iterator _end  = _list_temp_.cend();
+            while(_begin != _end)
+            {
+                _return_temp_.push_back(*_begin);
+                ++_begin;
+            }
+            return _return_temp_;
+        }
+        list& operator+=(const list<list_Node_Type>& _lsit_temp_)
+        {
+            const_iterator _begin = _lsit_temp_.cbegin();
+            const_iterator _end  = _lsit_temp_.cend();
+            while(_begin != _end)
+            {
+                push_back(*_begin);
+                ++_begin;
+            }
+            return *this;
+        }
+        template <typename const_list_Output_templates>
+        friend std::ostream& operator<< (std::ostream& list_ostream, const list<const_list_Output_templates>& Dynamic_arrays_data);
+        
+        template <typename list_Output_templates>
+        friend std::ostream& operator<< (std::ostream& list_ostream, list<list_Output_templates>& Dynamic_arrays_data);
     };
+    template <typename const_list_Output_templates>
+    std::ostream& operator<< (std::ostream& list_ostream, const list<const_list_Output_templates>& Dynamic_arrays_data)
+    {
+        //typename声明这是一个类型而不是表达式
+        typename list<const_list_Output_templates>::const_iterator it = Dynamic_arrays_data.cbegin();
+        while (it != Dynamic_arrays_data.cend()) 
+        {
+            list_ostream << *it << " ";
+            ++it;
+        }
+        return list_ostream;
+    }
+
+    template <typename list_Output_templates>
+    std::ostream& operator<< (std::ostream& list_ostream, list<list_Output_templates>& Dynamic_arrays_data)
+    {
+        //typename声明这是一个类型而不是表达式
+        typename list<list_Output_templates>::iterator it = Dynamic_arrays_data.begin();
+        while (it != Dynamic_arrays_data.end()) 
+        {
+            list_ostream << *it << " ";
+            ++it;
+        }
+        return list_ostream;
+    }
 }
 int main()
 {
@@ -439,5 +469,6 @@ int main()
     }
     std::cout << std::endl;
     std::cout << test4.size() << std::endl;
+    std::cout << test4 << std::endl;
     return 0;
 }

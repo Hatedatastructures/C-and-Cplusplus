@@ -103,73 +103,6 @@ namespace wz
                 delete [] _data;
                 _capacity = _size = 0;
             }
-            friend std::ostream& operator<<(std::ostream& string_ostream,const string &data_str);
-            friend std::ostream& operator<<(std::ostream& string_ostream,string &data_str);
-            friend std::istream& operator>>(std::istream& string_istream,string &data_str);
-            string& operator=(const string &data_str)
-            {
-                //防止无意义拷贝
-                if(this != &data_str)
-                {
-                    delete [] _data;
-                    size_t capacity = data_str._capacity;
-                    _data = new char[capacity + 1];
-                    strcpy(_data,data_str._data);
-                    _capacity = data_str._capacity;
-                    _size = data_str._size;
-                    _data[_size] = '\0';
-                }
-                return *this;
-            }
-            string& operator+=(const string& data_str)
-            {
-                size_t len = _size + data_str._size;
-                if(Automatic_scaling(len) != true)
-                {
-                    std::cout << "开辟内存失败！" << std::endl;
-                    return *this;
-                }
-                strcpy(_data + _size,data_str._data);
-                _size = _size + data_str._size;
-                _data[_size] = '\0';
-                return *this;
-            }
-            char& operator[](const size_t& ergodic_value)
-            {
-                //引用就是出了函数作用域还能用其他的变量名访问，不需要拷贝就能访问，所以可以直接返回引用减少内存开销
-                //在函数创建的变量出了函数作用域就不能访问了，这下才要返回拷贝值，如果返回引用就会未定义
-                if(ergodic_value >= _size)
-                {
-                    //如果越界了就返回第一个元素的引用
-                    return _data[0];
-                }
-                return _data[ergodic_value]; //返回第ergodic_value个元素的引用
-                //就像_data在外面就能访问它以及它的成员，所以这种就可以理解成出了函数作用域还在，进函数之前也能访问的就是引用
-            }
-            const char& operator[](const size_t& ergodic_value)const
-            {
-                if(ergodic_value >= _size)
-                {
-                    //如果越界了就返回第一个元素的引用
-                    return _data[0];
-                }
-                return _data[ergodic_value]; 
-            }
-            string operator+(const string& cpp_str_)
-            {
-                string _str_temp;
-                size_t _str_temp_len = _size + cpp_str_._size;
-                if(_str_temp.Automatic_scaling(_str_temp_len) != true)
-                {
-                    std::cout << "开辟内存失败！" << std::endl;
-                    return string();
-                }
-                strcpy(_str_temp._data , _data);
-                strcpy(_str_temp._data + _size , cpp_str_._data);
-                _str_temp._size = _size + cpp_str_._size;
-                _str_temp._data[_str_temp._size] = '\0';
-                return _str_temp;
-            }
             string& conversions_oldest()
             {
                 //字符串转大写
@@ -470,6 +403,73 @@ namespace wz
                     std::cout << *originate;
                 }
                 std::cout << std::endl;
+            }
+            friend std::ostream& operator<<(std::ostream& string_ostream,const string &data_str);
+            friend std::ostream& operator<<(std::ostream& string_ostream,string &data_str);
+            friend std::istream& operator>>(std::istream& string_istream,string &data_str);
+            string& operator=(const string &data_str)
+            {
+                //防止无意义拷贝
+                if(this != &data_str)
+                {
+                    delete [] _data;
+                    size_t capacity = data_str._capacity;
+                    _data = new char[capacity + 1];
+                    strcpy(_data,data_str._data);
+                    _capacity = data_str._capacity;
+                    _size = data_str._size;
+                    _data[_size] = '\0';
+                }
+                return *this;
+            }
+            string& operator+=(const string& data_str)
+            {
+                size_t len = _size + data_str._size;
+                if(Automatic_scaling(len) != true)
+                {
+                    std::cout << "开辟内存失败！" << std::endl;
+                    return *this;
+                }
+                strcpy(_data + _size,data_str._data);
+                _size = _size + data_str._size;
+                _data[_size] = '\0';
+                return *this;
+            }
+            char& operator[](const size_t& ergodic_value)
+            {
+                //引用就是出了函数作用域还能用其他的变量名访问，不需要拷贝就能访问，所以可以直接返回引用减少内存开销
+                //在函数创建的变量出了函数作用域就不能访问了，这下才要返回拷贝值，如果返回引用就会未定义
+                if(ergodic_value >= _size)
+                {
+                    //如果越界了就返回第一个元素的引用
+                    return _data[0];
+                }
+                return _data[ergodic_value]; //返回第ergodic_value个元素的引用
+                //就像_data在外面就能访问它以及它的成员，所以这种就可以理解成出了函数作用域还在，进函数之前也能访问的就是引用
+            }
+            const char& operator[](const size_t& ergodic_value)const
+            {
+                if(ergodic_value >= _size)
+                {
+                    //如果越界了就返回第一个元素的引用
+                    return _data[0];
+                }
+                return _data[ergodic_value]; 
+            }
+            string operator+(const string& cpp_str_)
+            {
+                string _str_temp;
+                size_t _str_temp_len = _size + cpp_str_._size;
+                if(_str_temp.Automatic_scaling(_str_temp_len) != true)
+                {
+                    std::cout << "开辟内存失败！" << std::endl;
+                    return string();
+                }
+                strcpy(_str_temp._data , _data);
+                strcpy(_str_temp._data + _size , cpp_str_._data);
+                _str_temp._size = _size + cpp_str_._size;
+                _str_temp._data[_str_temp._size] = '\0';
+                return _str_temp;
             }
     };
     std::ostream& operator<<(std::ostream& string_ostream,string &data_str) 

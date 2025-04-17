@@ -654,6 +654,41 @@ namespace wang
             }
             return *this;
         }
+        vector<vector_t>& push_back(const vector_t& push_back_temp_)
+        {
+            if(_size_pointer == _capacity_pointer)
+            {
+                size_t push_banck_size_ = _data_pointer == nullptr ? 10 : (size_t)(_capacity_pointer-_data_pointer)*2;
+                resize(push_banck_size_);
+            }
+            //注意—_szie_pointer是原生迭代器指针，需要解引用才能赋值
+            *_size_pointer = push_back_temp_;
+            _size_pointer++;
+            return *this;
+        }
+        vector<vector_t>& pop_back() 
+        {
+            if (_size_pointer > _data_pointer) 
+            { // 至少有一个元素
+                --_size_pointer; // 尾指针前移
+            }
+            return *this;
+        }
+        vector<vector_t>& head_back(const vector_t& pop_back_temp_)
+        {
+            if(_size_pointer == _capacity_pointer)
+            {
+                size_t pop_banck_size_ = _data_pointer == nullptr ? 10 : (size_t)(_capacity_pointer-_data_pointer)*2;
+                resize(pop_banck_size_);
+            }
+            _size_pointer++;
+            for(size_t pop_back_for_szie = size_v();pop_back_for_szie>0;pop_back_for_szie--)
+            {
+                _data_pointer[pop_back_for_szie] = _data_pointer[pop_back_for_szie -1];
+            }
+            *_data_pointer = pop_back_temp_;
+            return *this;
+        }
         vector_t& operator[](const size_t& _size_operator)
         {
             return _data_pointer[_size_operator];
@@ -701,46 +736,11 @@ namespace wang
             _size_pointer = _data_pointer + (_temp_szie_ + _szie_);
             return *this;
         }
-        vector<vector_t>& push_back(const vector_t& push_back_temp_)
-        {
-            if(_size_pointer == _capacity_pointer)
-            {
-                size_t push_banck_size_ = _data_pointer == nullptr ? 10 : (size_t)(_capacity_pointer-_data_pointer)*2;
-                resize(push_banck_size_);
-            }
-            //注意—_szie_pointer是原生迭代器指针，需要解引用才能赋值
-            *_size_pointer = push_back_temp_;
-            _size_pointer++;
-            return *this;
-        }
-        vector<vector_t>& pop_back() 
-        {
-            if (_size_pointer > _data_pointer) 
-            { // 至少有一个元素
-                --_size_pointer; // 尾指针前移
-            }
-            return *this;
-        }
-        vector<vector_t>& head_back(const vector_t& pop_back_temp_)
-        {
-            if(_size_pointer == _capacity_pointer)
-            {
-                size_t pop_banck_size_ = _data_pointer == nullptr ? 10 : (size_t)(_capacity_pointer-_data_pointer)*2;
-                resize(pop_banck_size_);
-            }
-            _size_pointer++;
-            for(size_t pop_back_for_szie = size_v();pop_back_for_szie>0;pop_back_for_szie--)
-            {
-                _data_pointer[pop_back_for_szie] = _data_pointer[pop_back_for_szie -1];
-            }
-            *_data_pointer = pop_back_temp_;
-            return *this;
-        }
-        template <typename Output_templates>
-        friend std::ostream& operator<< (std::ostream& vector_ostream, const vector<Output_templates>& Dynamic_arrays_data);
+        template <typename const_vector_Output_templates>
+        friend std::ostream& operator<< (std::ostream& vector_ostream, const vector<const_vector_Output_templates>& Dynamic_arrays_data);
     };
-    template <typename Output_templates>
-    std::ostream& operator<<(std::ostream& vector_ostream, const vector<Output_templates>& Dynamic_arrays_data)
+    template <typename const_vector_Output_templates>
+    std::ostream& operator<<(std::ostream& vector_ostream, const vector<const_vector_Output_templates>& Dynamic_arrays_data)
     {
         for(size_t i = 0; i < Dynamic_arrays_data.size_v(); i++)
         {
