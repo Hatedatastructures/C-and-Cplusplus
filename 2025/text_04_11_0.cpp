@@ -1,6 +1,6 @@
 #include <iostream>
 #include <cstring>
-namespace wz
+namespace wang
 {
     /*
     * 迭代器失效规则：
@@ -483,7 +483,7 @@ namespace wz
     std::ostream& operator<<(std::ostream& string_ostream,string &data_str) 
     {
         //当前没实现【】访问.可以用迭代器
-        for(wz::string::const_iterator originate = data_str.begin();originate != data_str.end();originate++)
+        for(wang::string::const_iterator originate = data_str.begin();originate != data_str.end();originate++)
         {
             string_ostream << *originate;
         }
@@ -788,21 +788,21 @@ int main()
     {
         std::cout << i << " ";
     }
-    wz::string s2 = "name";
+    wang::string s2 = "name";
     std::cout << std::endl;
-    wang::vector<wz::string> name_test(10,s2);
+    wang::vector<wang::string> name_test(10,s2);
     for(const auto& i : name_test )
     {
         std::cout << i << " ";
     }
     std::cout << std::endl;
-    wang::vector<wz::string> name_test1 =name_test ;
+    wang::vector<wang::string> name_test1 =name_test ;
     for(const auto& i : name_test1 )
     {
         std::cout << i << " ";
     }
     std::cout << std::endl;
-    wz::string s3 = "hello word!";
+    wang::string s3 = "hello word!";
     name_test1.push_back(s3);
     for(const auto& i : name_test1 )
     {

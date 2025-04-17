@@ -1,7 +1,7 @@
 #include <iostream>
 #include <cstring>
 //模拟string
-namespace wz
+namespace wang
 {
     /*
     * 迭代器失效规则：
@@ -475,7 +475,7 @@ namespace wz
     std::ostream& operator<<(std::ostream& string_ostream,string &data_str) 
     {
         //当前没实现【】访问.可以用迭代器
-        for(wz::string::const_iterator originate = data_str.begin();originate != data_str.end();originate++)
+        for(wang::string::const_iterator originate = data_str.begin();originate != data_str.end();originate++)
         {
             string_ostream << *originate;
         }
@@ -510,54 +510,54 @@ namespace wz
 
 int main()
 {
-    wz::string str1("hello");
-    wz::string str2("world");
+    wang::string string_test1("hello");
+    wang::string string_test2("world");
     
-    wz::string str3 = str1 + str2;
-    std::cout << "str3: " << str3 << std::endl;
-    str3.push_back('!');
+    wang::string string_test3 = string_test1 + string_test2;
+    std::cout << "string_test3: " << string_test3 << std::endl;
+    string_test3.push_back('!');
     const char* insert_str = "inserted";
-    str3.nose_Insertion_substrings(insert_str);
-    std::cout << "str3 after insertion: " << str3 << std::endl;
+    string_test3.nose_Insertion_substrings(insert_str);
+    std::cout << "str3 after insertion: " << string_test3 << std::endl;
 
 
     size_t old_pos = strlen(insert_str);
-    wz::string str4 = str3.str_withdraw(old_pos);
-    std::cout << "str4: " << str4 << std::endl;
+    wang::string string_test4 = string_test3.str_withdraw(old_pos);
+    std::cout << "string_test4: " << string_test4 << std::endl;
 
 
-    std::cout << str3.conversions_oldest() << std::endl;
-    std::cout << str3.conversions_few() << std::endl;
+    std::cout << string_test3.conversions_oldest() << std::endl;
+    std::cout << string_test3.conversions_few() << std::endl;
 
 
-    wz::string str5 = str3.str_withdraw_extremity(5);
-    std::cout << "str5: " << str5 << std::endl;
+    wang::string string_test5 = string_test3.str_withdraw_extremity(5);
+    std::cout << "string_test5: " << string_test5 << std::endl;
 
 
-    wz::string str6 = str3.str_withdraw_detail(5, 10);
-    std::cout << "str6: " << str6 << std::endl;
+    wang::string string_test6 = string_test3.str_withdraw_detail(5, 10);
+    std::cout << "string_test6: " << string_test6 << std::endl;
 
 
-    std::cout << "str3 size: " << str3.size() << std::endl;
-    std::cout << "str3 capacity: " << str3.capacity() << std::endl;
-    std::cout << "str3 after resize: " << str3.resize(21, '*') << std::endl;
+    std::cout << "str3 size: " << string_test3.size() << std::endl;
+    std::cout << "str3 capacity: " << string_test3.capacity() << std::endl;
+    std::cout << "string_test3 after resize: " << string_test3.resize(21, '*') << std::endl;
 
 
-    std::cout << "str3 after rollback: " << str3.rollback() << std::endl;
+    std::cout << "string_test3 after rollback: " << string_test3.rollback() << std::endl;
 
 
-    std::cout << "str3 after rollback_limit: " << str3.rollback_limit(5, 10) << std::endl;
+    std::cout << "string_test3 after rollback_limit: " << string_test3.rollback_limit(5, 10) << std::endl;
 
-    str3.string_print();
-    str3.string_print_reverse();
+    string_test3.string_print();
+    string_test3.string_print_reverse();
 
-    for(auto i :str3)
+    for(auto i :string_test3)
     {
         std::cout << i << " ";
     }
     std::cout << std::endl;
 
-    for(wz::string::const_iterator i = str3.begin();i != str3.end();i++)
+    for(wang::string::const_iterator i = string_test3.begin();i != string_test3.end();i++)
     {
         std::cout << *i << " ";
     }
