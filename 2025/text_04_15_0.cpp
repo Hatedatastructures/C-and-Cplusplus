@@ -5,6 +5,7 @@ namespace wa
     template<typename list_Ndoe_Type>
     struct listNode
     {
+        //节点类
         listNode<list_Ndoe_Type>* _prev;
         listNode<list_Ndoe_Type>* _next;
         list_Ndoe_Type _data;
@@ -16,8 +17,6 @@ namespace wa
         }
         
     };
-
-
     template <typename list_Node_Type ,typename Ref ,typename Ptr >
     class _list_iterator_
     {
@@ -158,13 +157,47 @@ namespace wa
             delete _head;
             _head = nullptr;
         }
+        list(iterator first , iterator last)
+        {
+            //通过另一个list对象构建一个list
+            CreateHead();
+            //已经创建一个哨兵节点
+            while (first != last)
+            {
+                push_back(*first);
+                ++first;
+            }
+        }
+        list(const_iterator first , const_iterator last)
+        {
+            //通过另一个list对象构建一个list
+            CreateHead();
+            //已经创建一个哨兵节点
+            while (first != last)
+            {
+                push_back(*first);
+                ++first;
+            }
+        }
         list(const list<list_Node_Type>& _list_data)
         {
             //拷贝构造
+            CreateHead();
+            list<list_Node_Type> _temp_ (_list_data.cbegin(),_list_data.cend());
+            swap(_temp_);
         }
-        list& operator+(const list<list_Node_Type>& _lsit_temp)
+        list& operator=(list<list_Node_Type> _lsit_temp)
         {
             //运算符重载
+            if( this != &_lsit_temp)
+            {
+                swap(_lsit_temp);
+            }
+            return *this;
+        }
+        void swap(wa::list<list_Node_Type>& _swap_temp)
+        {
+            std::swap(_head,_swap_temp._head);
         }
         iterator begin()
         {
@@ -353,5 +386,15 @@ int main()
     }
     std::cout << std::endl;
     std::cout << test1.size() << std::endl;
+
+    wa::list<int> test2 = test1;
+    wa::list<int>::const_iterator p =test2.cbegin();
+    while(p != test2.cend())
+    {
+        std::cout << *p  << " ";
+        p++;
+    }
+    std::cout << std::endl;
+    std::cout << test2.size() << std::endl;
     return 0;
 }
