@@ -7,51 +7,51 @@ namespace wa
     template <typename list_Node_Type>
     class list
     {
-        template<typename list_Ndoe_Type_>
+        template<typename list_Node_Type_New>
         struct listNode
         {
-            listNode<list_Ndoe_Type_>* _prev;
-            listNode<list_Ndoe_Type_>* _next;
-            list_Ndoe_Type_ _data;
+            listNode<list_Node_Type_New>* _prev;
+            listNode<list_Node_Type_New>* _next;
+            list_Node_Type_New _data;
 
-            listNode(const list_Ndoe_Type_& data = list_Ndoe_Type_())
+            listNode(const list_Node_Type_New& data = list_Node_Type_New())
             :_prev(nullptr), _next(nullptr), _data(data)
             {
                 //列表初始化
             }
             
         };
-        template <typename list_Node_Type_iterator>
+        template <typename list_Type>
         class _list_iterator_
         {
         public:
             //迭代器类
-            typedef listNode<list_Node_Type_iterator> Node;
+            typedef listNode<list_Type> Node;
             Node* _node;
             _list_iterator_(Node* node)
             :_node(node)
             {
                 //拿一个指针来构造迭代器
             }
-            list_Node_Type_iterator& operator*()
+            list_Type& operator*()
             {
                 //返回该节点的自定义类型的数据
                 return _node->_data;
             }
-            _list_iterator_<list_Node_Type_iterator>& operator++()
+            _list_iterator_<list_Type>& operator++()
             {
                 //先用再加，返回加之后的位置
                 _node = _node -> _next;
                 return *this;
             }
-            _list_iterator_<list_Node_Type_iterator> operator++(int)
+            _list_iterator_<list_Type> operator++(int)
             {
                 //先加再用返回加之前的位置
-                _list_iterator_<list_Node_Type_iterator> temp = *this;
+                _list_iterator_<list_Type> temp = *this;
                 ++(*this);
                 return temp;
             }
-            bool operator!= (const _list_iterator_<list_Node_Type_iterator>& _iterator_temp_)
+            bool operator!= (const _list_iterator_<list_Type>& _iterator_temp_)
             {
                 //比较两个指针及其上一个和下一个指针地址
                 return _node != _iterator_temp_._node;

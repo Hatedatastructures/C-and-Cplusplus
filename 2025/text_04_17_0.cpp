@@ -11,7 +11,7 @@ namespace wang
         size_t _capacity;
     public:
         //创建迭代器
-        typedef char* iterator;
+        typedef char* Reverse_iterator;
         typedef const char* const_iterator;
 
         typedef char* reverse_iterator;
@@ -19,11 +19,11 @@ namespace wang
         //反向迭代器
         //限定字符串最大值
         static const size_t nops = -1;
-        iterator begin() 
+        Reverse_iterator begin() 
         {  
             return _data; 
         }
-        iterator end()
+        Reverse_iterator end()
         {  
             return _data + _size; 
         }
@@ -100,7 +100,7 @@ namespace wang
         string& conversions_oldest()
         {
             //字符串转大写
-            for(string::iterator originate = _data; originate != _data + _size; originate++)
+            for(string::Reverse_iterator originate = _data; originate != _data + _size; originate++)
             {
                 if(*originate >= 'a' && *originate <= 'z')
                 {
@@ -112,7 +112,7 @@ namespace wang
         string& conversions_few()
         {
             //字符串转小写
-            for(string::iterator originate = _data; originate != _data + _size; originate++)
+            for(string::Reverse_iterator originate = _data; originate != _data + _size; originate++)
             {
                 if(*originate >= 'A' && *originate <= 'Z')
                 {
@@ -312,7 +312,7 @@ namespace wang
                     std::cout << "开辟内存失败！" << std::endl;
                     return *this;
                 }
-                for(string::iterator originate = _data + _size;originate != _data + new_size;originate++)
+                for(string::Reverse_iterator originate = _data + _size;originate != _data + new_size;originate++)
                 {
                     *originate = c_temp_str;
                 }
@@ -327,7 +327,7 @@ namespace wang
             }
             return *this;
         }
-        iterator reserve(const size_t& new_capacity)
+        Reverse_iterator reserve(const size_t& new_capacity)
         {
             if(Automatic_scaling(new_capacity) != true)
             {
@@ -505,20 +505,20 @@ namespace wang
     class vector
     {
     public:
-        typedef vector_t*       iterator;
+        typedef vector_t*       Reverse_iterator;
         typedef const vector_t* const_iterator;
         typedef vector_t*       reverse_iterator;
         typedef const vector_t* const_reverse_iterator;
     private:
-        iterator _data_pointer;     //指向数据的头
-        iterator _size_pointer;     //指向数据的尾
-        iterator _capacity_pointer; //指向容量的尾
+        Reverse_iterator _data_pointer;     //指向数据的头
+        Reverse_iterator _size_pointer;     //指向数据的尾
+        Reverse_iterator _capacity_pointer; //指向容量的尾
     public:
-        iterator begin()
+        Reverse_iterator begin()
         {
             return _data_pointer;
         }
-        iterator end()
+        Reverse_iterator end()
         {
             return _size_pointer;
         }
@@ -614,10 +614,10 @@ namespace wang
             std::swap(_size_pointer, temp_data._size_pointer);
             std::swap(_capacity_pointer, temp_data._capacity_pointer);
         }
-        iterator erase(iterator pos)
+        Reverse_iterator erase(Reverse_iterator pos)
         {
             //删除元素
-            iterator temp = pos + 1;
+            Reverse_iterator temp = pos + 1;
             while (temp != _size_pointer)
             {
                 //(temp-1)就是pos的位置，从pos位置开始覆盖，覆盖到倒数第1个结束，最后一个会被--屏蔽掉
@@ -633,7 +633,7 @@ namespace wang
             if ((size_t)(_capacity_pointer - _data_pointer) < new_capacity) 
             {
                 //涉及到迭代器失效问题，不能调用szie_v()函数，会释放未知空间
-                iterator new_data = new vector_t[new_capacity]; 
+                Reverse_iterator new_data = new vector_t[new_capacity]; 
                 // 复制原先的数据
                 for (size_t i = 0; i < old_size; i++) 
                 {
@@ -751,135 +751,136 @@ namespace wang
         return vector_ostream;
     }
     /*############################     list容器     ############################*/
-    template<typename list_Ndoe_Type>
-    struct listNode
-    {
-        //节点类
-        listNode<list_Ndoe_Type>* _prev;
-        listNode<list_Ndoe_Type>* _next;
-        list_Ndoe_Type _data;
-
-        listNode(const list_Ndoe_Type& data = list_Ndoe_Type())
-        :_prev(nullptr), _next(nullptr), _data(data)
-        {
-            //列表初始化
-        }
-        
-    };
-    template <typename list_Node_Type ,typename Ref ,typename Ptr >
-    class _list_iterator_
-    {
-    public:
-        //迭代器类
-        typedef listNode<list_Node_Type> Node;
-        typedef _list_iterator_<list_Node_Type ,list_Node_Type& ,list_Node_Type*> iterator;
-        typedef Ref reference;
-        typedef Ptr pointer;
-        Node* _node;
-        _list_iterator_(Node* node)
-        :_node(node)
-        {
-            //拿一个指针来构造迭代器
-        }
-        Ref operator*()
-        {
-            //返回该节点的自定义类型的数据
-            return _node->_data;
-        }
-        _list_iterator_& operator++()
-        {
-            //先加在用
-            _node = _node -> _next;
-            return *this;
-            //返回类型名，如果为迭代器就会因为const 报错
-        }
-        _list_iterator_ operator++(int)
-        {
-            //先用在加
-            _list_iterator_ temp(_node);
-            _node = _node->_next;
-            //把本体指向下一个位置
-            return temp;
-        }
-        _list_iterator_& operator--()
-        {
-            _node = _node->_prev;
-            return *this;
-        }
-        _list_iterator_ operator--(int)
-        {
-            _list_iterator_ temp (_node);
-            _node = _node->_prev;
-            return temp;
-        }
-        bool operator!= (const _list_iterator_& _iterator_temp_)
-        {
-            //比较两个指针及其上一个和下一个指针地址
-            return _node != _iterator_temp_._node;
-        }
-        Ptr operator->()
-        {
-            return &(_node->_data);
-        }
-    };
-    template <typename iterator>
-    class _Reverse_list_iterator_
-    {
-        //创建反向迭代器
-        typedef typename iterator::reference Ref;
-        typedef typename iterator::pointer Ptr;
-        typedef _Reverse_list_iterator_<iterator> _const_reverse_list_iterator;
-    public:
-        iterator _it;
-        _Reverse_list_iterator_(iterator it)
-        :_it(it)
-        {
-            ;
-        } 
-        Ref& operator*()
-        {
-            //因为反向迭代器起始位置在哨兵节点所以通过指向上一个来找到准确位置
-            //正好到rend位置停下来的时候已经遍历到rend位置
-            iterator temp(_it);
-            --(temp);
-            return *temp;
-        }
-        Ptr operator->()
-        {
-            //两者函数差不多可直接调用
-            return &(operator*());
-        }
-        _Reverse_list_iterator_& operator++()
-        {
-            --_it;
-            return *this;
-        }
-        _Reverse_list_iterator_ operator++(int)
-        {
-            _Reverse_list_iterator_ _temp (_it);
-            --_it;
-            return _temp;
-        }
-        _Reverse_list_iterator_& operator--()
-        {
-            ++_it;
-            return *this;
-        }
-        _Reverse_list_iterator_ operator--(int)
-        {
-            _Reverse_list_iterator_ _temp (_it);
-            ++_it;
-            return _temp;
-        }
-        bool operator!=(const _const_reverse_list_iterator& _temp_)
-        {
-            return _it != _temp_._it;
-        }
-    };
-    template <typename list_Node_Type>
+    
+    template <typename list_Type>
     class list
     {
-        typedef listNode<list_Node_Type> Node;
+        template<typename list_Node_Type_New>
+        struct listNode
+        {
+            //节点类
+            listNode<list_Node_Type_New>* _prev;
+            listNode<list_Node_Type_New>* _next;
+            list_Node_Type_New _data;
+
+            listNode(const list_Node_Type_New& data = list_Node_Type_New())
+            :_prev(nullptr), _next(nullptr), _data(data)
+            {
+                //列表初始化
+            }
+            
+        };
+        template <typename list_Node_Type_iterator ,typename Ref ,typename Ptr >
+        class _list_iterator_
+        {
+        public:
+            //迭代器类
+            typedef listNode<list_Node_Type_iterator> Node;
+            typedef _list_iterator_<list_Node_Type_iterator ,list_Node_Type_iterator& ,list_Node_Type_iterator*> Reverse_iterator;
+            typedef Ref reference;
+            typedef Ptr pointer;
+            Node* _node;
+            _list_iterator_(Node* node)
+            :_node(node)
+            {
+                //拿一个指针来构造迭代器
+            }
+            Ref operator*()
+            {
+                //返回该节点的自定义类型的数据
+                return _node->_data;
+            }
+            _list_iterator_& operator++()
+            {
+                //先加在用
+                _node = _node -> _next;
+                return *this;
+                //返回类型名，如果为迭代器就会因为const 报错
+            }
+            _list_iterator_ operator++(int)
+            {
+                //先用在加
+                _list_iterator_ temp(_node);
+                _node = _node->_next;
+                //把本体指向下一个位置
+                return temp;
+            }
+            _list_iterator_& operator--()
+            {
+                _node = _node->_prev;
+                return *this;
+            }
+            _list_iterator_ operator--(int)
+            {
+                _list_iterator_ temp (_node);
+                _node = _node->_prev;
+                return temp;
+            }
+            bool operator!= (const _list_iterator_& _iterator_temp_)
+            {
+                //比较两个指针及其上一个和下一个指针地址
+                return _node != _iterator_temp_._node;
+            }
+            Ptr operator->()
+            {
+                return &(_node->_data);
+            }
+        };
+        template <typename Reverse_iterator>
+        class _Reverse_list_iterator_
+        {
+            //创建反向迭代器
+            typedef typename Reverse_iterator::reference Ref;
+            typedef typename Reverse_iterator::pointer Ptr;
+            typedef _Reverse_list_iterator_<Reverse_iterator> _const_reverse_list_iterator;
+        public:
+            Reverse_iterator _it;
+            _Reverse_list_iterator_(Reverse_iterator it)
+            :_it(it)
+            {
+                ;
+            } 
+            Ref& operator*()
+            {
+                //因为反向迭代器起始位置在哨兵节点所以通过指向上一个来找到准确位置
+                //正好到rend位置停下来的时候已经遍历到rend位置
+                Reverse_iterator temp(_it);
+                --(temp);
+                return *temp;
+            }
+            Ptr operator->()
+            {
+                //两者函数差不多可直接调用
+                return &(operator*());
+            }
+            _Reverse_list_iterator_& operator++()
+            {
+                --_it;
+                return *this;
+            }
+            _Reverse_list_iterator_ operator++(int)
+            {
+                _Reverse_list_iterator_ _temp (_it);
+                --_it;
+                return _temp;
+            }
+            _Reverse_list_iterator_& operator--()
+            {
+                ++_it;
+                return *this;
+            }
+            _Reverse_list_iterator_ operator--(int)
+            {
+                _Reverse_list_iterator_ _temp (_it);
+                ++_it;
+                return _temp;
+            }
+            bool operator!=(const _const_reverse_list_iterator& _temp_)
+            {
+                return _it != _temp_._it;
+            }
+        };
+        typedef listNode<list_Type> Node;
 
         Node* _head;
         //_head为哨兵位
@@ -890,11 +891,11 @@ namespace wang
             _head -> _next = _head;
         }
     public:
-        typedef _list_iterator_<list_Node_Type,list_Node_Type& ,list_Node_Type*> iterator;
-        typedef _list_iterator_<list_Node_Type,const list_Node_Type&,const list_Node_Type*> const_iterator;
+        typedef _list_iterator_<list_Type,list_Type& ,list_Type*> Reverse_iterator;
+        typedef _list_iterator_<list_Type,const list_Type&,const list_Type*> const_iterator;
 
-        //拿正向迭代器构造反向迭代器，可以直接调用 iterator 已经重载的运算符和函数，相当于在封装一层类
-        typedef _Reverse_list_iterator_<iterator> reverse_iterator;
+        //拿正向迭代器构造反向迭代器，可以直接调用 Reverse_iterator 已经重载的运算符和函数，相当于在封装一层类
+        typedef _Reverse_list_iterator_<Reverse_iterator> reverse_iterator;
         typedef _Reverse_list_iterator_<const_iterator> reverse_const_iterator;
         list()
         {
@@ -906,7 +907,7 @@ namespace wang
             delete _head;
             _head = nullptr;
         }
-        list(iterator first , iterator last)
+        list(Reverse_iterator first , Reverse_iterator last)
         {
             //通过另一个list对象构建一个list
             CreateHead();
@@ -928,25 +929,25 @@ namespace wang
                 ++first;
             }
         }
-        list(const list<list_Node_Type>& _list_data)
+        list(const list<list_Type>& _list_data)
         {
             //拷贝构造
             CreateHead();
-            list<list_Node_Type> _temp_ (_list_data.cbegin(),_list_data.cend());
+            list<list_Type> _temp_ (_list_data.cbegin(),_list_data.cend());
             swap(_temp_);
         }
-        void swap(wang::list<list_Node_Type>& _swap_temp)
+        void swap(wang::list<list_Type>& _swap_temp)
         {
             std::swap(_head,_swap_temp._head);
         }
-        iterator begin()
+        Reverse_iterator begin()
         {
             //因为_head为哨兵位，所以哨兵下一个结点为有效数据
-            return iterator(_head ->_next);
+            return Reverse_iterator(_head ->_next);
         }
-        iterator end()
+        Reverse_iterator end()
         {
-            return iterator(_head);
+            return Reverse_iterator(_head);
         }
         const_iterator cbegin()const
         {
@@ -991,33 +992,33 @@ namespace wang
         /*
         元素访问操作
         */
-        list_Node_Type& front()
+        list_Type& front()
 		{
 			return _head->_next->_data;
 		}
 
-		const list_Node_Type& front()const
+		const list_Type& front()const
 		{
 			return _head->_next->_data;
 		}
 
-		list_Node_Type& back()
+		list_Type& back()
 		{
 			return _head->_prev->_data;
 		}
 
-		const list_Node_Type& back()const
+		const list_Type& back()const
 		{
 			return _head->_prev->_data;
 		}
         /*
         插入删除操作
         */
-        void push_back(const list_Node_Type& push_back_data)
+        void push_back(const list_Type& push_back_data)
         {
             insert(end(),push_back_data);
         }
-        void push_front(const list_Node_Type& push_front_data)
+        void push_front(const list_Type& push_front_data)
         {
             //插入到头
             insert(begin(),push_front_data);
@@ -1032,7 +1033,7 @@ namespace wang
             //删除头
 			erase(begin()); 
 		}
-        iterator insert(iterator pos ,const list_Node_Type& val)
+        Reverse_iterator insert(Reverse_iterator pos ,const list_Type& val)
         {
             Node* Pnew_node = new Node(val);
             //开辟新节点
@@ -1042,9 +1043,9 @@ namespace wang
             Pnew_node->_next = Pcur;
             Pnew_node->_prev->_next = Pnew_node;
             Pcur->_prev = Pnew_node;
-            return iterator(Pnew_node);
+            return Reverse_iterator(Pnew_node);
         }
-        iterator erase(iterator pos)
+        Reverse_iterator erase(Reverse_iterator pos)
 		{
 			// 找到待删除的节点
 			Node* pDel = pos._node;
@@ -1055,9 +1056,9 @@ namespace wang
 			pDel->_next->_prev = pDel->_prev;
 			delete pDel;
 
-			return iterator(pRet);
+			return Reverse_iterator(pRet);
 		}
-        void resize(size_t newsize, const list_Node_Type& data = list_Node_Type())
+        void resize(size_t newsize, const list_Type& data = list_Type())
 		{
             //将data插入到链表中
 			size_t oldsize = size();
@@ -1093,7 +1094,7 @@ namespace wang
 
 			_head->_next = _head->_prev = _head;
 		}
-        list& operator=(list<list_Node_Type> _lsit_temp)
+        list& operator=(list<list_Type> _lsit_temp)
         {
             //运算符重载
             if( this != &_lsit_temp)
@@ -1102,9 +1103,9 @@ namespace wang
             }
             return *this;
         }
-        list operator+(const list<list_Node_Type>& _list_temp_)
+        list operator+(const list<list_Type>& _list_temp_)
         {
-            list<list_Node_Type> _return_temp_ (cbegin(),cend());
+            list<list_Type> _return_temp_ (cbegin(),cend());
             const_iterator _begin = _list_temp_.cbegin();
             const_iterator _end  = _list_temp_.cend();
             while(_begin != _end)
@@ -1114,7 +1115,7 @@ namespace wang
             }
             return _return_temp_;
         }
-        list& operator+=(const list<list_Node_Type>& _lsit_temp_)
+        list& operator+=(const list<list_Type>& _lsit_temp_)
         {
             const_iterator _begin = _lsit_temp_.cbegin();
             const_iterator _end  = _lsit_temp_.cend();
@@ -1148,7 +1149,7 @@ namespace wang
     std::ostream& operator<< (std::ostream& list_ostream, list<list_Output_templates>& Dynamic_arrays_data)
     {
         //typename声明这是一个类型而不是表达式
-        typename list<list_Output_templates>::iterator it = Dynamic_arrays_data.begin();
+        typename list<list_Output_templates>::Reverse_iterator it = Dynamic_arrays_data.begin();
         while (it != Dynamic_arrays_data.end()) 
         {
             list_ostream << *it << " ";
@@ -1160,119 +1161,113 @@ namespace wang
 }
 int main()
 {
-    /*            string测试             */
-
+    // /*            string测试             */
+    // wang::string string_test1("hello");
+    // wang::string string_test2("world");
     
-    wang::string string_test1("hello");
-    wang::string string_test2("world");
-    
-    wang::string string_test3 = string_test1 + string_test2;
-    std::cout << "string_test3: " << string_test3 << std::endl;
-    string_test3.push_back('!');
-    const char* insert_str = "inserted";
-    string_test3.nose_Insertion_substrings(insert_str);
-    std::cout << "str3 after insertion: " << string_test3 << std::endl;
+    // wang::string string_test3 = string_test1 + string_test2;
+    // std::cout << "string_test3: " << string_test3 << std::endl;
+    // string_test3.push_back('!');
+    // const char* insert_str = "inserted";
+    // string_test3.nose_Insertion_substrings(insert_str);
+    // std::cout << "str3 after insertion: " << string_test3 << std::endl;
 
-    size_t old_pos = strlen(insert_str);
-    wang::string string_test4 = string_test3.str_withdraw(old_pos);
-    std::cout << "string_test4: " << string_test4 << std::endl;
+    // size_t old_pos = strlen(insert_str);
+    // wang::string string_test4 = string_test3.str_withdraw(old_pos);
+    // std::cout << "string_test4: " << string_test4 << std::endl;
 
-    std::cout << string_test3.conversions_oldest() << std::endl;
-    std::cout << string_test3.conversions_few() << std::endl;
+    // std::cout << string_test3.conversions_oldest() << std::endl;
+    // std::cout << string_test3.conversions_few() << std::endl;
 
-    wang::string string_test5 = string_test3.str_withdraw_extremity(5);
-    std::cout << "string_test5: " << string_test5 << std::endl;
+    // wang::string string_test5 = string_test3.str_withdraw_extremity(5);
+    // std::cout << "string_test5: " << string_test5 << std::endl;
 
-    wang::string string_test6 = string_test3.str_withdraw_detail(5, 10);
-    std::cout << "string_test6: " << string_test6 << std::endl;
+    // wang::string string_test6 = string_test3.str_withdraw_detail(5, 10);
+    // std::cout << "string_test6: " << string_test6 << std::endl;
 
-    std::cout << "str3 size: " << string_test3.size() << std::endl;
-    std::cout << "str3 capacity: " << string_test3.capacity() << std::endl;
-    std::cout << "string_test3 after resize: " << string_test3.resize(21, '*') << std::endl;
+    // std::cout << "str3 size: " << string_test3.size() << std::endl;
+    // std::cout << "str3 capacity: " << string_test3.capacity() << std::endl;
+    // std::cout << "string_test3 after resize: " << string_test3.resize(21, '*') << std::endl;
 
-    std::cout << "string_test3 after rollback: " << string_test3.rollback() << std::endl;
+    // std::cout << "string_test3 after rollback: " << string_test3.rollback() << std::endl;
 
-    std::cout << "string_test3 after rollback_limit: " << string_test3.rollback_limit(5, 10) << std::endl;
+    // std::cout << "string_test3 after rollback_limit: " << string_test3.rollback_limit(5, 10) << std::endl;
 
-    string_test3.string_print();
-    string_test3.string_print_reverse();
+    // string_test3.string_print();
+    // string_test3.string_print_reverse();
 
-    for(auto i :string_test3)
-    {
-        std::cout << i << " ";
-    }
-    std::cout << std::endl;
+    // for(auto i :string_test3)
+    // {
+    //     std::cout << i << " ";
+    // }
+    // std::cout << std::endl;
 
-    for(wang::string::const_iterator i = string_test3.begin();i != string_test3.end();i++)
-    {
-        std::cout << *i << " ";
-    }
-    std::cout << std::endl;
+    // for(wang::string::const_iterator i = string_test3.begin();i != string_test3.end();i++)
+    // {
+    //     std::cout << *i << " ";
+    // }
+    // std::cout << std::endl;
 
 
-    /*            vector测试             */
+    // /*            vector测试             */
+    // wang::vector<int> vector_test(5,1);
+    // for(auto i: vector_test)
+    // {
+    //     std::cout << i << " ";
+    // }
+    // std::cout << std::endl;
+    // wang::vector<int> vector_test1(vector_test);
+    // for(const  auto& i  : vector_test1 )
+    // {
+    //     std::cout << i << " ";
+    // }
+    // std::cout << std::endl;
+    // wang::vector<int> test2 = vector_test1;
+    // for(const auto i : test2)
+    // {
+    //     std::cout << i << " ";
+    // }
+    // wang::string s2 = "name";
+    // std::cout << std::endl;
+    // wang::vector<wang::string> name_test(10,s2);
+    // for(const auto& i : name_test )
+    // {
+    //     std::cout << i << " ";
+    // }
+    // std::cout << std::endl;
+    // wang::vector<wang::string> name_test1 =name_test ;
+    // for(const auto& i : name_test1 )
+    // {
+    //     std::cout << i << " ";
+    // }
+    // std::cout << std::endl;
+    // wang::string s3 = "hello word!";
+    // name_test1.push_back(s3);
+    // for(const auto& i : name_test1 )
+    // {
+    //     std::cout << i << " ";
+    // }
+    // std::cout << std::endl;
 
+    // name_test1.push_front(s3);
+    // for(const auto& i : name_test1 )
+    // {
+    //     std::cout << i << " ";
+    // }
+    // std::cout << std::endl;
 
-    wang::vector<int> vector_test(5,1);
-    for(auto i: vector_test)
-    {
-        std::cout << i << " ";
-    }
-    std::cout << std::endl;
-    wang::vector<int> vector_test1(vector_test);
-    for(const  auto& i  : vector_test1 )
-    {
-        std::cout << i << " ";
-    }
-    std::cout << std::endl;
-    wang::vector<int> test2 = vector_test1;
-    for(const auto i : test2)
-    {
-        std::cout << i << " ";
-    }
-    wang::string s2 = "name";
-    std::cout << std::endl;
-    wang::vector<wang::string> name_test(10,s2);
-    for(const auto& i : name_test )
-    {
-        std::cout << i << " ";
-    }
-    std::cout << std::endl;
-    wang::vector<wang::string> name_test1 =name_test ;
-    for(const auto& i : name_test1 )
-    {
-        std::cout << i << " ";
-    }
-    std::cout << std::endl;
-    wang::string s3 = "hello word!";
-    name_test1.push_back(s3);
-    for(const auto& i : name_test1 )
-    {
-        std::cout << i << " ";
-    }
-    std::cout << std::endl;
+    // name_test1+=name_test;
+    // for(const auto& i : name_test1 )
+    // {
+    //     std::cout << i << " ";
+    // }
+    // std::cout << std::endl;
 
-    name_test1.push_front(s3);
-    for(const auto& i : name_test1 )
-    {
-        std::cout << i << " ";
-    }
-    std::cout << std::endl;
-
-    name_test1+=name_test;
-    for(const auto& i : name_test1 )
-    {
-        std::cout << i << " ";
-    }
-    std::cout << std::endl;
-
-    std::cout << name_test1 << std::endl;
-    std::cout << name_test1.pop_back() << std::endl;
+    // std::cout << name_test1 << std::endl;
+    // std::cout << name_test1.pop_back() << std::endl;
 
 
     /*            list测试             */
-
-
     wang::list<int> list_test1;
     for(size_t i = 1; i < 10; i++)
     {
