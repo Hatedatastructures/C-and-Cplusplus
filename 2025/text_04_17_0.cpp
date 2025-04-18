@@ -96,6 +96,15 @@ namespace wang
             //返回C风格字符串
             return _data;
         }
+        char back()
+        {
+            //返回尾字符
+            return _data[_size];
+        }
+        char front()
+        {
+            return _data[0];
+        }
         string(const char* data_str = "")
         :_size(data_str == nullptr ? 0 : strlen(data_str)),_capacity(_size)
         {
@@ -556,18 +565,10 @@ namespace wang
         }
         size_t size()
         {
-            if(_data_pointer ==nullptr || _size_pointer == nullptr || _capacity_pointer == nullptr)
-            {
-                return 0;
-            }
             return _size_pointer - _data_pointer;
         }
         size_t capacity()
         {
-            if(_data_pointer ==nullptr || _size_pointer == nullptr || _capacity_pointer == nullptr)
-            {
-                return 0;
-            }
             return _capacity_pointer - _data_pointer;
         }
         size_t size() const
@@ -1087,10 +1088,10 @@ namespace wang
             //删除尾
 			erase(--end()); 
 		}
-        void pop_front() 
+        iterator pop_front() 
 		{ 
             //删除头
-			erase(begin()); 
+			return erase(begin()); 
 		}
         iterator insert(iterator pos ,const list_Type& val)
         {
@@ -1229,21 +1230,27 @@ namespace wang
         void pop ()
         {
             _container_temp.pop_front();
+            //list返回的是指向下一个位置的正向迭代器
+            //vector返回的是整个容器
         }
         size_t size()
         {
+            //返回元素个数
             return _container_temp.size();
         }
         bool empty()
         {
+            //判断容器是否为空
             return _container_temp.empty();
         }
         Function_templates_queue& front()
         {
+            //查看头数据
             return _container_temp.front();
         }
         Function_templates_queue& back()
         {
+            //查看尾数据
             return _container_temp.back();
         }
     };
