@@ -1231,7 +1231,28 @@ namespace wang
     {
         Container_staic Container_staic_temp_;
     public:
-        
+        void back(const Function_templates_staic& _staic_temp)
+        {
+            //插入尾
+            Container_staic_temp_.push_back(_staic_temp);
+        }
+        void pop()
+        {
+            //删除尾
+            Container_staic_temp_.pop_back();
+        }
+        size_t size()
+        {
+            return Container_staic_temp_.size();
+        }
+        bool empty()
+        {
+            return Container_staic_temp_.empty();
+        } 
+        Function_templates_staic& top()
+        {
+            return Container_staic_temp_.back();
+        }
     };
     /*############################     queue适配器     ############################*/
     template <typename Function_templates_queue ,typename Container_queue = wang::list<Function_templates_queue> >
@@ -1240,9 +1261,9 @@ namespace wang
         //注意队列适配器不会自动检测队列有没有元素，为学异常，注意空间元素
         Container_queue Container_queue_temp_;
     public:
-        void push_back(const Function_templates_queue& _staic_temp)
+        void push_back(const Function_templates_queue& _queue_temp)
         {
-            Container_queue_temp_.push_back(_staic_temp);
+            Container_queue_temp_.push_back(_queue_temp);
         }
         void pop ()
         {
@@ -1275,6 +1296,7 @@ namespace wang
 int main()
 {
     /*            string测试             */
+    std::cout << " string 测试 " << std::endl << std::endl;
     wang::string string_test1("hello");
     wang::string string_test2("world");
     
@@ -1323,6 +1345,7 @@ int main()
 
 
     /*            vector测试             */
+    std::cout << " vector 测试 " << std::endl << std::endl;
     wang::vector<int> vector_test(5,1);
     for(auto i: vector_test)
     {
@@ -1381,6 +1404,7 @@ int main()
 
 
     /*            list测试             */
+    std::cout << " list 测试 " << std::endl << std::endl;
     wang::list<int> list_test1;
     for(size_t i = 1; i < 10; i++)
     {
@@ -1441,8 +1465,26 @@ int main()
     std::cout << std::endl;
     std::cout << list_test4.size() << std::endl;
     std::cout << list_test4 << std::endl;
+    /*            staic测试             */
+    std::cout << " staic 测试 " << std::endl << std::endl;
+    wang::string staic_test_str1 = "hello";
+    wang::string staic_test_str2 = "word";
+    wang::string staic_test_str3 = "  ";
+    wang::staic<wang::string> staic_test1;
+
+    staic_test1.back(staic_test_str1);
+    staic_test1.back(staic_test_str3);
+    staic_test1.back(staic_test_str2);
+
+    std::cout << staic_test1.top() << std::endl;
+    staic_test1.pop();
+    std::cout << staic_test1.top() << std::endl;
+    staic_test1.pop();
+    std::cout << staic_test1.top() << std::endl;
+    staic_test1.pop();
 
     /*            queue测试             */
+    std::cout << " queue 测试 " << std::endl << std::endl;
     wang::string queue_test_str1 = "hello";
     wang::string queue_test_str2 = "word";
     wang::string queue_test_str3 = "  ";
