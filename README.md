@@ -17,6 +17,28 @@ C++ 迭代器失效问题 ，解决方法 ，及时更新迭代器位置 ，或�
 #include <cstring>
 namespace wang
 {
+    namespace STL_Imitation_functions
+    {
+        //仿函数命名空间
+        template<typename Imitation_functions_less>
+        class less
+        {
+        public:
+            bool operator()(Imitation_functions_less& _test1 , Imitation_functions_less& _test2)
+            {
+                return _test1 < _test2;
+            }
+        };
+        template<typename Imitation_functions_greater>
+        class greater
+        {
+        public:
+            bool operator()(Imitation_functions_greater& _test1 , Imitation_functions_greater& _test2)
+            {
+                return _test1 > _test2;
+            }
+        };
+    }
     /*############################     string容器     ############################*/
     class string
     {
@@ -26,7 +48,7 @@ namespace wang
         size_t _capacity;
     public:
         //创建迭代器
-        typedef char* Reverse_iterator;
+        typedef char* iterator;
         typedef const char* const_iterator;
 
         typedef char* reverse_iterator;
@@ -34,11 +56,11 @@ namespace wang
         //反向迭代器
         //限定字符串最大值
         static const size_t nops = -1;
-        Reverse_iterator begin() 
+        iterator begin() 
         {  
             return _data; 
         }
-        Reverse_iterator end()
+        iterator end()
         {  
             return _data + _size; 
         }
@@ -66,7 +88,14 @@ namespace wang
         {
             return const_reverse_iterator(cbegin()- 1);
         }
-
+        bool empty()
+        {
+            if(_data != nullptr || _size != 0)
+            {
+                return true;
+            }
+            return false;
+        }
         size_t size()const
         {
             //返回有效字符串长度
@@ -81,6 +110,15 @@ namespace wang
         {
             //返回C风格字符串
             return _data;
+        }
+        char back()
+        {
+            //返回尾字符
+            return _data[_size];
+        }
+        char front()
+        {
+            return _data[0];
         }
         string(const char* data_str = "")
         :_size(data_str == nullptr ? 0 : strlen(data_str)),_capacity(_size)
@@ -110,12 +148,13 @@ namespace wang
         ~string()
         {
             delete [] _data;
+            _data = nullptr;
             _capacity = _size = 0;
         }
         string& conversions_oldest()
         {
             //字符串转大写
-            for(string::Reverse_iterator originate = _data; originate != _data + _size; originate++)
+            for(string::iterator originate = _data; originate != _data + _size; originate++)
             {
                 if(*originate >= 'a' && *originate <= 'z')
                 {
@@ -127,7 +166,7 @@ namespace wang
         string& conversions_few()
         {
             //字符串转小写
-            for(string::Reverse_iterator originate = _data; originate != _data + _size; originate++)
+            for(string::iterator originate = _data; originate != _data + _size; originate++)
             {
                 if(*originate >= 'A' && *originate <= 'Z')
                 {
@@ -328,7 +367,7 @@ namespace wang
                     std::cout << "开辟内存失败！" << std::endl;
                     return *this;
                 }
-                for(string::Reverse_iterator originate = _data + _size;originate != _data + new_size;originate++)
+                for(string::iterator originate = _data + _size;originate != _data + new_size;originate++)
                 {
                     *originate = c_temp_str;
                 }
@@ -343,7 +382,7 @@ namespace wang
             }
             return *this;
         }
-        Reverse_iterator reserve(const size_t& new_capacity)
+        iterator reserve(const size_t& new_capacity)
         {
             if(Automatic_scaling(new_capacity) != true)
             {
@@ -449,21 +488,22 @@ namespace wang
         {
             //引用就是出了函数作用域还能用其他的变量名访问，不需要拷贝就能访问，所以可以直接返回引用减少内存开销
             //在函数创建的变量出了函数作用域就不能访问了，这下才要返回拷贝值，如果返回引用就会未定义
-            if(ergodic_value >= _size)
-            {
-                //如果越界了就返回第一个元素的引用
-                return _data[0];
-            }
+            // if(ergodic_value >= _size)
+            // {
+            //     //如果越界了就返回第一个元素的引用
+            //     return _data[0];
+            // }
+            //暴力返回
             return _data[ergodic_value]; //返回第ergodic_value个元素的引用
             //就像_data在外面就能访问它以及它的成员，所以这种就可以理解成出了函数作用域还在，进函数之前也能访问的就是引用
         }
         const char& operator[](const size_t& ergodic_value)const
         {
-            if(ergodic_value >= _size)
-            {
-                //如果越界了就返回第一个元素的引用
-                return _data[0];
-            }
+            // if(ergodic_value >= _size)
+            // {
+            //     //如果越界了就返回第一个元素的引用
+            //     return _data[0];
+            // }
             return _data[ergodic_value]; 
         }
         string operator+(const string& cpp_str_)
@@ -521,20 +561,20 @@ namespace wang
     class vector
     {
     public:
-        typedef vector_t*       Reverse_iterator;
+        typedef vector_t*       iterator;
         typedef const vector_t* const_iterator;
         typedef vector_t*       reverse_iterator;
         typedef const vector_t* const_reverse_iterator;
     private:
-        Reverse_iterator _data_pointer;     //指向数据的头
-        Reverse_iterator _size_pointer;     //指向数据的尾
-        Reverse_iterator _capacity_pointer; //指向容量的尾
+        iterator _data_pointer;     //指向数据的头
+        iterator _size_pointer;     //指向数据的尾
+        iterator _capacity_pointer; //指向容量的尾
     public:
-        Reverse_iterator begin()
+        iterator begin()
         {
             return _data_pointer;
         }
-        Reverse_iterator end()
+        iterator end()
         {
             return _size_pointer;
         }
@@ -554,6 +594,14 @@ namespace wang
         {
             return _capacity_pointer - _data_pointer;
         }
+        vector_t& front()
+        {
+            return head();
+        }
+        vector_t& back()
+        {
+            return tail();
+        }
         vector()
         {
             _data_pointer = nullptr;
@@ -569,6 +617,15 @@ namespace wang
                 _data_pointer[i] = data;
             }
         }
+        bool empty()
+        {
+            size_t i = size();
+            if(i != 0 || _data_pointer != nullptr)
+            {
+                return true;
+            }
+            return false;
+        }
         vector_t& head()
         {
             return *_data_pointer;
@@ -581,8 +638,9 @@ namespace wang
         {
             if(find_szie_ >= size())
             {
-                //先默认返回空数组
-                return vector();
+                //先默认返回空数组,但是需要提前写该类型的默认构造函数
+                static vector_t dummy;
+                return dummy;
             }
             return _data_pointer[find_szie_];
         }
@@ -617,7 +675,7 @@ namespace wang
         vector(const vector<vector_t>& temp_data)
         {
             _data_pointer = new vector_t [temp_data._capacity_pointer - temp_data._data_pointer];
-            for(size_t i = 0; i < (size_t)(temp_data._capacity_pointer - temp_data._data_pointer); i++)
+            for(size_t i = 0; i < temp_data.size(); i++)
             {
                 _data_pointer[i] = temp_data._data_pointer[i];
             }
@@ -635,10 +693,10 @@ namespace wang
             std::swap(_size_pointer, temp_data._size_pointer);
             std::swap(_capacity_pointer, temp_data._capacity_pointer);
         }
-        Reverse_iterator erase(Reverse_iterator pos)
+        iterator erase(iterator pos)
         {
             //删除元素
-            Reverse_iterator temp = pos + 1;
+            iterator temp = pos + 1;
             while (temp != _size_pointer)
             {
                 //(temp-1)就是pos的位置，从pos位置开始覆盖，覆盖到倒数第1个结束，最后一个会被--屏蔽掉
@@ -646,7 +704,8 @@ namespace wang
                 temp++;
             }
             --_size_pointer;
-            return pos;
+            return temp;
+            //返回下一个位置地址
         }
         vector<vector_t>& resize(const size_t& new_capacity)
         {
@@ -654,7 +713,7 @@ namespace wang
             if ((size_t)(_capacity_pointer - _data_pointer) < new_capacity) 
             {
                 //涉及到迭代器失效问题，不能调用szie_v()函数，会释放未知空间
-                Reverse_iterator new_data = new vector_t[new_capacity]; 
+                iterator new_data = new vector_t[new_capacity]; 
                 // 复制原先的数据
                 for (size_t i = 0; i < old_size; i++) 
                 {
@@ -695,7 +754,6 @@ namespace wang
                 size_t pop_banck_size_ = _data_pointer == nullptr ? 10 : (size_t)(_capacity_pointer-_data_pointer)*2;
                 resize(pop_banck_size_);
             }
-            _size_pointer++;
             for(size_t pop_back_for_szie = size();pop_back_for_szie>0;pop_back_for_szie--)
             {
                 _data_pointer[pop_back_for_szie] = _data_pointer[pop_back_for_szie -1];
@@ -801,7 +859,7 @@ namespace wang
         public:
             //迭代器类
             typedef listNode<list_Node_Type_iterator> Node;
-            typedef _list_iterator_<list_Node_Type_iterator ,list_Node_Type_iterator& ,list_Node_Type_iterator*> Reverse_iterator;
+            typedef _list_iterator_<list_Node_Type_iterator ,list_Node_Type_iterator& ,list_Node_Type_iterator*> iterator;
             typedef Ref reference;
             typedef Ptr pointer;
             Node* _node;
@@ -851,16 +909,16 @@ namespace wang
                 return &(_node->_data);
             }
         };
-        template <typename Reverse_iterator>
+        template <typename iterator>
         class _Reverse_list_iterator_
         {
             //创建反向迭代器
-            typedef typename Reverse_iterator::reference Ref;
-            typedef typename Reverse_iterator::pointer Ptr;
-            typedef _Reverse_list_iterator_<Reverse_iterator> _const_reverse_list_iterator;
+            typedef typename iterator::reference Ref;
+            typedef typename iterator::pointer Ptr;
+            typedef _Reverse_list_iterator_<iterator> _const_reverse_list_iterator;
         public:
-            Reverse_iterator _it;
-            _Reverse_list_iterator_(Reverse_iterator it)
+            iterator _it;
+            _Reverse_list_iterator_(iterator it)
             :_it(it)
             {
                 ;
@@ -869,7 +927,7 @@ namespace wang
             {
                 //因为反向迭代器起始位置在哨兵节点所以通过指向上一个来找到准确位置
                 //正好到rend位置停下来的时候已经遍历到rend位置
-                Reverse_iterator temp(_it);
+                iterator temp(_it);
                 --(temp);
                 return *temp;
             }
@@ -916,11 +974,11 @@ namespace wang
             _head -> _next = _head;
         }
     public:
-        typedef _list_iterator_<list_Type,list_Type& ,list_Type*> Reverse_iterator;
+        typedef _list_iterator_<list_Type,list_Type& ,list_Type*> iterator;
         typedef _list_iterator_<list_Type,const list_Type&,const list_Type*> const_iterator;
 
-        //拿正向迭代器构造反向迭代器，可以直接调用 Reverse_iterator 已经重载的运算符和函数，相当于在封装一层类
-        typedef _Reverse_list_iterator_<Reverse_iterator> reverse_iterator;
+        //拿正向迭代器构造反向迭代器，可以直接调用 iterator 已经重载的运算符和函数，相当于在封装一层类
+        typedef _Reverse_list_iterator_<iterator> reverse_iterator;
         typedef _Reverse_list_iterator_<const_iterator> reverse_const_iterator;
         list()
         {
@@ -932,7 +990,7 @@ namespace wang
             delete _head;
             _head = nullptr;
         }
-        list(Reverse_iterator first , Reverse_iterator last)
+        list(iterator first , iterator last)
         {
             //通过另一个list对象构建一个list
             CreateHead();
@@ -965,14 +1023,14 @@ namespace wang
         {
             std::swap(_head,_swap_temp._head);
         }
-        Reverse_iterator begin()
+        iterator begin()
         {
             //因为_head为哨兵位，所以哨兵下一个结点为有效数据
-            return Reverse_iterator(_head ->_next);
+            return iterator(_head ->_next);
         }
-        Reverse_iterator end()
+        iterator end()
         {
-            return Reverse_iterator(_head);
+            return iterator(_head);
         }
         const_iterator cbegin()const
         {
@@ -1004,7 +1062,7 @@ namespace wang
         }
         reverse_iterator rend()
         {
-            return reverse_iterator(begin());
+            return reverse_iterator(end());
         }
         reverse_const_iterator rcbegin()const
         {
@@ -1053,12 +1111,12 @@ namespace wang
             //删除尾
 			erase(--end()); 
 		}
-        void pop_front() 
+        iterator pop_front() 
 		{ 
             //删除头
-			erase(begin()); 
+			return erase(begin()); 
 		}
-        Reverse_iterator insert(Reverse_iterator pos ,const list_Type& val)
+        iterator insert(iterator pos ,const list_Type& val)
         {
             Node* Pnew_node = new Node(val);
             //开辟新节点
@@ -1068,9 +1126,9 @@ namespace wang
             Pnew_node->_next = Pcur;
             Pnew_node->_prev->_next = Pnew_node;
             Pcur->_prev = Pnew_node;
-            return Reverse_iterator(Pnew_node);
+            return iterator(Pnew_node);
         }
-        Reverse_iterator erase(Reverse_iterator pos)
+        iterator erase(iterator pos)
 		{
 			// 找到待删除的节点
 			Node* pDel = pos._node;
@@ -1081,7 +1139,7 @@ namespace wang
 			pDel->_next->_prev = pDel->_prev;
 			delete pDel;
 
-			return Reverse_iterator(pRet);
+			return iterator(pRet);
 		}
         void resize(size_t newsize, const list_Type& data = list_Type())
 		{
@@ -1174,7 +1232,7 @@ namespace wang
     std::ostream& operator<< (std::ostream& list_ostream, list<list_Output_templates>& Dynamic_arrays_data)
     {
         //typename声明这是一个类型而不是表达式
-        typename list<list_Output_templates>::Reverse_iterator it = Dynamic_arrays_data.begin();
+        typename list<list_Output_templates>::iterator it = Dynamic_arrays_data.begin();
         while (it != Dynamic_arrays_data.end()) 
         {
             list_ostream << *it << " ";
@@ -1183,15 +1241,77 @@ namespace wang
         return list_ostream;
     }
     /*############################     staic适配器     ############################*/
-    template <typename Function_templates>
+    template <typename Function_templates_staic,typename Container_staic = wang::vector<Function_templates_staic> >
     class staic
     {
-
+        Container_staic Container_staic_temp_;
+    public:
+        void back(const Function_templates_staic& _staic_temp)
+        {
+            //插入尾
+            Container_staic_temp_.push_back(_staic_temp);
+        }
+        void pop()
+        {
+            //删除尾
+            Container_staic_temp_.pop_back();
+        }
+        size_t size()
+        {
+            return Container_staic_temp_.size();
+        }
+        bool empty()
+        {
+            return Container_staic_temp_.empty();
+        } 
+        Function_templates_staic& top()
+        {
+            return Container_staic_temp_.back();
+        }
+    };
+    /*############################     queue适配器     ############################*/
+    template <typename Function_templates_queue ,typename Container_queue = wang::list<Function_templates_queue> >
+    class queue
+    {
+        //注意队列适配器不会自动检测队列有没有元素，为学异常，注意空间元素
+        Container_queue Container_queue_temp_;
+    public:
+        void push_back(const Function_templates_queue& _queue_temp)
+        {
+            Container_queue_temp_.push_back(_queue_temp);
+        }
+        void pop ()
+        {
+            Container_queue_temp_.pop_front();
+            //list返回的是指向下一个位置的正向迭代器
+            //vector返回的是整个容器
+        }
+        size_t size()
+        {
+            //返回元素个数
+            return Container_queue_temp_.size();
+        }
+        bool empty()
+        {
+            //判断容器是否为空
+            return Container_queue_temp_.empty();
+        }
+        Function_templates_queue& front()
+        {
+            //查看头数据
+            return Container_queue_temp_.front();
+        }
+        Function_templates_queue& back()
+        {
+            //查看尾数据
+            return Container_queue_temp_.back();
+        }
     };
 }
 int main()
 {
     /*            string测试             */
+    std::cout << " string 测试 " << std::endl << std::endl;
     wang::string string_test1("hello");
     wang::string string_test2("world");
     
@@ -1240,6 +1360,7 @@ int main()
 
 
     /*            vector测试             */
+    std::cout << " vector 测试 " << std::endl << std::endl;
     wang::vector<int> vector_test(5,1);
     for(auto i: vector_test)
     {
@@ -1298,6 +1419,7 @@ int main()
 
 
     /*            list测试             */
+    std::cout << " list 测试 " << std::endl << std::endl;
     wang::list<int> list_test1;
     for(size_t i = 1; i < 10; i++)
     {
@@ -1358,6 +1480,44 @@ int main()
     std::cout << std::endl;
     std::cout << list_test4.size() << std::endl;
     std::cout << list_test4 << std::endl;
+    /*            staic测试             */
+    std::cout << " staic 测试 " << std::endl << std::endl;
+    wang::string staic_test_str1 = "hello";
+    wang::string staic_test_str2 = "word";
+    wang::string staic_test_str3 = "  ";
+    wang::staic<wang::string> staic_test1;
+
+    staic_test1.back(staic_test_str1);
+    staic_test1.back(staic_test_str3);
+    staic_test1.back(staic_test_str2);
+
+    std::cout << staic_test1.top() << std::endl;
+    staic_test1.pop();
+    std::cout << staic_test1.top() << std::endl;
+    staic_test1.pop();
+    std::cout << staic_test1.top() << std::endl;
+    staic_test1.pop();
+
+    /*            queue测试             */
+    std::cout << " queue 测试 " << std::endl << std::endl;
+    wang::string queue_test_str1 = "hello";
+    wang::string queue_test_str2 = "word";
+    wang::string queue_test_str3 = "  ";
+    wang::queue<wang::string,wang::list<wang::string>> queue_test1;
+
+    queue_test1.push_back(queue_test_str1);
+    queue_test1.push_back(queue_test_str3);
+    queue_test1.push_back(queue_test_str2);
+
+    std::cout << queue_test1.front() << std::endl;
+    std::cout << queue_test1.back()  << std::endl;
+
+    std::cout << queue_test1.front() << " ";
+    queue_test1.pop();
+    std::cout << queue_test1.front() << " ";
+    queue_test1.pop();
+    std::cout << queue_test1.front() << " ";
+    queue_test1.pop();
 
     return 0;
 }
