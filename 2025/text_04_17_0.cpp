@@ -579,6 +579,14 @@ namespace wang
         {
             return _capacity_pointer - _data_pointer;
         }
+        vector_t& front()
+        {
+            return head();
+        }
+        vector_t& back()
+        {
+            return tail();
+        }
         vector()
         {
             _data_pointer = nullptr;
@@ -596,7 +604,7 @@ namespace wang
         }
         bool empty()
         {
-            size_t i = szie();
+            size_t i = size();
             if(i != 0 || _data_pointer != nullptr)
             {
                 return true;
@@ -1221,6 +1229,7 @@ namespace wang
     template <typename Function_templates_queue ,typename Container>
     class queue
     {
+        //注意队列适配器不会自动检测队列有没有元素，为学异常，注意空间元素
         Container _container_temp;
     public:
         void push_back(const Function_templates_queue& _staic_temp)
@@ -1257,173 +1266,192 @@ namespace wang
 }
 int main()
 {
-    /*            string测试             */
-    wang::string string_test1("hello");
-    wang::string string_test2("world");
+    // /*            string测试             */
+    // wang::string string_test1("hello");
+    // wang::string string_test2("world");
     
-    wang::string string_test3 = string_test1 + string_test2;
-    std::cout << "string_test3: " << string_test3 << std::endl;
-    string_test3.push_back('!');
-    const char* insert_str = "inserted";
-    string_test3.nose_Insertion_substrings(insert_str);
-    std::cout << "str3 after insertion: " << string_test3 << std::endl;
+    // wang::string string_test3 = string_test1 + string_test2;
+    // std::cout << "string_test3: " << string_test3 << std::endl;
+    // string_test3.push_back('!');
+    // const char* insert_str = "inserted";
+    // string_test3.nose_Insertion_substrings(insert_str);
+    // std::cout << "str3 after insertion: " << string_test3 << std::endl;
 
-    size_t old_pos = strlen(insert_str);
-    wang::string string_test4 = string_test3.str_withdraw(old_pos);
-    std::cout << "string_test4: " << string_test4 << std::endl;
+    // size_t old_pos = strlen(insert_str);
+    // wang::string string_test4 = string_test3.str_withdraw(old_pos);
+    // std::cout << "string_test4: " << string_test4 << std::endl;
 
-    std::cout << string_test3.conversions_oldest() << std::endl;
-    std::cout << string_test3.conversions_few() << std::endl;
+    // std::cout << string_test3.conversions_oldest() << std::endl;
+    // std::cout << string_test3.conversions_few() << std::endl;
 
-    wang::string string_test5 = string_test3.str_withdraw_extremity(5);
-    std::cout << "string_test5: " << string_test5 << std::endl;
+    // wang::string string_test5 = string_test3.str_withdraw_extremity(5);
+    // std::cout << "string_test5: " << string_test5 << std::endl;
 
-    wang::string string_test6 = string_test3.str_withdraw_detail(5, 10);
-    std::cout << "string_test6: " << string_test6 << std::endl;
+    // wang::string string_test6 = string_test3.str_withdraw_detail(5, 10);
+    // std::cout << "string_test6: " << string_test6 << std::endl;
 
-    std::cout << "str3 size: " << string_test3.size() << std::endl;
-    std::cout << "str3 capacity: " << string_test3.capacity() << std::endl;
-    std::cout << "string_test3 after resize: " << string_test3.resize(21, '*') << std::endl;
+    // std::cout << "str3 size: " << string_test3.size() << std::endl;
+    // std::cout << "str3 capacity: " << string_test3.capacity() << std::endl;
+    // std::cout << "string_test3 after resize: " << string_test3.resize(21, '*') << std::endl;
 
-    std::cout << "string_test3 after rollback: " << string_test3.rollback() << std::endl;
+    // std::cout << "string_test3 after rollback: " << string_test3.rollback() << std::endl;
 
-    std::cout << "string_test3 after rollback_limit: " << string_test3.rollback_limit(5, 10) << std::endl;
+    // std::cout << "string_test3 after rollback_limit: " << string_test3.rollback_limit(5, 10) << std::endl;
 
-    string_test3.string_print();
-    string_test3.string_print_reverse();
+    // string_test3.string_print();
+    // string_test3.string_print_reverse();
 
-    for(auto i :string_test3)
-    {
-        std::cout << i << " ";
-    }
-    std::cout << std::endl;
+    // for(auto i :string_test3)
+    // {
+    //     std::cout << i << " ";
+    // }
+    // std::cout << std::endl;
 
-    for(wang::string::const_iterator i = string_test3.begin();i != string_test3.end();i++)
-    {
-        std::cout << *i << " ";
-    }
-    std::cout << std::endl;
-
-
-    /*            vector测试             */
-    wang::vector<int> vector_test(5,1);
-    for(auto i: vector_test)
-    {
-        std::cout << i << " ";
-    }
-    std::cout << std::endl;
-    wang::vector<int> vector_test1(vector_test);
-    for(const  auto& i  : vector_test1 )
-    {
-        std::cout << i << " ";
-    }
-    std::cout << std::endl;
-    wang::vector<int> test2 = vector_test1;
-    for(const auto i : test2)
-    {
-        std::cout << i << " ";
-    }
-    wang::string s2 = "name";
-    std::cout << std::endl;
-    wang::vector<wang::string> name_test(10,s2);
-    for(const auto& i : name_test )
-    {
-        std::cout << i << " ";
-    }
-    std::cout << std::endl;
-    wang::vector<wang::string> name_test1 =name_test ;
-    for(const auto& i : name_test1 )
-    {
-        std::cout << i << " ";
-    }
-    std::cout << std::endl;
-    wang::string s3 = "hello word!";
-    name_test1.push_back(s3);
-    for(const auto& i : name_test1 )
-    {
-        std::cout << i << " ";
-    }
-    std::cout << std::endl;
-
-    name_test1.push_front(s3);
-    for(const auto& i : name_test1 )
-    {
-        std::cout << i << " ";
-    }
-    std::cout << std::endl;
-
-    name_test1+=name_test;
-    for(const auto& i : name_test1 )
-    {
-        std::cout << i << " ";
-    }
-    std::cout << std::endl;
-
-    std::cout << name_test1 << std::endl;
-    std::cout << name_test1.pop_back() << std::endl;
+    // for(wang::string::const_iterator i = string_test3.begin();i != string_test3.end();i++)
+    // {
+    //     std::cout << *i << " ";
+    // }
+    // std::cout << std::endl;
 
 
-    /*            list测试             */
-    wang::list<int> list_test1;
-    for(size_t i = 1; i < 10; i++)
-    {
-        list_test1.push_back(i);
-    }
-    wang::list<int>::const_iterator it =list_test1.cbegin();
-    while(it != list_test1.cend())
-    {
-        std::cout << *it  << " ";
-        it++;
-    }
-    std::cout << std::endl;
-    wang::list<int>::reverse_const_iterator i = list_test1.rcbegin();
-    while(i != list_test1.rcend())
-    {
-        std::cout << *i << " ";
-        i++;
-    }
-    std::cout <<std::endl;
+    // /*            vector测试             */
+    // wang::vector<int> vector_test(5,1);
+    // for(auto i: vector_test)
+    // {
+    //     std::cout << i << " ";
+    // }
+    // std::cout << std::endl;
+    // wang::vector<int> vector_test1(vector_test);
+    // for(const  auto& i  : vector_test1 )
+    // {
+    //     std::cout << i << " ";
+    // }
+    // std::cout << std::endl;
+    // wang::vector<int> test2 = vector_test1;
+    // for(const auto i : test2)
+    // {
+    //     std::cout << i << " ";
+    // }
+    // wang::string s2 = "name";
+    // std::cout << std::endl;
+    // wang::vector<wang::string> name_test(10,s2);
+    // for(const auto& i : name_test )
+    // {
+    //     std::cout << i << " ";
+    // }
+    // std::cout << std::endl;
+    // wang::vector<wang::string> name_test1 =name_test ;
+    // for(const auto& i : name_test1 )
+    // {
+    //     std::cout << i << " ";
+    // }
+    // std::cout << std::endl;
+    // wang::string s3 = "hello word!";
+    // name_test1.push_back(s3);
+    // for(const auto& i : name_test1 )
+    // {
+    //     std::cout << i << " ";
+    // }
+    // std::cout << std::endl;
 
-    list_test1.pop_back(); 
-    wang::list<int>::const_iterator j =list_test1.cbegin();
-    while(j != list_test1.cend())
-    {
-        std::cout << *j  << " ";
-        j++;
-    }
-    std::cout << std::endl;
-    std::cout << list_test1.size() << std::endl;
+    // name_test1.push_front(s3);
+    // for(const auto& i : name_test1 )
+    // {
+    //     std::cout << i << " ";
+    // }
+    // std::cout << std::endl;
 
-    wang::list<int> list_test2 = list_test1;
-    wang::list<int>::const_iterator p =list_test2.cbegin();
-    while(p != list_test2.cend())
-    {
-        std::cout << *p  << " ";
-        p++;
-    }
-    std::cout << std::endl;
-    std::cout << list_test2.size() << std::endl;
+    // name_test1+=name_test;
+    // for(const auto& i : name_test1 )
+    // {
+    //     std::cout << i << " ";
+    // }
+    // std::cout << std::endl;
 
-    wang::list<int> list_test3 = list_test2 + list_test1;
-    wang::list<int>::const_iterator k =list_test3.cbegin();
-    while(k != list_test3.cend())
-    {
-        std::cout << *k  << " ";
-        k++;
-    }
-    std::cout << std::endl;
-    std::cout << list_test3.size() << std::endl;
+    // std::cout << name_test1 << std::endl;
+    // std::cout << name_test1.pop_back() << std::endl;
 
-    wang::list<int> list_test4 = list_test3 + list_test1;
-    wang::list<int>::const_iterator kp =list_test4.cbegin();
-    while(kp != list_test4.cend())
-    {
-        std::cout << *kp  << " ";
-        kp++;
-    }
-    std::cout << std::endl;
-    std::cout << list_test4.size() << std::endl;
-    std::cout << list_test4 << std::endl;
 
+    // /*            list测试             */
+    // wang::list<int> list_test1;
+    // for(size_t i = 1; i < 10; i++)
+    // {
+    //     list_test1.push_back(i);
+    // }
+    // wang::list<int>::const_iterator it =list_test1.cbegin();
+    // while(it != list_test1.cend())
+    // {
+    //     std::cout << *it  << " ";
+    //     it++;
+    // }
+    // std::cout << std::endl;
+    // wang::list<int>::reverse_const_iterator i = list_test1.rcbegin();
+    // while(i != list_test1.rcend())
+    // {
+    //     std::cout << *i << " ";
+    //     i++;
+    // }
+    // std::cout <<std::endl;
+
+    // list_test1.pop_back(); 
+    // wang::list<int>::const_iterator j =list_test1.cbegin();
+    // while(j != list_test1.cend())
+    // {
+    //     std::cout << *j  << " ";
+    //     j++;
+    // }
+    // std::cout << std::endl;
+    // std::cout << list_test1.size() << std::endl;
+
+    // wang::list<int> list_test2 = list_test1;
+    // wang::list<int>::const_iterator p =list_test2.cbegin();
+    // while(p != list_test2.cend())
+    // {
+    //     std::cout << *p  << " ";
+    //     p++;
+    // }
+    // std::cout << std::endl;
+    // std::cout << list_test2.size() << std::endl;
+
+    // wang::list<int> list_test3 = list_test2 + list_test1;
+    // wang::list<int>::const_iterator k =list_test3.cbegin();
+    // while(k != list_test3.cend())
+    // {
+    //     std::cout << *k  << " ";
+    //     k++;
+    // }
+    // std::cout << std::endl;
+    // std::cout << list_test3.size() << std::endl;
+
+    // wang::list<int> list_test4 = list_test3 + list_test1;
+    // wang::list<int>::const_iterator kp =list_test4.cbegin();
+    // while(kp != list_test4.cend())
+    // {
+    //     std::cout << *kp  << " ";
+    //     kp++;
+    // }
+    // std::cout << std::endl;
+    // std::cout << list_test4.size() << std::endl;
+    // std::cout << list_test4 << std::endl;
+
+    wang::string queue_test_str1 = "hello";
+    wang::string queue_test_str2 = "word";
+    wang::string queue_test_str3 = "  ";
+    wang::queue<wang::string,wang::list<wang::string>> queue_test1;
+
+    queue_test1.push_back(queue_test_str1);
+    queue_test1.push_back(queue_test_str3);
+    queue_test1.push_back(queue_test_str2);
+
+    std::cout << queue_test1.front() << std::endl;
+    std::cout << queue_test1.back()  << std::endl;
+
+    std::cout << queue_test1.front() << " ";
+    queue_test1.pop();
+    std::cout << queue_test1.front() << " ";
+    queue_test1.pop();
+    std::cout << queue_test1.front() << " ";
+    queue_test1.pop();
+    
     return 0;
 }
