@@ -2,6 +2,28 @@
 #include <cstring>
 namespace wang
 {
+    namespace STL_Imitation_functions
+    {
+        //仿函数命名空间
+        template<typename Imitation_functions_less>
+        class less
+        {
+        public:
+            bool operator()(Imitation_functions_less& _test1 , Imitation_functions_less& _test2)
+            {
+                return _test1 < _test2;
+            }
+        };
+        template<typename Imitation_functions_greater>
+        class greater
+        {
+        public:
+            bool operator()(Imitation_functions_greater& _test1 , Imitation_functions_greater& _test2)
+            {
+                return _test1 > _test2;
+            }
+        };
+    }
     /*############################     string容器     ############################*/
     class string
     {
