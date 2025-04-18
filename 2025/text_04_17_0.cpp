@@ -73,7 +73,14 @@ namespace wang
         {
             return const_reverse_iterator(cbegin()- 1);
         }
-
+        bool empty()
+        {
+            if(_data != nullptr || _size != 0)
+            {
+                return true;
+            }
+            return false;
+        }
         size_t size()const
         {
             //返回有效字符串长度
@@ -585,6 +592,15 @@ namespace wang
             {
                 _data_pointer[i] = data;
             }
+        }
+        bool empty()
+        {
+            size_t i = szie();
+            if(i != 0 || _data_pointer != nullptr)
+            {
+                return true;
+            }
+            return false;
         }
         vector_t& head()
         {
@@ -1201,10 +1217,35 @@ namespace wang
         return list_ostream;
     }
     /*############################     staic适配器     ############################*/
-    template <typename Function_templates>
-    class staic
+    template <typename Function_templates_queue ,typename Container>
+    class queue
     {
-
+        Container _container_temp;
+    public:
+        void push_back(const Function_templates_queue& _staic_temp)
+        {
+            _container_temp.push_back(_staic_temp);
+        }
+        void pop ()
+        {
+            _container_temp.pop_front();
+        }
+        size_t size()
+        {
+            return _container_temp.size();
+        }
+        bool empty()
+        {
+            return _container_temp.empty();
+        }
+        Function_templates_queue& front()
+        {
+            return _container_temp.front();
+        }
+        Function_templates_queue& back()
+        {
+            return _container_temp.back();
+        }
     };
 }
 int main()
