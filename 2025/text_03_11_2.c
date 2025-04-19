@@ -71,7 +71,7 @@ int main()
 {
     
     srand(time(0));
-    int n = 5000;
+    int n = 10000;
     int* arr = (int*)malloc(sizeof(int) * n);
     for(int i = 0; i < n; i++)
     {
