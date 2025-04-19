@@ -1292,6 +1292,12 @@ namespace wang
             return Container_queue_temp_.back();
         }
     };
+    /*############################     priority_queue适配器     ############################*/
+    template <typename Function_templates_priorityqueue ,typename Container_priority_queue = wang::list<Function_templates_priorityqueue>>
+    class priority_queue
+    {
+
+    };
 }
 int main()
 {
