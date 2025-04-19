@@ -1293,7 +1293,9 @@ namespace wang
         }
     };
     /*############################     priority_queue适配器     ############################*/
-    template <typename Function_templates_priorityqueue ,typename Container_priority_queue = wang::list<Function_templates_priorityqueue>>
+    template <typename Function_templates_priorityqueue,
+    typename Imitation_function_parameter_function = wang::STL_Imitation_functions::less<Function_templates_priorityqueue>,
+    typename Container_priority_queue = wang::vector<Function_templates_priorityqueue>>
     class priority_queue
     {
 
