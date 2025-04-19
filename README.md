@@ -15,7 +15,7 @@ C++ 迭代器失效问题 ，解决方法 ，及时更新迭代器位置 ，或�
 ```cpp
 #include <iostream>
 #include <cstring>
-namespace wang
+namespace Wang
 {
     namespace STL_Imitation_functions
     {
@@ -550,7 +550,7 @@ namespace wang
     std::ostream& operator<<(std::ostream& string_ostream,string &data_str) 
     {
         //当前没实现【】访问.可以用迭代器
-        for(wang::string::const_iterator originate = data_str.begin();originate != data_str.end();originate++)
+        for(Wang::string::const_iterator originate = data_str.begin();originate != data_str.end();originate++)
         {
             string_ostream << *originate;
         }
@@ -684,8 +684,8 @@ namespace wang
         }
         ~vector()
         {
-            delete[]_data_pointer;
-            _data_pointer = _size_pointer =_capacity_pointer =nullptr;
+            delete[] _data_pointer;
+            _data_pointer = _size_pointer =_capacity_pointer = nullptr;
         }
         void swap_v(vector<vector_t>& temp_data)
         {
@@ -786,16 +786,8 @@ namespace wang
         {
             if (this != &vector_temp_) 
             {
-                delete[] _data_pointer; // 释放原有内存
-                size_t new_cap = vector_temp_.capacity();
-                _data_pointer = new vector_t[new_cap];
-                _size_pointer = _data_pointer + vector_temp_.size();
-                _capacity_pointer = _data_pointer + new_cap;
-                for (size_t i = 0; i < vector_temp_.size(); ++i) 
-                {
-                    _data_pointer[i] = vector_temp_[i]; 
-                    // 深拷贝元素
-                }
+                vector<vector_t> temp(vector_temp_); // 拷贝构造
+                swap(temp); // 交换资源，temp析构时会释放原资源
             }
             return *this;
         }
@@ -1019,7 +1011,7 @@ namespace wang
             list<list_Type> _temp_ (_list_data.cbegin(),_list_data.cend());
             swap(_temp_);
         }
-        void swap(wang::list<list_Type>& _swap_temp)
+        void swap(Wang::list<list_Type>& _swap_temp)
         {
             std::swap(_head,_swap_temp._head);
         }
@@ -1241,11 +1233,15 @@ namespace wang
         return list_ostream;
     }
     /*############################     staic适配器     ############################*/
-    template <typename Function_templates_staic,typename Container_staic = wang::vector<Function_templates_staic> >
+    template <typename Function_templates_staic,typename Container_staic = Wang::vector<Function_templates_staic> >
     class staic
     {
         Container_staic Container_staic_temp_;
     public:
+        ~staic()
+        {
+            ;
+        }
         void back(const Function_templates_staic& _staic_temp)
         {
             //插入尾
@@ -1270,12 +1266,16 @@ namespace wang
         }
     };
     /*############################     queue适配器     ############################*/
-    template <typename Function_templates_queue ,typename Container_queue = wang::list<Function_templates_queue> >
+    template <typename Function_templates_queue ,typename Container_queue = Wang::list<Function_templates_queue> >
     class queue
     {
         //注意队列适配器不会自动检测队列有没有元素，为学异常，注意空间元素
         Container_queue Container_queue_temp_;
     public:
+        ~queue()
+        {
+            ;
+        }
         void push_back(const Function_templates_queue& _queue_temp)
         {
             Container_queue_temp_.push_back(_queue_temp);
@@ -1307,15 +1307,102 @@ namespace wang
             return Container_queue_temp_.back();
         }
     };
+    /*############################     priority_queue适配器     ############################*/
+    template <typename Function_templates_priority_queue,
+    typename Imitation_function_parameter_function = Wang::STL_Imitation_functions::less<Function_templates_priority_queue>,
+    typename Container_priority_queue = Wang::vector<Function_templates_priority_queue>>
+    class priority_queue
+    {
+        //创建容器对象
+        Container_priority_queue Container_priority_queue_temp;
+
+
+        void priority_queue_Adjust_upwards(int Adjust_upwards_child)
+        {
+            //向上调整算法
+            Imitation_function_parameter_function com;
+            int parent = (Adjust_upwards_child-1)/2;
+            while(Adjust_upwards_child > 0)
+            {
+                if(com(Container_priority_queue_temp[parent],Container_priority_queue_temp[Adjust_upwards_child]))
+                {
+                    std::swap(Container_priority_queue_temp[parent],Container_priority_queue_temp[Adjust_upwards_child]);
+                    Adjust_upwards_child = parent;
+                    parent = (Adjust_upwards_child-1)/2;
+                }
+                else
+                {
+                    break;
+                }
+            }
+        }
+        void priority_queue_Adjust_downwards(int parent = 0)
+        {
+            Imitation_function_parameter_function com;
+            //仿函数对象
+            int priority_queue_Adjust_downwards_child = (parent*2)+1;
+            while(priority_queue_Adjust_downwards_child < (int)Container_priority_queue_temp.size())
+            {
+                int left = priority_queue_Adjust_downwards_child;
+                int right =left+1;
+                if( right < (int)Container_priority_queue_temp.size() && Container_priority_queue_temp[left] < Container_priority_queue_temp[right])
+                {
+                    //大堆找出左右节点哪个孩子大
+                    priority_queue_Adjust_downwards_child = right;
+                }
+                if(com(Container_priority_queue_temp[parent],Container_priority_queue_temp[priority_queue_Adjust_downwards_child]))
+                {
+                    //建大堆把小的换下去，建小堆把大的换下去
+                    std::swap( Container_priority_queue_temp[parent] , Container_priority_queue_temp[priority_queue_Adjust_downwards_child]);
+
+                    //换完之后如果是大堆，则父亲节点是较大的值，需要更新孩子节点继续向下找比孩子节点大的值，如果有继续交换
+                    parent = priority_queue_Adjust_downwards_child;
+                    priority_queue_Adjust_downwards_child = (parent*2)+1;
+                }
+                else
+                {
+                    break;
+                }
+            }
+        }
+        public:
+        ~priority_queue()
+        {
+            ;
+        }
+        void push_back(const Function_templates_priority_queue Function_templates_priority_queue_push_back)
+        {
+            Container_priority_queue_temp.push_back(Function_templates_priority_queue_push_back);
+            priority_queue_Adjust_upwards(Container_priority_queue_temp.size()-1);
+        }
+        Function_templates_priority_queue& top()
+        {
+            return Container_priority_queue_temp.front();
+        }
+        bool empty()
+        {
+            return Container_priority_queue_temp.empty();
+        }
+        size_t size()
+        {
+            return Container_priority_queue_temp.size();
+        }
+        void pop()
+        {
+            std::swap(Container_priority_queue_temp[0],Container_priority_queue_temp[Container_priority_queue_temp.size()-1]);
+            Container_priority_queue_temp.pop_back();
+            priority_queue_Adjust_downwards();
+        }
+    };
 }
 int main()
 {
     /*            string测试             */
     std::cout << " string 测试 " << std::endl << std::endl;
-    wang::string string_test1("hello");
-    wang::string string_test2("world");
+    Wang::string string_test1("hello");
+    Wang::string string_test2("world");
     
-    wang::string string_test3 = string_test1 + string_test2;
+    Wang::string string_test3 = string_test1 + string_test2;
     std::cout << "string_test3: " << string_test3 << std::endl;
     string_test3.push_back('!');
     const char* insert_str = "inserted";
@@ -1323,16 +1410,16 @@ int main()
     std::cout << "str3 after insertion: " << string_test3 << std::endl;
 
     size_t old_pos = strlen(insert_str);
-    wang::string string_test4 = string_test3.str_withdraw(old_pos);
+    Wang::string string_test4 = string_test3.str_withdraw(old_pos);
     std::cout << "string_test4: " << string_test4 << std::endl;
 
     std::cout << string_test3.conversions_oldest() << std::endl;
     std::cout << string_test3.conversions_few() << std::endl;
 
-    wang::string string_test5 = string_test3.str_withdraw_extremity(5);
+    Wang::string string_test5 = string_test3.str_withdraw_extremity(5);
     std::cout << "string_test5: " << string_test5 << std::endl;
 
-    wang::string string_test6 = string_test3.str_withdraw_detail(5, 10);
+    Wang::string string_test6 = string_test3.str_withdraw_detail(5, 10);
     std::cout << "string_test6: " << string_test6 << std::endl;
 
     std::cout << "str3 size: " << string_test3.size() << std::endl;
@@ -1352,7 +1439,7 @@ int main()
     }
     std::cout << std::endl;
 
-    for(wang::string::const_iterator i = string_test3.begin();i != string_test3.end();i++)
+    for(Wang::string::const_iterator i = string_test3.begin();i != string_test3.end();i++)
     {
         std::cout << *i << " ";
     }
@@ -1361,38 +1448,38 @@ int main()
 
     /*            vector测试             */
     std::cout << " vector 测试 " << std::endl << std::endl;
-    wang::vector<int> vector_test(5,1);
+    Wang::vector<int> vector_test(5,1);
     for(auto i: vector_test)
     {
         std::cout << i << " ";
     }
     std::cout << std::endl;
-    wang::vector<int> vector_test1(vector_test);
+    Wang::vector<int> vector_test1(vector_test);
     for(const  auto& i  : vector_test1 )
     {
         std::cout << i << " ";
     }
     std::cout << std::endl;
-    wang::vector<int> test2 = vector_test1;
+    Wang::vector<int> test2 = vector_test1;
     for(const auto i : test2)
     {
         std::cout << i << " ";
     }
-    wang::string s2 = "name";
+    Wang::string s2 = "name";
     std::cout << std::endl;
-    wang::vector<wang::string> name_test(10,s2);
+    Wang::vector<Wang::string> name_test(10,s2);
     for(const auto& i : name_test )
     {
         std::cout << i << " ";
     }
     std::cout << std::endl;
-    wang::vector<wang::string> name_test1 =name_test ;
+    Wang::vector<Wang::string> name_test1 =name_test ;
     for(const auto& i : name_test1 )
     {
         std::cout << i << " ";
     }
     std::cout << std::endl;
-    wang::string s3 = "hello word!";
+    Wang::string s3 = "hello word!";
     name_test1.push_back(s3);
     for(const auto& i : name_test1 )
     {
@@ -1420,19 +1507,19 @@ int main()
 
     /*            list测试             */
     std::cout << " list 测试 " << std::endl << std::endl;
-    wang::list<int> list_test1;
+    Wang::list<int> list_test1;
     for(size_t i = 1; i < 10; i++)
     {
         list_test1.push_back(i);
     }
-    wang::list<int>::const_iterator it =list_test1.cbegin();
+    Wang::list<int>::const_iterator it =list_test1.cbegin();
     while(it != list_test1.cend())
     {
         std::cout << *it  << " ";
         it++;
     }
     std::cout << std::endl;
-    wang::list<int>::reverse_const_iterator i = list_test1.rcbegin();
+    Wang::list<int>::reverse_const_iterator i = list_test1.rcbegin();
     while(i != list_test1.rcend())
     {
         std::cout << *i << " ";
@@ -1441,7 +1528,7 @@ int main()
     std::cout <<std::endl;
 
     list_test1.pop_back(); 
-    wang::list<int>::const_iterator j =list_test1.cbegin();
+    Wang::list<int>::const_iterator j =list_test1.cbegin();
     while(j != list_test1.cend())
     {
         std::cout << *j  << " ";
@@ -1450,8 +1537,8 @@ int main()
     std::cout << std::endl;
     std::cout << list_test1.size() << std::endl;
 
-    wang::list<int> list_test2 = list_test1;
-    wang::list<int>::const_iterator p =list_test2.cbegin();
+    Wang::list<int> list_test2 = list_test1;
+    Wang::list<int>::const_iterator p =list_test2.cbegin();
     while(p != list_test2.cend())
     {
         std::cout << *p  << " ";
@@ -1460,8 +1547,8 @@ int main()
     std::cout << std::endl;
     std::cout << list_test2.size() << std::endl;
 
-    wang::list<int> list_test3 = list_test2 + list_test1;
-    wang::list<int>::const_iterator k =list_test3.cbegin();
+    Wang::list<int> list_test3 = list_test2 + list_test1;
+    Wang::list<int>::const_iterator k =list_test3.cbegin();
     while(k != list_test3.cend())
     {
         std::cout << *k  << " ";
@@ -1470,8 +1557,8 @@ int main()
     std::cout << std::endl;
     std::cout << list_test3.size() << std::endl;
 
-    wang::list<int> list_test4 = list_test3 + list_test1;
-    wang::list<int>::const_iterator kp =list_test4.cbegin();
+    Wang::list<int> list_test4 = list_test3 + list_test1;
+    Wang::list<int>::const_iterator kp =list_test4.cbegin();
     while(kp != list_test4.cend())
     {
         std::cout << *kp  << " ";
@@ -1480,12 +1567,13 @@ int main()
     std::cout << std::endl;
     std::cout << list_test4.size() << std::endl;
     std::cout << list_test4 << std::endl;
+
     /*            staic测试             */
     std::cout << " staic 测试 " << std::endl << std::endl;
-    wang::string staic_test_str1 = "hello";
-    wang::string staic_test_str2 = "word";
-    wang::string staic_test_str3 = "  ";
-    wang::staic<wang::string> staic_test1;
+    Wang::string staic_test_str1 = "hello";
+    Wang::string staic_test_str2 = "word";
+    Wang::string staic_test_str3 = "  ";
+    Wang::staic<Wang::string> staic_test1;
 
     staic_test1.back(staic_test_str1);
     staic_test1.back(staic_test_str3);
@@ -1500,10 +1588,10 @@ int main()
 
     /*            queue测试             */
     std::cout << " queue 测试 " << std::endl << std::endl;
-    wang::string queue_test_str1 = "hello";
-    wang::string queue_test_str2 = "word";
-    wang::string queue_test_str3 = "  ";
-    wang::queue<wang::string,wang::list<wang::string>> queue_test1;
+    Wang::string queue_test_str1 = "hello";
+    Wang::string queue_test_str2 = "word";
+    Wang::string queue_test_str3 = "  ";
+    Wang::queue<Wang::string,Wang::list<Wang::string>> queue_test1;
 
     queue_test1.push_back(queue_test_str1);
     queue_test1.push_back(queue_test_str3);
@@ -1519,8 +1607,27 @@ int main()
     std::cout << queue_test1.front() << " ";
     queue_test1.pop();
 
+    /*            priority_queue测试             */
+    time_t num1 = clock();
+    std::cout << " priority_queue 测试 " << std::endl << std::endl;
+    Wang::priority_queue<int> priority_queue_test;
+    for(int i = 0; i < 10000 ; i++)
+    {
+        priority_queue_test.push_back(i);
+    }
+
+    std::cout << priority_queue_test.size() << std::endl;
+
+    for(size_t i = 0; i < 10000; i++)
+    {
+        std::cout << priority_queue_test.top() << " ";
+        priority_queue_test.pop();
+    }
+    std::cout << std::endl;
+    time_t num2 = clock();
+    std::cout << num2-num1 << std::endl;
+
     return 0;
 }
-
 
 ```
