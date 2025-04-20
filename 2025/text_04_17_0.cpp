@@ -2,6 +2,7 @@
 #include <cstring>
 namespace Wang
 {
+    //可以考虑实现一个copy函数等来替换strcpy
     namespace STL_Imitation_functions
     {
         //仿函数命名空间
@@ -1352,7 +1353,7 @@ namespace Wang
         void push_back(const Function_templates_priority_queue Function_templates_priority_queue_push_back)
         {
             Container_priority_queue_temp.push_back(Function_templates_priority_queue_push_back);
-            priority_queue_Adjust_upwards(Container_priority_queue_temp.size()-1);
+            priority_queue_Adjust_upwards(Container_priority_queue_temp.size()-(size_t)1);
         }
         Function_templates_priority_queue& top()
         {
@@ -1368,7 +1369,7 @@ namespace Wang
         }
         void pop()
         {
-            std::swap(Container_priority_queue_temp[0],Container_priority_queue_temp[Container_priority_queue_temp.size()-1]);
+            std::swap(Container_priority_queue_temp[0],Container_priority_queue_temp[Container_priority_queue_temp.size()-(size_t)1]);
             Container_priority_queue_temp.pop_back();
             priority_queue_Adjust_downwards();
         }
