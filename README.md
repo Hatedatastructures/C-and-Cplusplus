@@ -24,7 +24,7 @@ namespace Wang
         class less
         {
         public:
-            bool operator()(Imitation_functions_less& _test1 , Imitation_functions_less& _test2)
+            bool operator()(const Imitation_functions_less& _test1 ,const Imitation_functions_less& _test2)
             {
                 return _test1 < _test2;
             }
@@ -33,7 +33,7 @@ namespace Wang
         class greater
         {
         public:
-            bool operator()(Imitation_functions_greater& _test1 , Imitation_functions_greater& _test2)
+            bool operator()(const Imitation_functions_greater& _test1 ,const Imitation_functions_greater& _test2)
             {
                 return _test1 > _test2;
             }
@@ -90,11 +90,7 @@ namespace Wang
         }
         bool empty()
         {
-            if(_data != nullptr || _size != 0)
-            {
-                return true;
-            }
-            return false;
+            return _size == 0;
         }
         size_t size()const
         {
@@ -341,6 +337,10 @@ namespace Wang
         }
         string& push_back(const char* c_temp_str)
         {
+            if(c_temp_str == nullptr)
+            {
+                return *this;
+            }
             size_t len = strlen( c_temp_str );
             size_t new_capacity = len + _size ;
             if(new_capacity >_capacity)
@@ -580,19 +580,19 @@ namespace Wang
         }
         size_t size()
         {
-            return _size_pointer - _data_pointer;
+            return _data_pointer ? (_size_pointer - _data_pointer) : 0;
         }
         size_t capacity()
         {
-            return _capacity_pointer - _data_pointer;
+            return _data_pointer ? (_capacity_pointer - _data_pointer) : 0;
         }
         size_t size() const
         {
-            return _size_pointer - _data_pointer;
+            return _data_pointer ? (_size_pointer - _data_pointer) : 0;
         }
         size_t capacity() const 
         {
-            return _capacity_pointer - _data_pointer;
+            return _data_pointer ? (_capacity_pointer - _data_pointer) : 0;
         }
         vector_t& front()
         {
@@ -673,14 +673,13 @@ namespace Wang
             return *this;
         }
         vector(const vector<vector_t>& temp_data)
+        :_data_pointer(temp_data.capacity() ? new vector_t[temp_data.capacity()] : nullptr),
+        _size_pointer(_data_pointer + temp_data.size()),_capacity_pointer(_data_pointer + temp_data.capacity())
         {
-            _data_pointer = new vector_t [temp_data._capacity_pointer - temp_data._data_pointer];
-            for(size_t i = 0; i < temp_data.size(); i++)
-            {
+           for(size_t i = 0; i < temp_data.size();i++)
+           {
                 _data_pointer[i] = temp_data._data_pointer[i];
-            }
-            _size_pointer = _data_pointer + (temp_data._size_pointer - temp_data._data_pointer);
-            _capacity_pointer = _data_pointer + (temp_data._capacity_pointer - temp_data._data_pointer);
+           }
         }
         ~vector()
         {
@@ -1050,11 +1049,11 @@ namespace Wang
 		}
         reverse_iterator rbegin()
         {
-            return reverse_iterator(end());
+            return reverse_iterator(_head->_prev);
         }
         reverse_iterator rend()
         {
-            return reverse_iterator(end());
+            return reverse_iterator(_head);
         }
         reverse_const_iterator rcbegin()const
         {
@@ -1345,7 +1344,7 @@ namespace Wang
             {
                 int left = priority_queue_Adjust_downwards_child;
                 int right =left+1;
-                if( right < (int)Container_priority_queue_temp.size() && Container_priority_queue_temp[left] < Container_priority_queue_temp[right])
+                if( right < (int)Container_priority_queue_temp.size() && com(Container_priority_queue_temp[left],Container_priority_queue_temp[right]))
                 {
                     //大堆找出左右节点哪个孩子大
                     priority_queue_Adjust_downwards_child = right;
@@ -1629,5 +1628,4 @@ int main()
 
     return 0;
 }
-
 ```
