@@ -95,7 +95,7 @@ namespace Wang
         char back()
         {
             //返回尾字符
-            return _data[_size];
+            return _size > 0 ? _data[_size - 1] : '\0'; // 添加越界检查（可选）
         }
         char front()
         {
@@ -604,12 +604,7 @@ namespace Wang
         }
         bool empty()
         {
-            size_t i = size();
-            if(i != 0 || _data_pointer != nullptr)
-            {
-                return true;
-            }
-            return false;
+            return size() == 0; // 直接通过 size() 判断
         }
         vector_t& head()
         {
@@ -619,40 +614,40 @@ namespace Wang
         {
             return *(_size_pointer-1);
         }
-        vector_t& find(const size_t& find_szie_)
+        vector_t& find(const size_t& find_size_)
         {
-            if(find_szie_ >= size())
+            if(find_size_ >= size())
             {
                 //先默认返回空数组,但是需要提前写该类型的默认构造函数
                 static vector_t dummy;
                 return dummy;
             }
-            return _data_pointer[find_szie_];
+            return _data_pointer[find_size_];
         }
-        vector<vector_t>& Completion(const size_t& Completion_szie_ , const vector<vector_t>& Completion_temp_)
+        vector<vector_t>& Completion(const size_t& Completion_size_ , const vector<vector_t>& Completion_temp_)
         {
-            size_t Completion_temp_szie_ =size();
+            size_t Completion_temp_size_ =size();
             size_t Completion_capacity_  =capacity();
-            if(Completion_szie_ > Completion_capacity_)
+            if(Completion_size_ > Completion_capacity_)
             {
-                resize(Completion_szie_);
-                for(size_t i = Completion_capacity_; i < Completion_szie_ ; i++)
+                resize(Completion_size_);
+                for(size_t i = Completion_capacity_; i < Completion_size_ ; i++)
                 {
                     _data_pointer[i] = Completion_temp_;
                 }
             }
             else
             {
-                if(Completion_szie_ > Completion_temp_szie_)
+                if(Completion_size_ > Completion_temp_size_)
                 {
-                    for(size_t i = Completion_temp_szie_; i < Completion_szie_ ; i++)
+                    for(size_t i = Completion_temp_size_; i < Completion_size_ ; i++)
                     {
                         _data_pointer[i] = Completion_temp_;
                     }
                 }
-                else if (Completion_szie_ < Completion_temp_szie_)
+                else if (Completion_size_ < Completion_temp_size_)
                 {
-                    _size_pointer = _data_pointer + Completion_szie_;
+                    _size_pointer = _data_pointer + Completion_size_;
                 }
             }
             return *this;
@@ -717,7 +712,7 @@ namespace Wang
                 size_t push_banck_size_ = _data_pointer == nullptr ? 10 : (size_t)(_capacity_pointer-_data_pointer)*2;
                 resize(push_banck_size_);
             }
-            //注意—_szie_pointer是原生迭代器指针，需要解引用才能赋值
+            //注意—_size_pointer是原生迭代器指针，需要解引用才能赋值
             *_size_pointer = push_back_temp_;
             _size_pointer++;
             return *this;
@@ -738,9 +733,9 @@ namespace Wang
                 size_t pop_banck_size_ = _data_pointer == nullptr ? 10 : (size_t)(_capacity_pointer-_data_pointer)*2;
                 resize(pop_banck_size_);
             }
-            for(size_t pop_back_for_szie = size();pop_back_for_szie>0;pop_back_for_szie--)
+            for(size_t pop_back_for_size = size();pop_back_for_size>0;pop_back_for_size--)
             {
-                _data_pointer[pop_back_for_szie] = _data_pointer[pop_back_for_szie -1];
+                _data_pointer[pop_back_for_size] = _data_pointer[pop_back_for_size -1];
             }
             *_data_pointer = pop_back_temp_;
             ++_size_pointer;
@@ -781,20 +776,20 @@ namespace Wang
             {
                 return *this;
             }
-            size_t _temp_szie_ = _temp_.size();
-            size_t _szie_ = size();
+            size_t _temp_size_ = _temp_.size();
+            size_t _size_ = size();
             size_t _capacity_ = capacity();
-            if(_temp_szie_ + _szie_ > _capacity_)
+            if(_temp_size_ + _size_ > _capacity_)
             {
-                resize(_temp_szie_ + _szie_);
+                resize(_temp_size_ + _size_);
                
             } 
             size_t sum = 0;
-            for(size_t i = _szie_ ; i < (_temp_szie_ + _szie_); i++)
+            for(size_t i = _size_ ; i < (_temp_size_ + _size_); i++)
             {
                 _data_pointer[i] = _temp_._data_pointer[sum++];
             }
-            _size_pointer = _data_pointer + (_temp_szie_ + _szie_);
+            _size_pointer = _data_pointer + (_temp_size_ + _size_);
             return *this;
         }
         template <typename const_vector_Output_templates>
