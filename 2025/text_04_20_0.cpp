@@ -39,6 +39,7 @@ class Student : public Information
 };
 
 class teacher : public Information
+//
 {
     private:
     size_t Job_number;
@@ -57,7 +58,8 @@ int main()
 {
     B test;
     test.printf();
-
-
+    Dormitory_management st;
+    //st.ID;
+    //如果继承方式是public则父类是公开状态，以此类推
     return 0;
 }
