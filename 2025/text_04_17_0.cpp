@@ -25,6 +25,21 @@ namespace Wang
             }
         };
     }
+    namespace algorithm
+    {
+        template <typename Source_sequence,typename Target_sequence>
+        Target_sequence copy(Source_sequence begin,Source_sequence end,Target_sequence first)
+        {
+            while(begin != end)
+            {
+                *first = *begin;
+                ++begin;
+                ++first;
+            }
+            return first;
+        }
+        //返回下一个位置的迭代器，是否深浅拷贝取决于自定义类型重载和拷贝构造
+    }
     /*############################     string容器     ############################*/
     class string
     {
@@ -109,7 +124,8 @@ namespace Wang
             if(data_str != nullptr)
             {
                 _data = new char[_capacity + 1];
-                strcpy(_data,data_str);
+                std::strncpy(_data,data_str,std::strlen(data_str));
+                // strcpy(_data,data_str);
                 _data[_size] = '\0';
             }
             else
@@ -124,7 +140,8 @@ namespace Wang
             //拷贝构造函数，拿传入对象的变量初始化本地变量，对于涉及开辟内存的都要深拷贝
             size_t capacity = data_str._capacity;
             _data = new char[capacity + 1];
-            strcpy(_data,data_str._data);
+            // algorithm::copy(_data,_data+capacity,data_str._data); const对象出错
+            std::strncpy(_data,data_str._data,data_str.size());
             _data[_size] = '\0';
         }
         ~string()
@@ -280,7 +297,7 @@ namespace Wang
             char* temporary_ = new char[temporary_variable+1];
             if(temporary_)
             {
-                strcpy(temporary_,_data);
+                std::strncpy(temporary_,_data,size());
                 delete[] _data;
                 _data = temporary_;
                 _capacity = temporary_variable;
@@ -316,7 +333,7 @@ namespace Wang
                     return *this;
                 }
             }
-            strcpy(_data+_size,cpp_temp_str._data);
+            std::strncpy(_data+_size,cpp_temp_str._data,cpp_temp_str.size());
             _size =_size + cpp_temp_str._size;
             _data[_size] = '\0';
             return *this;
@@ -337,7 +354,7 @@ namespace Wang
                     return *this;
                 }
             }
-            strcpy(_data+_size , c_temp_str);
+            std::strncpy(_data+_size , c_temp_str,len);
             _size = _size + len;
             _data[_size] = '\0';
             return *this;
@@ -450,7 +467,7 @@ namespace Wang
                 delete [] _data;
                 size_t capacity = data_str._capacity;
                 _data = new char[capacity + 1];
-                strcpy(_data,data_str._data);
+                std::strncpy(_data,data_str._data,data_str.size());
                 _capacity = data_str._capacity;
                 _size = data_str._size;
                 _data[_size] = '\0';
@@ -465,7 +482,7 @@ namespace Wang
                 std::cout << "开辟内存失败！" << std::endl;
                 return *this;
             }
-            strcpy(_data + _size,data_str._data);
+            std::strncpy(_data + _size,data_str._data,data_str.size());
             _size = _size + data_str._size;
             _data[_size] = '\0';
             return *this;
@@ -501,8 +518,8 @@ namespace Wang
                 std::cout << "开辟内存失败！" << std::endl;
                 return string();
             }
-            strcpy(_str_temp._data , _data);
-            strcpy(_str_temp._data + _size , cpp_str_._data);
+            std::strncpy(_str_temp._data , _data,size());
+            std::strncpy(_str_temp._data + _size , cpp_str_._data,cpp_str_.size());
             _str_temp._size = _size + cpp_str_._size;
             _str_temp._data[_str_temp._size] = '\0';
             return _str_temp;
@@ -1353,7 +1370,7 @@ namespace Wang
         void push_back(const Function_templates_priority_queue Function_templates_priority_queue_push_back)
         {
             Container_priority_queue_temp.push_back(Function_templates_priority_queue_push_back);
-            priority_queue_Adjust_upwards(Container_priority_queue_temp.size()-(size_t)1);
+            priority_queue_Adjust_upwards((int)Container_priority_queue_temp.size()-1);
         }
         Function_templates_priority_queue& top()
         {
