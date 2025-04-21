@@ -86,6 +86,7 @@ namespace test_2
         Test.Teacher::printf();
     }
 }
+//菱形继承会导致数据二义性和数据冗余，官方解决方法就是虚继承
 int main()
 {
     test_1::test();
