@@ -2,7 +2,6 @@
 #include <cstring>
 namespace Wang
 {
-    //可以考虑实现一个copy函数等来替换strcpy
     namespace STL_Imitation_functions
     {
         //仿函数命名空间
