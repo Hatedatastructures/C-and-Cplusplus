@@ -74,11 +74,11 @@ namespace Wang
         }
         reverse_iterator rbegin()
         {
-            return reverse_iterator(end()- 1);
+            return empty() ? reverse_iterator(end()) : reverse_iterator(end() - 1);
         }
         reverse_iterator rend()
         {
-            return reverse_iterator(begin()- 1);
+            return empty() ? reverse_iterator(begin()) : reverse_iterator(begin() - 1);
         }
         const_reverse_iterator crbegin()const
         {
@@ -140,8 +140,7 @@ namespace Wang
             size_t capacity = data_str._capacity;
             _data = new char[capacity + 1];
             // algorithm::copy(_data,_data+capacity,data_str._data); const对象出错
-            std::strncpy(_data,data_str._data,data_str.size());
-            _data[_size] = '\0';
+            std::strcpy(_data, data_str._data);
         }
         ~string()
         {
