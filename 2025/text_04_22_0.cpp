@@ -65,7 +65,13 @@ namespace test_2
 }
 void test_virtual_(test_1::Name& test_virtual_)
 {
+    //虚函数调用一般是通过引用或者是指针来调用
     test_virtual_.printf();
+}
+void test_virtual_(test_2::Name* test_virtual_)
+{
+    //虚函数调用一般是通过引用或者是指针来调用
+    test_virtual_->printf();
 }
 void test_test1()
 {
@@ -77,6 +83,19 @@ void test_test1()
     test_virtual_(n);
     n._name = "李四";
     test_virtual_(n);
+}
+void test_test_1_s()
+{
+    test_2::Student* s = new test_2::Student;
+    test_2::Name* n = new test_2::Name;
+    s->_name = "王五";
+    s->size = 1999;
+    test_virtual_(s);
+    test_virtual_(n);
+    n->_name = "于六";
+    test_virtual_(n);
+    delete s;
+    delete n;
 }
 // void test_test2()
 // {
@@ -99,6 +118,8 @@ void test_test2()
 int main() // 主函数，程序的入口点
 {
     test_test1(); // 调用函数 test_test1，执行其功能
+    std::cout << std::endl << std::endl << std::endl;
+    test_test_1_s();
     std::cout << std::endl << std::endl << std::endl;
     test_test2();
     return 0; // 返回0，表示程序正常结束
