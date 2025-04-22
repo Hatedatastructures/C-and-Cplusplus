@@ -66,14 +66,28 @@ void test_()
     student->_name = "张三";
     student->size = 20250001;
     test::printf(student);
-    std::cout << std::endl << std::endl;
+    std::cout << std::endl;
 
     name->_name = "张三";
     test::printf(name);
-    std::cout << std::endl << std::endl;
+    std::cout << std::endl;
 
     information->age = 18;
     test::printf(information);
+
+    student->printf();
+    std::cout << std::endl;
+    name->printf();
+    std::cout << std::endl;
+    information->printf();
+    std::cout << std::endl;
+
+    delete student;
+    std::cout << std::endl;
+    delete name;
+    std::cout << std::endl;
+    delete information;
+    std::cout << std::endl;
 }
 int main()
 {
