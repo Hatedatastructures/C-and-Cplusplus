@@ -518,14 +518,14 @@ namespace wang
 //模拟实现vector
 namespace wang
 {
-    template <typename vector_t>
+    template <typename vector_Type>
     class vector
     {
     public:
-        typedef vector_t*       iterator;
-        typedef const vector_t* const_iterator;
-        typedef vector_t*       reverse_iterator;
-        typedef const vector_t* const_reverse_iterator;
+        typedef vector_Type*       iterator;
+        typedef const vector_Type* const_iterator;
+        typedef vector_Type*       reverse_iterator;
+        typedef const vector_Type* const_reverse_iterator;
     private:
         iterator _data_pointer;     //指向数据的头
         iterator _size_pointer;     //指向数据的尾
@@ -561,8 +561,8 @@ namespace wang
             _size_pointer = nullptr;
             _capacity_pointer = nullptr;
         }
-        vector(const size_t& sum_size , const vector_t& data = vector_t())
-        :_data_pointer(new vector_t[sum_size]),_size_pointer(_data_pointer + sum_size)
+        vector(const size_t& sum_size , const vector_Type& data = vector_Type())
+        :_data_pointer(new vector_Type[sum_size]),_size_pointer(_data_pointer + sum_size)
         ,_capacity_pointer(_data_pointer + sum_size)
         {
             for(size_t i = 0;i < sum_size;i++)
@@ -570,19 +570,19 @@ namespace wang
                 _data_pointer[i] = data;
             }
         }
-        vector_t& head()
+        vector_Type& head()
         {
             return _data_pointer;
         }
-        vector_t& tail()
+        vector_Type& tail()
         {
             return _size_pointer;
         }
-        vector_t& find(const size_t& find_szie_)
+        vector_Type& find(const size_t& find_szie_)
         {
             return _data_pointer[find_szie_];
         }
-        vector<vector_t>& Completion(const size_t& Completion_szie_ , const vector<vector_t>& Completion_temp_)
+        vector<vector_Type>& Completion(const size_t& Completion_szie_ , const vector<vector_Type>& Completion_temp_)
         {
             size_t Completion_temp_szie_ =size();
             size_t Completion_capacity_  =capacity();
@@ -610,9 +610,9 @@ namespace wang
             }
             return *this;
         }
-        vector(const vector<vector_t>& temp_data)
+        vector(const vector<vector_Type>& temp_data)
         {
-            _data_pointer = new vector_t [temp_data._capacity_pointer - temp_data._data_pointer];
+            _data_pointer = new vector_Type [temp_data._capacity_pointer - temp_data._data_pointer];
             for(size_t i = 0; i < (size_t)(temp_data._capacity_pointer - temp_data._data_pointer); i++)
             {
                 _data_pointer[i] = temp_data._data_pointer[i];
@@ -625,7 +625,7 @@ namespace wang
             delete[]_data_pointer;
             _data_pointer = _size_pointer =_capacity_pointer =nullptr;
         }
-        void swap_v(vector<vector_t>& temp_data)
+        void swap_v(vector<vector_Type>& temp_data)
         {
             std::swap(_data_pointer, temp_data._data_pointer);
             std::swap(_size_pointer, temp_data._size_pointer);
@@ -644,13 +644,13 @@ namespace wang
             --_size_pointer;
             return pos;
         }
-        vector<vector_t>& resize(const size_t& new_capacity)
+        vector<vector_Type>& resize(const size_t& new_capacity)
         {
             size_t old_size = size();  // 先保存原来的元素数量
             if ((size_t)(_capacity_pointer - _data_pointer) < new_capacity) 
             {
                 //涉及到迭代器失效问题，不能调用szie_v()函数，会释放未知空间
-                iterator new_data = new vector_t[new_capacity]; 
+                iterator new_data = new vector_Type[new_capacity]; 
                 // 复制原先的数据
                 for (size_t i = 0; i < old_size; i++) 
                 {
@@ -663,7 +663,7 @@ namespace wang
             }
             return *this;
         }
-        vector<vector_t>& push_back(const vector_t& push_back_temp_)
+        vector<vector_Type>& push_back(const vector_Type& push_back_temp_)
         {
             if(_size_pointer == _capacity_pointer)
             {
@@ -675,7 +675,7 @@ namespace wang
             _size_pointer++;
             return *this;
         }
-        vector<vector_t>& pop_back() 
+        vector<vector_Type>& pop_back() 
         {
             if (_size_pointer > _data_pointer) 
             { // 至少有一个元素
@@ -683,7 +683,7 @@ namespace wang
             }
             return *this;
         }
-        vector<vector_t>& push_front(const vector_t& pop_back_temp_)
+        vector<vector_Type>& push_front(const vector_Type& pop_back_temp_)
         {
             //头插
             if(_size_pointer == _capacity_pointer)
@@ -699,7 +699,7 @@ namespace wang
             *_data_pointer = pop_back_temp_;
             return *this;
         }
-        vector<vector_t>& pop_front()
+        vector<vector_Type>& pop_front()
         {
             for(size_t i = 0;i<size();i++)
             {
@@ -708,21 +708,21 @@ namespace wang
             --_size_pointer;
             return *this;
         }
-        vector_t& operator[](const size_t& _size_operator)
+        vector_Type& operator[](const size_t& _size_operator)
         {
             return _data_pointer[_size_operator];
         }
-        const vector_t& operator[](const size_t& _size_operator)const 
+        const vector_Type& operator[](const size_t& _size_operator)const 
         {
             return _data_pointer[_size_operator];
         }
-        vector<vector_t>& operator=(const vector<vector_t>&vector_temp_)
+        vector<vector_Type>& operator=(const vector<vector_Type>&vector_temp_)
         {
             if (this != &vector_temp_) 
             {
                 delete[] _data_pointer; // 释放原有内存
                 size_t new_cap = vector_temp_.capacity();
-                _data_pointer = new vector_t[new_cap];
+                _data_pointer = new vector_Type[new_cap];
                 _size_pointer = _data_pointer + vector_temp_.size();
                 _capacity_pointer = _data_pointer + new_cap;
                 for (size_t i = 0; i < vector_temp_.size(); ++i) 
@@ -733,7 +733,7 @@ namespace wang
             }
             return *this;
         }
-        vector<vector_t>& operator+=(const vector<vector_t>& _temp_)
+        vector<vector_Type>& operator+=(const vector<vector_Type>& _temp_)
         {
             if(_temp_.size() == 0|| _temp_._data_pointer == nullptr)
             {

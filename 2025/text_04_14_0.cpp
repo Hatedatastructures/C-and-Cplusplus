@@ -7,14 +7,14 @@ namespace wa
     template <typename list_Node_Type>
     class list
     {
-        template<typename list_Node_Type_New>
+        template<typename list_Type_Function_Node>
         struct listNode
         {
-            listNode<list_Node_Type_New>* _prev;
-            listNode<list_Node_Type_New>* _next;
-            list_Node_Type_New _data;
+            listNode<list_Type_Function_Node>* _prev;
+            listNode<list_Type_Function_Node>* _next;
+            list_Type_Function_Node _data;
 
-            listNode(const list_Node_Type_New& data = list_Node_Type_New())
+            listNode(const list_Type_Function_Node& data = list_Type_Function_Node())
             :_prev(nullptr), _next(nullptr), _data(data)
             {
                 //列表初始化

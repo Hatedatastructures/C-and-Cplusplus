@@ -558,14 +558,14 @@ namespace Wang
         return string_ostream;
     }
     /*############################     vector容器     ############################*/
-    template <typename vector_t>
+    template <typename vector_Type>
     class vector
     {
     public:
-        typedef vector_t*       iterator;
-        typedef const vector_t* const_iterator;
-        typedef vector_t*       reverse_iterator;
-        typedef const vector_t* const_reverse_iterator;
+        typedef vector_Type*       iterator;
+        typedef const vector_Type* const_iterator;
+        typedef vector_Type*       reverse_iterator;
+        typedef const vector_Type* const_reverse_iterator;
     private:
         iterator _data_pointer;     //指向数据的头
         iterator _size_pointer;     //指向数据的尾
@@ -595,11 +595,11 @@ namespace Wang
         {
             return _data_pointer ? (_capacity_pointer - _data_pointer) : 0;
         }
-        vector_t& front()
+        vector_Type& front()
         {
             return head();
         }
-        vector_t& back()
+        vector_Type& back()
         {
             return tail();
         }
@@ -609,8 +609,8 @@ namespace Wang
             _size_pointer = nullptr;
             _capacity_pointer = nullptr;
         }
-        vector(const size_t& sum_size , const vector_t& data = vector_t())
-        :_data_pointer(new vector_t[sum_size]),_size_pointer(_data_pointer + sum_size)
+        vector(const size_t& sum_size , const vector_Type& data = vector_Type())
+        :_data_pointer(new vector_Type[sum_size]),_size_pointer(_data_pointer + sum_size)
         ,_capacity_pointer(_data_pointer + sum_size)
         {
             for(size_t i = 0;i < sum_size;i++)
@@ -622,25 +622,25 @@ namespace Wang
         {
             return size() == 0; // 直接通过 size() 判断
         }
-        vector_t& head()
+        vector_Type& head()
         {
             return *_data_pointer;
         }
-        vector_t& tail()
+        vector_Type& tail()
         {
             return *(_size_pointer-1);
         }
-        vector_t& find(const size_t& find_size_)
+        vector_Type& find(const size_t& find_size_)
         {
             if(find_size_ >= size())
             {
                 //先默认返回空数组,但是需要提前写该类型的默认构造函数
-                static vector_t dummy;
+                static vector_Type dummy;
                 return dummy;
             }
             return _data_pointer[find_size_];
         }
-        vector<vector_t>& Completion(const size_t& Completion_size_ , const vector<vector_t>& Completion_temp_)
+        vector<vector_Type>& Completion(const size_t& Completion_size_ , const vector<vector_Type>& Completion_temp_)
         {
             size_t Completion_temp_size_ =size();
             size_t Completion_capacity_  =capacity();
@@ -668,8 +668,8 @@ namespace Wang
             }
             return *this;
         }
-        vector(const vector<vector_t>& temp_data)
-        :_data_pointer(temp_data.capacity() ? new vector_t[temp_data.capacity()] : nullptr),
+        vector(const vector<vector_Type>& temp_data)
+        :_data_pointer(temp_data.capacity() ? new vector_Type[temp_data.capacity()] : nullptr),
         _size_pointer(_data_pointer + temp_data.size()),_capacity_pointer(_data_pointer + temp_data.capacity())
         {
            for(size_t i = 0; i < temp_data.size();i++)
@@ -682,7 +682,7 @@ namespace Wang
             delete[] _data_pointer;
             _data_pointer = _size_pointer =_capacity_pointer = nullptr;
         }
-        void swap_v(vector<vector_t>& temp_data)
+        void swap_v(vector<vector_Type>& temp_data)
         {
             std::swap(_data_pointer, temp_data._data_pointer);
             std::swap(_size_pointer, temp_data._size_pointer);
@@ -702,13 +702,13 @@ namespace Wang
             return temp;
             //返回下一个位置地址
         }
-        vector<vector_t>& resize(const size_t& new_capacity)
+        vector<vector_Type>& resize(const size_t& new_capacity)
         {
             size_t old_size = size();  // 先保存原来的元素数量
             if ((size_t)(_capacity_pointer - _data_pointer) < new_capacity) 
             {
                 //涉及到迭代器失效问题，不能调用szie_v()函数，会释放未知空间
-                iterator new_data = new vector_t[new_capacity]; 
+                iterator new_data = new vector_Type[new_capacity]; 
                 // 复制原先的数据
                 for (size_t i = 0; i < old_size; i++) 
                 {
@@ -721,7 +721,7 @@ namespace Wang
             }
             return *this;
         }
-        vector<vector_t>& push_back(const vector_t& push_back_temp_)
+        vector<vector_Type>& push_back(const vector_Type& push_back_temp_)
         {
             if(_size_pointer == _capacity_pointer)
             {
@@ -733,7 +733,7 @@ namespace Wang
             _size_pointer++;
             return *this;
         }
-        vector<vector_t>& pop_back() 
+        vector<vector_Type>& pop_back() 
         {
             if (_size_pointer > _data_pointer) 
             { // 至少有一个元素
@@ -741,7 +741,7 @@ namespace Wang
             }
             return *this;
         }
-        vector<vector_t>& push_front(const vector_t& pop_back_temp_)
+        vector<vector_Type>& push_front(const vector_Type& pop_back_temp_)
         {
             //头插
             if(_size_pointer == _capacity_pointer)
@@ -757,7 +757,7 @@ namespace Wang
             ++_size_pointer;
             return *this;
         }
-        vector<vector_t>& pop_front()
+        vector<vector_Type>& pop_front()
         {
             if( size() > 0 )
             {
@@ -769,24 +769,24 @@ namespace Wang
             }
             return *this;
         }
-        vector_t& operator[](const size_t& _size_operator)
+        vector_Type& operator[](const size_t& _size_operator)
         {
             return _data_pointer[_size_operator];
         }
-        const vector_t& operator[](const size_t& _size_operator)const 
+        const vector_Type& operator[](const size_t& _size_operator)const 
         {
             return _data_pointer[_size_operator];
         }
-        vector<vector_t>& operator=(const vector<vector_t>&vector_temp_)
+        vector<vector_Type>& operator=(const vector<vector_Type>&vector_temp_)
         {
             if (this != &vector_temp_) 
             {
-                vector<vector_t> temp(vector_temp_); // 拷贝构造
+                vector<vector_Type> temp(vector_temp_); // 拷贝构造
                 swap(temp); // 交换资源，temp析构时会释放原资源
             }
             return *this;
         }
-        vector<vector_t>& operator+=(const vector<vector_t>& _temp_)
+        vector<vector_Type>& operator+=(const vector<vector_Type>& _temp_)
         {
             if(_temp_.size() == 0|| _temp_._data_pointer == nullptr)
             {
@@ -825,15 +825,15 @@ namespace Wang
     template <typename list_Type>
     class list
     {
-        template<typename list_Node_Type_New>
+        template<typename list_Type_Function_Node>
         struct listNode
         {
             //节点类
-            listNode<list_Node_Type_New>* _prev;
-            listNode<list_Node_Type_New>* _next;
-            list_Node_Type_New _data;
+            listNode<list_Type_Function_Node>* _prev;
+            listNode<list_Type_Function_Node>* _next;
+            list_Type_Function_Node _data;
 
-            listNode(const list_Node_Type_New& data = list_Node_Type_New())
+            listNode(const list_Type_Function_Node& data = list_Type_Function_Node())
             :_prev(nullptr), _next(nullptr), _data(data)
             {
                 //列表初始化
@@ -1228,7 +1228,7 @@ namespace Wang
         return list_ostream;
     }
     /*############################     staic适配器     ############################*/
-    template <typename Function_templates_staic,typename Container_staic = Wang::vector<Function_templates_staic> >
+    template <typename staic_Type,typename Container_staic = Wang::vector<staic_Type> >
     class staic
     {
         Container_staic Container_staic_temp_;
@@ -1237,7 +1237,7 @@ namespace Wang
         {
             ;
         }
-        void back(const Function_templates_staic& _staic_temp)
+        void back(const staic_Type& _staic_temp)
         {
             //插入尾
             Container_staic_temp_.push_back(_staic_temp);
@@ -1255,13 +1255,13 @@ namespace Wang
         {
             return Container_staic_temp_.empty();
         } 
-        Function_templates_staic& top()
+        staic_Type& top()
         {
             return Container_staic_temp_.back();
         }
     };
     /*############################     queue适配器     ############################*/
-    template <typename Function_templates_queue ,typename Container_queue = Wang::list<Function_templates_queue> >
+    template <typename queue_Type ,typename Container_queue = Wang::list<queue_Type> >
     class queue
     {
         //注意队列适配器不会自动检测队列有没有元素，为学异常，注意空间元素
@@ -1271,7 +1271,7 @@ namespace Wang
         {
             ;
         }
-        void push_back(const Function_templates_queue& _queue_temp)
+        void push_back(const queue_Type& _queue_temp)
         {
             Container_queue_temp_.push_back(_queue_temp);
         }
@@ -1291,21 +1291,21 @@ namespace Wang
             //判断容器是否为空
             return Container_queue_temp_.empty();
         }
-        Function_templates_queue& front()
+        queue_Type& front()
         {
             //查看头数据
             return Container_queue_temp_.front();
         }
-        Function_templates_queue& back()
+        queue_Type& back()
         {
             //查看尾数据
             return Container_queue_temp_.back();
         }
     };
     /*############################     priority_queue适配器     ############################*/
-    template <typename Function_templates_priority_queue,
-    typename Imitation_function_parameter_function = Wang::STL_Imitation_functions::less<Function_templates_priority_queue>,
-    typename Container_priority_queue = Wang::vector<Function_templates_priority_queue>>
+    template <typename priority_queue_Type,
+    typename Imitation_function_parameter_function = Wang::STL_Imitation_functions::less<priority_queue_Type>,
+    typename Container_priority_queue = Wang::vector<priority_queue_Type>>
     class priority_queue
     {
         //创建容器对象
@@ -1365,12 +1365,12 @@ namespace Wang
         {
             ;
         }
-        void push_back(const Function_templates_priority_queue Function_templates_priority_queue_push_back)
+        void push_back(const priority_queue_Type Function_templates_priority_queue_push_back)
         {
             Container_priority_queue_temp.push_back(Function_templates_priority_queue_push_back);
             priority_queue_Adjust_upwards((int)Container_priority_queue_temp.size()-1);
         }
-        Function_templates_priority_queue& top()
+        priority_queue_Type& top()
         {
             return Container_priority_queue_temp.front();
         }
