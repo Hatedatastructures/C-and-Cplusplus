@@ -1448,12 +1448,47 @@ namespace Wang
             }
             else
             {
-
+                BST_Node*& _ROOT_Temp = _ROOT;
+                while(_ROOT_Temp!= nullptr)
+                {
+                    if(data == _ROOT_Temp->_data)
+                    {
+                        return false;
+                    }
+                    else if(data < _ROOT_Temp->_data)
+                    {
+                        _ROOT_Temp = _ROOT_Temp->_left;
+                    }
+                    else
+                    {
+                        _ROOT_Temp = _ROOT_Temp->_right;
+                    }
+                }
+                _ROOT_Temp = new Binary_search_tree::Binary_search_tree_Type_Node<Binary_search_tree_Type>(data);
+                //未完成链接指针
+                return true;
             }
         }
-        BST_Node* find(const Binary_search_tree_Type& data)
+        BST_Node*& find(const Binary_search_tree_Type& data)
         {
             //查找函数
+            BST_Node*& _ROOT_Find = _ROOT;
+            while(_ROOT_Find!= nullptr)
+            {
+                if(data == _ROOT_Find->_data)
+                {
+                    return _ROOT_Find;
+                }
+                else if(data < _ROOT_Find->_data)
+                {
+                    _ROOT_Find = _ROOT_Find->_left;
+                }
+                else
+                {
+                    _ROOT_Find = _ROOT_Find->_right;
+                }
+            }
+            return nullptr;
         }
         void insert(const Binary_search_tree_Type& former_data,const Binary_search_tree_Type& latter_data)
         {
