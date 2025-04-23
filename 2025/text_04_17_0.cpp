@@ -1237,7 +1237,7 @@ namespace Wang
         {
             ;
         }
-        void back(const staic_Type& _staic_temp)
+        void push(const staic_Type& _staic_temp)
         {
             //插入尾
             Container_staic_temp_.push_back(_staic_temp);
@@ -1271,7 +1271,7 @@ namespace Wang
         {
             ;
         }
-        void push_back(const queue_Type& _queue_temp)
+        void push(const queue_Type& _queue_temp)
         {
             Container_queue_temp_.push_back(_queue_temp);
         }
@@ -1365,7 +1365,7 @@ namespace Wang
         {
             ;
         }
-        void push_back(const priority_queue_Type Function_templates_priority_queue_push_back)
+        void push(const priority_queue_Type Function_templates_priority_queue_push_back)
         {
             Container_priority_queue_temp.push_back(Function_templates_priority_queue_push_back);
             priority_queue_Adjust_upwards((int)Container_priority_queue_temp.size()-1);
@@ -1398,6 +1398,7 @@ namespace Wang
         class Binary_search_tree_Type_Node
         {
         public:
+            //节点类
             Binary_search_tree_Type_Node* _left;
             Binary_search_tree_Type_Node* _right;
             Binary_search_tree_Type_Function_Node _data;
@@ -1407,11 +1408,39 @@ namespace Wang
                 ;
             }
         };
-        typedef Binary_search_tree<Binary_search_tree_Type> BST_Node;
+        typedef Binary_search_tree_Type_Node <Binary_search_tree_Type> BST_Node;
         BST_Node* _ROOT;
-    public:
-        bool insert(const Binary_search_tree_Type& data)
+        void _Middle_order_traversal(BST_Node* _ROOT_Temp)
         {
+            //中序遍历函数
+            Wang::staic<Binary_search_tree_Type> _staic_temp_;
+            while(_ROOT_Temp != nullptr || !_staic_temp_.empty())
+            {
+                while(_ROOT_Temp!= nullptr)
+                {
+                    _staic_temp_.push(_ROOT_Temp->_data);
+                    //压栈
+                    _ROOT_Temp = _ROOT_Temp->_left;
+                }
+                // 访问栈顶节点
+                _ROOT_Temp = stack.top();
+                //弹出栈顶元素，刷新栈顶元素，理想情况下正好下一个元素正好是刚push进去的元素
+                
+                _staic_temp_.pop();
+                std::cout << _ROOT_Temp->_data << " ";
+
+                // 转向右子树
+                _ROOT_Temp = _ROOT_Temp->right;
+            }
+        }
+    public:
+        void Middle_order_traversal()
+        {
+            _Middle_order_traversal(_ROOT);
+        }
+        bool push(const Binary_search_tree_Type& data)
+        {
+                //尾上插入函数
             if(_ROOT == nullptr)
             {
                 _ROOT = new Binary_search_tree::Binary_search_tree_Type_Node<Binary_search_tree_Type>(data);
@@ -1419,8 +1448,16 @@ namespace Wang
             }
             else
             {
-                
+
             }
+        }
+        BST_Node* find(const Binary_search_tree_Type& data)
+        {
+            //查找函数
+        }
+        void insert(const Binary_search_tree_Type& former_data,const Binary_search_tree_Type& latter_data)
+        {
+            //在former_data后面插入latter_data
         }
     };
 }
@@ -1604,9 +1641,9 @@ int main()
     Wang::string staic_test_str3 = "  ";
     Wang::staic<Wang::string> staic_test1;
 
-    staic_test1.back(staic_test_str1);
-    staic_test1.back(staic_test_str3);
-    staic_test1.back(staic_test_str2);
+    staic_test1.push(staic_test_str1);
+    staic_test1.push(staic_test_str3);
+    staic_test1.push(staic_test_str2);
 
     std::cout << staic_test1.top() << std::endl;
     staic_test1.pop();
@@ -1622,9 +1659,9 @@ int main()
     Wang::string queue_test_str3 = "  ";
     Wang::queue<Wang::string,Wang::list<Wang::string>> queue_test1;
 
-    queue_test1.push_back(queue_test_str1);
-    queue_test1.push_back(queue_test_str3);
-    queue_test1.push_back(queue_test_str2);
+    queue_test1.push(queue_test_str1);
+    queue_test1.push(queue_test_str3);
+    queue_test1.push(queue_test_str2);
 
     std::cout << queue_test1.front() << std::endl;
     std::cout << queue_test1.back()  << std::endl;
@@ -1642,7 +1679,7 @@ int main()
     Wang::priority_queue<int> priority_queue_test;
     for(int i = 0; i < 10000 ; i++)
     {
-        priority_queue_test.push_back(i);
+        priority_queue_test.push(i);
     }
 
     std::cout << priority_queue_test.size() << std::endl;
