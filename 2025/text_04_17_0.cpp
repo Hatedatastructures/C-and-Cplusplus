@@ -1,5 +1,7 @@
 #include <iostream>
 #include <cstring>
+#include <random>
+#include <algorithm>
 namespace Wang
 {
     namespace STL_Imitation_functions
@@ -1229,11 +1231,11 @@ namespace Wang
     }
     /*############################     staic适配器     ############################*/
     template <typename staic_Type,typename Container_staic = Wang::vector<staic_Type>>
-    class staic
+    class stack
     {
         Container_staic Container_staic_temp_;
     public:
-        ~staic()
+        ~stack()
         {
             ;
         }
@@ -1414,7 +1416,7 @@ namespace Wang
         void _Middle_order_traversal(BST_Node* _ROOT_Temp)
         {
             //中序遍历函数
-            Wang::staic<BST_Node*> _staic_temp_;
+            Wang::stack<BST_Node*> _staic_temp_;
             while(_ROOT_Temp != nullptr || !_staic_temp_.empty())
             {
                 while(_ROOT_Temp!= nullptr)
@@ -1437,8 +1439,32 @@ namespace Wang
         void clear()
         {
             //递归释放资源
+            BST_Node* _ROOT_Temp = _ROOT;
+            Wang::stack<BST_Node*> _staic_clear_temp_;
+            _staic_clear_temp_.push(_ROOT_Temp);
+            while(_staic_clear_temp_.empty() == false)
+            {
+                _ROOT_Temp = _staic_clear_temp_.top();
+                //取出元素，把左右节点入进去
+                _staic_clear_temp_.pop();
+                if(_ROOT_Temp->_left!= nullptr)
+                {
+                    _staic_clear_temp_.push(_ROOT_Temp->_left);
+                }
+                if(_ROOT_Temp->_right!= nullptr)
+                {
+                    _staic_clear_temp_.push(_ROOT_Temp->_right);
+                }
+                delete _ROOT_Temp;
+                _ROOT_Temp = nullptr;
+            }
+            _ROOT = nullptr;
         }
     public:
+        ~Binary_search_tree()
+        {
+            clear();
+        }
         Binary_search_tree() 
         :_ROOT(nullptr) {     ;   }
         Binary_search_tree(const Binary_search_tree<Binary_search_tree_Type>& _Binary_search_tree_temp)
@@ -1450,6 +1476,7 @@ namespace Wang
         }
         void Middle_order_traversal()
         {
+            //中序遍历函数
             _Middle_order_traversal(_ROOT);
         }
         bool push(const Binary_search_tree_Type& data)
@@ -1775,19 +1802,59 @@ int main()
     // std::cout << num2-num1 << std::endl;
 
     /*            Binary_search_tree测试             */
-    time_t Binary_search_tree_num1 = clock();
-    Wang::Binary_search_tree<int,Wang::STL_Imitation_functions::greater<int>> Binary_search_tree_test;
-    for(size_t i = 100000; i > 0; i--)
     {
-        Binary_search_tree_test.push(i);
-    }
-    time_t Binary_search_tree_num2 = clock();
+        time_t Binary_search_tree_num1 = clock();
+        Wang::Binary_search_tree<int,Wang::STL_Imitation_functions::greater<int>> Binary_search_tree_test;
+        for(size_t i = 100000; i > 0; i--)
+        {
+            //相对来说这算是有序插入导致二叉树相乘时间复杂度为O(N)的链表
+            Binary_search_tree_test.push(i);
+        }
+        time_t Binary_search_tree_num2 = clock();
 
-    time_t Binary_search_tree_num3 = clock();
-    Binary_search_tree_test.find(5888);
-    time_t Binary_search_tree_num4 = clock();
-    // Binary_search_tree_test.Middle_order_traversal();
-    std::cout << "插入时间" << Binary_search_tree_num2-Binary_search_tree_num1 << std::endl;
-    std::cout << "查找时间" << Binary_search_tree_num4-Binary_search_tree_num3 << std::endl;
+        time_t Binary_search_tree_num3 = clock();
+        Binary_search_tree_test.find(5888);
+        time_t Binary_search_tree_num4 = clock();
+        // Binary_search_tree_test.Middle_order_traversal();
+        std::cout << "退化链表插入时间" << Binary_search_tree_num2-Binary_search_tree_num1 << std::endl;
+        std::cout << "退化链表查找时间" << Binary_search_tree_num4-Binary_search_tree_num3 << std::endl;
+    }
+
+    {
+        const size_t Binary_search_tree_arraySize = 100000;
+        Wang::vector<int> Binary_search_tree_array(Binary_search_tree_arraySize);
+        for (size_t i = 0; i < Binary_search_tree_arraySize; ++i) 
+        {
+            Binary_search_tree_array[i] = i;
+        }
+
+        // 创建随机数引擎和分布
+        std::random_device rd;
+        std::mt19937 g(rd());
+        std::shuffle(Binary_search_tree_array.begin(), Binary_search_tree_array.end(), g);
+        // 输出打乱后的数组
+        // for (int i = 0; i < 10000; ++i) 
+        // {
+        //     std::cout << Binary_search_tree_array[i] << " ";
+        // }
+
+        // 打乱数组元素顺序
+        time_t Binary_search_tree_num1 = clock();
+        Wang::Binary_search_tree<int,Wang::STL_Imitation_functions::greater<int>> Binary_search_tree_test;
+        for(const auto& Binary_search_tree_for_test: Binary_search_tree_array)
+        {
+            Binary_search_tree_test.push(Binary_search_tree_for_test);
+        }
+        time_t Binary_search_tree_num2 = clock();
+
+        const int Binary_search_tree_find = Binary_search_tree_array[Binary_search_tree_arraySize/2];
+
+        time_t Binary_search_tree_num3 = clock();
+        Binary_search_tree_test.find(Binary_search_tree_find);
+        time_t Binary_search_tree_num4 = clock();
+        Binary_search_tree_test.Middle_order_traversal();
+        std::cout << "插入时间" << Binary_search_tree_num2-Binary_search_tree_num1 << std::endl;
+        std::cout << "查找时间" << Binary_search_tree_num4-Binary_search_tree_num3 << std::endl;
+    }
     return 0;
 }

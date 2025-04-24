@@ -1229,11 +1229,11 @@ namespace Wang
     }
     /*############################     staic适配器     ############################*/
     template <typename staic_Type,typename Container_staic = Wang::vector<staic_Type> >
-    class staic
+    class stack
     {
         Container_staic Container_staic_temp_;
     public:
-        ~staic()
+        ~stack()
         {
             ;
         }
