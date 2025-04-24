@@ -1427,7 +1427,7 @@ namespace Wang
                 }
                 // 访问栈顶节点
                 _ROOT_Temp = _staic_temp_.top();
-                //弹出栈顶元素，刷新栈顶元素，理想情况下正好下一个元素正好是刚push进去的元素
+                //弹出栈顶元素，刷新栈顶元素，栈顶元素会变成之前压入栈的节点的父节点
                 
                 _staic_temp_.pop();
                 std::cout << _ROOT_Temp->_data << " ";
@@ -1570,236 +1570,247 @@ namespace Wang
     };
 }
 int main()
-{
+{  
     // /*            string测试             */
-    // std::cout << " string 测试 " << std::endl << std::endl;
-    // Wang::string string_test1("hello");
-    // Wang::string string_test2("world");
-    
-    // Wang::string string_test3 = string_test1 + string_test2;
-    // std::cout << "string_test3: " << string_test3 << std::endl;
-    // string_test3.push_back('!');
-    // const char* insert_str = "inserted";
-    // string_test3.nose_Insertion_substrings(insert_str);
-    // std::cout << "str3 after insertion: " << string_test3 << std::endl;
-
-    // size_t old_pos = strlen(insert_str);
-    // Wang::string string_test4 = string_test3.str_withdraw(old_pos);
-    // std::cout << "string_test4: " << string_test4 << std::endl;
-
-    // std::cout << string_test3.conversions_oldest() << std::endl;
-    // std::cout << string_test3.conversions_few() << std::endl;
-
-    // Wang::string string_test5 = string_test3.str_withdraw_extremity(5);
-    // std::cout << "string_test5: " << string_test5 << std::endl;
-
-    // Wang::string string_test6 = string_test3.str_withdraw_detail(5, 10);
-    // std::cout << "string_test6: " << string_test6 << std::endl;
-
-    // std::cout << "str3 size: " << string_test3.size() << std::endl;
-    // std::cout << "str3 capacity: " << string_test3.capacity() << std::endl;
-    // std::cout << "string_test3 after resize: " << string_test3.resize(21, '*') << std::endl;
-
-    // std::cout << "string_test3 after rollback: " << string_test3.rollback() << std::endl;
-
-    // std::cout << "string_test3 after rollback_limit: " << string_test3.rollback_limit(5, 10) << std::endl;
-
-    // string_test3.string_print();
-    // string_test3.string_print_reverse();
-
-    // for(auto i :string_test3)
     // {
-    //     std::cout << i << " ";
-    // }
-    // std::cout << std::endl;
+    //     std::cout << " string 测试 " << std::endl << std::endl;
+    //     Wang::string string_test1("hello");
+    //     Wang::string string_test2("world");
+        
+    //     Wang::string string_test3 = string_test1 + string_test2;
+    //     std::cout << "string_test3: " << string_test3 << std::endl;
+    //     string_test3.push_back('!');
+    //     const char* insert_str = "inserted";
+    //     string_test3.nose_Insertion_substrings(insert_str);
+    //     std::cout << "str3 after insertion: " << string_test3 << std::endl;
 
-    // for(Wang::string::const_iterator i = string_test3.begin();i != string_test3.end();i++)
-    // {
-    //     std::cout << *i << " ";
-    // }
-    // std::cout << std::endl;
+    //     size_t old_pos = strlen(insert_str);
+    //     Wang::string string_test4 = string_test3.str_withdraw(old_pos);
+    //     std::cout << "string_test4: " << string_test4 << std::endl;
 
+    //     std::cout << string_test3.conversions_oldest() << std::endl;
+    //     std::cout << string_test3.conversions_few() << std::endl;
+
+    //     Wang::string string_test5 = string_test3.str_withdraw_extremity(5);
+    //     std::cout << "string_test5: " << string_test5 << std::endl;
+
+    //     Wang::string string_test6 = string_test3.str_withdraw_detail(5, 10);
+    //     std::cout << "string_test6: " << string_test6 << std::endl;
+
+    //     std::cout << "str3 size: " << string_test3.size() << std::endl;
+    //     std::cout << "str3 capacity: " << string_test3.capacity() << std::endl;
+    //     std::cout << "string_test3 after resize: " << string_test3.resize(21, '*') << std::endl;
+
+    //     std::cout << "string_test3 after rollback: " << string_test3.rollback() << std::endl;
+
+    //     std::cout << "string_test3 after rollback_limit: " << string_test3.rollback_limit(5, 10) << std::endl;
+
+    //     string_test3.string_print();
+    //     string_test3.string_print_reverse();
+
+    //     for(auto i :string_test3)
+    //     {
+    //         std::cout << i << " ";
+    //     }
+    //     std::cout << std::endl;
+
+    //     for(Wang::string::const_iterator i = string_test3.begin();i != string_test3.end();i++)
+    //     {
+    //         std::cout << *i << " ";
+    //     }
+    //     std::cout << std::endl;
+    // }
 
     // /*            vector测试             */
-    // std::cout << " vector 测试 " << std::endl << std::endl;
-    // Wang::vector<int> vector_test(5,1);
-    // for(auto i: vector_test)
     // {
-    //     std::cout << i << " ";
-    // }
-    // std::cout << std::endl;
-    // Wang::vector<int> vector_test1(vector_test);
-    // for(const  auto& i  : vector_test1 )
-    // {
-    //     std::cout << i << " ";
-    // }
-    // std::cout << std::endl;
-    // Wang::vector<int> test2 = vector_test1;
-    // for(const auto i : test2)
-    // {
-    //     std::cout << i << " ";
-    // }
-    // Wang::string s2 = "name";
-    // std::cout << std::endl;
-    // Wang::vector<Wang::string> name_test(10,s2);
-    // for(const auto& i : name_test )
-    // {
-    //     std::cout << i << " ";
-    // }
-    // std::cout << std::endl;
-    // Wang::vector<Wang::string> name_test1 =name_test ;
-    // for(const auto& i : name_test1 )
-    // {
-    //     std::cout << i << " ";
-    // }
-    // std::cout << std::endl;
-    // Wang::string s3 = "hello word!";
-    // name_test1.push_back(s3);
-    // for(const auto& i : name_test1 )
-    // {
-    //     std::cout << i << " ";
-    // }
-    // std::cout << std::endl;
+    //     std::cout << " vector 测试 " << std::endl << std::endl;
+    //     Wang::vector<int> vector_test(5,1);
+    //     for(auto i: vector_test)
+    //     {
+    //         std::cout << i << " ";
+    //     }
+    //     std::cout << std::endl;
+    //     Wang::vector<int> vector_test1(vector_test);
+    //     for(const  auto& i  : vector_test1 )
+    //     {
+    //         std::cout << i << " ";
+    //     }
+    //     std::cout << std::endl;
+    //     Wang::vector<int> test2 = vector_test1;
+    //     for(const auto i : test2)
+    //     {
+    //         std::cout << i << " ";
+    //     }
+    //     Wang::string s2 = "name";
+    //     std::cout << std::endl;
+    //     Wang::vector<Wang::string> name_test(10,s2);
+    //     for(const auto& i : name_test )
+    //     {
+    //         std::cout << i << " ";
+    //     }
+    //     std::cout << std::endl;
+    //     Wang::vector<Wang::string> name_test1 =name_test ;
+    //     for(const auto& i : name_test1 )
+    //     {
+    //         std::cout << i << " ";
+    //     }
+    //     std::cout << std::endl;
+    //     Wang::string s3 = "hello word!";
+    //     name_test1.push_back(s3);
+    //     for(const auto& i : name_test1 )
+    //     {
+    //         std::cout << i << " ";
+    //     }
+    //     std::cout << std::endl;
 
-    // name_test1.push_front(s3);
-    // for(const auto& i : name_test1 )
-    // {
-    //     std::cout << i << " ";
-    // }
-    // std::cout << std::endl;
+    //     name_test1.push_front(s3);
+    //     for(const auto& i : name_test1 )
+    //     {
+    //         std::cout << i << " ";
+    //     }
+    //     std::cout << std::endl;
 
-    // name_test1+=name_test;
-    // for(const auto& i : name_test1 )
-    // {
-    //     std::cout << i << " ";
-    // }
-    // std::cout << std::endl;
+    //     name_test1+=name_test;
+    //     for(const auto& i : name_test1 )
+    //     {
+    //         std::cout << i << " ";
+    //     }
+    //     std::cout << std::endl;
 
-    // std::cout << name_test1 << std::endl;
-    // std::cout << name_test1.pop_back() << std::endl;
+    //     std::cout << name_test1 << std::endl;
+    //     std::cout << name_test1.pop_back() << std::endl;
+    // }
 
 
     // /*            list测试             */
-    // std::cout << " list 测试 " << std::endl << std::endl;
-    // Wang::list<int> list_test1;
-    // for(size_t i = 1; i < 10; i++)
     // {
-    //     list_test1.push_back(i);
-    // }
-    // Wang::list<int>::const_iterator it =list_test1.cbegin();
-    // while(it != list_test1.cend())
-    // {
-    //     std::cout << *it  << " ";
-    //     it++;
-    // }
-    // std::cout << std::endl;
-    // Wang::list<int>::reverse_const_iterator i = list_test1.rcbegin();
-    // while(i != list_test1.rcend())
-    // {
-    //     std::cout << *i << " ";
-    //     i++;
-    // }
-    // std::cout <<std::endl;
+    //     std::cout << " list 测试 " << std::endl << std::endl;
+    //     Wang::list<int> list_test1;
+    //     for(size_t i = 1; i < 10; i++)
+    //     {
+    //         list_test1.push_back(i);
+    //     }
+    //     Wang::list<int>::const_iterator it =list_test1.cbegin();
+    //     while(it != list_test1.cend())
+    //     {
+    //         std::cout << *it  << " ";
+    //         it++;
+    //     }
+    //     std::cout << std::endl;
+    //     Wang::list<int>::reverse_const_iterator i = list_test1.rcbegin();
+    //     while(i != list_test1.rcend())
+    //     {
+    //         std::cout << *i << " ";
+    //         i++;
+    //     }
+    //     std::cout <<std::endl;
 
-    // list_test1.pop_back(); 
-    // Wang::list<int>::const_iterator j =list_test1.cbegin();
-    // while(j != list_test1.cend())
-    // {
-    //     std::cout << *j  << " ";
-    //     j++;
-    // }
-    // std::cout << std::endl;
-    // std::cout << list_test1.size() << std::endl;
+    //     list_test1.pop_back(); 
+    //     Wang::list<int>::const_iterator j =list_test1.cbegin();
+    //     while(j != list_test1.cend())
+    //     {
+    //         std::cout << *j  << " ";
+    //         j++;
+    //     }
+    //     std::cout << std::endl;
+    //     std::cout << list_test1.size() << std::endl;
 
-    // Wang::list<int> list_test2 = list_test1;
-    // Wang::list<int>::const_iterator p =list_test2.cbegin();
-    // while(p != list_test2.cend())
-    // {
-    //     std::cout << *p  << " ";
-    //     p++;
-    // }
-    // std::cout << std::endl;
-    // std::cout << list_test2.size() << std::endl;
+    //     Wang::list<int> list_test2 = list_test1;
+    //     Wang::list<int>::const_iterator p =list_test2.cbegin();
+    //     while(p != list_test2.cend())
+    //     {
+    //         std::cout << *p  << " ";
+    //         p++;
+    //     }
+    //     std::cout << std::endl;
+    //     std::cout << list_test2.size() << std::endl;
 
-    // Wang::list<int> list_test3 = list_test2 + list_test1;
-    // Wang::list<int>::const_iterator k =list_test3.cbegin();
-    // while(k != list_test3.cend())
-    // {
-    //     std::cout << *k  << " ";
-    //     k++;
-    // }
-    // std::cout << std::endl;
-    // std::cout << list_test3.size() << std::endl;
+    //     Wang::list<int> list_test3 = list_test2 + list_test1;
+    //     Wang::list<int>::const_iterator k =list_test3.cbegin();
+    //     while(k != list_test3.cend())
+    //     {
+    //         std::cout << *k  << " ";
+    //         k++;
+    //     }
+    //     std::cout << std::endl;
+    //     std::cout << list_test3.size() << std::endl;
 
-    // Wang::list<int> list_test4 = list_test3 + list_test1;
-    // Wang::list<int>::const_iterator kp =list_test4.cbegin();
-    // while(kp != list_test4.cend())
-    // {
-    //     std::cout << *kp  << " ";
-    //     kp++;
+    //     Wang::list<int> list_test4 = list_test3 + list_test1;
+    //     Wang::list<int>::const_iterator kp =list_test4.cbegin();
+    //     while(kp != list_test4.cend())
+    //     {
+    //         std::cout << *kp  << " ";
+    //         kp++;
+    //     }
+    //     std::cout << std::endl;
+    //     std::cout << list_test4.size() << std::endl;
+    //     std::cout << list_test4 << std::endl;
     // }
-    // std::cout << std::endl;
-    // std::cout << list_test4.size() << std::endl;
-    // std::cout << list_test4 << std::endl;
 
     // /*            staic测试             */
-    // std::cout << " staic 测试 " << std::endl << std::endl;
-    // Wang::string staic_test_str1 = "hello";
-    // Wang::string staic_test_str2 = "word";
-    // Wang::string staic_test_str3 = "  ";
-    // Wang::staic<Wang::string> staic_test1;
+    // {
+    //     std::cout << " staic 测试 " << std::endl << std::endl;
+    //     Wang::string staic_test_str1 = "hello";
+    //     Wang::string staic_test_str2 = "word";
+    //     Wang::string staic_test_str3 = "  ";
+    //     Wang::stack<Wang::string> staic_test1;
 
-    // staic_test1.push(staic_test_str1);
-    // staic_test1.push(staic_test_str3);
-    // staic_test1.push(staic_test_str2);
+    //     staic_test1.push(staic_test_str1);
+    //     staic_test1.push(staic_test_str3);
+    //     staic_test1.push(staic_test_str2);
 
-    // std::cout << staic_test1.top() << std::endl;
-    // staic_test1.pop();
-    // std::cout << staic_test1.top() << std::endl;
-    // staic_test1.pop();
-    // std::cout << staic_test1.top() << std::endl;
-    // staic_test1.pop();
+    //     std::cout << staic_test1.top() << std::endl;
+    //     staic_test1.pop();
+    //     std::cout << staic_test1.top() << std::endl;
+    //     staic_test1.pop();
+    //     std::cout << staic_test1.top() << std::endl;
+    //     staic_test1.pop();
+    // }
 
     // /*            queue测试             */
-    // std::cout << " queue 测试 " << std::endl << std::endl;
-    // Wang::string queue_test_str1 = "hello";
-    // Wang::string queue_test_str2 = "word";
-    // Wang::string queue_test_str3 = "  ";
-    // Wang::queue<Wang::string,Wang::list<Wang::string>> queue_test1;
+    // {
+    //     std::cout << " queue 测试 " << std::endl << std::endl;
+    //     Wang::string queue_test_str1 = "hello";
+    //     Wang::string queue_test_str2 = "word";
+    //     Wang::string queue_test_str3 = "  ";
+    //     Wang::queue<Wang::string,Wang::list<Wang::string>> queue_test1;
 
-    // queue_test1.push(queue_test_str1);
-    // queue_test1.push(queue_test_str3);
-    // queue_test1.push(queue_test_str2);
+    //     queue_test1.push(queue_test_str1);
+    //     queue_test1.push(queue_test_str3);
+    //     queue_test1.push(queue_test_str2);
 
-    // std::cout << queue_test1.front() << std::endl;
-    // std::cout << queue_test1.back()  << std::endl;
+    //     std::cout << queue_test1.front() << std::endl;
+    //     std::cout << queue_test1.back()  << std::endl;
 
-    // std::cout << queue_test1.front() << " ";
-    // queue_test1.pop();
-    // std::cout << queue_test1.front() << " ";
-    // queue_test1.pop();
-    // std::cout << queue_test1.front() << " ";
-    // queue_test1.pop();
+    //     std::cout << queue_test1.front() << " ";
+    //     queue_test1.pop();
+    //     std::cout << queue_test1.front() << " ";
+    //     queue_test1.pop();
+    //     std::cout << queue_test1.front() << " ";
+    //     queue_test1.pop();
+    // }
 
     // /*            priority_queue测试             */
-    // time_t num1 = clock();
-    // std::cout << " priority_queue 测试 " << std::endl << std::endl;
-    // Wang::priority_queue<int> priority_queue_test;
-    // for(int i = 0; i < 10000 ; i++)
     // {
-    //     priority_queue_test.push(i);
-    // }
+    //     time_t num1 = clock();
+    //     std::cout << " priority_queue 测试 " << std::endl << std::endl;
+    //     Wang::priority_queue<int> priority_queue_test;
+    //     for(int i = 0; i < 10000 ; i++)
+    //     {
+    //         priority_queue_test.push(i);
+    //     }
 
-    // std::cout << priority_queue_test.size() << std::endl;
+    //     std::cout << priority_queue_test.size() << std::endl;
 
-    // for(size_t i = 0; i < 10000; i++)
-    // {
-    //     std::cout << priority_queue_test.top() << " ";
-    //     priority_queue_test.pop();
-    // }
-    // std::cout << std::endl;
-    // time_t num2 = clock();
-    // std::cout << num2-num1 << std::endl;
+    //     for(size_t i = 0; i < 10000; i++)
+    //     {
+    //         std::cout << priority_queue_test.top() << " ";
+    //         priority_queue_test.pop();
+    //     }
+    //     std::cout << std::endl;
+    //     time_t num2 = clock();
+    //     std::cout << num2-num1 << std::endl;
+    //}
 
     /*            Binary_search_tree测试             */
     {
