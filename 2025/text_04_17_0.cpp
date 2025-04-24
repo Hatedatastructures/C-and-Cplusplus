@@ -1403,7 +1403,7 @@ namespace Wang
             Binary_search_tree_Type_Node* _right;
             Binary_search_tree_Type_Function_Node _data;
             Binary_search_tree_Type_Node(const Binary_search_tree_Type_Function_Node& data = Binary_search_tree_Type_Function_Node())
-            :_data(data),_left(nullptr),_right(nullptr)
+            :_left(nullptr),_right(nullptr),_data(data)
             {
                 ;
             }
@@ -1423,7 +1423,7 @@ namespace Wang
                     _ROOT_Temp = _ROOT_Temp->_left;
                 }
                 // 访问栈顶节点
-                _ROOT_Temp = stack.top();
+                _ROOT_Temp = _staic_temp_.top();
                 //弹出栈顶元素，刷新栈顶元素，理想情况下正好下一个元素正好是刚push进去的元素
                 
                 _staic_temp_.pop();
@@ -1434,6 +1434,14 @@ namespace Wang
             }
         }
     public:
+        Binary_search_tree() 
+        :_ROOT(nullptr) {     ;   }
+        Binary_search_tree(const Binary_search_tree<Binary_search_tree_Type>& _Binary_search_tree_temp)
+        :_ROOT(nullptr)
+        {
+            //拷贝构造
+            _ROOT = new BST_Node(_Binary_search_tree_temp._ROOT->_data);
+        }
         void Middle_order_traversal()
         {
             _Middle_order_traversal(_ROOT);
@@ -1448,12 +1456,15 @@ namespace Wang
             }
             else
             {
-                BST_Node*& _ROOT_Temp = _ROOT;
+                BST_Node* _ROOT_Temp = _ROOT;
+                BST_Node* _ROOT_Temp_Parent = nullptr;
                 while(_ROOT_Temp!= nullptr)
                 {
-                    if(data == _ROOT_Temp->_data)
+                    _ROOT_Temp_Parent = _ROOT_Temp;
+                     if(data == _ROOT_Temp->_data)
                     {
                         return false;
+                        //data存在随机值
                     }
                     else if(data < _ROOT_Temp->_data)
                     {
@@ -1465,7 +1476,15 @@ namespace Wang
                     }
                 }
                 _ROOT_Temp = new Binary_search_tree::Binary_search_tree_Type_Node<Binary_search_tree_Type>(data);
-                //未完成链接指针
+                //链接节点
+                if(data < _ROOT_Temp_Parent->_data)
+                {
+                    _ROOT_Temp_Parent->_left = _ROOT_Temp;
+                }
+                else
+                {
+                    _ROOT_Temp_Parent->_right = _ROOT_Temp;
+                }
                 return true;
             }
         }
@@ -1727,6 +1746,8 @@ int main()
     std::cout << std::endl;
     time_t num2 = clock();
     std::cout << num2-num1 << std::endl;
-
+    /*            Binary_search_tree测试             */
+    Wang::Binary_search_tree<int> Binary_search_tree_test;
+    Binary_search_tree_test.push(10);
     return 0;
 }
