@@ -1438,7 +1438,7 @@ namespace Wang
         }
         void clear()
         {
-            //递归释放资源
+            //循环释放资源
             BST_Node* _ROOT_Temp = _ROOT;
             Wang::stack<BST_Node*> _staic_clear_temp_;
             _staic_clear_temp_.push(_ROOT_Temp);
@@ -1471,8 +1471,12 @@ namespace Wang
         :_ROOT(nullptr)
         {
             //拷贝构造
-            _ROOT = new BST_Node(_Binary_search_tree_temp._ROOT->_data);
-            ///////////////////////////////////////////////////////////////////
+            if(_Binary_search_tree_temp._ROOT == nullptr)
+            {
+                return;
+            }
+            ///////////////////Wang::stack
+            ////////////////////////////////////////////
         }
         void Middle_order_traversal()
         {
@@ -1555,7 +1559,7 @@ namespace Wang
         void insert(const Binary_search_tree_Type& former_data,const Binary_search_tree_Type& latter_data)
         {
             //在former_data后面插入latter_data
-            BST_Node*& _ROOT_former_data = find(former_data);
+            BST_Node* _ROOT_former_data = find(former_data);
             //插入节点
             if(_ROOT_former_data == nullptr)
             {
@@ -1814,23 +1818,77 @@ int main()
     //}
 
     /*            Binary_search_tree测试             */
-    {
-        time_t Binary_search_tree_num1 = clock();
-        Wang::Binary_search_tree<int,Wang::STL_Imitation_functions::greater<int>> Binary_search_tree_test;
-        for(size_t i = 100000; i > 0; i--)
-        {
-            //相对来说这算是有序插入导致二叉树相乘时间复杂度为O(N)的链表
-            Binary_search_tree_test.push(i);
-        }
-        time_t Binary_search_tree_num2 = clock();
+    // {
+    //     time_t Binary_search_tree_num1 = clock();
+    //     Wang::Binary_search_tree<int,Wang::STL_Imitation_functions::greater<int>> Binary_search_tree_test;
+    //     for(size_t i = 100000; i > 0; i--)
+    //     {
+    //         //相对来说这算是有序插入导致二叉树相乘时间复杂度为O(N)的链表
+    //         Binary_search_tree_test.push(i);
+    //     }
+    //     time_t Binary_search_tree_num2 = clock();
 
-        time_t Binary_search_tree_num3 = clock();
-        Binary_search_tree_test.find(5888);
-        time_t Binary_search_tree_num4 = clock();
-        // Binary_search_tree_test.Middle_order_traversal();
-        std::cout << "退化链表插入时间" << Binary_search_tree_num2-Binary_search_tree_num1 << std::endl;
-        std::cout << "退化链表查找时间" << Binary_search_tree_num4-Binary_search_tree_num3 << std::endl;
-    }
+    //     time_t Binary_search_tree_num3 = clock();
+    //     Binary_search_tree_test.find(5888);
+    //     time_t Binary_search_tree_num4 = clock();
+    //     // Binary_search_tree_test.Middle_order_traversal();
+    //     std::cout << "退化链表插入时间" << Binary_search_tree_num2-Binary_search_tree_num1 << std::endl;
+    //     std::cout << "退化链表查找时间" << Binary_search_tree_num4-Binary_search_tree_num3 << std::endl;
+    // }
+
+    // {
+    //     Wang::Binary_search_tree<int, Wang::STL_Imitation_functions::greater<int>> bst;
+    //     bst.push(5);
+    //     bst.push(4);
+    //     bst.push(3);
+    //     bst.push(2);
+    //     bst.push(1);
+    //     bst.Middle_order_traversal(); 
+    //     std::cout << std::endl; // 确保输出刷新
+    // }
+    // {
+    //     const size_t Binary_search_tree_arraySize = 100000;
+    //     Wang::vector<int> Binary_search_tree_array(Binary_search_tree_arraySize);
+    //     for (size_t i = 0; i < Binary_search_tree_arraySize; ++i) 
+    //     {
+    //         Binary_search_tree_array[i] = i;
+    //     }
+
+    //     // 创建随机数引擎和分布
+    //     std::random_device rd;
+    //     std::mt19937 g(rd());
+    //     std::shuffle(Binary_search_tree_array.begin(), Binary_search_tree_array.end(), g);
+    //     //输出打乱后的数组
+    //     // for(auto& i : Binary_search_tree_array)
+    //     // {
+    //     //     std::cout << i << " ";
+    //     // }
+
+    //     //打乱数组元素顺序
+    //     size_t size = 0;
+    //     time_t Binary_search_tree_num1 = clock();
+    //     Wang::Binary_search_tree<int,Wang::STL_Imitation_functions::greater<int>> Binary_search_tree_test;
+    //     for(const auto& Binary_search_tree_for_test: Binary_search_tree_array)
+    //     {
+    //         if(Binary_search_tree_test.push(Binary_search_tree_for_test))
+    //         {
+    //             size++;
+    //         }
+    //     }
+    //     time_t Binary_search_tree_num2 = clock();
+
+    //     const int Binary_search_tree_find = Binary_search_tree_array[Binary_search_tree_arraySize/2];
+
+    //     time_t Binary_search_tree_num3 = clock();
+    //     Binary_search_tree_test.find(Binary_search_tree_find);
+    //     time_t Binary_search_tree_num4 = clock();
+    //     // Binary_search_tree_test.Middle_order_traversal();
+    //     std::cout << "插入个数" << size << std::endl;
+    //     std::cout << "插入时间" << Binary_search_tree_num2-Binary_search_tree_num1 << std::endl;
+    //     std::cout << "查找时间" << Binary_search_tree_num4-Binary_search_tree_num3 << std::endl;
+    //     /*              查找数据时间不稳定时间复杂度是O(logN)        */
+        
+    // }
 
     {
         const size_t Binary_search_tree_arraySize = 100000;
@@ -1862,28 +1920,15 @@ int main()
             }
         }
         time_t Binary_search_tree_num2 = clock();
-
-        const int Binary_search_tree_find = Binary_search_tree_array[Binary_search_tree_arraySize/2];
-
+        Wang::Binary_search_tree<int,Wang::STL_Imitation_functions::greater<int>> Binary_search_tree_test1 = Binary_search_tree_test;
         time_t Binary_search_tree_num3 = clock();
-        Binary_search_tree_test.find(Binary_search_tree_find);
-        time_t Binary_search_tree_num4 = clock();
-        // Binary_search_tree_test.Middle_order_traversal();
+
+        Binary_search_tree_test.Middle_order_traversal();
+        std::cout << std::endl;
+        Binary_search_tree_test1.Middle_order_traversal();
         std::cout << "插入个数" << size << std::endl;
         std::cout << "插入时间" << Binary_search_tree_num2-Binary_search_tree_num1 << std::endl;
-        std::cout << "查找时间" << Binary_search_tree_num4-Binary_search_tree_num3 << std::endl;
-        //查找数据时间不稳定时间复杂度是O(logN)
-        //示例测试代码调整
-        // {
-        //     Wang::Binary_search_tree<int, Wang::STL_Imitation_functions::greater<int>> bst;
-        //     bst.push(5);
-        //     bst.push(4);
-        //     bst.push(3);
-        //     bst.push(2);
-        //     bst.push(1);
-        //     bst.Middle_order_traversal(); 
-        //     std::cout << std::endl; // 确保输出刷新
-        // }
+        std::cout << "拷贝时间" << Binary_search_tree_num3-Binary_search_tree_num2 << std::endl;
     }
     return 0;
 }
