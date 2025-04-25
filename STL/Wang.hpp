@@ -26,8 +26,8 @@ namespace Wang
     }
     namespace algorithm
     {
-        template <typename Source_sequence,typename Target_sequence>
-        Target_sequence copy(Source_sequence begin,Source_sequence end,Target_sequence first)
+        template <typename Source_sequence_copy,typename Target_sequence_copy>
+        Target_sequence_copy copy(Source_sequence_copy begin,Source_sequence_copy end,Target_sequence_copy first)
         {
             while(begin != end)
             {
