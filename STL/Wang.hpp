@@ -1,5 +1,7 @@
 #include <iostream>
 #include <cstring>
+#include <random>
+#include <algorithm>
 namespace Wang
 {
     namespace STL_Imitation_functions
@@ -24,6 +26,62 @@ namespace Wang
             }
         };
     }
+    namespace STL_Demand_class
+    {
+        template<typename Data_Type_example_pair_T,typename Data_Type_example_pair_K>
+        class pair
+        {
+        public:
+            //链接两个相同或不同的类型为一个类型，方便使用
+            Data_Type_example_pair_T first;
+            Data_Type_example_pair_K second;
+            pair() : first(Data_Type_example_pair_T()), second(Data_Type_example_pair_K()) 
+            {
+                ;
+            }
+            pair(const Data_Type_example_pair_T& _first,const Data_Type_example_pair_K& _second) 
+            : first(_first), second(_second)
+            {
+                ;
+            }
+            pair(const pair& other) 
+            : first(other.first), second(other.second)
+            {
+                ;
+            }
+            pair& operator=(const pair& other)
+            {
+                if(this != &other)
+                {
+                    first = other.first;
+                    second = other.second;
+                }
+                return *this;
+            }
+            bool operator==(const pair& other)const
+            {
+                return first == other.first && second == other.second;
+            }
+            bool operator!=(const pair& other)const
+            {
+                return !(*this == other);
+            }
+            pair* operator->()
+            {
+                return this;
+            }
+        };
+        template<typename Data_Type_example_make_pair_T,typename Data_Type_example_make_pair_K>
+        class make_pair
+        {
+        public:
+            pair<Data_Type_example_make_pair_T,Data_Type_example_make_pair_K> operator()
+            (const Data_Type_example_make_pair_T& _first,const Data_Type_example_make_pair_K& _second) const
+            {
+                return pair<Data_Type_example_make_pair_T,Data_Type_example_make_pair_K>(_first,_second);
+            }
+        };
+    }
     namespace algorithm
     {
         template <typename Source_sequence_copy,typename Target_sequence_copy>
@@ -38,6 +96,26 @@ namespace Wang
             return first;
         }
         //返回下一个位置的迭代器，是否深浅拷贝取决于自定义类型重载和拷贝构造
+        template<typename Source_sequence_find,typename Target_sequence_find>
+        Source_sequence_find find(Source_sequence_find begin,Source_sequence_find end,const Target_sequence_find& value)
+        {
+            while(begin!= end)
+            {
+                if(*begin == value)
+                {
+                    return begin;
+                }
+                ++begin;
+            }
+            return end;
+        } 
+        template<typename data_type_swap>
+        void swap(data_type_swap& a,data_type_swap& b)
+        {
+            data_type_swap temp = a;
+            a = b;
+            b = temp;
+        }
     }
     /*############################     string容器     ############################*/
     class string
@@ -392,11 +470,11 @@ namespace Wang
             return _data;
             //返回首地址迭代器
         }
-        string& swap_s(string& data_str)
+        string& swap(string& data_str)
         {
-            std::swap(_data,data_str._data);
-            std::swap(_size,data_str._size);
-            std::swap(_capacity,data_str._capacity);
+            Wang::algorithm::swap(_data,data_str._data);
+            Wang::algorithm::swap(_size,data_str._size);
+            Wang::algorithm::swap(_capacity,data_str._capacity);
             return *this;
         }
         string rollback()
@@ -682,11 +760,11 @@ namespace Wang
             delete[] _data_pointer;
             _data_pointer = _size_pointer =_capacity_pointer = nullptr;
         }
-        void swap_v(vector<vector_Type>& temp_data)
+        void swap(vector<vector_Type>& temp_data)
         {
-            std::swap(_data_pointer, temp_data._data_pointer);
-            std::swap(_size_pointer, temp_data._size_pointer);
-            std::swap(_capacity_pointer, temp_data._capacity_pointer);
+            Wang::algorithm::swap(_data_pointer, temp_data._data_pointer);
+            Wang::algorithm::swap(_size_pointer, temp_data._size_pointer);
+            Wang::algorithm::swap(_capacity_pointer, temp_data._capacity_pointer);
         }
         iterator erase(iterator pos)
         {
@@ -1008,7 +1086,7 @@ namespace Wang
         }
         void swap(Wang::list<list_Type>& _swap_temp)
         {
-            std::swap(_head,_swap_temp._head);
+            Wang::algorithm::swap(_head,_swap_temp._head);
         }
         iterator begin()
         {
@@ -1228,7 +1306,7 @@ namespace Wang
         return list_ostream;
     }
     /*############################     staic适配器     ############################*/
-    template <typename staic_Type,typename Container_staic = Wang::vector<staic_Type> >
+    template <typename staic_Type,typename Container_staic = Wang::vector<staic_Type>>
     class stack
     {
         Container_staic Container_staic_temp_;
@@ -1237,7 +1315,7 @@ namespace Wang
         {
             ;
         }
-        void back(const staic_Type& _staic_temp)
+        void push(const staic_Type& _staic_temp)
         {
             //插入尾
             Container_staic_temp_.push_back(_staic_temp);
@@ -1271,7 +1349,7 @@ namespace Wang
         {
             ;
         }
-        void push_back(const queue_Type& _queue_temp)
+        void push(const queue_Type& _queue_temp)
         {
             Container_queue_temp_.push_back(_queue_temp);
         }
@@ -1321,7 +1399,7 @@ namespace Wang
             {
                 if(com(Container_priority_queue_temp[parent],Container_priority_queue_temp[Adjust_upwards_child]))
                 {
-                    std::swap(Container_priority_queue_temp[parent],Container_priority_queue_temp[Adjust_upwards_child]);
+                    Wang::algorithm::swap(Container_priority_queue_temp[parent],Container_priority_queue_temp[Adjust_upwards_child]);
                     Adjust_upwards_child = parent;
                     parent = (Adjust_upwards_child-1)/2;
                 }
@@ -1348,7 +1426,7 @@ namespace Wang
                 if(com(Container_priority_queue_temp[parent],Container_priority_queue_temp[priority_queue_Adjust_downwards_child]))
                 {
                     //建大堆把小的换下去，建小堆把大的换下去
-                    std::swap( Container_priority_queue_temp[parent] , Container_priority_queue_temp[priority_queue_Adjust_downwards_child]);
+                    Wang::algorithm::swap( Container_priority_queue_temp[parent] , Container_priority_queue_temp[priority_queue_Adjust_downwards_child]);
 
                     //换完之后如果是大堆，则父亲节点是较大的值，需要更新孩子节点继续向下找比孩子节点大的值，如果有继续交换
                     parent = priority_queue_Adjust_downwards_child;
@@ -1365,7 +1443,7 @@ namespace Wang
         {
             ;
         }
-        void push_back(const priority_queue_Type Function_templates_priority_queue_push_back)
+        void push(const priority_queue_Type Function_templates_priority_queue_push_back)
         {
             Container_priority_queue_temp.push_back(Function_templates_priority_queue_push_back);
             priority_queue_Adjust_upwards((int)Container_priority_queue_temp.size()-1);
@@ -1384,9 +1462,339 @@ namespace Wang
         }
         void pop()
         {
-            std::swap(Container_priority_queue_temp[0],Container_priority_queue_temp[Container_priority_queue_temp.size()-(size_t)1]);
+            Wang::algorithm::swap(Container_priority_queue_temp[0],Container_priority_queue_temp[Container_priority_queue_temp.size()-(size_t)1]);
             Container_priority_queue_temp.pop_back();
             priority_queue_Adjust_downwards();
+        }
+    };
+    /*############################     Binary_search_tree 容器     ############################*/
+    template <typename Binary_search_tree_Type,typename Imitation_function_parameter_function_BST = Wang::STL_Imitation_functions::less <Binary_search_tree_Type> >
+    class Binary_search_tree
+    {
+    private:
+        template <typename Binary_search_tree_Type_Function_Node>
+        class Binary_search_tree_Type_Node
+        {
+        public:
+            //节点类
+            Binary_search_tree_Type_Node* _left;
+            Binary_search_tree_Type_Node* _right;
+            Binary_search_tree_Type_Function_Node _data;
+            Binary_search_tree_Type_Node(const Binary_search_tree_Type_Function_Node& data = Binary_search_tree_Type_Function_Node())
+            :_left(nullptr),_right(nullptr),_data(data)
+            {
+                ;
+            }
+            ~Binary_search_tree_Type_Node()
+            {
+                _left  = nullptr;
+                _right = nullptr;
+            }
+        };
+        typedef Binary_search_tree_Type_Node <Binary_search_tree_Type> BST_Node;
+        BST_Node* _ROOT;
+        Imitation_function_parameter_function_BST com;
+        void _Middle_order_traversal(BST_Node* _ROOT_Temp)
+        {
+            //中序遍历函数
+            Wang::stack<BST_Node*> _staic_temp_;
+            while(_ROOT_Temp != nullptr || !_staic_temp_.empty())
+            {
+                while(_ROOT_Temp!= nullptr)
+                {
+                    _staic_temp_.push(_ROOT_Temp);
+                    //压栈
+                    _ROOT_Temp = _ROOT_Temp->_left;
+                }
+                // 访问栈顶节点
+                _ROOT_Temp = _staic_temp_.top();
+                //弹出栈顶元素，刷新栈顶元素，栈顶元素会变成之前压入栈的节点的父节点
+                
+                _staic_temp_.pop();
+                std::cout <<  _ROOT_Temp->_data << " ";
+                // std::cout << &_ROOT_Temp->_data << " ";
+                //检查地址是不是值拷贝
+                // 转向右子树
+                _ROOT_Temp = _ROOT_Temp->_right;
+            }
+        }
+        size_t& _Middle_order_traversal(BST_Node* _ROOT_Temp,size_t& _size_temp_ )
+        {
+            Wang::stack<BST_Node*> _staic_temp_;
+            while(_ROOT_Temp != nullptr || !_staic_temp_.empty())
+            {
+                while(_ROOT_Temp!= nullptr)
+                {
+                    _staic_temp_.push(_ROOT_Temp);
+                    //压栈
+                    _ROOT_Temp = _ROOT_Temp->_left;
+                }
+                // 访问栈顶节点
+                _ROOT_Temp = _staic_temp_.top();
+                //弹出栈顶元素，刷新栈顶元素，栈顶元素会变成之前压入栈的节点的父节点
+                
+                _staic_temp_.pop();
+                _size_temp_++;
+                // 转向右子树
+                _ROOT_Temp = _ROOT_Temp->_right;
+            }
+        }
+        void clear()
+        {
+            if(_ROOT == nullptr)
+            {
+                return;
+            }
+            //循环释放资源
+            BST_Node* _ROOT_Temp = _ROOT;
+            Wang::stack<BST_Node*> _staic_clear_temp_;
+            _staic_clear_temp_.push(_ROOT_Temp);
+            while(_staic_clear_temp_.empty() == false)
+            {
+                _ROOT_Temp = _staic_clear_temp_.top();
+                //取出元素，把左右节点入进去
+                _staic_clear_temp_.pop();
+                if(_ROOT_Temp->_left!= nullptr)
+                {
+                    _staic_clear_temp_.push(_ROOT_Temp->_left);
+                }
+                if(_ROOT_Temp->_right!= nullptr)
+                {
+                    _staic_clear_temp_.push(_ROOT_Temp->_right);
+                }
+                delete _ROOT_Temp;
+                _ROOT_Temp = nullptr;
+            }
+            _ROOT = nullptr;
+        }
+    public:
+        ~Binary_search_tree()
+        {
+            clear();
+        }
+        Binary_search_tree() 
+        :_ROOT(nullptr) {     ;   }
+        Binary_search_tree(const Binary_search_tree& _Binary_search_tree_temp)
+        :_ROOT(nullptr),com(_Binary_search_tree_temp.com)
+        //这个拷贝构造不需要传模板参数，因为模板参数是在编译时确定的，而不是在运行时确定的，对于仿函数，直接拿传进来的引用初始化就可以了
+        {
+            //拷贝构造，时间复杂度为O(n)
+            BST_Node* _Binary_search_tree_temp_copy = _Binary_search_tree_temp._ROOT;
+            if(_Binary_search_tree_temp_copy == nullptr)
+            {
+                return;
+            }
+            Wang::stack<Wang::STL_Demand_class::pair<BST_Node*,BST_Node**> > _staic_temp_;
+            //注意这里把本地_ROOT类型传过去，是因为要对本地的_ROOT进行操作，所以要传二级指针
+            //这里传引用也不行，这里的对象是动态变化的，所以传引用也不行
+            //如果是对全局的_ROOT进行操作，就传一级指针
+            _staic_temp_.push(Wang::STL_Demand_class::pair<BST_Node*,BST_Node**>(_Binary_search_tree_temp_copy,&_ROOT));
+            while( !_staic_temp_.empty())
+            {
+                auto _staic_temp_pair = _staic_temp_.top();
+                _staic_temp_.pop();
+                *(_staic_temp_pair.second) = new BST_Node(_staic_temp_pair.first->_data);
+                BST_Node* _staic_temp_pair_second = *(_staic_temp_pair.second);
+                if(_staic_temp_pair.first->_left!= nullptr)
+                {
+                    _staic_temp_.push(Wang::STL_Demand_class::pair<BST_Node*,BST_Node**>(_staic_temp_pair.first->_left,&_staic_temp_pair_second->_left));
+                }
+                if(_staic_temp_pair.first->_right!= nullptr)
+                {
+                    _staic_temp_.push(Wang::STL_Demand_class::pair<BST_Node*,BST_Node**>(_staic_temp_pair.first->_right,&_staic_temp_pair_second->_right));
+                }
+            }
+        }
+        void Middle_order_traversal()
+        {
+            //中序遍历函数
+            _Middle_order_traversal(_ROOT);
+        }
+        bool push(const Binary_search_tree_Type& data)
+        {
+            //尾上插入函数
+            if(_ROOT == nullptr)
+            {
+                _ROOT = new Binary_search_tree::Binary_search_tree_Type_Node<Binary_search_tree_Type>(data);
+                return true;
+            }
+            else
+            {
+                BST_Node* _ROOT_Temp = _ROOT;
+                BST_Node* _ROOT_Temp_Parent = nullptr;
+                while(_ROOT_Temp!= nullptr)
+                {
+                    _ROOT_Temp_Parent = _ROOT_Temp;
+                     if(data == _ROOT_Temp->_data)
+                    {
+                        return false;
+                        //data存在随机值,原因未初始化_ROOT的值(构造函数)
+                    }
+                    else if(com(data , _ROOT_Temp->_data))
+                    {
+                        _ROOT_Temp = _ROOT_Temp->_left;
+                    }
+                    else
+                    {
+                        _ROOT_Temp = _ROOT_Temp->_right;
+                    }
+                }
+                //新开节点链接
+                BST_Node* _ROOT_Temp_Node = new Binary_search_tree::Binary_search_tree_Type_Node<Binary_search_tree_Type>(data);
+                //链接节点
+                if(com(data , _ROOT_Temp_Parent->_data))
+                {
+                    _ROOT_Temp_Parent->_left = _ROOT_Temp_Node;
+                }
+                else
+                {
+                    _ROOT_Temp_Parent->_right = _ROOT_Temp_Node;
+                }
+                return true;
+            }
+        }
+        Binary_search_tree& pop(const Binary_search_tree_Type& data)
+        {
+            //删除节点
+            BST_Node* _ROOT_Temp = _ROOT;
+            BST_Node* _ROOT_Temp_Parent = nullptr;
+            while(_ROOT_Temp!= nullptr)
+            {
+                if(data == _ROOT_Temp->_data)
+                {
+                    //找到节点
+                    if(_ROOT_Temp->_left == nullptr)
+                    {
+                        //左子树为空,下面判断要删除的节点是父节点的左子树还是右子树，防止多删和误删
+                        if (_ROOT_Temp_Parent == nullptr)
+                        {
+                            // 当前节点是根节点，直接更新 _ROOT
+                            _ROOT = _ROOT_Temp->_right;
+                        }
+                        else
+                        {
+                            if(_ROOT_Temp_Parent->_left == _ROOT_Temp)
+                            {
+                                //根节点
+                                _ROOT_Temp_Parent->_left = _ROOT_Temp->_right;
+                            }   
+                            else
+                            {
+                                //非根节点
+                                _ROOT_Temp_Parent->_right = _ROOT_Temp->_right;
+                            }
+                        }
+                        delete _ROOT_Temp;
+                        _ROOT_Temp = nullptr;
+                        return *this;
+                    }
+                    else if(_ROOT_Temp->_right == nullptr)
+                    {
+                        if (_ROOT_Temp_Parent == nullptr)
+                        {
+                            // 防止当前节点是根节点，无法解引用，直接更新 _ROOT
+                            _ROOT = _ROOT_Temp->_left;
+                        }
+                        else
+                        {
+                            if(_ROOT_Temp_Parent->_left == _ROOT_Temp)
+                            {
+                                _ROOT_Temp_Parent->_left = _ROOT_Temp->_left;
+                            }
+                            else
+                            {
+                                _ROOT_Temp_Parent->_right = _ROOT_Temp->_left;
+                            }
+                        }
+                        delete _ROOT_Temp;
+                        _ROOT_Temp = nullptr;
+                        return *this;	
+                    }
+                    else
+                    {
+                        //左右子树都不为空，找右子树的最左节点
+                    	BST_Node* _ROOT_Temp_right_min = _ROOT_Temp->_right;
+                        BST_Node* _ROOT_Temp_test_Parent = _ROOT_Temp;
+                        while(_ROOT_Temp_right_min->_left != nullptr)
+                        {
+                            _ROOT_Temp_test_Parent = _ROOT_Temp_right_min;
+                            _ROOT_Temp_right_min = _ROOT_Temp_right_min->_left;
+                        }
+                        //找到最左节点	
+                        Wang::algorithm::swap(_ROOT_Temp->_data,_ROOT_Temp_right_min->_data);
+                        //因为右树最左节点已经被删，但是还需要把被删的上一节点的左子树指向被删节点的右子树，不管右子树有没有节点都要连接上
+                        _ROOT_Temp_test_Parent->_left = _ROOT_Temp_right_min->_right;
+                        delete _ROOT_Temp_right_min;
+                        _ROOT_Temp_right_min = nullptr;
+                        return *this;
+                    }
+                }
+                else if(com(data, _ROOT_Temp->_data))
+                {
+                    _ROOT_Temp_Parent = _ROOT_Temp;
+                    _ROOT_Temp = _ROOT_Temp->_left;
+                }
+                else
+                {
+                    _ROOT_Temp_Parent = _ROOT_Temp;
+                    _ROOT_Temp = _ROOT_Temp->_right;
+                }
+            }
+            return *this;
+        }
+        size_t size()
+        {
+            size_t _size = 0;
+            return _Middle_order_traversal(_ROOT,_size);
+        }
+        BST_Node* find(const Binary_search_tree_Type& data)
+        {
+            //查找函数
+            BST_Node* _ROOT_Find = _ROOT;
+            while(_ROOT_Find!= nullptr)
+            {
+                if(data == _ROOT_Find->_data)
+                {
+                    return _ROOT_Find;
+                }
+                else if(com(data, _ROOT_Find->_data))
+                {
+                    _ROOT_Find = _ROOT_Find->_left;
+                }
+                else
+                {
+                    _ROOT_Find = _ROOT_Find->_right;
+                }
+            }
+            return _ROOT_Find;
+        }
+        void insert(const Binary_search_tree_Type& former_data,const Binary_search_tree_Type& latter_data)
+        {
+            //在former_data后面插入latter_data
+            BST_Node* _ROOT_former_data = find(former_data);
+            //插入节点
+            if(_ROOT_former_data == nullptr)
+            {
+                return;
+            }
+            else
+            {
+                BST_Node* _ROOT_latter_data = new BST_Node(latter_data);
+                _ROOT_latter_data->_left = _ROOT_former_data->_right;
+                _ROOT_former_data->_right = _ROOT_latter_data;
+            }
+        }
+        Binary_search_tree& operator=(const Binary_search_tree& _Binary_search_tree_temp)
+        {
+            //赋值运算符重载
+            if(this != &_Binary_search_tree_temp)
+            {
+                clear();
+                com = _Binary_search_tree_temp.com;
+                Binary_search_tree _Binary_search_tree_temp_copy = _Binary_search_tree_temp;
+                Wang::algorithm::swap(_Binary_search_tree_temp_copy._ROOT,_ROOT);
+            }
+            return *this;
         }
     };
 }
