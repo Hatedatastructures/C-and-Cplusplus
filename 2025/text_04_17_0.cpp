@@ -1653,14 +1653,94 @@ namespace Wang
                 return true;
             }
         }
-        void pop(const Binary_search_tree_Type& data)
+        Binary_search_tree& pop(const Binary_search_tree_Type& data)
         {
-            //删除函数
-            BST_Node*& _ROOT_Find = find(data);
-            if(_ROOT_Find == nullptr)
+            //删除节点
+            BST_Node* _ROOT_Temp = _ROOT;
+            BST_Node* _ROOT_Temp_Parent = nullptr;
+            while(_ROOT_Temp!= nullptr)
             {
-                return;
+                if(data == _ROOT_Temp->_data)
+                {
+                    //找到节点
+                    if(_ROOT_Temp->_left == nullptr)
+                    {
+                        //左子树为空,下面判断要删除的节点是父节点的左子树还是右子树，防止多删和误删
+                        if (_ROOT_Temp_Parent == nullptr)
+                        {
+                            // 当前节点是根节点，直接更新 _ROOT
+                            _ROOT = _ROOT_Temp->_right;
+                        }
+                        else
+                        {
+                            if(_ROOT_Temp_Parent->_left == _ROOT_Temp)
+                            {
+                                //根节点
+                                _ROOT_Temp_Parent->_left = _ROOT_Temp->_right;
+                            }   
+                            else
+                            {
+                                //非根节点
+                                _ROOT_Temp_Parent->_right = _ROOT_Temp->_right;
+                            }
+                        }
+                        delete _ROOT_Temp;
+                        _ROOT_Temp = nullptr;
+                        return *this;
+                    }
+                    else if(_ROOT_Temp->_right == nullptr)
+                    {
+                        if (_ROOT_Temp_Parent == nullptr)
+                        {
+                            // 防止当前节点是根节点，无法解引用，直接更新 _ROOT
+                            _ROOT = _ROOT_Temp->_left;
+                        }
+                        else
+                        {
+                            if(_ROOT_Temp_Parent->_left == _ROOT_Temp)
+                            {
+                                _ROOT_Temp_Parent->_left = _ROOT_Temp->_left;
+                            }
+                            else
+                            {
+                                _ROOT_Temp_Parent->_right = _ROOT_Temp->_left;
+                            }
+                        }
+                        delete _ROOT_Temp;
+                        _ROOT_Temp = nullptr;
+                        return *this;	
+                    }
+                    else
+                    {
+                        //左右子树都不为空，找右子树的最左节点
+                    	BST_Node* _ROOT_Temp_right_min = _ROOT_Temp->_right;
+                        BST_Node* _ROOT_Temp_test_Parent = _ROOT_Temp;
+                        while(_ROOT_Temp_right_min->_left != nullptr)
+                        {
+                            _ROOT_Temp_test_Parent = _ROOT_Temp_right_min;
+                            _ROOT_Temp_right_min = _ROOT_Temp_right_min->_left;
+                        }
+                        //找到最左节点	
+                        Wang::algorithm::swap(_ROOT_Temp->_data,_ROOT_Temp_right_min->_data);
+                        //因为右树最左节点已经被删，但是还需要把被删的上一节点的左子树指向被删节点的右子树，不管右子树有没有节点都要连接上
+                        _ROOT_Temp_test_Parent->_left = _ROOT_Temp_right_min->_right;
+                        delete _ROOT_Temp_right_min;
+                        _ROOT_Temp_right_min = nullptr;
+                        return *this;
+                    }
+                }
+                else if(com(data, _ROOT_Temp->_data))
+                {
+                    _ROOT_Temp_Parent = _ROOT_Temp;
+                    _ROOT_Temp = _ROOT_Temp->_left;
+                }
+                else
+                {
+                    _ROOT_Temp_Parent = _ROOT_Temp;
+                    _ROOT_Temp = _ROOT_Temp->_right;
+                }
             }
+            return *this;
         }
         size_t size()
         {
@@ -1703,52 +1783,6 @@ namespace Wang
                 _ROOT_latter_data->_left = _ROOT_former_data->_right;
                 _ROOT_former_data->_right = _ROOT_latter_data;
             }
-        }
-        Binary_search_tree& deleteNode(const Binary_search_tree_Type& data)
-        {
-            //删除节点
-            BST_Node* _ROOT_Find = find(data);
-            if(_ROOT_Find == nullptr)
-            {
-                return *this;
-            }
-            else
-            {
-                //左右子树都为空
-                if(_ROOT_Find->_left == nullptr && _ROOT_Find == nullptr)
-                {
-                    delete _ROOT_Find;
-                    _ROOT_Find = nullptr;
-                    //置空
-                }
-                else if(_ROOT_Find->_left != nullptr && _ROOT_Find->_right != nullptr)
-                {
-                    BST_Node* _ROOT_Find_temp = _ROOT_Find->_left;
-                    while (_ROOT_Find_temp)
-                    {
-                        _ROOT_Find_temp = _ROOT_Find_temp->_right;
-                    }
-                    Wang::algorithm::swap(_ROOT_Find_temp,_ROOT_Find);
-                    delete _ROOT_Find_temp;
-                }
-                else if(_ROOT_Find->_left == nullptr)
-                {
-                    //左节点为空
-                    BST_Node* _ROOT_Find_right_ = _ROOT_Find;
-                    _ROOT_Find = _ROOT_Find->_right;
-                    delete _ROOT_Find_right_;
-                    _ROOT_Find_right_ = nullptr;
-                }
-                else
-                {
-                    //右节点为空
-                    BST_Node* _ROOT_Find_left_ = _ROOT_Find;
-                    _ROOT_Find = _ROOT_Find->_left;
-                    delete _ROOT_Find_left_;
-                    _ROOT_Find_left_ = nullptr;
-                }
-            }
-            return *this;
         }
         Binary_search_tree& operator=(const Binary_search_tree& _Binary_search_tree_temp)
         {
@@ -2008,77 +2042,77 @@ int main()
     // }
 
     /*            Binary_search_tree测试             */
-    {
-        time_t Binary_search_tree_num1 = clock();
-        Wang::Binary_search_tree<int,Wang::STL_Imitation_functions::greater<int>> Binary_search_tree_test;
-        for(size_t i = 100000; i > 0; i--)
-        {
-            //相对来说这算是有序插入导致二叉树相乘时间复杂度为O(N)的链表
-            Binary_search_tree_test.push(i);
-        }
-        time_t Binary_search_tree_num2 = clock();
+    // {
+    //     time_t Binary_search_tree_num1 = clock();
+    //     Wang::Binary_search_tree<int,Wang::STL_Imitation_functions::greater<int>> Binary_search_tree_test;
+    //     for(size_t i = 100000; i > 0; i--)
+    //     {
+    //         //相对来说这算是有序插入导致二叉树相乘时间复杂度为O(N)的链表
+    //         Binary_search_tree_test.push(i);
+    //     }
+    //     time_t Binary_search_tree_num2 = clock();
 
-        time_t Binary_search_tree_num3 = clock();
-        Binary_search_tree_test.find(5888);
-        time_t Binary_search_tree_num4 = clock();
-        // Binary_search_tree_test.Middle_order_traversal();
-        std::cout << "退化链表插入时间" << Binary_search_tree_num2-Binary_search_tree_num1 << std::endl;
-        std::cout << "退化链表查找时间" << Binary_search_tree_num4-Binary_search_tree_num3 << std::endl;
-    }
+    //     time_t Binary_search_tree_num3 = clock();
+    //     Binary_search_tree_test.find(5888);
+    //     time_t Binary_search_tree_num4 = clock();
+    //     // Binary_search_tree_test.Middle_order_traversal();
+    //     std::cout << "退化链表插入时间" << Binary_search_tree_num2-Binary_search_tree_num1 << std::endl;
+    //     std::cout << "退化链表查找时间" << Binary_search_tree_num4-Binary_search_tree_num3 << std::endl;
+    // }
 
-    {
-        Wang::Binary_search_tree<int, Wang::STL_Imitation_functions::greater<int>> bst;
-        bst.push(5);
-        bst.push(4);
-        bst.push(3);
-        bst.push(2);
-        bst.push(1);
-        bst.Middle_order_traversal(); 
-        std::cout << std::endl; // 确保输出刷新
-    }
-    {
-        const size_t Binary_search_tree_arraySize = 100000;
-        Wang::vector<int> Binary_search_tree_array(Binary_search_tree_arraySize);
-        for (size_t i = 0; i < Binary_search_tree_arraySize; ++i) 
-        {
-            Binary_search_tree_array[i] = i;
-        }
+    // {
+    //     Wang::Binary_search_tree<int, Wang::STL_Imitation_functions::greater<int>> bst;
+    //     bst.push(5);
+    //     bst.push(4);
+    //     bst.push(3);
+    //     bst.push(2);
+    //     bst.push(1);
+    //     bst.Middle_order_traversal(); 
+    //     std::cout << std::endl; // 确保输出刷新
+    // }
+    // {
+    //     const size_t Binary_search_tree_arraySize = 10;
+    //     Wang::vector<int> Binary_search_tree_array(Binary_search_tree_arraySize);
+    //     for (size_t i = 0; i < Binary_search_tree_arraySize; ++i) 
+    //     {
+    //         Binary_search_tree_array[i] = i;
+    //     }
 
-        // 创建随机数引擎和分布
-        std::random_device rd;
-        std::mt19937 g(rd());
-        std::shuffle(Binary_search_tree_array.begin(), Binary_search_tree_array.end(), g);
-        //输出打乱后的数组
-        // for(auto& i : Binary_search_tree_array)
-        // {
-        //     std::cout << i << " ";
-        // }
+    //     // 创建随机数引擎和分布
+    //     std::random_device rd;
+    //     std::mt19937 g(rd());
+    //     std::shuffle(Binary_search_tree_array.begin(), Binary_search_tree_array.end(), g);
+    //     //输出打乱后的数组
+    //     // for(auto& i : Binary_search_tree_array)
+    //     // {
+    //     //     std::cout << i << " ";
+    //     // }
 
-        //打乱数组元素顺序
-        size_t size = 0;
-        time_t Binary_search_tree_num1 = clock();
-        Wang::Binary_search_tree<int,Wang::STL_Imitation_functions::greater<int>> Binary_search_tree_test;
-        for(const auto& Binary_search_tree_for_test: Binary_search_tree_array)
-        {
-            if(Binary_search_tree_test.push(Binary_search_tree_for_test))
-            {
-                size++;
-            }
-        }
-        time_t Binary_search_tree_num2 = clock();
+    //     //打乱数组元素顺序
+    //     size_t size = 0;
+    //     time_t Binary_search_tree_num1 = clock();
+    //     Wang::Binary_search_tree<int,Wang::STL_Imitation_functions::greater<int>> Binary_search_tree_test;
+    //     for(const auto& Binary_search_tree_for_test: Binary_search_tree_array)
+    //     {
+    //         if(Binary_search_tree_test.push(Binary_search_tree_for_test))
+    //         {
+    //             size++;
+    //         }
+    //     }
+    //     time_t Binary_search_tree_num2 = clock();
 
-        const int Binary_search_tree_find = Binary_search_tree_array[Binary_search_tree_arraySize/2];
+    //     const int Binary_search_tree_find = Binary_search_tree_array[Binary_search_tree_arraySize/2];
 
-        time_t Binary_search_tree_num3 = clock();
-        Binary_search_tree_test.find(Binary_search_tree_find);
-        time_t Binary_search_tree_num4 = clock();
-        // Binary_search_tree_test.Middle_order_traversal();
-        std::cout << "插入个数" << size << std::endl;
-        std::cout << "插入时间" << Binary_search_tree_num2-Binary_search_tree_num1 << std::endl;
-        std::cout << "查找时间" << Binary_search_tree_num4-Binary_search_tree_num3 << std::endl;
-        /*              查找数据时间不稳定时间复杂度是O(logN)        */
+    //     time_t Binary_search_tree_num3 = clock();
+    //     Binary_search_tree_test.find(Binary_search_tree_find);
+    //     time_t Binary_search_tree_num4 = clock();
+    //     // Binary_search_tree_test.Middle_order_traversal();
+    //     std::cout << "插入个数" << size << std::endl;
+    //     std::cout << "插入时间" << Binary_search_tree_num2-Binary_search_tree_num1 << std::endl;
+    //     std::cout << "查找时间" << Binary_search_tree_num4-Binary_search_tree_num3 << std::endl;
+    //     /*              查找数据时间不稳定时间复杂度是O(logN)        */
         
-    }
+    // }
 
     {
         const size_t Binary_search_tree_arraySize = 5;
@@ -2112,6 +2146,11 @@ int main()
         time_t Binary_search_tree_num2 = clock();
         Wang::Binary_search_tree<int,Wang::STL_Imitation_functions::greater<int>> Binary_search_tree_test1 = Binary_search_tree_test;
         time_t Binary_search_tree_num3 = clock();
+
+        Binary_search_tree_test.pop(3);
+        Binary_search_tree_test.pop(2);
+        Binary_search_tree_test.pop(1);
+        Binary_search_tree_test.pop(0);
 
         Binary_search_tree_test.Middle_order_traversal();
         std::cout << std::endl;
