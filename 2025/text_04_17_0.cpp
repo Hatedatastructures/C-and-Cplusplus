@@ -77,7 +77,6 @@ namespace Wang
             const pair* operator->()const
             {
                 return this;
-                
             }
             template<typename Data_Type_example_pair_ostream_T,typename Data_Type_example_pair_ostream_K>
             friend std::ostream& operator<<(std::ostream& os,pair<Data_Type_example_pair_ostream_T,Data_Type_example_pair_ostream_K>& p);
@@ -1720,7 +1719,7 @@ namespace Wang
                 _ROOT_Temp = _ROOT_Temp->_right;
             }
         }
-        size_t& _Middle_order_traversal(BS_Tree_Node* _ROOT_Temp,size_t& _size_temp_ )
+        size_t _Middle_order_traversal(BS_Tree_Node* _ROOT_Temp,size_t& _size_temp_ )
         {
             Wang::stack<BS_Tree_Node*> _staic_temp_;
             while(_ROOT_Temp != nullptr || !_staic_temp_.empty())
@@ -1803,6 +1802,14 @@ namespace Wang
         }
         BS_Tree() 
         :_ROOT(nullptr) {     ;   }
+        // 构造函数，使用初始化列表来初始化二叉搜索树
+        BS_Tree(std::initializer_list<BS_Tree_Type> list_temp)
+        {
+            for(auto& e:list_temp)
+            {
+                push(e);
+            }
+        }
         BS_Tree(const BS_Tree& _Binary_search_tree_temp)
         :_ROOT(nullptr),com(_Binary_search_tree_temp.com)
         //这个拷贝构造不需要传模板参数，因为模板参数是在编译时确定的，而不是在运行时确定的，对于仿函数，直接拿传进来的引用初始化就可以了
@@ -1826,11 +1833,11 @@ namespace Wang
                 BS_Tree_Node* _staic_temp_pair_second = *(_staic_temp_pair.second);
                 if(_staic_temp_pair.first->_left!= nullptr)
                 {
-                    _staic_temp_.push(Wang::STL_Demand_class::pair<BS_Tree_Node*,BS_Tree_Node**>(_staic_temp_pair.first->_left,&_staic_temp_pair_second->_left));
+                    _staic_temp_.push(Wang::STL_Demand_class::pair<BS_Tree_Node*,BS_Tree_Node**>(_staic_temp_pair.first->_left,&((*_staic_temp_pair.second)->_left)));
                 }
                 if(_staic_temp_pair.first->_right!= nullptr)
                 {
-                    _staic_temp_.push(Wang::STL_Demand_class::pair<BS_Tree_Node*,BS_Tree_Node**>(_staic_temp_pair.first->_right,&_staic_temp_pair_second->_right));
+                    _staic_temp_.push(Wang::STL_Demand_class::pair<BS_Tree_Node*,BS_Tree_Node**>(_staic_temp_pair.first->_right,&((*_staic_temp_pair.second)->_right)));
                 }
             }
         }
@@ -1858,10 +1865,10 @@ namespace Wang
                 while(_ROOT_Temp!= nullptr)
                 {
                     _ROOT_Temp_Parent = _ROOT_Temp;
-                    if(data == _ROOT_Temp->_data)
+                    if(!com(data, _ROOT_Temp->_data) && !com(_ROOT_Temp->_data, data))
                     {
+                        //改用仿函数特性，判断是否有重复元素,防止自定义类型没有重载==运算符
                         return false;
-                        //data存在随机值,原因未初始化_ROOT的值(构造函数)
                     }
                     else if(com(data , _ROOT_Temp->_data))
                     {
@@ -1956,7 +1963,7 @@ namespace Wang
                         //找到最左节点	
                         Wang::algorithm::swap(_ROOT_Temp->_data,_ROOT_Temp_right_min->_data);
                         //因为右树最左节点已经被删，但是还需要把被删的上一节点的左子树指向被删节点的右子树，不管右子树有没有节点都要连接上
-                        if(_ROOT_Temp == _ROOT_Temp_test_Parent)
+                        if(_ROOT_Temp_test_Parent == _ROOT_Temp)
                         {
                             //说明右子树没有左子树最小节点就是右子树的第一个根，如同上面判断条件：要删除的根节点等于右子树最小节点的父亲节点
                             _ROOT_Temp_test_Parent->_right = _ROOT_Temp_right_min->_right;
@@ -1986,6 +1993,11 @@ namespace Wang
             return *this;
         }
         size_t size()
+        {
+            size_t _size = 0;
+            return _Middle_order_traversal(_ROOT,_size);
+        }
+        size_t size()const
         {
             size_t _size = 0;
             return _Middle_order_traversal(_ROOT,_size);
@@ -2045,9 +2057,11 @@ namespace Wang
     typename Imitation_function_parameter_function_AVL_Tee = Wang::STL_Imitation_functions::less < AVL_Tree_Type_K > >
     class AVL_Tree
     {
+    private:
         template<typename AVL_Tree_Type_Node_K,typename AVL_Tree_Type_Node_V>
         class AVL_Tree_Type_Node
         {
+        public:
             Wang::STL_Demand_class::pair<AVL_Tree_Type_Node_K,AVL_Tree_Type_Node_V> _data;
 
             AVL_Tree_Type_Node<AVL_Tree_Type_Node_K,AVL_Tree_Type_Node_V>* _left;
@@ -2055,12 +2069,22 @@ namespace Wang
             AVL_Tree_Type_Node<AVL_Tree_Type_Node_K,AVL_Tree_Type_Node_V>* _parent;
             //平衡因子
             int _Balance_factor;
-            AVL_Tree_Type_Node(const AVL_Tree_Type_K& Tree_Node_temp_ = AVL_Tree_Type_K())
-            :_data(Tree_Node_temp_),_left(nullptr),_right(nullptr),_parent(nullptr),_Balance_factor(0)
+            AVL_Tree_Type_Node(const AVL_Tree_Type_K& Tree_Node_temp_ = AVL_Tree_Type_K(),const AVL_Tree_Type_V& Tree_Node_temp_2 = AVL_Tree_Type_V())
+            :_data(Tree_Node_temp_,Tree_Node_temp_2),_left(nullptr),_right(nullptr),_parent(nullptr),_Balance_factor(0)
             {
                 ;
             }
         };
+    public:
+        using AVL_Node = AVL_Tree_Type_Node<AVL_Tree_Type_K,AVL_Tree_Type_V>;
+
+        AVL_Node* _ROOT;
+
+        Imitation_function_parameter_function_AVL_Tee com;
+        AVL_Tree()
+        {
+            _ROOT = nullptr;
+        }
     };
 }
 int main()
