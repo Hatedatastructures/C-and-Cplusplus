@@ -73,11 +73,15 @@ namespace Wang
                 }
                 return *this;
             }
-            bool operator==(const pair& other)const
+            bool operator==(pair& other)
             {
                 return first == other.first && second == other.second;
             }
-            bool operator!=(const pair& other)const
+            bool operator==(pair& other)const
+            {
+                return first == other.first && second == other.second;
+            }
+            bool operator!=(const pair& other)
             {
                 return !(*this == other);
             }
@@ -85,7 +89,20 @@ namespace Wang
             {
                 return this;
             }
+            const pair* operator->()const
+            {
+                return this;
+            }
+            template<typename Data_Type_example_pair_ostream_T,typename Data_Type_example_pair_ostream_K>
+            friend std::ostream& operator<<(std::ostream& os,pair<Data_Type_example_pair_ostream_T,Data_Type_example_pair_ostream_K>& p);
         };
+        template<typename Data_Type_example_pair_ostream_T,typename Data_Type_example_pair_ostream_K>
+        std::ostream& operator<<(std::ostream& os,const pair<Data_Type_example_pair_ostream_T,Data_Type_example_pair_ostream_K>& p)
+        {
+            os << "(" << p.first << ":" << p.second << ")";
+            return os;
+        }
+        /*                               类分隔                                   */
         template<typename Data_Type_example_make_pair_T,typename Data_Type_example_make_pair_K>
         class make_pair
         {
@@ -141,11 +158,11 @@ namespace Wang
         size_t _capacity;
     public:
         //创建迭代器
-        typedef char* iterator;
-        typedef const char* const_iterator;
+        using iterator = char*;
+        using const_iterator = const char*;
 
-        typedef char* reverse_iterator;
-        typedef const char* const_reverse_iterator;
+        using reverse_iterator = char*;
+        using const_reverse_iterator = const char*;
         //反向迭代器
         //限定字符串最大值
         static const size_t nops = -1;
@@ -184,6 +201,16 @@ namespace Wang
         bool empty()
         {
             return _size == 0;
+        }
+        size_t size()
+        {
+            //返回有效字符串长度
+            return _size;
+        }
+        size_t capacity()
+        {
+            //返回容量
+            return _capacity;
         }
         size_t size()const
         {
@@ -234,6 +261,15 @@ namespace Wang
             _data = new char[capacity + 1];
             // algorithm::copy(_data,_data+capacity,data_str._data); const对象出错
             std::strcpy(_data, data_str._data);
+        }
+        string(std::initializer_list<char> data_str)
+        {
+            //初始化列表构造函数
+            _size = data_str.size();
+            _capacity = _size;
+            _data = new char[_capacity + 1];
+            Wang::algorithm::copy(data_str.begin(), data_str.end(), _data);
+            _data[_size] = '\0';
         }
         ~string()
         {
@@ -389,6 +425,7 @@ namespace Wang
             if(temporary_)
             {
                 std::strncpy(temporary_,_data,size());
+                temporary_[_size] = '\0';
                 delete[] _data;
                 _data = temporary_;
                 _capacity = temporary_variable;
@@ -578,6 +615,84 @@ namespace Wang
             _data[_size] = '\0';
             return *this;
         }
+        bool operator==(const string& data_str)
+        {
+            if(_size != data_str._size)
+            {
+                return false;
+            }
+            for(size_t i = 0;i < _size;i++)
+            {
+                if(_data[i]!= data_str._data[i])
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+        bool operator==(string& data_str) const
+        {
+            if(_size != data_str._size)
+            {
+                return false;
+            }
+            for(size_t i = 0;i < _size;i++)
+            {
+                if(_data[i]!= data_str._data[i])
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+        bool operator<(const string& data_str)
+        {
+            size_t min_len = _size < data_str._size? _size : data_str._size;
+            for(size_t i = 0;i < min_len;i++)
+            {
+                if(_data[i]!= data_str._data[i])
+                {
+                    return _data[i] < data_str._data[i];
+                }
+            }
+            return _size < data_str._size;
+        }
+        bool operator<(const string& data_str) const
+        {
+            size_t min_len = _size < data_str._size? _size : data_str._size;
+            for(size_t i = 0;i < min_len;i++)
+            {
+                if(_data[i]!= data_str._data[i])
+                {
+                    return _data[i] < data_str._data[i];
+                }
+            }
+            return _size < data_str._size;
+        }
+        bool operator>(const string& data_str)
+        {
+            size_t min_len = _size < data_str._size? _size : data_str._size;
+            for(size_t i = 0;i < min_len;i++)
+            {
+                if(_data[i]!= data_str._data[i])
+                {
+                    return _data[i] > data_str._data[i];
+                }
+            }
+            return _size > data_str._size;
+        }
+        bool operator>(const string& data_str) const
+        {
+            size_t min_len = _size < data_str._size? _size : data_str._size;
+            for(size_t i = 0;i < min_len;i++)
+            {
+                if(_data[i]!= data_str._data[i])
+                {
+                    return _data[i] > data_str._data[i];
+                }
+            }
+            return _size > data_str._size;
+        }
         char& operator[](const size_t& ergodic_value)
         {
             //引用就是出了函数作用域还能用其他的变量名访问，不需要拷贝就能访问，所以可以直接返回引用减少内存开销
@@ -655,10 +770,10 @@ namespace Wang
     class vector
     {
     public:
-        typedef vector_Type*       iterator;
-        typedef const vector_Type* const_iterator;
-        typedef vector_Type*       reverse_iterator;
-        typedef const vector_Type* const_reverse_iterator;
+        using iterator = vector_Type*;
+        using const_iterator = const vector_Type*;
+        using reverse_iterator = vector_Type*;
+        using const_reverse_iterator = const vector_Type*;
     private:
         iterator _data_pointer;     //指向数据的头
         iterator _size_pointer;     //指向数据的尾
@@ -709,6 +824,18 @@ namespace Wang
             for(size_t i = 0;i < sum_size;i++)
             {
                 _data_pointer[i] = data;
+            }
+        }
+        vector(std::initializer_list<vector_Type> list_temp)
+        :_data_pointer(new vector_Type[list_temp.size()]),_size_pointer(_data_pointer + list_temp.size())
+        ,_capacity_pointer(_data_pointer + list_temp.size())
+        {
+            //链式拷贝
+            size_t i = 0;
+            for(auto& e:list_temp)
+            {
+                _data_pointer[i] = e;
+                i++;
             }
         }
         bool empty()
@@ -938,10 +1065,10 @@ namespace Wang
         {
         public:
             //迭代器类
-            typedef listNode<list_Node_Type_iterator> Node;
-            typedef _list_iterator_<list_Node_Type_iterator ,list_Node_Type_iterator& ,list_Node_Type_iterator*> iterator;
-            typedef Ref reference;
-            typedef Ptr pointer;
+            using Node      = listNode<list_Node_Type_iterator> ;
+            using iterator  = _list_iterator_<list_Node_Type_iterator ,list_Node_Type_iterator& ,list_Node_Type_iterator*>;
+            using reference = Ref ;
+            using pointer   = Ptr ;
             Node* _node;
             _list_iterator_(Node* node)
             :_node(node)
@@ -993,9 +1120,9 @@ namespace Wang
         class _Reverse_list_iterator_
         {
             //创建反向迭代器
-            typedef typename iterator::reference Ref;
-            typedef typename iterator::pointer Ptr;
-            typedef _Reverse_list_iterator_<iterator> _const_reverse_list_iterator;
+            using  Ref = typename iterator::reference;
+            using  Ptr = typename iterator::pointer ;
+            using  _const_reverse_list_iterator = _Reverse_list_iterator_<iterator>;
         public:
             iterator _it;
             _Reverse_list_iterator_(iterator it)
@@ -1043,7 +1170,7 @@ namespace Wang
                 return _it != _temp_._it;
             }
         };
-        typedef listNode<list_Type> Node;
+        using Node = listNode<list_Type>;
 
         Node* _head;
         //_head为哨兵位
@@ -1054,12 +1181,12 @@ namespace Wang
             _head -> _next = _head;
         }
     public:
-        typedef _list_iterator_<list_Type,list_Type& ,list_Type*> iterator;
-        typedef _list_iterator_<list_Type,const list_Type&,const list_Type*> const_iterator;
+        using iterator = _list_iterator_<list_Type,list_Type& ,list_Type*>;
+        using const_iterator = _list_iterator_<list_Type,const list_Type&,const list_Type*>;
 
         //拿正向迭代器构造反向迭代器，可以直接调用 iterator 已经重载的运算符和函数，相当于在封装一层类
-        typedef _Reverse_list_iterator_<iterator> reverse_iterator;
-        typedef _Reverse_list_iterator_<const_iterator> reverse_const_iterator;
+        using reverse_iterator = _Reverse_list_iterator_<iterator> ;
+        using reverse_const_iterator = _Reverse_list_iterator_<const_iterator>;
         list()
         {
             CreateHead();
@@ -1079,6 +1206,15 @@ namespace Wang
             {
                 push_back(*first);
                 ++first;
+            }
+        }
+        list(std::initializer_list<list_Type> list_temp)
+        {
+            //通过初始化列表构建一个list
+            CreateHead();
+            for(auto& e:list_temp)
+            {
+                push_back(e);
             }
         }
         list(const_iterator first , const_iterator last)
@@ -1352,6 +1488,25 @@ namespace Wang
         {
             return Container_staic_temp_.back();
         }
+        stack(const stack<staic_Type>& _staic_temp)
+        {
+            Container_staic_temp_ = _staic_temp.Container_staic_temp_;
+        }
+        stack(std::initializer_list<staic_Type> _staic_temp)
+        {
+            for(auto& e:_staic_temp)
+            {
+                Container_staic_temp_.push_back(e);
+            }
+        }
+        stack(const staic_Type& _staic_temp)
+        {
+            Container_staic_temp_.push_back(_staic_temp);
+        }
+        stack()
+        {
+            ;
+        }
     };
     /*############################     queue适配器     ############################*/
     template <typename queue_Type ,typename Container_queue = Wang::list<queue_Type> >
@@ -1393,6 +1548,28 @@ namespace Wang
         {
             //查看尾数据
             return Container_queue_temp_.back();
+        }
+        queue(const queue<queue_Type>& _queue_temp)
+        {
+            //拷贝构造
+            Container_queue_temp_ = _queue_temp.Container_queue_temp_;
+        }
+        queue(std::initializer_list<queue_Type> _queue_temp)
+        {
+            //初始化列表
+            for(auto& e:_queue_temp)
+            {
+                Container_queue_temp_.push_back(e);
+            }
+        }
+        queue(const queue_Type& _queue_temp)
+        {
+            //拷贝构造
+            Container_queue_temp_.push_back(_queue_temp);
+        }
+        queue()
+        {
+            ;
         }
     };
     /*############################     priority_queue适配器     ############################*/
@@ -1481,38 +1658,62 @@ namespace Wang
             Container_priority_queue_temp.pop_back();
             priority_queue_Adjust_downwards();
         }
+        priority_queue()
+        {
+            ;
+        }
+        priority_queue(std::initializer_list<priority_queue_Type> list_temp)
+        {
+            //通过初始化列表构建一个list
+            for(auto& e:list_temp)
+            {
+                push(e);
+            }
+        }
+        priority_queue(const priority_queue& _priority_queue_temp)
+        {
+            //拷贝构造
+            Container_priority_queue_temp = _priority_queue_temp.Container_priority_queue_temp;
+            priority_queue_Adjust_upwards((int)Container_priority_queue_temp.size()-1);
+        }
+        priority_queue(const priority_queue_Type& _priority_queue_temp)
+        {
+            //拷贝构造
+            Container_priority_queue_temp.push_back(_priority_queue_temp);
+            priority_queue_Adjust_upwards((int)Container_priority_queue_temp.size()-1);
+        }
     };
     /*############################     Binary_search_tree 容器     ############################*/
-    template <typename Binary_search_tree_Type,typename Imitation_function_parameter_function_BST = Wang::STL_Imitation_functions::less <Binary_search_tree_Type> >
-    class Binary_search_tree
+    template <typename BS_Tree_Type,typename Imitation_function_parameter_function_BS_Tree = Wang::STL_Imitation_functions::less <BS_Tree_Type> >
+    class BS_Tree
     {
     private:
-        template <typename Binary_search_tree_Type_Function_Node>
-        class Binary_search_tree_Type_Node
+        template <typename BS_Tree_Type_Function_Node>
+        class BS_Tree_Type_Node
         {
         public:
             //节点类
-            Binary_search_tree_Type_Node* _left;
-            Binary_search_tree_Type_Node* _right;
-            Binary_search_tree_Type_Function_Node _data;
-            Binary_search_tree_Type_Node(const Binary_search_tree_Type_Function_Node& data = Binary_search_tree_Type_Function_Node())
+            BS_Tree_Type_Node* _left;
+            BS_Tree_Type_Node* _right;
+            BS_Tree_Type_Function_Node _data;
+            BS_Tree_Type_Node(const BS_Tree_Type_Function_Node& data = BS_Tree_Type_Function_Node())
             :_left(nullptr),_right(nullptr),_data(data)
             {
                 ;
             }
-            ~Binary_search_tree_Type_Node()
+            ~BS_Tree_Type_Node()
             {
                 _left  = nullptr;
                 _right = nullptr;
             }
         };
-        typedef Binary_search_tree_Type_Node <Binary_search_tree_Type> BST_Node;
-        BST_Node* _ROOT;
-        Imitation_function_parameter_function_BST com;
-        void _Middle_order_traversal(BST_Node* _ROOT_Temp)
+        using BS_Tree_Node = BS_Tree_Type_Node <BS_Tree_Type>;
+        BS_Tree_Node* _ROOT;
+        Imitation_function_parameter_function_BS_Tree com;
+        void _Middle_order_traversal(BS_Tree_Node* _ROOT_Temp)
         {
             //中序遍历函数
-            Wang::stack<BST_Node*> _staic_temp_;
+            Wang::stack<BS_Tree_Node*> _staic_temp_;
             while(_ROOT_Temp != nullptr || !_staic_temp_.empty())
             {
                 while(_ROOT_Temp!= nullptr)
@@ -1533,9 +1734,9 @@ namespace Wang
                 _ROOT_Temp = _ROOT_Temp->_right;
             }
         }
-        size_t& _Middle_order_traversal(BST_Node* _ROOT_Temp,size_t& _size_temp_ )
+        size_t _Middle_order_traversal(BS_Tree_Node* _ROOT_Temp,size_t& _size_temp_ )
         {
-            Wang::stack<BST_Node*> _staic_temp_;
+            Wang::stack<BS_Tree_Node*> _staic_temp_;
             while(_ROOT_Temp != nullptr || !_staic_temp_.empty())
             {
                 while(_ROOT_Temp!= nullptr)
@@ -1554,15 +1755,15 @@ namespace Wang
                 _ROOT_Temp = _ROOT_Temp->_right;
             }
         }
-        void _Pre_order_traversal(BST_Node* _ROOT_Temp )
+        void _Pre_order_traversal(BS_Tree_Node* _ROOT_Temp )
         {
             //前序遍历，最外左子树全部压栈
             if(_ROOT_Temp == nullptr)
             {
                 return;
             }
-            BST_Node* _Pre_order_traversal_test = _ROOT_Temp;
-            Wang::stack<BST_Node*> stack_Temp;
+            BS_Tree_Node* _Pre_order_traversal_test = _ROOT_Temp;
+            Wang::stack<BS_Tree_Node*> stack_Temp;
             stack_Temp.push(_Pre_order_traversal_test);
             //不能添加|| _Pre_order_traversal_test != nullptr ，因为最后一层循环后_Pre_order_traversal_test还是为真后面循环无意义，反之还会破环性质
             while( !stack_Temp.empty() )
@@ -1588,8 +1789,8 @@ namespace Wang
                 return;
             }
             //循环释放资源
-            BST_Node* _ROOT_Temp = _ROOT;
-            Wang::stack<BST_Node*> _staic_clear_temp_;
+            BS_Tree_Node* _ROOT_Temp = _ROOT;
+            Wang::stack<BS_Tree_Node*> _staic_clear_temp_;
             _staic_clear_temp_.push(_ROOT_Temp);
             while(_staic_clear_temp_.empty() == false)
             {
@@ -1610,40 +1811,48 @@ namespace Wang
             _ROOT = nullptr;
         }
     public:
-        ~Binary_search_tree()
+        ~BS_Tree()
         {
             clear();
         }
-        Binary_search_tree() 
+        BS_Tree() 
         :_ROOT(nullptr) {     ;   }
-        Binary_search_tree(const Binary_search_tree& _Binary_search_tree_temp)
+        // 构造函数，使用初始化列表来初始化二叉搜索树
+        BS_Tree(std::initializer_list<BS_Tree_Type> list_temp)
+        {
+            for(auto& e:list_temp)
+            {
+                push(e);
+            }
+        }
+        BS_Tree(const BS_Tree& _Binary_search_tree_temp)
         :_ROOT(nullptr),com(_Binary_search_tree_temp.com)
         //这个拷贝构造不需要传模板参数，因为模板参数是在编译时确定的，而不是在运行时确定的，对于仿函数，直接拿传进来的引用初始化就可以了
         {
             //拷贝构造，时间复杂度为O(n)
-            BST_Node* _Binary_search_tree_temp_copy = _Binary_search_tree_temp._ROOT;
+            BS_Tree_Node* _Binary_search_tree_temp_copy = _Binary_search_tree_temp._ROOT;
             if(_Binary_search_tree_temp_copy == nullptr)
             {
                 return;
             }
-            Wang::stack<Wang::STL_Demand_class::pair<BST_Node*,BST_Node**> > _staic_temp_;
+            Wang::stack<Wang::STL_Demand_class::pair<BS_Tree_Node*,BS_Tree_Node**> > _staic_temp_;
             //注意这里把本地_ROOT类型传过去，是因为要对本地的_ROOT进行操作，所以要传二级指针
             //这里传引用也不行，这里的对象是动态变化的，所以传引用也不行
             //如果是对全局的_ROOT进行操作，就传一级指针
-            _staic_temp_.push(Wang::STL_Demand_class::pair<BST_Node*,BST_Node**>(_Binary_search_tree_temp_copy,&_ROOT));
+            _staic_temp_.push(Wang::STL_Demand_class::pair<BS_Tree_Node*,BS_Tree_Node**>(_Binary_search_tree_temp_copy,&_ROOT));
             while( !_staic_temp_.empty() )
             {
                 auto _staic_temp_pair = _staic_temp_.top();
                 _staic_temp_.pop();
-                *(_staic_temp_pair.second) = new BST_Node(_staic_temp_pair.first->_data);
-                BST_Node* _staic_temp_pair_second = *(_staic_temp_pair.second);
+                *(_staic_temp_pair.second) = new BS_Tree_Node(_staic_temp_pair.first->_data);
+                BS_Tree_Node* _staic_temp_pair_second = *(_staic_temp_pair.second);
                 if(_staic_temp_pair.first->_left!= nullptr)
                 {
-                    _staic_temp_.push(Wang::STL_Demand_class::pair<BST_Node*,BST_Node**>(_staic_temp_pair.first->_left,&_staic_temp_pair_second->_left));
+                    _staic_temp_.push(Wang::STL_Demand_class::pair<BS_Tree_Node*,BS_Tree_Node**>(_staic_temp_pair.first->_left,&_staic_temp_pair_second->_left));
                 }
                 if(_staic_temp_pair.first->_right!= nullptr)
                 {
-                    _staic_temp_.push(Wang::STL_Demand_class::pair<BST_Node*,BST_Node**>(_staic_temp_pair.first->_right,&_staic_temp_pair_second->_right));
+                    _staic_temp_.push(Wang::STL_Demand_class::pair<BS_Tree_Node*,BS_Tree_Node**>(_staic_temp_pair.first->_right,&_staic_temp_pair_second->_right));
                 }
             }
         }
@@ -1656,25 +1865,25 @@ namespace Wang
         {
             _Pre_order_traversal(_ROOT);
         }
-        bool push(const Binary_search_tree_Type& data)
+        bool push(const BS_Tree_Type& data)
         {
             //尾上插入函数
             if(_ROOT == nullptr)
             {
-                _ROOT = new Binary_search_tree::Binary_search_tree_Type_Node<Binary_search_tree_Type>(data);
+                _ROOT = new BS_Tree::BS_Tree_Type_Node<BS_Tree_Type>(data);
                 return true;
             }
             else
             {
-                BST_Node* _ROOT_Temp = _ROOT;
-                BST_Node* _ROOT_Temp_Parent = nullptr;
+                BS_Tree_Node* _ROOT_Temp = _ROOT;
+                BS_Tree_Node* _ROOT_Temp_Parent = nullptr;
                 while(_ROOT_Temp!= nullptr)
                 {
                     _ROOT_Temp_Parent = _ROOT_Temp;
-                     if(data == _ROOT_Temp->_data)
+                    if(!com(data, _ROOT_Temp->_data) && !com(_ROOT_Temp->_data, data))
                     {
+                        //改用仿函数特性，判断是否有重复元素,防止自定义类型没有重载==运算符
                         return false;
-                        //data存在随机值,原因未初始化_ROOT的值(构造函数)
                     }
                     else if(com(data , _ROOT_Temp->_data))
                     {
@@ -1686,7 +1895,7 @@ namespace Wang
                     }
                 }
                 //新开节点链接
-                BST_Node* _ROOT_Temp_Node = new Binary_search_tree::Binary_search_tree_Type_Node<Binary_search_tree_Type>(data);
+                BS_Tree_Node* _ROOT_Temp_Node = new BS_Tree::BS_Tree_Type_Node<BS_Tree_Type>(data);
                 //链接节点
                 if(com(data , _ROOT_Temp_Parent->_data))
                 {
@@ -1699,11 +1908,11 @@ namespace Wang
                 return true;
             }
         }
-        Binary_search_tree& pop(const Binary_search_tree_Type& data)
+        BS_Tree& pop(const BS_Tree_Type& data)
         {
             //删除节点
-            BST_Node* _ROOT_Temp = _ROOT;
-            BST_Node* _ROOT_Temp_Parent = nullptr;
+            BS_Tree_Node* _ROOT_Temp = _ROOT;
+            BS_Tree_Node* _ROOT_Temp_Parent = nullptr;
             while( _ROOT_Temp != nullptr )
             {
                 if(data == _ROOT_Temp->_data)
@@ -1759,8 +1968,8 @@ namespace Wang
                     else
                     {
                         //左右子树都不为空，找右子树的最左节点
-                    	BST_Node* _ROOT_Temp_right_min = _ROOT_Temp->_right;
-                        BST_Node* _ROOT_Temp_test_Parent = _ROOT_Temp;
+                    	BS_Tree_Node* _ROOT_Temp_right_min = _ROOT_Temp->_right;
+                        BS_Tree_Node* _ROOT_Temp_test_Parent = _ROOT_Temp;
                         while(_ROOT_Temp_right_min->_left != nullptr)
                         {
                             _ROOT_Temp_test_Parent = _ROOT_Temp_right_min;
@@ -1769,7 +1978,7 @@ namespace Wang
                         //找到最左节点	
                         Wang::algorithm::swap(_ROOT_Temp->_data,_ROOT_Temp_right_min->_data);
                         //因为右树最左节点已经被删，但是还需要把被删的上一节点的左子树指向被删节点的右子树，不管右子树有没有节点都要连接上
-                        if(_ROOT_Temp == _ROOT_Temp_test_Parent)
+                        if(_ROOT_Temp_test_Parent == _ROOT_Temp)
                         {
                             //说明右子树没有左子树最小节点就是右子树的第一个根，如同上面判断条件：要删除的根节点等于右子树最小节点的父亲节点
                             _ROOT_Temp_test_Parent->_right = _ROOT_Temp_right_min->_right;
@@ -1803,10 +2012,15 @@ namespace Wang
             size_t _size = 0;
             return _Middle_order_traversal(_ROOT,_size);
         }
-        BST_Node* find(const Binary_search_tree_Type& data)
+        size_t size()const
+        {
+            size_t _size = 0;
+            return _Middle_order_traversal(_ROOT,_size);
+        }
+        BS_Tree_Node* find(const BS_Tree_Type& data)
         {
             //查找函数
-            BST_Node* _ROOT_Find = _ROOT;
+            BS_Tree_Node* _ROOT_Find = _ROOT;
             while(_ROOT_Find!= nullptr)
             {
                 if(data == _ROOT_Find->_data)
@@ -1824,10 +2038,10 @@ namespace Wang
             }
             return _ROOT_Find;
         }
-        void insert(const Binary_search_tree_Type& former_data,const Binary_search_tree_Type& latter_data)
+        void insert(const BS_Tree_Type& former_data,const BS_Tree_Type& latter_data)
         {
             //在former_data后面插入latter_data
-            BST_Node* _ROOT_former_data = find(former_data);
+            BS_Tree_Node* _ROOT_former_data = find(former_data);
             //插入节点
             if(_ROOT_former_data == nullptr)
             {
@@ -1835,22 +2049,56 @@ namespace Wang
             }
             else
             {
-                BST_Node* _ROOT_latter_data = new BST_Node(latter_data);
+                BS_Tree_Node* _ROOT_latter_data = new BS_Tree_Node(latter_data);
                 _ROOT_latter_data->_left = _ROOT_former_data->_right;
                 _ROOT_former_data->_right = _ROOT_latter_data;
             }
         }
-        Binary_search_tree& operator=(const Binary_search_tree& _Binary_search_tree_temp)
+        BS_Tree& operator=(const BS_Tree& _Binary_search_tree_temp)
         {
             //赋值运算符重载
             if(this != &_Binary_search_tree_temp)
             {
                 clear();
                 com = _Binary_search_tree_temp.com;
-                Binary_search_tree _Binary_search_tree_temp_copy = _Binary_search_tree_temp;
+                BS_Tree _Binary_search_tree_temp_copy = _Binary_search_tree_temp;
                 Wang::algorithm::swap(_Binary_search_tree_temp_copy._ROOT,_ROOT);
             }
             return *this;
+        }
+    };
+    /*############################     map 容器     ############################*/
+    template <typename AVL_Tree_Type_K,     typename AVL_Tree_Type_V,
+    typename Imitation_function_parameter_function_AVL_Tee = Wang::STL_Imitation_functions::less < AVL_Tree_Type_K > >
+    class AVL_Tree
+    {
+    private:
+        template<typename AVL_Tree_Type_Node_K,typename AVL_Tree_Type_Node_V>
+        class AVL_Tree_Type_Node
+        {
+        public:
+            Wang::STL_Demand_class::pair<AVL_Tree_Type_Node_K,AVL_Tree_Type_Node_V> _data;
+
+            AVL_Tree_Type_Node<AVL_Tree_Type_Node_K,AVL_Tree_Type_Node_V>* _left;
+            AVL_Tree_Type_Node<AVL_Tree_Type_Node_K,AVL_Tree_Type_Node_V>* _right;
+            AVL_Tree_Type_Node<AVL_Tree_Type_Node_K,AVL_Tree_Type_Node_V>* _parent;
+            //平衡因子
+            int _Balance_factor;
+            AVL_Tree_Type_Node(const AVL_Tree_Type_K& Tree_Node_temp_ = AVL_Tree_Type_K(),const AVL_Tree_Type_V& Tree_Node_temp_2 = AVL_Tree_Type_V())
+            :_data(Tree_Node_temp_,Tree_Node_temp_2),_left(nullptr),_right(nullptr),_parent(nullptr),_Balance_factor(0)
+            {
+                ;
+            }
+        };
+    public:
+        using AVL_Node = AVL_Tree_Type_Node<AVL_Tree_Type_K,AVL_Tree_Type_V>;
+
+        AVL_Node* _ROOT;
+
+        Imitation_function_parameter_function_AVL_Tee com;
+        AVL_Tree()
+        {
+            _ROOT = nullptr;
         }
     };
 }
@@ -2100,7 +2348,7 @@ int main()
     /*            Binary_search_tree测试             */
     {
         time_t Binary_search_tree_num1 = clock();
-        Wang::Binary_search_tree<int,Wang::STL_Imitation_functions::greater<int>> Binary_search_tree_test;
+        Wang::BS_Tree<int,Wang::STL_Imitation_functions::greater<int>> Binary_search_tree_test;
         for(size_t i = 100; i > 0; i--)
         {
             //相对来说这算是有序插入导致二叉树相乘时间复杂度为O(N)的链表
@@ -2118,7 +2366,7 @@ int main()
     }
 
     {
-        Wang::Binary_search_tree<int, Wang::STL_Imitation_functions::greater<int>> bst;
+        Wang::BS_Tree<int, Wang::STL_Imitation_functions::greater<int>> bst;
         bst.push(5);
         bst.push(4);
         bst.push(3);
@@ -2149,7 +2397,7 @@ int main()
         //打乱数组元素顺序
         size_t size = 0;
         time_t Binary_search_tree_num1 = clock();
-        Wang::Binary_search_tree<int,Wang::STL_Imitation_functions::greater<int>> Binary_search_tree_test;
+        Wang::BS_Tree<int,Wang::STL_Imitation_functions::greater<int>> Binary_search_tree_test;
         for(const auto& Binary_search_tree_for_test: Binary_search_tree_array)
         {
             if(Binary_search_tree_test.push(Binary_search_tree_for_test))
@@ -2193,7 +2441,7 @@ int main()
         //打乱数组元素顺序
         size_t size = 0;
         time_t Binary_search_tree_num1 = clock();
-        Wang::Binary_search_tree<int,Wang::STL_Imitation_functions::greater<int>> Binary_search_tree_test;
+        Wang::BS_Tree<int,Wang::STL_Imitation_functions::greater<int>> Binary_search_tree_test;
         for(const auto& Binary_search_tree_for_test: Binary_search_tree_array)
         {
             if(Binary_search_tree_test.push(Binary_search_tree_for_test))
@@ -2204,7 +2452,7 @@ int main()
         }
         std::cout << std::endl;
         time_t Binary_search_tree_num2 = clock();
-        Wang::Binary_search_tree<int,Wang::STL_Imitation_functions::greater<int>> Binary_search_tree_test1 = Binary_search_tree_test;
+        Wang::BS_Tree<int,Wang::STL_Imitation_functions::greater<int>> Binary_search_tree_test1 = Binary_search_tree_test;
         time_t Binary_search_tree_num3 = clock();
         std::cout << "拷贝构造没问题 " << std::endl;
 
@@ -2230,6 +2478,27 @@ int main()
         std::cout << "插入个数" << size << std::endl;
         std::cout << "插入时间" << Binary_search_tree_num2-Binary_search_tree_num1 << std::endl;
         std::cout << "拷贝时间" << Binary_search_tree_num3-Binary_search_tree_num2 << std::endl;
+    }
+
+    {
+        Wang::string str1 = {'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'};
+        std::cout << str1 << std::endl;
+        Wang::vector <Wang::string> vector_str = {"西瓜","樱桃","苹果","西瓜","樱桃","苹果","樱桃","西瓜","樱桃","西瓜","樱桃","苹果","樱桃","苹果","樱桃"};
+        Wang::BS_Tree< Wang::string > BST_temp;
+        size_t _BST_size = vector_str.size();
+        for(size_t i = 0 ; i < _BST_size;i++)
+        {
+            if(BST_temp.push(vector_str[i]))
+            {
+                std::cout << "插入成功" << std::endl;
+            }
+            else
+            {
+                //当前未实现累加功能
+                std::cout << "插入失败" << std::endl;
+            }
+        }
+        BST_temp.Middle_order_traversal();
     }
     return 0;
 }
