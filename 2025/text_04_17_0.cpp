@@ -863,6 +863,18 @@ namespace Wang
                 _data_pointer[i] = data;
             }
         }
+        vector(Wang::STL_initialize::initialize_list<vector_Type> list_temp)
+        :_data_pointer(new vector_Type[list_temp.size()]),_size_pointer(_data_pointer + list_temp.size())
+        ,_capacity_pointer(_data_pointer + list_temp.size())
+        {
+            //链式拷贝
+            size_t i = 0;
+            for(auto& e:list_temp)
+            {
+                _data_pointer[i] = e;
+                i++;
+            }
+        }
         bool empty()
         {
             return size() == 0; // 直接通过 size() 判断
