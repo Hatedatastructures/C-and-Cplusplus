@@ -100,66 +100,6 @@ namespace Wang
             }
         };
     }
-    namespace STL_initialize
-    {
-        template<typename Data_Type_example_initialize_list_T>
-        class initialize_list
-        {
-            //链式初始化轻量容器
-        private:
-            const Data_Type_example_initialize_list_T* _firest;
-            const Data_Type_example_initialize_list_T* _last;
-        public:
-            using iterator = const Data_Type_example_initialize_list_T*;
-            using const_iterator = const Data_Type_example_initialize_list_T*;
-            using reference = const Data_Type_example_initialize_list_T&;
-            using const_reference = const Data_Type_example_initialize_list_T&;
-            using size_type = size_t;
-            using value_type = Data_Type_example_initialize_list_T;
-            initialize_list()
-            : _firest(nullptr),_last(nullptr)
-            {
-                ;
-            }
-            initialize_list(const Data_Type_example_initialize_list_T* firest,const Data_Type_example_initialize_list_T* last)
-            : _firest(_firest),_last(_last)
-            {
-                ;
-            }
-            size_type size()const
-            {
-                return _last - _firest;
-            }
-            size_type size()
-            {
-                return _last - _firest;
-            }
-            const_iterator begin()const
-            {
-                return _firest;
-            }
-            const_iterator end()const
-            {
-                return _last;
-            }
-            const_iterator cbegin()const
-            {
-                return _firest;
-            }
-            const_iterator cend()const
-            {
-                return _last;
-            }
-            const_reference front()const
-            {
-                return *_firest;
-            }
-            const_reference back()const
-            {
-                return *(_last - 1);
-            }
-        };
-    }
     namespace algorithm
     {
         template <typename Source_sequence_copy,typename Target_sequence_copy>
@@ -863,7 +803,7 @@ namespace Wang
                 _data_pointer[i] = data;
             }
         }
-        vector(Wang::STL_initialize::initialize_list<vector_Type> list_temp)
+        vector(std::initializer_list<vector_Type> list_temp)
         :_data_pointer(new vector_Type[list_temp.size()]),_size_pointer(_data_pointer + list_temp.size())
         ,_capacity_pointer(_data_pointer + list_temp.size())
         {
@@ -2413,6 +2353,7 @@ int main()
             }
             else
             {
+                //当前未实现累加功能
                 std::cout << "插入失败" << std::endl;
             }
         }
