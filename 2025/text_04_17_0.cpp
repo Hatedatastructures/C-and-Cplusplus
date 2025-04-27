@@ -1830,14 +1830,23 @@ namespace Wang
                 auto _staic_temp_pair = _staic_temp_.top();
                 _staic_temp_.pop();
                 *(_staic_temp_pair.second) = new BS_Tree_Node(_staic_temp_pair.first->_data);
-                BS_Tree_Node* _staic_temp_pair_second = *(_staic_temp_pair.second);
+                // BS_Tree_Node* _staic_temp_pair_second = *(_staic_temp_pair.second);
+                // if(_staic_temp_pair.first->_left!= nullptr)
+                // {
+                //     _staic_temp_.push(Wang::STL_Demand_class::pair<BS_Tree_Node*,BS_Tree_Node**>(_staic_temp_pair.first->_left,&_staic_temp_pair_second->_left));
+                // }
+                // if(_staic_temp_pair.first->_right!= nullptr)
+                // {
+                //     _staic_temp_.push(Wang::STL_Demand_class::pair<BS_Tree_Node*,BS_Tree_Node**>(_staic_temp_pair.first->_right,&_staic_temp_pair_second->_right));
+                // }
+                //移除临时变量，直接使用指针解引用
                 if(_staic_temp_pair.first->_left!= nullptr)
                 {
-                    _staic_temp_.push(Wang::STL_Demand_class::pair<BS_Tree_Node*,BS_Tree_Node**>(_staic_temp_pair.first->_left,&_staic_temp_pair_second->_left));
+                    _staic_temp_.push(Wang::STL_Demand_class::pair<BS_Tree_Node*,BS_Tree_Node**>(_staic_temp_pair.first->_left,&((*_staic_temp_pair.second)->_left)));
                 }
                 if(_staic_temp_pair.first->_right!= nullptr)
                 {
-                    _staic_temp_.push(Wang::STL_Demand_class::pair<BS_Tree_Node*,BS_Tree_Node**>(_staic_temp_pair.first->_right,&_staic_temp_pair_second->_right));
+                    _staic_temp_.push(Wang::STL_Demand_class::pair<BS_Tree_Node*,BS_Tree_Node**>(_staic_temp_pair.first->_right,&((*_staic_temp_pair.second)->_right)));
                 }
             }
         }
