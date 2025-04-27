@@ -248,6 +248,15 @@ namespace Wang
             // algorithm::copy(_data,_data+capacity,data_str._data); const对象出错
             std::strcpy(_data, data_str._data);
         }
+        string(std::initializer_list<char> data_str)
+        {
+            //初始化列表构造函数
+            _size = data_str.size();
+            _capacity = _size;
+            _data = new char[_capacity + 1];
+            Wang::algorithm::copy(data_str.begin(), data_str.end(), _data);
+            _data[_size] = '\0';
+        }
         ~string()
         {
             delete [] _data;
@@ -1185,6 +1194,15 @@ namespace Wang
                 ++first;
             }
         }
+        list(std::initializer_list<list_Type> list_temp)
+        {
+            //通过初始化列表构建一个list
+            CreateHead();
+            for(auto& e:list_temp)
+            {
+                push_back(e);
+            }
+        }
         list(const_iterator first , const_iterator last)
         {
             //通过另一个list对象构建一个list
@@ -1456,6 +1474,25 @@ namespace Wang
         {
             return Container_staic_temp_.back();
         }
+        stack(const stack<staic_Type>& _staic_temp)
+        {
+            Container_staic_temp_ = _staic_temp.Container_staic_temp_;
+        }
+        stack(std::initializer_list<staic_Type> _staic_temp)
+        {
+            for(auto& e:_staic_temp)
+            {
+                Container_staic_temp_.push_back(e);
+            }
+        }
+        stack(const staic_Type& _staic_temp)
+        {
+            Container_staic_temp_.push_back(_staic_temp);
+        }
+        stack()
+        {
+            ;
+        }
     };
     /*############################     queue适配器     ############################*/
     template <typename queue_Type ,typename Container_queue = Wang::list<queue_Type> >
@@ -1497,6 +1534,28 @@ namespace Wang
         {
             //查看尾数据
             return Container_queue_temp_.back();
+        }
+        queue(const queue<queue_Type>& _queue_temp)
+        {
+            //拷贝构造
+            Container_queue_temp_ = _queue_temp.Container_queue_temp_;
+        }
+        queue(std::initializer_list<queue_Type> _queue_temp)
+        {
+            //初始化列表
+            for(auto& e:_queue_temp)
+            {
+                Container_queue_temp_.push_back(e);
+            }
+        }
+        queue(const queue_Type& _queue_temp)
+        {
+            //拷贝构造
+            Container_queue_temp_.push_back(_queue_temp);
+        }
+        queue()
+        {
+            ;
         }
     };
     /*############################     priority_queue适配器     ############################*/
@@ -1584,6 +1643,30 @@ namespace Wang
             Wang::algorithm::swap(Container_priority_queue_temp[0],Container_priority_queue_temp[Container_priority_queue_temp.size()-(size_t)1]);
             Container_priority_queue_temp.pop_back();
             priority_queue_Adjust_downwards();
+        }
+        priority_queue()
+        {
+            ;
+        }
+        priority_queue(std::initializer_list<priority_queue_Type> list_temp)
+        {
+            //通过初始化列表构建一个list
+            for(auto& e:list_temp)
+            {
+                push(e);
+            }
+        }
+        priority_queue(const priority_queue& _priority_queue_temp)
+        {
+            //拷贝构造
+            Container_priority_queue_temp = _priority_queue_temp.Container_priority_queue_temp;
+            priority_queue_Adjust_upwards((int)Container_priority_queue_temp.size()-1);
+        }
+        priority_queue(const priority_queue_Type& _priority_queue_temp)
+        {
+            //拷贝构造
+            Container_priority_queue_temp.push_back(_priority_queue_temp);
+            priority_queue_Adjust_upwards((int)Container_priority_queue_temp.size()-1);
         }
     };
     /*############################     Binary_search_tree 容器     ############################*/
@@ -2342,6 +2425,8 @@ int main()
     // }
 
     {
+        Wang::string str1 = {'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'};
+        std::cout << str1 << std::endl;
         Wang::vector <Wang::string> vector_str = {"西瓜","樱桃","苹果","西瓜","樱桃","苹果","樱桃","西瓜","樱桃","西瓜","樱桃","苹果","樱桃","苹果","樱桃"};
         Wang::Binary_search_tree< Wang::string > BST_temp;
         size_t _BST_size = vector_str.size();
