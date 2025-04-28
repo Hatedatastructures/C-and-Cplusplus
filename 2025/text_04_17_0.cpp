@@ -2129,7 +2129,7 @@ namespace Wang
         class AVL_Tree_Type_Node
         {
         public:
-            Wang::STL_Demand_class::pair<AVL_Tree_Type_Node_K,AVL_Tree_Type_Node_V> _data;
+            AVL_Tree_Synthetic_class _data;
 
             AVL_Tree_Type_Node<AVL_Tree_Type_Node_K,AVL_Tree_Type_Node_V>* _left;
             AVL_Tree_Type_Node<AVL_Tree_Type_Node_K,AVL_Tree_Type_Node_V>* _right;
@@ -2138,6 +2138,11 @@ namespace Wang
             int _Balance_factor;
             AVL_Tree_Type_Node(const AVL_Tree_Type_K& Tree_Node_temp_ = AVL_Tree_Type_K(),const AVL_Tree_Type_V& Tree_Node_temp_2 = AVL_Tree_Type_V())
             :_data(Tree_Node_temp_,Tree_Node_temp_2),_left(nullptr),_right(nullptr),_parent(nullptr),_Balance_factor(0)
+            {
+                ;
+            }
+            AVL_Tree_Type_Node(const AVL_Tree_Synthetic_class& AVL_Tree_pair_temp)
+            :_data(AVL_Tree_pair_temp),_left(nullptr),_right(nullptr),_parent(nullptr),_Balance_factor(0)
             {
                 ;
             }
@@ -2158,11 +2163,16 @@ namespace Wang
         {
             _ROOT = new AVL_Node(Key_temp,val_temp);
         }
-        AVL_Tree(const Wang::STL_Demand_class::pair<AVL_Tree_Type_K,AVL_Tree_Type_V>& AVL_Tree_Pair_Temp,
+        AVL_Tree(const AVL_Tree_Synthetic_class& AVL_Tree_Pair_Temp,
         Imitation_function_parameter_function_AVL_Tee com_temp = Imitation_function_parameter_function_AVL_Tee())
         :_ROOT(nullptr),com(com_temp)
         {
             _ROOT = new AVL_Node(AVL_Tree_Pair_Temp.first,AVL_Tree_Pair_Temp.second);
+        }
+        AVL_Tree(const AVL_Tree& AVL_Tree_temp_)
+        {
+            //拷贝构造
+            ;
         }
     };
 }
@@ -2409,7 +2419,7 @@ int main()
         std::cout << num2-num1 << std::endl;
     }
 
-    /*            Binary_search_tree测试             */
+    /*            BS_Tree 测试             */
     {
         time_t Binary_search_tree_num1 = clock();
         Wang::BS_Tree<int,Wang::STL_Imitation_functions::greater<int>> Binary_search_tree_test;
@@ -2564,6 +2574,11 @@ int main()
         }
         BST_temp.Middle_order_traversal();
         std::cout << BST_temp.size() << std::endl;
+    }
+    /*            AVL_Tree 测试             */
+    {
+        Wang::STL_Demand_class::pair<Wang::STL_Demand_class::pair<int,int>,int> pair_test_ (Wang::STL_Demand_class::pair(9,0), 10);
+        Wang::AVL_Tree<Wang::STL_Demand_class::pair<int,int>,int> AVL_Tree_test(pair_test_);
     }
     return 0;
 }
