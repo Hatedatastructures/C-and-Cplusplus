@@ -2161,12 +2161,14 @@ namespace Wang
         Imitation_function_parameter_function_AVL_Tee com_temp = Imitation_function_parameter_function_AVL_Tee())
         :_ROOT(nullptr),com(com_temp)
         {
+            std::cout << "单一赋值" << std::endl;
             _ROOT = new AVL_Node(Key_temp,val_temp);
         }
         AVL_Tree(const AVL_Tree_Synthetic_class& AVL_Tree_Pair_Temp,
         Imitation_function_parameter_function_AVL_Tee com_temp = Imitation_function_parameter_function_AVL_Tee())
         :_ROOT(nullptr),com(com_temp)
         {
+            std::cout << "合并赋值" << std::endl;
             _ROOT = new AVL_Node(AVL_Tree_Pair_Temp.first,AVL_Tree_Pair_Temp.second);
         }
         AVL_Tree(const AVL_Tree& AVL_Tree_temp_)
@@ -2577,8 +2579,10 @@ int main()
     }
     /*            AVL_Tree 测试             */
     {
+        Wang::AVL_Tree<Wang::STL_Demand_class::pair<int,int>,int> AVL_Tree_test1(Wang::STL_Demand_class::pair(9,0), 10);
         Wang::STL_Demand_class::pair<Wang::STL_Demand_class::pair<int,int>,int> pair_test_ (Wang::STL_Demand_class::pair(9,0), 10);
         Wang::AVL_Tree<Wang::STL_Demand_class::pair<int,int>,int> AVL_Tree_test(pair_test_);
+        //两个构造函数，根据传值调用来查看调用情况
     }
     return 0;
 }
