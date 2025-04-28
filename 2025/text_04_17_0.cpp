@@ -2120,7 +2120,8 @@ namespace Wang
     };
     /*############################     AVL_Tree 容器     ############################*/
     template <typename AVL_Tree_Type_K,     typename AVL_Tree_Type_V,
-    typename Imitation_function_parameter_function_AVL_Tee = Wang::STL_Imitation_functions::less < AVL_Tree_Type_K > >
+    typename Imitation_function_parameter_function_AVL_Tee = Wang::STL_Imitation_functions::less < AVL_Tree_Type_K >,
+    typename AVL_Tree_Synthetic_class = Wang::STL_Demand_class::pair<AVL_Tree_Type_K,AVL_Tree_Type_V> >
     class AVL_Tree
     {
     private:
@@ -2151,12 +2152,17 @@ namespace Wang
         {
             _ROOT = nullptr;
         }
-        AVL_Tree(const AVL_Tree_Type_K Key_temp = AVL_Tree_Type_K(),const AVL_Tree_Type_V val_temp = AVL_Tree_Type_V())
+        AVL_Tree(const AVL_Tree_Type_K& Key_temp = AVL_Tree_Type_K(),const AVL_Tree_Type_V& val_temp = AVL_Tree_Type_V(),
+        Imitation_function_parameter_function_AVL_Tee com_temp = Imitation_function_parameter_function_AVL_Tee())
+        :_ROOT(nullptr),com(com_temp)
         {
-            if(_ROOT == nullptr)
-            {
-                _ROOT = new AVL_Node(Key_temp,val_temp);
-            }
+            _ROOT = new AVL_Node(Key_temp,val_temp);
+        }
+        AVL_Tree(const Wang::STL_Demand_class::pair<AVL_Tree_Type_K,AVL_Tree_Type_V>& AVL_Tree_Pair_Temp,
+        Imitation_function_parameter_function_AVL_Tee com_temp = Imitation_function_parameter_function_AVL_Tee())
+        :_ROOT(nullptr),com(com_temp)
+        {
+            _ROOT = new AVL_Node(AVL_Tree_Pair_Temp.first,AVL_Tree_Pair_Temp.second);
         }
     };
 }
