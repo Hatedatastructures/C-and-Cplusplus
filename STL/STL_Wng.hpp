@@ -88,14 +88,14 @@ namespace Wang
             return os;
         }
         /*                               类分隔                                   */
-        template<typename Data_Type_example_make_pair_T,typename Data_Type_example_make_pair_K>
+        template<typename make_pair_T,typename make_pair_K>
         class make_pair
         {
         public:
-            pair<Data_Type_example_make_pair_T,Data_Type_example_make_pair_K> operator()
-            (const Data_Type_example_make_pair_T& _first,const Data_Type_example_make_pair_K& _second) const
+            pair<make_pair_T,make_pair_K> operator()
+            (const make_pair_T& _first,const make_pair_K& _second) const
             {
-                return pair<Data_Type_example_make_pair_T,Data_Type_example_make_pair_K>(_first,_second);
+                return pair<make_pair_T,make_pair_K>(_first,_second);
             }
         };
     }

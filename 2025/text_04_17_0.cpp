@@ -49,6 +49,11 @@ namespace Wang
             {
                 ;
             }
+            pair(const pair& pair_temp)
+            {
+                first = pair_temp.first;
+                second = pair_temp.second;
+            }
             pair& operator=(const pair& other)
             {
                 if(this != &other)
@@ -80,7 +85,15 @@ namespace Wang
             }
             template<typename Data_Type_example_pair_ostream_T,typename Data_Type_example_pair_ostream_K>
             friend std::ostream& operator<<(std::ostream& os,pair<Data_Type_example_pair_ostream_T,Data_Type_example_pair_ostream_K>& p);
+            template<typename Data_Type_example_pair_ostream_T,typename Data_Type_example_pair_ostream_K>
+            friend std::ostream& operator<<(std::ostream& os,const pair<Data_Type_example_pair_ostream_T,Data_Type_example_pair_ostream_K>& p);
         };
+        template<typename Data_Type_example_pair_ostream_T,typename Data_Type_example_pair_ostream_K>
+        std::ostream& operator<<(std::ostream& os,pair<Data_Type_example_pair_ostream_T,Data_Type_example_pair_ostream_K>& p)
+        {
+            os << "(" << p.first << ":" << p.second << ")";
+            return os;
+        }
         template<typename Data_Type_example_pair_ostream_T,typename Data_Type_example_pair_ostream_K>
         std::ostream& operator<<(std::ostream& os,const pair<Data_Type_example_pair_ostream_T,Data_Type_example_pair_ostream_K>& p)
         {
@@ -88,16 +101,11 @@ namespace Wang
             return os;
         }
         /*                               类分隔                                   */
-        template<typename Data_Type_example_make_pair_T,typename Data_Type_example_make_pair_K>
-        class make_pair
+        template<typename make_pair_T,typename make_pair_K>
+        pair<make_pair_T,make_pair_K> make_pair (const make_pair_T& _first,const make_pair_K& _second)
         {
-        public:
-            pair<Data_Type_example_make_pair_T,Data_Type_example_make_pair_K> operator()
-            (const Data_Type_example_make_pair_T& _first,const Data_Type_example_make_pair_K& _second) const
-            {
-                return pair<Data_Type_example_make_pair_T,Data_Type_example_make_pair_K>(_first,_second);
-            }
-        };
+            return pair<make_pair_T,make_pair_K>(_first,_second);
+        }
     }
     namespace algorithm
     {
@@ -2577,12 +2585,18 @@ int main()
         BST_temp.Middle_order_traversal();
         std::cout << BST_temp.size() << std::endl;
     }
+    /*            pair类 测试             */
+    {
+        const int i = 31; const int j = 28;
+        Wang::STL_Demand_class::pair<int,int> pair_test =Wang::STL_Demand_class::make_pair(i,j);
+        std::cout << pair_test << std::endl;
+    }
     /*            AVL_Tree 测试             */
     {
         Wang::AVL_Tree<Wang::STL_Demand_class::pair<int,int>,int> AVL_Tree_test1(Wang::STL_Demand_class::pair(9,0), 10);
         Wang::STL_Demand_class::pair<Wang::STL_Demand_class::pair<int,int>,int> pair_test_ (Wang::STL_Demand_class::pair(9,0), 10);
         Wang::AVL_Tree<Wang::STL_Demand_class::pair<int,int>,int> AVL_Tree_test(pair_test_);
-        //两个构造函数，根据传值调用来查看调用情况
+        //两个构造函数，根据传值调用来查看调用情况捐给
     }
     return 0;
 }
