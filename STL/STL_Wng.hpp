@@ -49,6 +49,11 @@ namespace Wang
             {
                 ;
             }
+            pair(const pair& pair_temp)
+            {
+                first = pair_temp.first;
+                second = pair_temp.second;
+            }
             pair& operator=(const pair& other)
             {
                 if(this != &other)
@@ -58,7 +63,7 @@ namespace Wang
                 }
                 return *this;
             }
-            bool operator==(pair& other)
+            bool operator==(const pair& other)
             {
                 return first == other.first && second == other.second;
             }
@@ -80,7 +85,15 @@ namespace Wang
             }
             template<typename Data_Type_example_pair_ostream_T,typename Data_Type_example_pair_ostream_K>
             friend std::ostream& operator<<(std::ostream& os,pair<Data_Type_example_pair_ostream_T,Data_Type_example_pair_ostream_K>& p);
+            template<typename Data_Type_example_pair_ostream_T,typename Data_Type_example_pair_ostream_K>
+            friend std::ostream& operator<<(std::ostream& os,const pair<Data_Type_example_pair_ostream_T,Data_Type_example_pair_ostream_K>& p);
         };
+        template<typename Data_Type_example_pair_ostream_T,typename Data_Type_example_pair_ostream_K>
+        std::ostream& operator<<(std::ostream& os,pair<Data_Type_example_pair_ostream_T,Data_Type_example_pair_ostream_K>& p)
+        {
+            os << "(" << p.first << ":" << p.second << ")";
+            return os;
+        }
         template<typename Data_Type_example_pair_ostream_T,typename Data_Type_example_pair_ostream_K>
         std::ostream& operator<<(std::ostream& os,const pair<Data_Type_example_pair_ostream_T,Data_Type_example_pair_ostream_K>& p)
         {
@@ -89,15 +102,10 @@ namespace Wang
         }
         /*                               类分隔                                   */
         template<typename make_pair_T,typename make_pair_K>
-        class make_pair
+        pair<make_pair_T,make_pair_K> make_pair (const make_pair_T& _first,const make_pair_K& _second)
         {
-        public:
-            pair<make_pair_T,make_pair_K> operator()
-            (const make_pair_T& _first,const make_pair_K& _second) const
-            {
-                return pair<make_pair_T,make_pair_K>(_first,_second);
-            }
-        };
+            return pair<make_pair_T,make_pair_K>(_first,_second);
+        }
     }
     namespace algorithm
     {
@@ -615,7 +623,37 @@ namespace Wang
             }
             return true;
         }
+        bool operator==(const string& data_str)const
+        {
+            if(_size != data_str._size)
+            {
+                return false;
+            }
+            for(size_t i = 0;i < _size;i++)
+            {
+                if(_data[i]!= data_str._data[i])
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
         bool operator==(string& data_str) const
+        {
+            if(_size != data_str._size)
+            {
+                return false;
+            }
+            for(size_t i = 0;i < _size;i++)
+            {
+                if(_data[i]!= data_str._data[i])
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+        bool operator==(string& data_str)
         {
             if(_size != data_str._size)
             {
@@ -643,6 +681,30 @@ namespace Wang
             return _size < data_str._size;
         }
         bool operator<(const string& data_str) const
+        {
+            size_t min_len = _size < data_str._size? _size : data_str._size;
+            for(size_t i = 0;i < min_len;i++)
+            {
+                if(_data[i]!= data_str._data[i])
+                {
+                    return _data[i] < data_str._data[i];
+                }
+            }
+            return _size < data_str._size;
+        }
+        bool operator<(string& data_str) const
+        {
+            size_t min_len = _size < data_str._size? _size : data_str._size;
+            for(size_t i = 0;i < min_len;i++)
+            {
+                if(_data[i]!= data_str._data[i])
+                {
+                    return _data[i] < data_str._data[i];
+                }
+            }
+            return _size < data_str._size;
+        }
+        bool operator<(string& data_str)
         {
             size_t min_len = _size < data_str._size? _size : data_str._size;
             for(size_t i = 0;i < min_len;i++)
@@ -912,7 +974,7 @@ namespace Wang
             size_t old_size = size();  // 先保存原来的元素数量
             if ((size_t)(_capacity_pointer - _data_pointer) < new_capacity) 
             {
-                //涉及到迭代器失效问题，不能调用szie_v()函数，会释放未知空间
+                //涉及到迭代器失效问题，不能调用size()函数，会释放未知空间
                 iterator new_data = new vector_Type[new_capacity]; 
                 // 复制原先的数据
                 for (size_t i = 0; i < old_size; i++) 
@@ -921,6 +983,7 @@ namespace Wang
                 }
                 delete [] _data_pointer;
                 _data_pointer = new_data;
+                //对于自定义类型delete会释放资源，而new_data是新new出来的因该不会导致资源泄露
                 _size_pointer = _data_pointer + old_size;  // 使用 old_size 来重建 _size_pointer
                 _capacity_pointer = _data_pointer + new_capacity;
             }
@@ -1565,12 +1628,12 @@ namespace Wang
     {
         //创建容器对象
         Container_priority_queue Container_priority_queue_temp;
-
+        Imitation_function_parameter_function com;
+        //仿函数对象
 
         void priority_queue_Adjust_upwards(int Adjust_upwards_child)
         {
             //向上调整算法
-            Imitation_function_parameter_function com;
             int parent = (Adjust_upwards_child-1)/2;
             while(Adjust_upwards_child > 0)
             {
@@ -1588,8 +1651,6 @@ namespace Wang
         }
         void priority_queue_Adjust_downwards(int parent = 0)
         {
-            Imitation_function_parameter_function com;
-            //仿函数对象
             int priority_queue_Adjust_downwards_child = (parent*2)+1;
             while(priority_queue_Adjust_downwards_child < (int)Container_priority_queue_temp.size())
             {
@@ -1615,7 +1676,7 @@ namespace Wang
                 }
             }
         }
-        public:
+    public:
         ~priority_queue()
         {
             ;
@@ -1739,6 +1800,7 @@ namespace Wang
                 // 转向右子树
                 _ROOT_Temp = _ROOT_Temp->_right;
             }
+            return _size_temp_;
         }
         void _Pre_order_traversal(BS_Tree_Node* _ROOT_Temp )
         {
@@ -1800,8 +1862,6 @@ namespace Wang
         {
             clear();
         }
-        BS_Tree() 
-        :_ROOT(nullptr) {     ;   }
         // 构造函数，使用初始化列表来初始化二叉搜索树
         BS_Tree(std::initializer_list<BS_Tree_Type> list_temp)
         {
@@ -1809,6 +1869,11 @@ namespace Wang
             {
                 push(e);
             }
+        }
+        BS_Tree(const BS_Tree_Type& BST_Temp = BS_Tree_Type(),Imitation_function_parameter_function_BS_Tree com_temp = Imitation_function_parameter_function_BS_Tree())
+        :_ROOT(nullptr),com(com_temp)
+        {   
+            _ROOT = new BS_Tree_Node(BST_Temp);
         }
         BS_Tree(const BS_Tree& _Binary_search_tree_temp)
         :_ROOT(nullptr),com(_Binary_search_tree_temp.com)
@@ -1831,6 +1896,15 @@ namespace Wang
                 _staic_temp_.pop();
                 *(_staic_temp_pair.second) = new BS_Tree_Node(_staic_temp_pair.first->_data);
                 // BS_Tree_Node* _staic_temp_pair_second = *(_staic_temp_pair.second);
+                // if(_staic_temp_pair.first->_left!= nullptr)
+                // {
+                //     _staic_temp_.push(Wang::STL_Demand_class::pair<BS_Tree_Node*,BS_Tree_Node**>(_staic_temp_pair.first->_left,&_staic_temp_pair_second->_left));
+                // }
+                // if(_staic_temp_pair.first->_right!= nullptr)
+                // {
+                //     _staic_temp_.push(Wang::STL_Demand_class::pair<BS_Tree_Node*,BS_Tree_Node**>(_staic_temp_pair.first->_right,&_staic_temp_pair_second->_right));
+                // }
+                //移除临时变量，直接使用指针解引用
                 if(_staic_temp_pair.first->_left!= nullptr)
                 {
                     _staic_temp_.push(Wang::STL_Demand_class::pair<BS_Tree_Node*,BS_Tree_Node**>(_staic_temp_pair.first->_left,&((*_staic_temp_pair.second)->_left)));
@@ -2052,9 +2126,10 @@ namespace Wang
             return *this;
         }
     };
-    /*############################     map 容器     ############################*/
+    /*############################     AVL_Tree 容器     ############################*/
     template <typename AVL_Tree_Type_K,     typename AVL_Tree_Type_V,
-    typename Imitation_function_parameter_function_AVL_Tee = Wang::STL_Imitation_functions::less < AVL_Tree_Type_K > >
+    typename Imitation_function_parameter_function_AVL_Tee = Wang::STL_Imitation_functions::less < AVL_Tree_Type_K >,
+    typename AVL_Tree_Synthetic_class = Wang::STL_Demand_class::pair<AVL_Tree_Type_K,AVL_Tree_Type_V> >
     class AVL_Tree
     {
     private:
@@ -2062,7 +2137,7 @@ namespace Wang
         class AVL_Tree_Type_Node
         {
         public:
-            Wang::STL_Demand_class::pair<AVL_Tree_Type_Node_K,AVL_Tree_Type_Node_V> _data;
+            AVL_Tree_Synthetic_class _data;
 
             AVL_Tree_Type_Node<AVL_Tree_Type_Node_K,AVL_Tree_Type_Node_V>* _left;
             AVL_Tree_Type_Node<AVL_Tree_Type_Node_K,AVL_Tree_Type_Node_V>* _right;
@@ -2074,16 +2149,40 @@ namespace Wang
             {
                 ;
             }
+            AVL_Tree_Type_Node(const AVL_Tree_Synthetic_class& AVL_Tree_pair_temp)
+            :_data(AVL_Tree_pair_temp),_left(nullptr),_right(nullptr),_parent(nullptr),_Balance_factor(0)
+            {
+                ;
+            }
         };
-    public:
         using AVL_Node = AVL_Tree_Type_Node<AVL_Tree_Type_K,AVL_Tree_Type_V>;
 
         AVL_Node* _ROOT;
 
         Imitation_function_parameter_function_AVL_Tee com;
+    public:
         AVL_Tree()
         {
             _ROOT = nullptr;
+        }
+        AVL_Tree(const AVL_Tree_Type_K& Key_temp = AVL_Tree_Type_K(),const AVL_Tree_Type_V& val_temp = AVL_Tree_Type_V(),
+        Imitation_function_parameter_function_AVL_Tee com_temp = Imitation_function_parameter_function_AVL_Tee())
+        :_ROOT(nullptr),com(com_temp)
+        {
+            std::cout << "单一赋值" << std::endl;
+            _ROOT = new AVL_Node(Key_temp,val_temp);
+        }
+        AVL_Tree(const AVL_Tree_Synthetic_class& AVL_Tree_Pair_Temp,
+        Imitation_function_parameter_function_AVL_Tee com_temp = Imitation_function_parameter_function_AVL_Tee())
+        :_ROOT(nullptr),com(com_temp)
+        {
+            std::cout << "合并赋值" << std::endl;
+            _ROOT = new AVL_Node(AVL_Tree_Pair_Temp.first,AVL_Tree_Pair_Temp.second);
+        }
+        AVL_Tree(const AVL_Tree& AVL_Tree_temp_)
+        {
+            //拷贝构造
+            ;
         }
     };
 }
