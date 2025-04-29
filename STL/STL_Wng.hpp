@@ -83,19 +83,19 @@ namespace Wang
             {
                 return this;
             }
-            template<typename Data_Type_example_pair_ostream_T,typename Data_Type_example_pair_ostream_K>
-            friend std::ostream& operator<<(std::ostream& os,pair<Data_Type_example_pair_ostream_T,Data_Type_example_pair_ostream_K>& p);
-            template<typename Data_Type_example_pair_ostream_T,typename Data_Type_example_pair_ostream_K>
-            friend std::ostream& operator<<(std::ostream& os,const pair<Data_Type_example_pair_ostream_T,Data_Type_example_pair_ostream_K>& p);
+            template<typename pair_ostream_T,typename pair_ostream_K>
+            friend std::ostream& operator<<(std::ostream& os,pair<pair_ostream_T,pair_ostream_K>& p);
+            template<typename pair_ostream_T,typename pair_ostream_K>
+            friend std::ostream& operator<<(std::ostream& os,const pair<pair_ostream_T,pair_ostream_K>& p);
         };
-        template<typename Data_Type_example_pair_ostream_T,typename Data_Type_example_pair_ostream_K>
-        std::ostream& operator<<(std::ostream& os,pair<Data_Type_example_pair_ostream_T,Data_Type_example_pair_ostream_K>& p)
+        template<typename pair_ostream_T,typename pair_ostream_K>
+        std::ostream& operator<<(std::ostream& os,pair<pair_ostream_T,pair_ostream_K>& p)
         {
             os << "(" << p.first << ":" << p.second << ")";
             return os;
         }
-        template<typename Data_Type_example_pair_ostream_T,typename Data_Type_example_pair_ostream_K>
-        std::ostream& operator<<(std::ostream& os,const pair<Data_Type_example_pair_ostream_T,Data_Type_example_pair_ostream_K>& p)
+        template<typename pair_ostream_T,typename pair_ostream_K>
+        std::ostream& operator<<(std::ostream& os,const pair<pair_ostream_T,pair_ostream_K>& p)
         {
             os << "(" << p.first << ":" << p.second << ")";
             return os;

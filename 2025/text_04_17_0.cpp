@@ -31,15 +31,18 @@ namespace Wang
         template<typename Data_Type_example_pair_T,typename Data_Type_example_pair_K>
         class pair
         {
+            using T = Data_Type_example_pair_T;
+            using K = Data_Type_example_pair_K;
+            //处理指针类型
         public:
             //链接两个相同或不同的类型为一个类型，方便使用
-            Data_Type_example_pair_T first;
-            Data_Type_example_pair_K second;
-            pair() : first(Data_Type_example_pair_T()), second(Data_Type_example_pair_K()) 
+            T first;
+            K second;
+            pair() : first(T()), second(K()) 
             {
                 ;
             }
-            pair(const Data_Type_example_pair_T& _first,const Data_Type_example_pair_K& _second) 
+            pair(const T& _first,const K& _second) 
             : first(_first), second(_second)
             {
                 ;
@@ -48,11 +51,6 @@ namespace Wang
             : first(other.first), second(other.second)
             {
                 ;
-            }
-            pair(const pair& pair_temp)
-            {
-                first = pair_temp.first;
-                second = pair_temp.second;
             }
             pair& operator=(const pair& other)
             {
@@ -65,10 +63,18 @@ namespace Wang
             }
             bool operator==(const pair& other)
             {
+                if(this == &other)
+                {
+                    return true;
+                }
                 return first == other.first && second == other.second;
             }
             bool operator==(pair& other)const
             {
+                if (this == &other)
+                {
+                    return true;
+                }
                 return first == other.first && second == other.second;
             }
             bool operator!=(const pair& other)
@@ -83,23 +89,125 @@ namespace Wang
             {
                 return this;
             }
-            template<typename Data_Type_example_pair_ostream_T,typename Data_Type_example_pair_ostream_K>
-            friend std::ostream& operator<<(std::ostream& os,pair<Data_Type_example_pair_ostream_T,Data_Type_example_pair_ostream_K>& p);
-            template<typename Data_Type_example_pair_ostream_T,typename Data_Type_example_pair_ostream_K>
-            friend std::ostream& operator<<(std::ostream& os,const pair<Data_Type_example_pair_ostream_T,Data_Type_example_pair_ostream_K>& p);
+            template<typename pair_ostream_T,typename pair_ostream_K>
+            friend std::ostream& operator<<(std::ostream& os,pair<pair_ostream_T,pair_ostream_K>& p);
+
+            template<typename pair_ostream_T,typename pair_ostream_K>
+            friend std::ostream& operator<<(std::ostream& os,const pair<pair_ostream_T,pair_ostream_K>& p);
         };
-        template<typename Data_Type_example_pair_ostream_T,typename Data_Type_example_pair_ostream_K>
-        std::ostream& operator<<(std::ostream& os,pair<Data_Type_example_pair_ostream_T,Data_Type_example_pair_ostream_K>& p)
+        template<typename pair_ostream_T,typename pair_ostream_K>
+        std::ostream& operator<<(std::ostream& os,pair<pair_ostream_T,pair_ostream_K>& p)
         {
             os << "(" << p.first << ":" << p.second << ")";
             return os;
         }
-        template<typename Data_Type_example_pair_ostream_T,typename Data_Type_example_pair_ostream_K>
-        std::ostream& operator<<(std::ostream& os,const pair<Data_Type_example_pair_ostream_T,Data_Type_example_pair_ostream_K>& p)
+        template<typename pair_ostream_T,typename pair_ostream_K>
+        std::ostream& operator<<(std::ostream& os,const pair<pair_ostream_T,pair_ostream_K>& p)
         {
             os << "(" << p.first << ":" << p.second << ")";
             return os;
         }
+        // /*                               pair 指针特化版本                                   */
+        // template<typename Data_Type_example_pair_T,typename Data_Type_example_pair_K>
+        // class pair<Data_Type_example_pair_T*,Data_Type_example_pair_K*>
+        // {
+        //     using T = Data_Type_example_pair_T;
+        //     using K = Data_Type_example_pair_K;
+        //     using T_pointer = Data_Type_example_pair_T*;
+        //     using K_pointer = Data_Type_example_pair_K*;
+        // public:
+        //     T_pointer first;
+        //     K_pointer second;
+        //     ~pair()
+        //     {
+        //         delete first;
+        //         delete second;
+        //         first = nullptr;
+        //         second = nullptr;
+        //     }
+        //     pair() : first(nullptr), second(nullptr)
+        //     {
+        //         ;
+        //     }
+        //     pair(const T_pointer& _first,const K_pointer& _second)
+        //     : first(nullptr), second(nullptr)
+        //     {
+        //         first  = new T(*_first);
+        //         second = new K(*_second);
+        //     }
+        //     pair(const pair& other)
+        //     {
+        //         delete first;
+        //         delete second;
+        //         first  = new T(*other.first);
+        //         second = new K(*other.second);
+        //     }
+        //     pair& operator=(const pair& other) 
+        //     {
+        //         if (this != &other) 
+        //         {
+        //             delete first;
+        //             delete second;
+        //             first = (other.first) ? new T(*other.first) : nullptr;
+        //             second = (other.second) ? new K(*other.second) : nullptr;
+        //         }
+        //         return *this;
+        //     }
+        //     bool operator==(const pair& other)
+        //     {
+        //         if(this == &other)
+        //         {
+        //             return true;
+        //         }
+        //         return *first == *other.first && *second == *other.second;
+        //     }
+        //     bool operator==(pair& other)const
+        //     {
+        //         if (this == &other)
+        //         {
+        //             return true;
+        //         }
+        //         return *first == *other.first && *second == *other.second;
+        //     }
+        //     bool operator!=(const pair& other)
+        //     {
+        //         return!(*this == other);
+        //     }
+        //     pair* operator->()
+        //     {
+        //         return this;
+        //     }
+        //     const pair* operator->()const
+        //     {
+        //         return this;
+        //     }
+        //     template<typename pair_ostream_T,typename pair_ostream_K>
+        //     friend std::ostream& operator<<(std::ostream& os,pair<pair_ostream_T*,pair_ostream_K*>& p);
+
+        //     template<typename pair_ostream_T,typename pair_ostream_K>
+        //     friend std::ostream& operator<<(std::ostream& os,const pair<pair_ostream_T*,pair_ostream_K*>& p);
+        // };
+        // template<typename pair_ostream_T,typename pair_ostream_K>
+        // std::ostream& operator<<(std::ostream& os,pair<pair_ostream_T*,pair_ostream_K*>& p)
+        // {
+        //     os << "(";
+        //     Wang::STL_Demand_class_Helper_functions::print_pointer_or_nullptr(os, p.first);
+        //     os << ":";
+        //     Wang::STL_Demand_class_Helper_functions::print_pointer_or_nullptr(os, p.second);
+        //     os << ")";
+        //     return os;
+        //     return os;
+        // }
+        // template<typename pair_ostream_T,typename pair_ostream_K>
+        // std::ostream& operator<<(std::ostream& os,const pair<pair_ostream_T*,pair_ostream_K*>& p)
+        // {
+        //     os << "(";
+        //     Wang::STL_Demand_class_Helper_functions::print_pointer_or_nullptr(os, p.first);
+        //     os << ":";
+        //     Wang::STL_Demand_class_Helper_functions::print_pointer_or_nullptr(os, p.second);
+        //     os << ")";
+        //     return os;
+        // }
         /*                               类分隔                                   */
         template<typename make_pair_T,typename make_pair_K>
         pair<make_pair_T,make_pair_K> make_pair (const make_pair_T& _first,const make_pair_K& _second)
@@ -2161,10 +2269,6 @@ namespace Wang
 
         Imitation_function_parameter_function_AVL_Tee com;
     public:
-        AVL_Tree()
-        {
-            _ROOT = nullptr;
-        }
         AVL_Tree(const AVL_Tree_Type_K& Key_temp = AVL_Tree_Type_K(),const AVL_Tree_Type_V& val_temp = AVL_Tree_Type_V(),
         Imitation_function_parameter_function_AVL_Tee com_temp = Imitation_function_parameter_function_AVL_Tee())
         :_ROOT(nullptr),com(com_temp)
@@ -2183,6 +2287,11 @@ namespace Wang
         {
             //拷贝构造
             ;
+        }
+        ~AVL_Tree()
+        {
+            //析构函数
+            // std::cout << "析构函数" <<std::endl;
         }
     };
 }
@@ -2596,7 +2705,9 @@ int main()
         Wang::AVL_Tree<Wang::STL_Demand_class::pair<int,int>,int> AVL_Tree_test1(Wang::STL_Demand_class::pair(9,0), 10);
         Wang::STL_Demand_class::pair<Wang::STL_Demand_class::pair<int,int>,int> pair_test_ (Wang::STL_Demand_class::pair(9,0), 10);
         Wang::AVL_Tree<Wang::STL_Demand_class::pair<int,int>,int> AVL_Tree_test(pair_test_);
-        //两个构造函数，根据传值调用来查看调用情况捐给
+        //两个构造函数，根据传值调用来查看调用情况
+        Wang::AVL_Tree<Wang::string,int> AVL_Tree_test2;
+        AVL_Tree_test2.~AVL_Tree();
     }
     return 0;
 }
