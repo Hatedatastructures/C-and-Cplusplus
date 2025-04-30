@@ -2387,7 +2387,7 @@ namespace Wang
         {   
             AVL_Node* Sub_left_temp = parent_temp_Node->_left;
             AVL_Node* Sub_left_right_temp = Sub_left_temp->_right;
-            
+
             int Balance_factor_temp = Sub_left_right_temp->_Balance_factor;
 
             _left_revolve(parent_temp_Node->_left);
@@ -2460,9 +2460,39 @@ namespace Wang
             }
             else
             {
-
+                AVL_Node* _ROOT_Temp = _ROOT;
+                AVL_Node* _ROOT_Temp_parent = nullptr;
+                while(_ROOT_Temp != nullptr)
+                {
+                    _ROOT_Temp_parent = _ROOT_Temp;
+                    if(!com(AVL_Tree_Pair_Temp.first,_ROOT_Temp->_Key) && !com(_ROOT_Temp->_Key,AVL_Tree_Pair_Temp.first))
+                    {
+                        _ROOT_Temp->_data = AVL_Tree_Pair_Temp;
+                        return true;
+                    }
+                    else if(com(AVL_Tree_Pair_Temp.first,_ROOT_Temp->_Key))
+                    {
+                        _ROOT_Temp = _ROOT_Temp->_left;
+                    }
+                    else
+                    {
+                        _ROOT_Temp = _ROOT_Temp->_right;
+                    }
+                }
+                _ROOT_Temp = new AVL_Node(AVL_Tree_Pair_Temp.first,AVL_Tree_Pair_Temp.second);
+                if(com(AVL_Tree_Pair_Temp.first,_ROOT_Temp_parent->_Key))
+                {
+                    _ROOT_Temp_parent->_left = _ROOT_Temp;
+                }
+                else
+                {
+                    _ROOT_Temp_parent->_right = _ROOT_Temp;
+                }
+                //插入完成，开始平衡
+                
             }
         }
+        
     };
 }
 int main()
