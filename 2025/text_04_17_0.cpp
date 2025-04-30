@@ -2268,6 +2268,91 @@ namespace Wang
         AVL_Node* _ROOT;
 
         Imitation_function_parameter_function_AVL_Tee com;
+        void _levorotation(AVL_Node* parent_temp_Node)
+        {
+            //传进来的值是发现该树平衡性被破坏的节点地址
+            //大致思想：因为这是左单旋，所以找传进来的父亲节点的右根节点来当调整节点
+            //然后把调整节点的左根节点赋值给传进来的父亲节点的右根节点 (刚才已经用节点保存过调整节点，所以这里直接赋值)，
+            //再把父亲节点赋值给调整节点的左根节点，！！注意：在旋转的过程中还要处理每个调整节点的父亲节点的指向和平衡因子
+
+            // {
+            //     AVL_Node* Sub_right_temp = parent_temp_Node->_right;
+            //     parent_temp_Node->_right = Sub_right_temp->_left;
+            //     Sub_right_temp->_left = parent_temp_Node;
+            //     //错误写法：未同步调整父亲节点和判断调整节点的左根节点是否为空，以及全部需要调整节点的父亲指针的指针的指向
+            // }
+            AVL_Node* Sub_right_temp = parent_temp_Node->_right;
+            AVL_Node* Sub_right_left_temp = Sub_right_temp->_left;
+
+            parent_temp_Node->_right = Sub_right_left_temp;
+            if(Sub_right_left_temp)
+            {
+                Sub_right_left_temp->_parent = parent_temp_Node;
+                //如果Sub_right_left_temp(调整节点的左根节点)不等于空，还需要调整Sub_right_left_temp它的父亲节点
+            }
+            Sub_right_temp->left = parent_temp_Node;
+            //这里先保存一下parent_temp_Node的父亲地址，防止到下面else比较的时候丢失
+            AVL_Node* parent_parent_temp_Node = parent_temp_Node->_parent;
+            parent_temp_Node->_parent = Sub_right_temp;
+            //更新parent_temp_Node节点指向正确的地址
+
+            if(_ROOT == parent_temp_Node)
+            {
+                //如果要调整的节点是根根节点，直接把调整节点赋值给根节点，然后把调整节点的父亲节点置空
+                _ROOT = Sub_right_temp;
+                Sub_right_temp->_parent = nullptr;
+            }
+            else
+            {
+                //调整前parent_temp_Node是这个树的根现在是Sub_right_temp是这个树的根
+                if(parent_parent_temp_Node->_left == parent_temp_Node)
+                {
+                    parent_parent_temp_Node->_left = Sub_right_temp;
+                }
+                else
+                {
+                    parent_parent_temp_Node->_right = Sub_right_temp;
+                }
+                Sub_right_temp->_parent = parent_parent_temp_Node;
+            }
+            parent_temp_Node->_Balance_factor = Sub_right_temp->_Balance_factor = 0;
+        }
+
+        void _Right_handed(AVL_Node* parent_temp_Node)
+        {
+            //思路同左单旋思路差不多
+            AVL_Node* Sub_left_temp = parent_temp_Node->_left;
+            AVL_Node* Sub_left_right_temp = Sub_left_temp->_right;
+
+            parent_temp_Node->_left = Sub_left_temp;
+            if(Sub_left_right_temp)
+            {
+                Sub_left_right_temp->_parent = parent_temp_Node;
+            }
+            Sub_left_temp->right = parent_temp_Node;
+            //保存parent_temp_Node的父亲节点
+            AVL_Node* parent_parent_temp_Node = parent_temp_Node->_parent;
+            parent_temp_Node->_parent = Sub_left_temp;
+
+            if(_ROOT == parent_temp_Node)
+            {
+                _ROOT = Sub_left_temp;
+                Sub_left_temp->_parent = nullptr;
+            }
+            else
+            {
+                if(parent_parent_temp_Node->_left == parent_temp_Node)
+                {
+                    parent_parent_temp_Node->_left = Sub_left_temp;
+                }
+                else
+                {
+                    parent_parent_temp_Node->_right = Sub_left_temp;
+                }
+                Sub_left_temp->_parent = parent_parent_temp_Node;
+            }
+            parent_temp_Node->_Balance_factor = Sub_left_temp->_Balance_factor = 0;
+        }
     public:
         AVL_Tree(const AVL_Tree_Type_K& Key_temp = AVL_Tree_Type_K(),const AVL_Tree_Type_V& val_temp = AVL_Tree_Type_V(),
         Imitation_function_parameter_function_AVL_Tee com_temp = Imitation_function_parameter_function_AVL_Tee())
