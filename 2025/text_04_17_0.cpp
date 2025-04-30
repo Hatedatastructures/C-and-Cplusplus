@@ -107,6 +107,7 @@ namespace Wang
             os << "(" << p.first << ":" << p.second << ")";
             return os;
         }
+        //当前pair版本对于指针类型在用到pair的地方会导致内存泄漏
         // /*                               pair 指针特化版本                                   */
         // template<typename Data_Type_example_pair_T,typename Data_Type_example_pair_K>
         // class pair<Data_Type_example_pair_T*,Data_Type_example_pair_K*>
@@ -2268,7 +2269,7 @@ namespace Wang
         AVL_Node* _ROOT;
 
         Imitation_function_parameter_function_AVL_Tee com;
-        void _levorotation(AVL_Node* parent_temp_Node)
+        void _left_revolve(AVL_Node* parent_temp_Node)
         {
             //传进来的值是发现该树平衡性被破坏的节点地址
             //大致思想：因为这是左单旋，所以找传进来的父亲节点的右根节点来当调整节点
@@ -2318,7 +2319,7 @@ namespace Wang
             parent_temp_Node->_Balance_factor = Sub_right_temp->_Balance_factor = 0;
         }
 
-        void _Right_handed(AVL_Node* parent_temp_Node)
+        void _right_revolve(AVL_Node* parent_temp_Node)
         {
             //思路同左单旋思路差不多
             AVL_Node* Sub_left_temp = parent_temp_Node->_left;
@@ -2353,6 +2354,39 @@ namespace Wang
             }
             parent_temp_Node->_Balance_factor = Sub_left_temp->_Balance_factor = 0;
         }
+        void _right_left_revolve(AVL_Node* parent_temp_Node)
+        {
+            AVL_Node* Sub_right_temp = parent_temp_Node->_right;
+            AVL_Node* Sub_right_left_temp = Sub_right_temp->_left;
+            int Balance_factor_temp = Sub_right_left_temp->_Balance_factor;
+
+            _right_revolve(parent_temp_Node->_right);
+            //右旋
+            _left_revolve(parent_temp_Node);
+            //左旋
+            if(Balance_factor_temp == -1)
+            {
+                parent_temp_Node->_Balance_factor = 0;
+                Sub_right_temp->_Balance_factor = 1;
+                Sub_right_left_temp->_Balance_factor = 0;
+            }
+            else if(Balance_factor_temp == 1)
+            {
+                parent_temp_Node->_Balance_factor = -1;
+                Sub_right_temp->_Balance_factor = 0;
+                Sub_right_left_temp->_Balance_factor = 0;
+            }
+            else
+            {
+                parent_temp_Node->_Balance_factor = 0;
+                Sub_right_temp->_Balance_factor = 0;
+                Sub_right_left_temp->_Balance_factor = 0;
+            }
+        }
+        void _left_right_revolve(AVL_Node* parent_temp_Node)
+        {
+
+        }
     public:
         AVL_Tree(const AVL_Tree_Type_K& Key_temp = AVL_Tree_Type_K(),const AVL_Tree_Type_V& val_temp = AVL_Tree_Type_V(),
         Imitation_function_parameter_function_AVL_Tee com_temp = Imitation_function_parameter_function_AVL_Tee())
@@ -2377,6 +2411,31 @@ namespace Wang
         {
             //析构函数
             // std::cout << "析构函数" <<std::endl;
+        }
+        bool push(const AVL_Tree_Type_K& Key_temp,const AVL_Tree_Type_V& val_temp)
+        {
+            //插入
+            if(_ROOT == nullptr)
+            {
+                _ROOT = new AVL_Node(Key_temp,val_temp);
+                return true;
+            }
+            else
+            {
+
+            }
+        }
+        bool push(const AVL_Tree_Synthetic_class& AVL_Tree_Pair_Temp)
+        {
+            if(_ROOT == nullptr)
+            {
+                _ROOT = new AVL_Node(AVL_Tree_Pair_Temp.first,AVL_Tree_Pair_Temp.second);
+                return true;
+            }
+            else
+            {
+
+            }
         }
     };
 }
