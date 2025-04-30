@@ -2384,8 +2384,34 @@ namespace Wang
             }
         }
         void _left_right_revolve(AVL_Node* parent_temp_Node)
-        {
+        {   
+            AVL_Node* Sub_left_temp = parent_temp_Node->_left;
+            AVL_Node* Sub_left_right_temp = Sub_left_temp->_right;
+            
+            int Balance_factor_temp = Sub_left_right_temp->_Balance_factor;
 
+            _left_revolve(parent_temp_Node->_left);
+            //左旋
+            _right_revolve(parent_temp_Node);
+            //右旋
+            if(Balance_factor_temp == -1)
+            {
+                parent_temp_Node->_Balance_factor = 0;
+                Sub_left_temp->_Balance_factor = 1;
+                Sub_left_right_temp->_Balance_factor = 0;
+            }
+            else if(Balance_factor_temp == 1)
+            {
+                parent_temp_Node->_Balance_factor = -1;
+                Sub_left_temp->_Balance_factor = 0;
+                Sub_left_right_temp->_Balance_factor = 0;
+            }
+            else
+            {
+                parent_temp_Node->_Balance_factor = 0;
+                Sub_left_temp->_Balance_factor = 0;
+                Sub_left_right_temp->_Balance_factor = 0;
+            }
         }
     public:
         AVL_Tree(const AVL_Tree_Type_K& Key_temp = AVL_Tree_Type_K(),const AVL_Tree_Type_V& val_temp = AVL_Tree_Type_V(),
