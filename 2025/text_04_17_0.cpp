@@ -1945,12 +1945,11 @@ namespace Wang
                 return;
             }
             //循环释放资源
-            BS_Tree_Node* _ROOT_Temp = _ROOT;
             Wang::stack<BS_Tree_Node*> _staic_clear_temp_;
-            _staic_clear_temp_.push(_ROOT_Temp);
+            _staic_clear_temp_.push(_ROOT);
             while(_staic_clear_temp_.empty() == false)
             {
-                _ROOT_Temp = _staic_clear_temp_.top();
+                BS_Tree_Node* _ROOT_Temp = _staic_clear_temp_.top();
                 //取出元素，把左右节点入进去
                 _staic_clear_temp_.pop();
                 if(_ROOT_Temp->_left!= nullptr)
@@ -1962,7 +1961,7 @@ namespace Wang
                     _staic_clear_temp_.push(_ROOT_Temp->_right);
                 }
                 delete _ROOT_Temp;
-                _ROOT_Temp = nullptr;
+                _ROOT = nullptr;
             }
             _ROOT = nullptr;
         }
@@ -2413,6 +2412,36 @@ namespace Wang
                 Sub_left_right_temp->_Balance_factor = 0;
             }
         }
+        void clear()
+        {
+            //清空所有资源
+            if(_ROOT == nullptr)
+            {
+                return;
+            }
+            else
+            {
+                Wang::stack<AVL_Node*> _stack_temp;
+                //前序释放
+                _stack_temp.push(_ROOT);
+                while(!_stack_temp.empty())
+                {
+                    AVL_Node* temp = _stack_temp.top();
+                    _stack_temp.pop();
+                    if(temp->_left != nullptr)
+                    {
+                        _stack_temp.push(temp->_left);
+                    }
+                    if(temp->_right != nullptr)
+                    {
+                        _stack_temp.push(temp->_right);
+                    }
+                    delete temp;
+                    temp = nullptr;
+                }
+                _ROOT = nullptr;
+            }
+        }
     public:
         AVL_Tree(const AVL_Tree_Type_K& Key_temp = AVL_Tree_Type_K(),const AVL_Tree_Type_V& val_temp = AVL_Tree_Type_V(),
         Imitation_function_parameter_function_AVL_Tee com_temp = Imitation_function_parameter_function_AVL_Tee())
@@ -2437,6 +2466,7 @@ namespace Wang
         {
             //析构函数
             // std::cout << "析构函数" <<std::endl;
+            clear();
         }
         bool push(const AVL_Tree_Type_K& Key_temp,const AVL_Tree_Type_V& val_temp)
         {
