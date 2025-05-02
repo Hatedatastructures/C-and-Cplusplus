@@ -2281,9 +2281,15 @@ namespace Wang
             //     Sub_right_temp->_left = parent_temp_Node;
             //     //错误写法：未同步调整父亲节点和判断调整节点的左根节点是否为空，以及全部需要调整节点的父亲指针的指针的指向
             // }
+            if(parent_temp_Node == nullptr|| parent_temp_Node->_right == nullptr)
+            {
+                std::cout <<"left "<< "空指针"  <<std::endl;
+                return ;
+            }
             AVL_Node* Sub_right_temp = parent_temp_Node->_right;
-            AVL_Node* Sub_right_left_temp = Sub_right_temp->_left;
-
+            // AVL_Node* Sub_right_left_temp = Sub_right_temp->_left;
+            AVL_Node* Sub_right_left_temp = (Sub_right_temp->_left)? Sub_right_temp->_left : nullptr;
+            //防止空指针解引用
             parent_temp_Node->_right = Sub_right_left_temp;
             if(Sub_right_left_temp)
             {
@@ -2321,10 +2327,15 @@ namespace Wang
         void _right_revolve(AVL_Node* parent_temp_Node)
         {
             //思路同左单旋思路差不多
+            if(parent_temp_Node == nullptr|| parent_temp_Node->_left == nullptr)
+            {
+                std::cout <<"right "<< "空指针"  <<std::endl; 
+                return ;
+            }
             AVL_Node* Sub_left_temp = parent_temp_Node->_left;
-            AVL_Node* Sub_left_right_temp = Sub_left_temp->_right;
-
-            parent_temp_Node->_left = Sub_left_temp;
+            AVL_Node* Sub_left_right_temp = (Sub_left_temp->_right)? Sub_left_temp->_right : nullptr;
+            //防止空指针解引用
+            parent_temp_Node->_left = Sub_left_right_temp;
             if(Sub_left_right_temp)
             {
                 Sub_left_right_temp->_parent = parent_temp_Node;
@@ -2355,6 +2366,11 @@ namespace Wang
         }
         void _right_left_revolve(AVL_Node* parent_temp_Node)
         {
+            if(parent_temp_Node==nullptr || parent_temp_Node->_right == nullptr || parent_temp_Node->_right->_left == nullptr)
+            {
+                std::cout <<"right_left "<< "空指针"  <<std::endl;
+                return;
+            }
             AVL_Node* Sub_right_temp = parent_temp_Node->_right;
             AVL_Node* Sub_right_left_temp = Sub_right_temp->_left;
             int Balance_factor_temp = Sub_right_left_temp->_Balance_factor;
@@ -2384,9 +2400,13 @@ namespace Wang
         }
         void _left_right_revolve(AVL_Node* parent_temp_Node)
         {   
+            if(parent_temp_Node == nullptr || parent_temp_Node->_left == nullptr || parent_temp_Node->_left->_right == nullptr)
+            {
+                std::cout << "left_right " << "空指针" << std::endl;
+                return ;
+            }
             AVL_Node* Sub_left_temp = parent_temp_Node->_left;
             AVL_Node* Sub_left_right_temp = Sub_left_temp->_right;
-
             int Balance_factor_temp = Sub_left_right_temp->_Balance_factor;
 
             _left_revolve(parent_temp_Node->_left);
@@ -2560,7 +2580,7 @@ namespace Wang
                     {
                         //不允许重复插入
                         return true;
-                    }
+                    } 
                     else if(com(AVL_Tree_Pair_Temp.first,_ROOT_Temp->_data.first))
                     {
                         _ROOT_Temp = _ROOT_Temp->_left;
@@ -2574,65 +2594,66 @@ namespace Wang
                 if(com(AVL_Tree_Pair_Temp.first,_ROOT_Temp_parent->_data.first))
                 {
                     _ROOT_Temp_parent->_left = _ROOT_Temp;
-                    _ROOT->_parent = _ROOT_Temp_parent;
                     //三叉链表，注意父亲节点指向
                 }
                 else
                 {
                     _ROOT_Temp_parent->_right = _ROOT_Temp;
-                    _ROOT->_parent = _ROOT_Temp_parent;
                 }
+                _ROOT_Temp->_parent = _ROOT_Temp_parent;
+                AVL_Node* _ROOT_Temp_test = _ROOT_Temp;
+                AVL_Node* _ROOT_Temp_test_parent = _ROOT_Temp_parent;
                 //更新平衡因子
-                while(_ROOT_Temp)
+                while(_ROOT_Temp_test_parent)
                 {
                     //更新到根节点跳出
-                    if(_ROOT_Temp == _ROOT_Temp_parent->_right)
+                    if(_ROOT_Temp_test == _ROOT_Temp_test_parent->_right)
                     {
-                        _ROOT_Temp_parent->_Balance_factor++;
+                        _ROOT_Temp_test_parent->_Balance_factor++;
                     }
                     else
                     {
-                        _ROOT_Temp_parent->_Balance_factor--;
+                        _ROOT_Temp_test_parent->_Balance_factor--;
                     }
 
-                    if(_ROOT_Temp_parent->_Balance_factor == 0)
+                    if(_ROOT_Temp_test_parent->_Balance_factor == 0)
                     {
                         //平衡因子为0，无需平衡
                         break;
                     }
-                    else if(_ROOT_Temp_parent->_Balance_factor == 1 || _ROOT_Temp_parent->_Balance_factor == -1)
+                    else if(_ROOT_Temp_test_parent->_Balance_factor == 1 || _ROOT_Temp_test_parent->_Balance_factor == -1)
                     {
-                        _ROOT_Temp = _ROOT_Temp_parent;
-                        _ROOT_Temp_parent = _ROOT_Temp_parent->_parent;
+                        _ROOT_Temp_test = _ROOT_Temp_test_parent;
+                        _ROOT_Temp_test_parent = _ROOT_Temp_test_parent->_parent;
                         //向上更新，直到找到0或-2或2
                     }
-                    else if(_ROOT_Temp_parent->_Balance_factor == 2 || _ROOT_Temp_parent->_Balance_factor == -2)
+                    else if(_ROOT_Temp_test_parent->_Balance_factor == 2 || _ROOT_Temp_test_parent->_Balance_factor == -2)
                     {
                         //平衡因子为2或者-2，需要平衡
-                        if(_ROOT_Temp_parent->_Balance_factor == 2)
+                        if(_ROOT_Temp_test_parent->_Balance_factor == 2)
                         {
-                            if(_ROOT_Temp->_Balance_factor == 1)
+                            if(_ROOT_Temp_test->_Balance_factor == 1)
                             {
-                                //LL
-                                _left_revolve(_ROOT_Temp_parent);
+                                //L
+                                _left_revolve(_ROOT_Temp_test_parent);
                             }
                             else
                             {
                                 //LR
-                                _left_right_revolve(_ROOT_Temp_parent);
+                                _left_right_revolve(_ROOT_Temp_test_parent);
                             }
                         }
-                        else if (_ROOT_Temp_parent->_Balance_factor == -2)
+                        else if (_ROOT_Temp_test_parent->_Balance_factor == -2)
                         {
-                            if(_ROOT_Temp->_Balance_factor == -1)
+                            if(_ROOT_Temp_test->_Balance_factor == -1)
                             {
-                                //RR
-                                _right_revolve(_ROOT_Temp_parent);
+                                //R
+                                _right_revolve(_ROOT_Temp_test_parent);
                             }
                             else
                             {
                                 //RL
-                                _right_left_revolve(_ROOT_Temp_parent);
+                                _right_left_revolve(_ROOT_Temp_test_parent);
                             }
                         }
                         break;
@@ -3062,6 +3083,7 @@ int main()
     //     AVL_Tree_test2.~AVL_Tree();
     // }
     {
+        //bug空指针
         Wang::AVL_Tree<int,int> AVL_Tree_test1;
         Wang::vector<Wang::STL_Demand_class::pair<int,int>> AVL_Tree_array = {{22,0},{16,0},{13,0},{15,0},{11,0},{12,0},{14,0},{10,0},{2,0},{10,0}};
         for(auto& i : AVL_Tree_array)
