@@ -2563,6 +2563,7 @@ namespace Wang
         }
         bool push(const AVL_Tree_Synthetic_class& AVL_Tree_Pair_Temp)
         {
+            //AVL树左子树比右子树高，则他俩的根节点的平衡因子为1，反之为-1，也就是说左加一，右减一，如果根节点为2和-2就要需要调整了
             if(_ROOT == nullptr)
             {
                 _ROOT = new AVL_Node(AVL_Tree_Pair_Temp.first,AVL_Tree_Pair_Temp.second);
@@ -2579,7 +2580,7 @@ namespace Wang
                     if(!com(AVL_Tree_Pair_Temp.first,_ROOT_Temp->_data.first) && !com(_ROOT_Temp->_data.first,AVL_Tree_Pair_Temp.first))
                     {
                         //不允许重复插入
-                        return true;
+                        return false;
                     } 
                     else if(com(AVL_Tree_Pair_Temp.first,_ROOT_Temp->_data.first))
                     {
@@ -2634,39 +2635,41 @@ namespace Wang
                         {
                             if(_ROOT_Temp_test->_Balance_factor == 1)
                             {
-                                //L
+                                //L，说明_ROOT_Temp_test是_ROOT_Temp_test_parent的左子节点，线形
                                 _left_revolve(_ROOT_Temp_test_parent);
                             }
                             else
                             {
-                                //LR
-                                _left_right_revolve(_ROOT_Temp_test_parent);
+                                //RL，证明_ROOT_Temp_test是_ROOT_Temp_test_parent的右子节点，在AVL树抽象图上就是折线型的
+                                _right_left_revolve(_ROOT_Temp_test_parent);
                             }
                         }
                         else if (_ROOT_Temp_test_parent->_Balance_factor == -2)
                         {
                             if(_ROOT_Temp_test->_Balance_factor == -1)
                             {
-                                //R
+                                //R，说明_ROOT_Temp_test是_ROOT_Temp_test_parent的右子节点，线形
                                 _right_revolve(_ROOT_Temp_test_parent);
                             }
                             else
                             {
-                                //RL
-                                _right_left_revolve(_ROOT_Temp_test_parent);
+                                //LR，和上同理
+                                _left_right_revolve(_ROOT_Temp_test_parent);
                             }
                         }
-                        break;
+                        //旋转后继续向上调整，因为旋转后父节点的平衡因子可能发生变化，每个旋转的节点都可以当作一个子树，子树旋转后，父节点平衡因子可能发生变化
+                        _ROOT_Temp_test = _ROOT_Temp_test_parent;
+                        _ROOT_Temp_test_parent = _ROOT_Temp_test_parent->_parent;
+                        //对于双旋的情况，相同方向先调整该节点，再调整整体
                     }
                 }
             }
-            return false;
+            return true;
         }
         
     };
     //pair类指针特化版本，析构函数
     //AVL树其余函数，拷贝构，，迭代器配置
-    //BS树迭代器
 }
 int main()
 {  
