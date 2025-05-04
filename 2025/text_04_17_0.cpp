@@ -2333,7 +2333,7 @@ namespace Wang
                 return ;
             }
             AVL_Node* Sub_left_temp = parent_temp_Node->_left;
-            AVL_Node* Sub_left_right_temp = (Sub_left_temp->_right)? Sub_left_temp->_right : nullptr;
+            AVL_Node* Sub_left_right_temp = (Sub_left_temp->_right) ? Sub_left_temp->_right : nullptr;
             //防止空指针解引用
             parent_temp_Node->_left = Sub_left_right_temp;
             if(Sub_left_right_temp)
@@ -2366,7 +2366,7 @@ namespace Wang
         }
         void _right_left_revolve(AVL_Node* parent_temp_Node)
         {
-            if(parent_temp_Node==nullptr || parent_temp_Node->_right == nullptr || parent_temp_Node->_right->_left == nullptr)
+            if(parent_temp_Node==nullptr || parent_temp_Node->_right == nullptr)
             {
                 std::cout <<"right_left "<< "空指针"  <<std::endl;
                 return;
@@ -2400,7 +2400,7 @@ namespace Wang
         }
         void _left_right_revolve(AVL_Node* parent_temp_Node)
         {   
-            if(parent_temp_Node == nullptr || parent_temp_Node->_left == nullptr || parent_temp_Node->_left->_right == nullptr)
+            if(parent_temp_Node == nullptr || parent_temp_Node->_left == nullptr)
             {
                 std::cout << "left_right " << "空指针" << std::endl;
                 return ;
