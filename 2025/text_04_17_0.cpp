@@ -2515,18 +2515,22 @@ namespace Wang
             }
         }
     public:
-        AVL_Tree(const AVL_Tree_Type_K& Key_temp = AVL_Tree_Type_K(),const AVL_Tree_Type_V& val_temp = AVL_Tree_Type_V(),
+        AVL_Tree()
+        {
+            _ROOT = nullptr;
+        }
+        AVL_Tree(const AVL_Tree_Type_K& Key_temp,const AVL_Tree_Type_V& val_temp = AVL_Tree_Type_V(),
         Imitation_function_parameter_function_AVL_Tee com_temp = Imitation_function_parameter_function_AVL_Tee())
         :_ROOT(nullptr),com(com_temp)
         {
-            std::cout << "单一赋值" << std::endl;
+            // std::cout << "单一赋值" << std::endl;
             _ROOT = new AVL_Node(Key_temp,val_temp);
         }
         AVL_Tree(const AVL_Tree_Synthetic_class& AVL_Tree_Pair_Temp,
         Imitation_function_parameter_function_AVL_Tee com_temp = Imitation_function_parameter_function_AVL_Tee())
         :_ROOT(nullptr),com(com_temp)
         {
-            std::cout << "合并赋值" << std::endl;
+            // std::cout << "合并赋值" << std::endl;
             _ROOT = new AVL_Node(AVL_Tree_Pair_Temp.first,AVL_Tree_Pair_Temp.second);
         }
         AVL_Tree(const AVL_Tree& AVL_Tree_temp_)
