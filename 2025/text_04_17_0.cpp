@@ -2515,6 +2515,37 @@ namespace Wang
                 _ROOT_Temp = _ROOT_Temp->_right;
             }
         }
+        size_t _size()
+        {
+            size_t temp = 0; 
+            if(_ROOT == nullptr)
+            {
+                return temp;
+            }
+            else
+            {
+                AVL_Node* _Pre_order_traversal_test = _ROOT;
+                Wang::stack<AVL_Node*> stack_Temp;
+                stack_Temp.push(_Pre_order_traversal_test);
+                while( !stack_Temp.empty() )
+                {
+                    _Pre_order_traversal_test = stack_Temp.top();
+                    stack_Temp.pop();
+
+                    temp++;
+
+                    if(_Pre_order_traversal_test->_right != nullptr)
+                    {
+                        stack_Temp.push(_Pre_order_traversal_test->_right);
+                    }
+                    if(_Pre_order_traversal_test->_left != nullptr)
+                    {
+                        stack_Temp.push(_Pre_order_traversal_test->_left);
+                    }
+                }
+            }
+            return temp;
+        }
     public:
         AVL_Tree()
         {
@@ -2541,6 +2572,14 @@ namespace Wang
         {
             //析构函数
             clear();
+        }
+        size_t size() const
+        {
+            return _size();
+        }
+        size_t size()
+        {
+            return _size();
         }
         bool push(const AVL_Tree_Type_K& Key_temp,const AVL_Tree_Type_V& val_temp = AVL_Tree_Type_V())
         {
@@ -3197,7 +3236,7 @@ int main()
             AVL_Tree_test_pair.push(i);
         }
         time_t AVL_Tree_num2 = clock();
-        std::cout << "插入个数:" << size  << " " << " 插入时间:" << AVL_Tree_num2 - AVL_Tree_num1 << std::endl;
+        std::cout << "插入个数:" << AVL_Tree_test_pair.size()  << " " << " 插入时间:" << AVL_Tree_num2 - AVL_Tree_num1 << std::endl;
 
         /*                  非pair 类型               */
         Wang::AVL_Tree<size_t,int> AVL_Tree_test;
@@ -3212,7 +3251,7 @@ int main()
             AVL_Tree_test.push(j);
         }
         time_t AVL_Tree_num4 = clock();
-        std::cout << "插入个数:" << size  << " " << " 插入时间:" << AVL_Tree_num4 - AVL_Tree_num3 << std::endl;
+        std::cout << "插入个数:" << AVL_Tree_test.size()  << " " << " 插入时间:" << AVL_Tree_num4 - AVL_Tree_num3 << std::endl;
     }
     return 0;
 }
