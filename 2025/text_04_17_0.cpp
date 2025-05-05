@@ -1928,14 +1928,15 @@ namespace Wang
                 stack_Temp.pop();
 
                 std::cout << _Pre_order_traversal_test->_data << " ";
-                if(_Pre_order_traversal_test->_left != nullptr)
-                {
-                    stack_Temp.push(_Pre_order_traversal_test->_left);
-                }
                 if(_Pre_order_traversal_test->_right != nullptr)
                 {
                     stack_Temp.push(_Pre_order_traversal_test->_right);
                 }
+                if(_Pre_order_traversal_test->_left != nullptr)
+                {
+                    stack_Temp.push(_Pre_order_traversal_test->_left);
+                }
+                //修改逻辑错误，先压右子树再压左子树，因为这是栈
             }
         }
         void clear()
@@ -2264,7 +2265,6 @@ namespace Wang
             }
         };
         using AVL_Node = AVL_Tree_Type_Node<AVL_Tree_Type_K,AVL_Tree_Type_V>;
-
         AVL_Node* _ROOT;
 
         Imitation_function_parameter_function_AVL_Tee com;
@@ -2480,13 +2480,14 @@ namespace Wang
                 stack_Temp.pop();
 
                 std::cout << _Pre_order_traversal_test->_data << " ";
-                if(_Pre_order_traversal_test->_left != nullptr)
-                {
-                    stack_Temp.push(_Pre_order_traversal_test->_left);
-                }
+                //修改逻辑错误，先压右子树再压左子树，因为这是栈
                 if(_Pre_order_traversal_test->_right != nullptr)
                 {
                     stack_Temp.push(_Pre_order_traversal_test->_right);
+                }
+                if(_Pre_order_traversal_test->_left != nullptr)
+                {
+                    stack_Temp.push(_Pre_order_traversal_test->_left);
                 }
             }
         }
@@ -3090,7 +3091,6 @@ int main()
     //     AVL_Tree_test2.~AVL_Tree();
     // }
     {
-        //bug空指针
         Wang::AVL_Tree<int,int> AVL_Tree_test1;
         Wang::vector<Wang::STL_Demand_class::pair<int,int>> AVL_Tree_array = {{22,0},{16,0},{13,0},{15,0},{11,0},{12,0},{14,0},{10,0},{2,0},{10,0}};
         for(auto& i : AVL_Tree_array)
