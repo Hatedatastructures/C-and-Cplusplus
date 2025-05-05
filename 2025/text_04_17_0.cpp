@@ -2524,14 +2524,12 @@ namespace Wang
         Imitation_function_parameter_function_AVL_Tee com_temp = Imitation_function_parameter_function_AVL_Tee())
         :_ROOT(nullptr),com(com_temp)
         {
-            // std::cout << "单一赋值" << std::endl;
             _ROOT = new AVL_Node(Key_temp,val_temp);
         }
         AVL_Tree(const AVL_Tree_Synthetic_class& AVL_Tree_Pair_Temp,
         Imitation_function_parameter_function_AVL_Tee com_temp = Imitation_function_parameter_function_AVL_Tee())
         :_ROOT(nullptr),com(com_temp)
         {
-            // std::cout << "合并赋值" << std::endl;
             _ROOT = new AVL_Node(AVL_Tree_Pair_Temp.first,AVL_Tree_Pair_Temp.second);
         }
         AVL_Tree(const AVL_Tree& AVL_Tree_temp_)
@@ -2542,10 +2540,9 @@ namespace Wang
         ~AVL_Tree()
         {
             //析构函数
-            // std::cout << "析构函数" <<std::endl;
             clear();
         }
-        bool push(const AVL_Tree_Type_K& Key_temp,const AVL_Tree_Type_V& val_temp)
+        bool push(const AVL_Tree_Type_K& Key_temp,const AVL_Tree_Type_V& val_temp = AVL_Tree_Type_V())
         {
             //插入
             if(_ROOT == nullptr)
@@ -2555,8 +2552,88 @@ namespace Wang
             }
             else
             {
+                AVL_Node* _ROOT_temp = _ROOT;
+                AVL_Node* _ROOT_temp_parent = nullptr;
+                while(_ROOT_temp)
+                {
+                    _ROOT_temp_parent = _ROOT_temp;
+                    if(!com(Key_temp,_ROOT_temp->_data.first) && !com(_ROOT_temp->_data.first,Key_temp))
+                    {
+                        return false;
+                    }
+                    else if(com(Key_temp,_ROOT_temp->_data.first))
+                    {
+                        _ROOT_temp = _ROOT_temp->_left;
+                    }
+                    else
+                    {
+                        _ROOT_temp = _ROOT_temp->_right;
+                    }
+                }
+                _ROOT_temp = new AVL_Node(Key_temp,val_temp);
+                if(com(Key_temp,_ROOT_temp_parent->_data.first))
+                {
+                    _ROOT_temp_parent->_left = _ROOT_temp;
+                }
+                else
+                {
+                    _ROOT_temp_parent->_right = _ROOT_temp;
+                }
+                _ROOT_temp->_parent = _ROOT_temp_parent;
 
+                AVL_Node* _ROOT_temp_test = _ROOT_temp;
+                AVL_Node* _ROOT_temp_test_parent = _ROOT_temp_parent;
+
+                while(_ROOT_temp_test_parent)
+                {
+                    if(_ROOT_temp_test_parent->_left == _ROOT_temp_test)
+                    {
+                        _ROOT_temp_test_parent->_Balance_factor--;
+                    }
+                    else
+                    {
+                        _ROOT_temp_test_parent->_Balance_factor++;
+                    }
+
+                    if(_ROOT_temp_test_parent->_Balance_factor == 0)
+                    {
+                        break;
+                    }
+                    else if (_ROOT_temp_test_parent->_Balance_factor == 1 || _ROOT_temp_test_parent->_Balance_factor == -1)
+                    {
+                        _ROOT_temp_test = _ROOT_temp_test_parent;
+                        _ROOT_temp_test_parent = _ROOT_temp_test_parent->_parent;
+                    }
+                    else if (_ROOT_temp_test_parent->_Balance_factor == 2 || _ROOT_temp_test_parent->_Balance_factor == -2)
+                    {
+                        if(_ROOT_temp_test_parent->_Balance_factor == 2)
+                        {
+                            if(_ROOT_temp_test->_Balance_factor == 1)
+                            {
+                                _left_revolve(_ROOT_temp_test_parent);
+                            }
+                            else
+                            {
+                                _right_left_revolve(_ROOT_temp_test_parent);
+                            }
+                        }
+                        if(_ROOT_temp_test_parent->_Balance_factor == -2)
+                        {
+                            if(_ROOT_temp_test->_Balance_factor == -1)
+                            {
+                                _right_revolve(_ROOT_temp_test_parent);
+                            }
+                            else
+                            {
+                                _left_right_revolve(_ROOT_temp_test_parent);
+                            }
+                        }
+                        _ROOT_temp_test = _ROOT_temp_test_parent;
+                        _ROOT_temp_test_parent = _ROOT_temp_test_parent->_parent;
+                    }
+                }
             }
+            return true;
         }
         void Pre_order_traversal()
         {
@@ -3083,7 +3160,7 @@ int main()
     // }
     // /*            AVL_Tree 测试             */
     // {
-    //     Wang::AVL_Tree<Wang::STL_Demand_class::pair<int,int>,int> AVL_Tree_test1(Wang::STL_Demand_class::pair(9,0), 10);
+    //     Wang::AVL_Tree<Wang::STL_Demand_class::pair<int,int>,int> AVL_Tree_test_pair(Wang::STL_Demand_class::pair(9,0), 10);
     //     Wang::STL_Demand_class::pair<Wang::STL_Demand_class::pair<int,int>,int> pair_test_ (Wang::STL_Demand_class::pair(9,0), 10);
     //     Wang::AVL_Tree<Wang::STL_Demand_class::pair<int,int>,int> AVL_Tree_test(pair_test_);
     //     //两个构造函数，根据传值调用来查看调用情况
@@ -3091,18 +3168,51 @@ int main()
     //     AVL_Tree_test2.~AVL_Tree();
     // }
     {
-        Wang::AVL_Tree<int,int> AVL_Tree_test1;
-        Wang::vector<Wang::STL_Demand_class::pair<int,int>> AVL_Tree_array = {{22,0},{16,0},{13,0},{15,0},{11,0},{12,0},{14,0},{10,0},{2,0},{10,0}};
-        for(auto& i : AVL_Tree_array)
+        Wang::AVL_Tree<int,int> AVL_Tree_test_pair;
+        Wang::vector<Wang::STL_Demand_class::pair<int,int>> AVL_Tree_array_pair = {{22,0},{16,0},{13,0},{15,0},{11,0},{12,0},{14,0},{10,0},{2,0},{10,0}};
+        for(auto& i : AVL_Tree_array_pair)
         {
-            AVL_Tree_test1.push(i);
+            AVL_Tree_test_pair.push(i);
         }
         std::cout << "前序遍历 "<< std::endl;
-        AVL_Tree_test1.Pre_order_traversal();
+        AVL_Tree_test_pair.Pre_order_traversal();
         std::cout << std::endl;
         std::cout << "中序遍历 "<< std::endl;
-        AVL_Tree_test1.Middle_order_traversal();
+        AVL_Tree_test_pair.Middle_order_traversal();
         std::cout << std::endl;
+    }
+    {
+        //性能测试
+        /*                   pair 类型                */
+        Wang::AVL_Tree<size_t,int> AVL_Tree_test_pair;
+        Wang::vector<Wang::STL_Demand_class::pair<size_t,int>> AVL_Tree_array_pair;
+        size_t size = 100000;
+        for(size_t i = 0; i < size; i++)
+        {
+            AVL_Tree_array_pair.push_back(Wang::STL_Demand_class::pair<size_t,int>(i,0));
+        }
+        time_t AVL_Tree_num1 = clock();
+        for(auto& i : AVL_Tree_array_pair)
+        {
+            AVL_Tree_test_pair.push(i);
+        }
+        time_t AVL_Tree_num2 = clock();
+        std::cout << "插入个数:" << size  << " " << " 插入时间:" << AVL_Tree_num2 - AVL_Tree_num1 << std::endl;
+
+        /*                  非pair 类型               */
+        Wang::AVL_Tree<size_t,int> AVL_Tree_test;
+        Wang::vector<size_t> AVL_Tree_array;
+        for(size_t j = 0; j < size ; j++)
+        {
+            AVL_Tree_array.push_back(j);
+        }
+        time_t AVL_Tree_num3 = clock();
+        for(auto& j : AVL_Tree_array)
+        {
+            AVL_Tree_test.push(j);
+        }
+        time_t AVL_Tree_num4 = clock();
+        std::cout << "插入个数:" << size  << " " << " 插入时间:" << AVL_Tree_num4 - AVL_Tree_num3 << std::endl;
     }
     return 0;
 }
