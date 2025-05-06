@@ -2462,50 +2462,50 @@ namespace Wang
         }
         AVL_Tree(const AVL_Tree& AVL_Tree_temp_)
         : _ROOT(nullptr), com(AVL_Tree_temp_.com)
-    {
-        if (AVL_Tree_temp_._ROOT == nullptr)
         {
-            return;
+            if (AVL_Tree_temp_._ROOT == nullptr)
+            {
+                return;
+            }
+        
+            Wang::stack<Wang::STL_Demand_class::pair<AVL_Node*, AVL_Node**>> _stack_temp;
+            _stack_temp.push(Wang::STL_Demand_class::pair<AVL_Node*, AVL_Node**>(AVL_Tree_temp_._ROOT, &_ROOT));
+        
+            while (!_stack_temp.empty())
+            {
+                auto AVL_pair_temp = _stack_temp.top();
+                _stack_temp.pop();
+        
+                // 创建新节点并复制数据
+                AVL_Node* new_node = new AVL_Node(AVL_pair_temp.first->_data);
+                new_node->_Balance_factor = AVL_pair_temp.first->_Balance_factor;
+                *AVL_pair_temp.second = new_node; // 将新节点赋值给目标位置
+        
+                // 处理右子节点
+                if (AVL_pair_temp.first->_right != nullptr)
+                {
+                    _stack_temp.push(Wang::STL_Demand_class::pair<AVL_Node*, AVL_Node**>(
+                        AVL_pair_temp.first->_right, &new_node->_right));
+                }
+        
+                // 处理左子节点
+                if (AVL_pair_temp.first->_left != nullptr)
+                {
+                    _stack_temp.push(Wang::STL_Demand_class::pair<AVL_Node*, AVL_Node**>(
+                        AVL_pair_temp.first->_left, &new_node->_left));
+                }
+        
+                // 设置子节点的父指针
+                if (new_node->_left != nullptr)
+                {
+                    new_node->_left->_parent = new_node;
+                }
+                if (new_node->_right != nullptr)
+                {
+                    new_node->_right->_parent = new_node;
+                }
+            }
         }
-    
-        Wang::stack<Wang::STL_Demand_class::pair<AVL_Node*, AVL_Node**>> _stack_temp;
-        _stack_temp.push(Wang::STL_Demand_class::pair<AVL_Node*, AVL_Node**>(AVL_Tree_temp_._ROOT, &_ROOT));
-    
-        while (!_stack_temp.empty())
-        {
-            auto AVL_pair_temp = _stack_temp.top();
-            _stack_temp.pop();
-    
-            // 创建新节点并复制数据
-            AVL_Node* new_node = new AVL_Node(AVL_pair_temp.first->_data);
-            new_node->_Balance_factor = AVL_pair_temp.first->_Balance_factor;
-            *AVL_pair_temp.second = new_node; // 将新节点赋值给目标位置
-    
-            // 处理右子节点
-            if (AVL_pair_temp.first->_right != nullptr)
-            {
-                _stack_temp.push(Wang::STL_Demand_class::pair<AVL_Node*, AVL_Node**>(
-                    AVL_pair_temp.first->_right, &new_node->_right));
-            }
-    
-            // 处理左子节点
-            if (AVL_pair_temp.first->_left != nullptr)
-            {
-                _stack_temp.push(Wang::STL_Demand_class::pair<AVL_Node*, AVL_Node**>(
-                    AVL_pair_temp.first->_left, &new_node->_left));
-            }
-    
-            // 设置子节点的父指针
-            if (new_node->_left != nullptr)
-            {
-                new_node->_left->_parent = new_node;
-            }
-            if (new_node->_right != nullptr)
-            {
-                new_node->_right->_parent = new_node;
-            }
-        }
-    }
         ~AVL_Tree()
         {
             //析构函数
@@ -2745,11 +2745,11 @@ namespace Wang
             }
             return _ROOT_Temp;
         }
-        AVL_Node* pop(const AVL_Tree_Type_K& _data_Temp)
+        AVL_Tree& pop(const AVL_Tree_Type_K& _data_Temp)
         {
             if(_ROOT == nullptr)
             {
-                return;
+                return *this;
             }
             AVL_Node* _ROOT_Temp = _ROOT;
             AVL_Node* _ROOT_Temp_parent = nullptr;
@@ -2758,7 +2758,7 @@ namespace Wang
                 _ROOT_Temp_parent = _ROOT_Temp;
                 if(!com(_data_Temp,_ROOT_Temp->_data.first) && !com(_ROOT_Temp->_data.first,_data_Temp))
                 {
-                    break
+                    break;
                 }
                 else if (com(_ROOT_Temp->_data.first,_data_Temp))
                 {
@@ -2770,31 +2770,53 @@ namespace Wang
                 }
             }
             //三种情况：左空，右空，左右都不空
-            if(_ROOT_Temp->left == nullptr)
+            // if(_ROOT_Temp->_left == nullptr)
+            // {
+            //     if(_ROOT_Temp_parent != nullptr)
+            //     {
+            //         //根
+            //         _ROOT = _ROOT_Temp->_right;
+            //         _ROOT_Temp->_right->_parent = nullptr;
+            //     }
+            //     else
+            //     {
+            //         if(_ROOT_Temp_parent->_left == _ROOT_Temp)
+            //         {
+            //             _ROOT_Temp_parent->_left = _ROOT_Temp->_right;
+            //         }
+            //         else
+            //         {
+            //             _ROOT_Temp_parent->_right = _ROOT_Temp->_right;
+            //         }
+            //         _ROOT_Temp->_right->_parent = _ROOT_Temp_parent;
+            //         //架空_ROOT_Temp,并更新_ROOT_Temp接班人的父亲指针
+            //     }
+            //     delete _ROOT_Temp;
+            //     _ROOT_Temp = nullptr;
+            // }
+            if (_ROOT_Temp->_left == nullptr) 
             {
-                if(_ROOT_Temp_parent == nullptr)
+                if (_ROOT_Temp->_right != nullptr) 
                 {
-                    //根
-                    _ROOT = _ROOT_Temp->_right;
-                    _ROOT_Temp->_right->_parent = nullptr;
+                    _ROOT_Temp->_right->_parent = _ROOT_Temp_parent;
                 }
-                else
+                if (_ROOT_Temp_parent == nullptr) 
                 {
-                    if(_ROOT_Temp_parent->_left == _ROOT_Temp)
+                    _ROOT = _ROOT_Temp->_right;
+                } 
+                else 
+                {
+                    if (_ROOT_Temp_parent->_left == _ROOT_Temp) 
                     {
                         _ROOT_Temp_parent->_left = _ROOT_Temp->_right;
-                    }
-                    else
+                    } 
+                    else 
                     {
                         _ROOT_Temp_parent->_right = _ROOT_Temp->_right;
                     }
-                    _ROOT_Temp->_right->_parent = _ROOT_Temp_parent;
-                    //架空_ROOT_Temp,并更新_ROOT_Temp接班人的父亲指针
                 }
                 delete _ROOT_Temp;
-                _ROOT_Temp = nullptr;
-                return *this;
-            }
+            }            
             else if (_ROOT_Temp->_right == nullptr)
             {
                 if(_ROOT_Temp_parent == nullptr)
@@ -2812,12 +2834,14 @@ namespace Wang
                     {
                         _ROOT_Temp_parent->_right = _ROOT_Temp->_left; 
                     }
-                    _ROOT_Temp->_left->_parent = _ROOT_Temp_parent;
+                    if(_ROOT_Temp->_left!= nullptr)
+                    {
+                        _ROOT_Temp->_left->_parent = _ROOT_Temp_parent;
+                    }
                     //更新父节点
                 }
                 delete _ROOT_Temp;
                 _ROOT_Temp = nullptr;
-                return *this;
             }
             else if(_ROOT_Temp->_right != nullptr && _ROOT_Temp->_left != nullptr)
             {
@@ -2830,29 +2854,76 @@ namespace Wang
                     _right_min = _right_min->_left;
                 }
                 Wang::algorithm::swap(_right_min->_data,_ROOT_Temp->_data);
-                if(_right_parent == _ROOT_Temp )
+                if (_right_parent == _ROOT_Temp) 
                 {
-                    //没有左子树
-                    _right_parent->_right = _right_min->_right;
-                }
-                else
+                    _right_parent->_right = (_right_min->_right != nullptr) ? _right_min->_right : nullptr;
+                } 
+                else 
                 {
-                    _right_parent->_left = _right_min->_right;
+                    _right_parent->_left = (_right_min->_right != nullptr) ? _right_min->_right : nullptr;
                 }
-                if(_right_min->_right == nullptr)
-                {
-                    ;
-                }
-                else
+                if (_right_min->_right != nullptr) 
                 {
                     _right_min->_right->_parent = _right_parent;
                 }
-                //更新父亲节点
+                delete _right_min;
+                _right_min = nullptr;                
             }
+            //更新平衡因子
+            AVL_Node* parent_BF = _ROOT_Temp_parent;
+            while(parent_BF != nullptr)
+            {
+                if(parent_BF->_left == _ROOT_Temp)
+                {
+                    parent_BF->_Balance_factor++;
+                }
+                else
+                {
+                    parent_BF->_Balance_factor--;
+                }
+                if(parent_BF->_Balance_factor == 0)
+                {
+                    break;
+                }
+                else if(parent_BF->_Balance_factor == 1 || parent_BF->_Balance_factor == -1)
+                {
+                    //高度不变，更新结束
+                    _ROOT_Temp = parent_BF;
+                    parent_BF = parent_BF->_parent;
+                }
+                else if(parent_BF->_Balance_factor == 2 || parent_BF->_Balance_factor == -2)
+                {
+                    //高度变了需要旋转处理
+                    if(parent_BF->_Balance_factor == 2)
+                    {
+                        if(_ROOT_Temp->_Balance_factor == 1)
+                        {
+                            _left_revolve(parent_BF);
+                        }
+                        else
+                        {
+                            _right_left_revolve(parent_BF);
+                        }
+                    }
+                    else if(parent_BF->_Balance_factor == -2)
+                    {
+                        if(_ROOT_Temp->_Balance_factor == -1)
+                        {
+                            _right_revolve(parent_BF);
+                        }
+                        else
+                        {
+                            _left_right_revolve(parent_BF);
+                        }
+                    }
+                    _ROOT_Temp = parent_BF;
+                    parent_BF = parent_BF->_parent;
+                    //旋转后继续向上调整，因为旋转后父节点的平衡因子可能发生变化，每个旋转的节点都可以当作一个子树，子树旋转后，父节点平衡因子可能发生变化，需要继续向上调整
+                }
+            }
+            return *this;
         }
     };
-    //pair类指针特化版本，析构函数
-    //AVL树其余函数，拷贝构，，迭代器配置
 }
 int main()
 {  
@@ -3282,7 +3353,41 @@ int main()
     //     AVL_Tree_test_pair.Middle_order_traversal();
     //     std::cout << std::endl;
     // }
+    // {
+    //     Wang::AVL_Tree<int,int> AVL_Tree_test_pair;
+    //     Wang::vector<Wang::STL_Demand_class::pair<int,int>> AVL_Tree_array_pair = {{22,0},{16,0},{13,0},{15,0},{11,0},{12,0},{14,0},{10,0},{2,0},{10,0}};
+    //     for(auto& i : AVL_Tree_array_pair)
+    //     {
+    //         AVL_Tree_test_pair.push(i);
+    //     }
+    //     std::cout << "前序遍历 "<< std::endl;
+    //     AVL_Tree_test_pair.Pre_order_traversal();
+    //     std::cout << std::endl;
+    //     std::cout << "中序遍历 "<< std::endl;
+    //     AVL_Tree_test_pair.Middle_order_traversal();
+    //     std::cout << std::endl; 
+    //     Wang::AVL_Tree<int,int>AVL_Tree_test_pair1(AVL_Tree_test_pair);
+    //     std::cout << "前序遍历 "<< std::endl;
+    //     AVL_Tree_test_pair1.Pre_order_traversal();
+    //     std::cout << std::endl;
+    //     std::cout << "中序遍历 "<< std::endl;
+    //     AVL_Tree_test_pair1.Middle_order_traversal();
+    //     std::cout << std::endl; 
+
+    //     Wang::BS_Tree<char> BS_Tr;
+    //     Wang::string str1 = {'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'};
+    //     for(auto& i :str1)
+    //     {
+    //         BS_Tr.push(i);
+    //     }
+    //     BS_Tr.Middle_order_traversal();
+    //     std::cout << std::endl;
+    //     Wang::BS_Tree<char> BS_TREE(BS_Tr);
+    //     BS_TREE.Middle_order_traversal();
+    //     std::cout << std::endl;
+    // }
     {
+        //删除测试
         Wang::AVL_Tree<int,int> AVL_Tree_test_pair;
         Wang::vector<Wang::STL_Demand_class::pair<int,int>> AVL_Tree_array_pair = {{22,0},{16,0},{13,0},{15,0},{11,0},{12,0},{14,0},{10,0},{2,0},{10,0}};
         for(auto& i : AVL_Tree_array_pair)
@@ -3292,26 +3397,10 @@ int main()
         std::cout << "前序遍历 "<< std::endl;
         AVL_Tree_test_pair.Pre_order_traversal();
         std::cout << std::endl;
-        std::cout << "中序遍历 "<< std::endl;
-        AVL_Tree_test_pair.Middle_order_traversal();
-        std::cout << std::endl; 
-        Wang::AVL_Tree<int,int>AVL_Tree_test_pair1(AVL_Tree_test_pair);
-        std::cout << "前序遍历 "<< std::endl;
-        AVL_Tree_test_pair1.Pre_order_traversal();
-        std::cout << std::endl;
-        std::cout << "中序遍历 "<< std::endl;
-        AVL_Tree_test_pair1.Middle_order_traversal();
-        std::cout << std::endl; 
-        Wang::BS_Tree<char> BS_Tr;
-        Wang::string str1 = {'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'};
-        for(auto& i :str1)
+        for(auto& i : AVL_Tree_array_pair)
         {
-            BS_Tr.push(i);
+            AVL_Tree_test_pair.pop(i.first);
         }
-        BS_Tr.Middle_order_traversal();
-        std::cout << std::endl;
-        Wang::BS_Tree<char> BS_TREE(BS_Tr);
-        BS_TREE.Middle_order_traversal();
         std::cout << std::endl;
     }
     // {
