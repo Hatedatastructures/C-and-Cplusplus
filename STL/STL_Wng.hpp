@@ -1508,7 +1508,7 @@ namespace Wang
     template <typename staic_Type,typename Container_staic = Wang::vector<staic_Type>>
     class stack
     {
-        Container_staic Container_staic_temp_;
+        Container_staic Container_stack_temp_;
     public:
         ~stack()
         {
@@ -1517,39 +1517,39 @@ namespace Wang
         void push(const staic_Type& _staic_temp)
         {
             //插入尾
-            Container_staic_temp_.push_back(_staic_temp);
+            Container_stack_temp_.push_back(_staic_temp);
         }
         void pop()
         {
             //删除尾
-            Container_staic_temp_.pop_back();
+            Container_stack_temp_.pop_back();
         }
         size_t size()
         {
-            return Container_staic_temp_.size();
+            return Container_stack_temp_.size();
         }
         bool empty()
         {
-            return Container_staic_temp_.empty();
+            return Container_stack_temp_.empty();
         } 
         staic_Type& top()
         {
-            return Container_staic_temp_.back();
+            return Container_stack_temp_.back();
         }
         stack(const stack<staic_Type>& _staic_temp)
         {
-            Container_staic_temp_ = _staic_temp.Container_staic_temp_;
+            Container_stack_temp_ = _staic_temp.Container_stack_temp_;
         }
         stack(std::initializer_list<staic_Type> _staic_temp)
         {
             for(auto& e:_staic_temp)
             {
-                Container_staic_temp_.push_back(e);
+                Container_stack_temp_.push_back(e);
             }
         }
         stack(const staic_Type& _staic_temp)
         {
-            Container_staic_temp_.push_back(_staic_temp);
+            Container_stack_temp_.push_back(_staic_temp);
         }
         stack()
         {
