@@ -2745,9 +2745,110 @@ namespace Wang
             }
             return _ROOT_Temp;
         }
-        void pop(const AVL_Tree_Type_K& _data_Temp)
+        AVL_Node* pop(const AVL_Tree_Type_K& _data_Temp)
         {
-
+            if(_ROOT == nullptr)
+            {
+                return;
+            }
+            AVL_Node* _ROOT_Temp = _ROOT;
+            AVL_Node* _ROOT_Temp_parent = nullptr;
+            while(_ROOT_Temp != nullptr)
+            {
+                _ROOT_Temp_parent = _ROOT_Temp;
+                if(!com(_data_Temp,_ROOT_Temp->_data.first) && !com(_ROOT_Temp->_data.first,_data_Temp))
+                {
+                    break
+                }
+                else if (com(_ROOT_Temp->_data.first,_data_Temp))
+                {
+                    _ROOT_Temp = _ROOT_Temp->_right;
+                }
+                else
+                {
+                    _ROOT_Temp = _ROOT_Temp->_left;
+                }
+            }
+            //三种情况：左空，右空，左右都不空
+            if(_ROOT_Temp->left == nullptr)
+            {
+                if(_ROOT_Temp_parent == nullptr)
+                {
+                    //根
+                    _ROOT = _ROOT_Temp->_right;
+                    _ROOT_Temp->_right->_parent = nullptr;
+                }
+                else
+                {
+                    if(_ROOT_Temp_parent->_left == _ROOT_Temp)
+                    {
+                        _ROOT_Temp_parent->_left = _ROOT_Temp->_right;
+                    }
+                    else
+                    {
+                        _ROOT_Temp_parent->_right = _ROOT_Temp->_right;
+                    }
+                    _ROOT_Temp->_right->_parent = _ROOT_Temp_parent;
+                    //架空_ROOT_Temp,并更新_ROOT_Temp接班人的父亲指针
+                }
+                delete _ROOT_Temp;
+                _ROOT_Temp = nullptr;
+                return *this;
+            }
+            else if (_ROOT_Temp->_right == nullptr)
+            {
+                if(_ROOT_Temp_parent == nullptr)
+                {
+                    _ROOT = _ROOT_Temp->_left;
+                    _ROOT_Temp->_left->_parent = nullptr;
+                }
+                else
+                {
+                    if(_ROOT_Temp_parent->_left == _ROOT_Temp)
+                    {
+                        _ROOT_Temp_parent->_left = _ROOT_Temp->_left;
+                    }
+                    else
+                    {
+                        _ROOT_Temp_parent->_right = _ROOT_Temp->_left; 
+                    }
+                    _ROOT_Temp->_left->_parent = _ROOT_Temp_parent;
+                    //更新父节点
+                }
+                delete _ROOT_Temp;
+                _ROOT_Temp = nullptr;
+                return *this;
+            }
+            else if(_ROOT_Temp->_right != nullptr && _ROOT_Temp->_left != nullptr)
+            {
+                //找右子树最左节点
+                AVL_Node* _right_min = _ROOT_Temp->_right;
+                AVL_Node* _right_parent = _ROOT_Temp;
+                while(_right_min->_left != nullptr)
+                {
+                    _right_parent = _right_min;
+                    _right_min = _right_min->_left;
+                }
+                Wang::algorithm::swap(_right_min->_data,_ROOT_Temp->_data);
+                if(_right_parent == _ROOT_Temp )
+                {
+                    //没有左子树
+                    _right_parent->_right = _right_min->_right;
+                }
+                else
+                {
+                    _right_parent->_left = _right_min->_right;
+                }
+                if(_right_min->_right == nullptr)
+                {
+                    ;
+                }
+                else
+                {
+                    _right_min->_right->_parent = _right_parent;
+                }
+                //更新父亲节点
+            }
         }
     };
     //pair类指针特化版本，析构函数
