@@ -106,89 +106,6 @@ namespace Wang
             os << "(" << p.first << ":" << p.second << ")";
             return os;
         }
-        // 当前pair版本对于指针类型在用到pair的地方会导致内存泄漏
-        /*                               pair 指针特化版本                                   */
-        template<typename Data_Type_example_pair_T,typename Data_Type_example_pair_K>
-        class pair<Data_Type_example_pair_T*,Data_Type_example_pair_K*>
-        {
-            using T = Data_Type_example_pair_T;
-            using K = Data_Type_example_pair_K;
-            using T_pointer = Data_Type_example_pair_T*;
-            using K_pointer = Data_Type_example_pair_K*;
-        public:
-            T_pointer first;
-            K_pointer second;
-            ~pair()
-            {
-                delete first;
-                delete second;
-                first = nullptr;
-                second = nullptr;
-            }
-            pair() : first(nullptr), second(nullptr)
-            {
-                ;
-            }
-            pair(const T_pointer& _first,const K_pointer& _second)
-            : first(nullptr), second(nullptr)
-            {
-                first  = new T(*_first);
-                second = new K(*_second);
-            }
-            pair(const pair& other) 
-            {
-                first  = other.first  ? new T(*other.first)  : nullptr;
-                second = other.second ? new K(*other.second) : nullptr;
-            }
-            pair& operator=(const pair& other) 
-            {
-                if (this != &other) 
-                {
-                    delete first;
-                    delete second;
-                    first  = (other.first)  ? new T(*other.first)  : nullptr;
-                    second = (other.second) ? new K(*other.second) : nullptr;
-                }
-                return *this;
-            }
-            bool operator==(const pair& other) 
-            {
-                bool firstEqual = (first == nullptr) ? (other.first == nullptr) : (other.first != nullptr && *first == *other.first);
-                bool secondEqual = (second == nullptr) ? (other.second == nullptr) : (other.second != nullptr && *second == *other.second);
-                return this == &other ? true : (firstEqual && secondEqual);
-            }
-            bool operator==(const pair& other) const
-            {
-                bool firstEqual = (first == nullptr) ? (other.first == nullptr) : (other.first != nullptr && *first == *other.first);
-                bool secondEqual = (second == nullptr) ? (other.second == nullptr) : (other.second != nullptr && *second == *other.second);
-                return this == &other ? true : (firstEqual && secondEqual);
-            }
-            bool operator!=(const pair& other)
-            {
-                return!(*this == other);
-            }
-            pair* operator->()
-            {
-                return this;
-            }
-            const pair* operator->()const
-            {
-                return this;
-            }
-
-            template<typename pair_ostream_T,typename pair_ostream_K>
-            friend std::ostream& operator<<(std::ostream& os,const pair<pair_ostream_T*,pair_ostream_K*>& p);
-        };
-        template<typename pair_ostream_T,typename pair_ostream_K>
-        std::ostream& operator<<(std::ostream& os,const pair<pair_ostream_T*,pair_ostream_K*>& p)
-        {
-            os << "(";
-            STL_Demand_class_Helper_functions::print_pointer_or_nullptr(os, p.first);
-            os << ":";
-            STL_Demand_class_Helper_functions::print_pointer_or_nullptr(os, p.second);
-            os << ")";
-            return os;
-        }
         /*                               类分隔                                   */
         template<typename make_pair_T,typename make_pair_K>
         pair<make_pair_T,make_pair_K> make_pair (const make_pair_T& _first,const make_pair_K& _second)
@@ -1943,7 +1860,6 @@ namespace Wang
                     _staic_clear_temp_.push(_ROOT_Temp->_right);
                 }
                 delete _ROOT_Temp;
-                _ROOT = nullptr;
             }
             _ROOT = nullptr;
         }
@@ -2545,31 +2461,51 @@ namespace Wang
             _ROOT = new AVL_Node(AVL_Tree_Pair_Temp.first,AVL_Tree_Pair_Temp.second);
         }
         AVL_Tree(const AVL_Tree& AVL_Tree_temp_)
-        :_ROOT(nullptr),com(AVL_Tree_temp_.com)
+        : _ROOT(nullptr), com(AVL_Tree_temp_.com)
+    {
+        if (AVL_Tree_temp_._ROOT == nullptr)
         {
-            //拷贝构造
-            if(AVL_Tree_temp_._ROOT == nullptr)
+            return;
+        }
+    
+        Wang::stack<Wang::STL_Demand_class::pair<AVL_Node*, AVL_Node**>> _stack_temp;
+        _stack_temp.push(Wang::STL_Demand_class::pair<AVL_Node*, AVL_Node**>(AVL_Tree_temp_._ROOT, &_ROOT));
+    
+        while (!_stack_temp.empty())
+        {
+            auto AVL_pair_temp = _stack_temp.top();
+            _stack_temp.pop();
+    
+            // 创建新节点并复制数据
+            AVL_Node* new_node = new AVL_Node(AVL_pair_temp.first->_data);
+            new_node->_Balance_factor = AVL_pair_temp.first->_Balance_factor;
+            *AVL_pair_temp.second = new_node; // 将新节点赋值给目标位置
+    
+            // 处理右子节点
+            if (AVL_pair_temp.first->_right != nullptr)
             {
-                return ;
+                _stack_temp.push(Wang::STL_Demand_class::pair<AVL_Node*, AVL_Node**>(
+                    AVL_pair_temp.first->_right, &new_node->_right));
             }
-            Wang::stack<Wang::STL_Demand_class::pair<AVL_Node*,AVL_Node**>> _stack_temp;
-            _stack_temp.push(Wang::STL_Demand_class::pair<AVL_Node*,AVL_Node**>(AVL_Tree_temp_._ROOT,&_ROOT));
-            while(!_stack_temp.empty())
+    
+            // 处理左子节点
+            if (AVL_pair_temp.first->_left != nullptr)
             {
-                auto AVL_pair_temp = _stack_temp.top();
-                _stack_temp.pop();
-                *(AVL_pair_temp.second) = new AVL_Node(AVL_pair_temp.first->_data);
-                (*(AVL_pair_temp.second))->_Balance_factor = AVL_pair_temp.first->_Balance_factor;
-                if(AVL_pair_temp.first->_right != nullptr)
-                {
-                    _stack_temp.push(Wang::STL_Demand_class::pair<AVL_Node*,AVL_Node**>(AVL_pair_temp.first->_right,&(*AVL_pair_temp.second)->_right));
-                }
-                if(AVL_pair_temp.first->_left != nullptr)
-                {
-                    _stack_temp.push(Wang::STL_Demand_class::pair<AVL_Node*,AVL_Node**>(AVL_pair_temp.first->_left,&(*AVL_pair_temp.second)->_left));
-                }
+                _stack_temp.push(Wang::STL_Demand_class::pair<AVL_Node*, AVL_Node**>(
+                    AVL_pair_temp.first->_left, &new_node->_left));
+            }
+    
+            // 设置子节点的父指针
+            if (new_node->_left != nullptr)
+            {
+                new_node->_left->_parent = new_node;
+            }
+            if (new_node->_right != nullptr)
+            {
+                new_node->_right->_parent = new_node;
             }
         }
+    }
         ~AVL_Tree()
         {
             //析构函数
@@ -3246,25 +3182,25 @@ int main()
     //     std::cout << std::endl;
     // }
     {
-        // Wang::AVL_Tree<int,int> AVL_Tree_test_pair;
-        // Wang::vector<Wang::STL_Demand_class::pair<int,int>> AVL_Tree_array_pair = {{22,0},{16,0},{13,0},{15,0},{11,0},{12,0},{14,0},{10,0},{2,0},{10,0}};
-        // for(auto& i : AVL_Tree_array_pair)
-        // {
-        //     AVL_Tree_test_pair.push(i);
-        // }
-        // std::cout << "前序遍历 "<< std::endl;
-        // AVL_Tree_test_pair.Pre_order_traversal();
-        // std::cout << std::endl;
-        // std::cout << "中序遍历 "<< std::endl;
-        // AVL_Tree_test_pair.Middle_order_traversal();
-        // std::cout << std::endl; 
-        // Wang::AVL_Tree<int,int>AVL_Tree_test_pair1(AVL_Tree_test_pair);
-        // std::cout << "前序遍历 "<< std::endl;
-        // AVL_Tree_test_pair1.Pre_order_traversal();
-        // std::cout << std::endl;
-        // std::cout << "中序遍历 "<< std::endl;
-        // AVL_Tree_test_pair1.Middle_order_traversal();
-        // std::cout << std::endl; 
+        Wang::AVL_Tree<int,int> AVL_Tree_test_pair;
+        Wang::vector<Wang::STL_Demand_class::pair<int,int>> AVL_Tree_array_pair = {{22,0},{16,0},{13,0},{15,0},{11,0},{12,0},{14,0},{10,0},{2,0},{10,0}};
+        for(auto& i : AVL_Tree_array_pair)
+        {
+            AVL_Tree_test_pair.push(i);
+        }
+        std::cout << "前序遍历 "<< std::endl;
+        AVL_Tree_test_pair.Pre_order_traversal();
+        std::cout << std::endl;
+        std::cout << "中序遍历 "<< std::endl;
+        AVL_Tree_test_pair.Middle_order_traversal();
+        std::cout << std::endl; 
+        Wang::AVL_Tree<int,int>AVL_Tree_test_pair1(AVL_Tree_test_pair);
+        std::cout << "前序遍历 "<< std::endl;
+        AVL_Tree_test_pair1.Pre_order_traversal();
+        std::cout << std::endl;
+        std::cout << "中序遍历 "<< std::endl;
+        AVL_Tree_test_pair1.Middle_order_traversal();
+        std::cout << std::endl; 
         Wang::BS_Tree<char> BS_Tr;
         Wang::string str1 = {'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'};
         for(auto& i :str1)
