@@ -2903,9 +2903,9 @@ namespace Wang
         }
     };
     /*############################     RB_Tree 容器     ############################*/
-    template <typename RB_Tree_Type_K, typename RB_Tree_Type_V,
-    typename Imitation_function_parameter_function_RB_Tree = Wang::STL_Imitation_functions::less <RB_Tree_Type_K>,
-    typename RB_Tree_Synthetic_class = Wang::STL_Demand_class::pair<RB_Tree_Type_K,RB_Tree_Type_V> >
+    template <typename RB_Tree_Type_Key, typename RB_Tree_Type_Val,
+    typename Imitation_function_parameter_function_RB_Tree = Wang::STL_Imitation_functions::less <RB_Tree_Type_Key>,
+    typename RB_Tree_Synthetic_class = Wang::STL_Demand_class::pair<RB_Tree_Type_Key,RB_Tree_Type_Val> >
     class RB_Tree
     {
     private:
@@ -2927,7 +2927,7 @@ namespace Wang
         	{
                 ;
             }
-            RB_Tree_Node(const RB_Tree_Type_K& Key_temp,const RB_Tree_Type_V& val_temp = RB_Tree_Type_V())
+            RB_Tree_Node(const RB_Tree_Type_Key& Key_temp,const RB_Tree_Type_Val& val_temp = RB_Tree_Type_Val())
             :_data(Key_temp,val_temp),_left(nullptr),_right(nullptr),_parent(nullptr),_color(RED)
             {
                 ;

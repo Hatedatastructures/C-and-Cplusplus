@@ -2159,6 +2159,20 @@ namespace Wang
                 ;
             }
         };
+        template<typename T, typename Ref ,typename Ptr>
+        class AVL_Tree_iterator
+        {
+        public:
+            using iterator_Node = AVL_Tree_Type_Node;
+            using Self = AVL_Tree_iterator<T,Ref,Ptr>;
+            iterator_Node* _Node;
+            AVL_Tree_iterator(iterator_Node* _Node_Temp)
+            :_Node(_Node_Temp)
+            {
+                ;
+            }
+            /////////未完成
+        };
         using Node = AVL_Tree_Type_Node;
         Node* _ROOT;
 
@@ -2902,14 +2916,13 @@ namespace Wang
             return *this;
         }
     };
-    /*############################     RB_Tree 容器     ############################*/
-    template <typename RB_Tree_Type_K, typename RB_Tree_Type_V,
-    typename Imitation_function_parameter_function_RB_Tree = Wang::STL_Imitation_functions::less <RB_Tree_Type_K>,
-    typename RB_Tree_Synthetic_class = Wang::STL_Demand_class::pair<RB_Tree_Type_K,RB_Tree_Type_V> >
+    /*############################     RB_Tree 基类容器     ############################*/
+    template <typename RB_Tree_Type_Key, typename RB_Tree_Type_Val, typename Type_imitation_function,
+    typename Imitation_function_parameter_function_RB_Tree = Wang::STL_Imitation_functions::less<RB_Tree_Type_Key> >
     class RB_Tree
     {
     private:
-    enum RB_Tree_Color
+        enum RB_Tree_Color
         {
             RED,
             BLACK,
@@ -2917,30 +2930,96 @@ namespace Wang
         class RB_Tree_Node
         {
         public:
-        	RB_Tree_Synthetic_class _data;
+        	RB_Tree_Type_Val _data;
         	RB_Tree_Node* _left;
         	RB_Tree_Node* _right;
         	RB_Tree_Node* _parent;
         	RB_Tree_Color _color;
-        	RB_Tree_Node(const RB_Tree_Synthetic_class& data = RB_Tree_Synthetic_class())
-        	:_data(data),_left(nullptr),_right(nullptr),_parent(nullptr),_color(RED)
-        	{
-                ;
-            }
-            RB_Tree_Node(const RB_Tree_Type_K& Key_temp,const RB_Tree_Type_V& val_temp = RB_Tree_Type_V())
-            :_data(Key_temp,val_temp),_left(nullptr),_right(nullptr),_parent(nullptr),_color(RED)
+            RB_Tree_Node(const RB_Tree_Type_Val& val_temp = RB_Tree_Type_Val())
+            :_data(val_temp),_left(nullptr),_right(nullptr),_parent(nullptr),_color(RED)
             {
                 ;
             }
         };
+        template<typename T, typename Ref, typename Ptr>
+        class RBTree_iterator
+        { 
+            using Self = RBTree_iterator<T,Ref,Ptr>;
+            using Node_iterator = RB_Tree_Node;
+            Node_iterator* _Node;
+        public:
+
+            RBTree_iterator(Node_iterator* Node_temp_)
+            :_Node(Node_temp_)
+            {
+                ;
+            }
+            Ref operator* ()
+            {
+                return _Node->_data;
+            }
+            Ptr operator->()
+            {
+                return &(_Node->_data);
+            }
+            Self operator++()
+            {
+
+            }
+            Self operator++(int)
+            {
+
+            }
+            Self operator--()
+            {
+
+            }
+            Self operator--(int)
+            {
+
+            }
+        };
         using Node = RB_Tree_Node;
         Node* _ROOT;
+        Type_imitation_function Element;
         Imitation_function_parameter_function_RB_Tree com;
     public:
+        using iterator = RBTree_iterator<RB_Tree_Type_Val,RB_Tree_Type_Val&,RB_Tree_Type_Val*>; 
         RB_Tree()
         {
             _ROOT = nullptr;
         }
+    };
+    /*############################     Map 容器     ############################*/
+    template <typename Map_Type_K,typename Map_Type_V>
+    class Map
+    {
+        using Key_Val_Type = Wang::STL_Demand_class::pair<Map_Type_K,Map_Type_V>;
+        struct Key_Val
+        {
+            const Map_Type_K& operator()(const Key_Val_Type& Temp_Key_)
+            {
+                return Temp_Key_.first;
+            }
+        };
+        using RB_TREE = RB_Tree<Map_Type_K,Key_Val_Type,Key_Val>;
+        RB_TREE _ROOT_Tree;
+    public:
+        using iterator = typename RB_TREE::iterator;
+    };
+    /*############################     Set 容器     ############################*/
+    template <typename Set_Type_K>
+    class Set
+    {
+        using Key_Val_Type = Set_Type_K;
+        struct Key_Val
+        {
+            const Set_Type_K& operator()(const Key_Val_Type& Temp_Key_)
+            {
+                return Temp_Key_;
+            }
+        };
+        using RB_TREE = RB_Tree<Set_Type_K,Key_Val_Type,Key_Val>;
     };
 }
 int main()
