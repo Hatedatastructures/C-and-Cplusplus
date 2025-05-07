@@ -2922,9 +2922,20 @@ namespace Wang
         	RB_Tree_Node* _right;
         	RB_Tree_Node* _parent;
         	RB_Tree_Color _color;
+        	RB_Tree_Node(const RB_Tree_Synthetic_class& data = RB_Tree_Synthetic_class())
+        	:_data(data),_left(nullptr),_right(nullptr),_parent(nullptr),_color(RED)
+        	{
+                ;
+            }
+            RB_Tree_Node(const RB_Tree_Type_K& Key_temp,const RB_Tree_Type_V& val_temp = RB_Tree_Type_V())
+            :_data(Key_temp,val_temp),_left(nullptr),_right(nullptr),_parent(nullptr),_color(RED)
+            {
+                ;
+            }
         };
         using Node = RB_Tree_Node;
         Node* _ROOT;
+        Imitation_function_parameter_function_RB_Tree com;
     public:
         RB_Tree()
         {
