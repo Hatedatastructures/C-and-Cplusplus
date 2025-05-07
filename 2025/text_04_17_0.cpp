@@ -1736,20 +1736,19 @@ namespace Wang
             priority_queue_Adjust_upwards((int)Container_priority_queue_temp.size()-1);
         }
     };
-    /*############################     Binary_search_tree 容器     ############################*/
+    /*############################     BS_Tree 容器     ############################*/
     template <typename BS_Tree_Type,typename Imitation_function_parameter_function_BS_Tree = Wang::STL_Imitation_functions::less <BS_Tree_Type> >
     class BS_Tree
     {
     private:
-        template <typename BS_Tree_Type_Function_Node>
         class BS_Tree_Type_Node
         {
         public:
             //节点类
             BS_Tree_Type_Node* _left;
             BS_Tree_Type_Node* _right;
-            BS_Tree_Type_Function_Node _data;
-            BS_Tree_Type_Node(const BS_Tree_Type_Function_Node& data = BS_Tree_Type_Function_Node())
+            BS_Tree_Type _data;
+            BS_Tree_Type_Node(const BS_Tree_Type& data = BS_Tree_Type())
             :_left(nullptr),_right(nullptr),_data(data)
             {
                 ;
@@ -1760,13 +1759,13 @@ namespace Wang
                 _right = nullptr;
             }
         };
-        using BS_Tree_Node = BS_Tree_Type_Node <BS_Tree_Type>;
-        BS_Tree_Node* _ROOT;
+        using Node = BS_Tree_Type_Node;
+        Node* _ROOT;
         Imitation_function_parameter_function_BS_Tree com;
-        void _Middle_order_traversal(BS_Tree_Node* _ROOT_Temp)
+        void _Middle_order_traversal(Node* _ROOT_Temp)
         {
             //中序遍历函数
-            Wang::stack<BS_Tree_Node*> _staic_temp_;
+            Wang::stack<Node*> _staic_temp_;
             while(_ROOT_Temp != nullptr || !_staic_temp_.empty())
             {
                 while(_ROOT_Temp!= nullptr)
@@ -1787,9 +1786,9 @@ namespace Wang
                 _ROOT_Temp = _ROOT_Temp->_right;
             }
         }
-        size_t _Middle_order_traversal(BS_Tree_Node* _ROOT_Temp,size_t& _size_temp_ )
+        size_t _Middle_order_traversal(Node* _ROOT_Temp,size_t& _size_temp_ )
         {
-            Wang::stack<BS_Tree_Node*> _staic_temp_;
+            Wang::stack<Node*> _staic_temp_;
             while(_ROOT_Temp != nullptr || !_staic_temp_.empty())
             {
                 while(_ROOT_Temp!= nullptr)
@@ -1809,15 +1808,15 @@ namespace Wang
             }
             return _size_temp_;
         }
-        void _Pre_order_traversal(BS_Tree_Node* _ROOT_Temp )
+        void _Pre_order_traversal(Node* _ROOT_Temp )
         {
             //前序遍历，最外左子树全部压栈
             if(_ROOT_Temp == nullptr)
             {
                 return;
             }
-            BS_Tree_Node* _Pre_order_traversal_test = _ROOT_Temp;
-            Wang::stack<BS_Tree_Node*> stack_Temp;
+            Node* _Pre_order_traversal_test = _ROOT_Temp;
+            Wang::stack<Node*> stack_Temp;
             stack_Temp.push(_Pre_order_traversal_test);
             //不能添加|| _Pre_order_traversal_test != nullptr ，因为最后一层循环后_Pre_order_traversal_test还是为真后面循环无意义，反之还会破环性质
             while( !stack_Temp.empty() )
@@ -1844,11 +1843,11 @@ namespace Wang
                 return;
             }
             //循环释放资源
-            Wang::stack<BS_Tree_Node*> _staic_clear_temp_;
+            Wang::stack<Node*> _staic_clear_temp_;
             _staic_clear_temp_.push(_ROOT);
             while(_staic_clear_temp_.empty() == false)
             {
-                BS_Tree_Node* _ROOT_Temp = _staic_clear_temp_.top();
+                Node* _ROOT_Temp = _staic_clear_temp_.top();
                 //取出元素，把左右节点入进去
                 _staic_clear_temp_.pop();
                 if(_ROOT_Temp->_left!= nullptr)
@@ -1879,45 +1878,45 @@ namespace Wang
         BS_Tree(const BS_Tree_Type& BST_Temp = BS_Tree_Type(),Imitation_function_parameter_function_BS_Tree com_temp = Imitation_function_parameter_function_BS_Tree())
         :_ROOT(nullptr),com(com_temp)
         {   
-            _ROOT = new BS_Tree_Node(BST_Temp);
+            _ROOT = new Node(BST_Temp);
         }
         BS_Tree(const BS_Tree& _Binary_search_tree_temp)
         :_ROOT(nullptr),com(_Binary_search_tree_temp.com)
         //这个拷贝构造不需要传模板参数，因为模板参数是在编译时确定的，而不是在运行时确定的，对于仿函数，直接拿传进来的引用初始化就可以了
         {
             //拷贝构造，时间复杂度为O(n)
-            BS_Tree_Node* _Binary_search_tree_temp_copy = _Binary_search_tree_temp._ROOT;
+            Node* _Binary_search_tree_temp_copy = _Binary_search_tree_temp._ROOT;
             if(_Binary_search_tree_temp_copy == nullptr)
             {
                 return;
             }
-            Wang::stack<Wang::STL_Demand_class::pair<BS_Tree_Node*,BS_Tree_Node**> > _staic_temp_;
+            Wang::stack<Wang::STL_Demand_class::pair<Node*,Node**> > _staic_temp_;
             //注意这里把本地_ROOT类型传过去，是因为要对本地的_ROOT进行操作，所以要传二级指针
             //这里传引用也不行，这里的对象是动态变化的，所以传引用也不行
             //如果是对全局的_ROOT进行操作，就传一级指针
-            _staic_temp_.push(Wang::STL_Demand_class::pair<BS_Tree_Node*,BS_Tree_Node**>(_Binary_search_tree_temp_copy,&_ROOT));
+            _staic_temp_.push(Wang::STL_Demand_class::pair<Node*,Node**>(_Binary_search_tree_temp_copy,&_ROOT));
             while( !_staic_temp_.empty() )
             {
                 auto _staic_temp_pair = _staic_temp_.top();
                 _staic_temp_.pop();
-                *(_staic_temp_pair.second) = new BS_Tree_Node(_staic_temp_pair.first->_data);
-                // BS_Tree_Node* _staic_temp_pair_second = *(_staic_temp_pair.second);
+                *(_staic_temp_pair.second) = new Node(_staic_temp_pair.first->_data);
+                // Node* _staic_temp_pair_second = *(_staic_temp_pair.second);
                 // if(_staic_temp_pair.first->_left!= nullptr)
                 // {
-                //     _staic_temp_.push(Wang::STL_Demand_class::pair<BS_Tree_Node*,BS_Tree_Node**>(_staic_temp_pair.first->_left,&_staic_temp_pair_second->_left));
+                //     _staic_temp_.push(Wang::STL_Demand_class::pair<Node*,Node**>(_staic_temp_pair.first->_left,&_staic_temp_pair_second->_left));
                 // }
                 // if(_staic_temp_pair.first->_right!= nullptr)
                 // {
-                //     _staic_temp_.push(Wang::STL_Demand_class::pair<BS_Tree_Node*,BS_Tree_Node**>(_staic_temp_pair.first->_right,&_staic_temp_pair_second->_right));
+                //     _staic_temp_.push(Wang::STL_Demand_class::pair<Node*,Node**>(_staic_temp_pair.first->_right,&_staic_temp_pair_second->_right));
                 // }
                 //移除临时变量，直接使用指针解引用
                 if(_staic_temp_pair.first->_right!= nullptr)
                 {
-                    _staic_temp_.push(Wang::STL_Demand_class::pair<BS_Tree_Node*,BS_Tree_Node**>(_staic_temp_pair.first->_right,&((*_staic_temp_pair.second)->_right)));
+                    _staic_temp_.push(Wang::STL_Demand_class::pair<Node*,Node**>(_staic_temp_pair.first->_right,&((*_staic_temp_pair.second)->_right)));
                 }
                 if(_staic_temp_pair.first->_left!= nullptr)
                 {
-                    _staic_temp_.push(Wang::STL_Demand_class::pair<BS_Tree_Node*,BS_Tree_Node**>(_staic_temp_pair.first->_left,&((*_staic_temp_pair.second)->_left)));
+                    _staic_temp_.push(Wang::STL_Demand_class::pair<Node*,Node**>(_staic_temp_pair.first->_left,&((*_staic_temp_pair.second)->_left)));
                 }
             }
         }
@@ -1935,13 +1934,13 @@ namespace Wang
             //尾上插入函数
             if(_ROOT == nullptr)
             {
-                _ROOT = new BS_Tree::BS_Tree_Type_Node<BS_Tree_Type>(data);
+                _ROOT = new Node(data);
                 return true;
             }
             else
             {
-                BS_Tree_Node* _ROOT_Temp = _ROOT;
-                BS_Tree_Node* _ROOT_Temp_Parent = nullptr;
+                Node* _ROOT_Temp = _ROOT;
+                Node* _ROOT_Temp_Parent = nullptr;
                 while(_ROOT_Temp!= nullptr)
                 {
                     _ROOT_Temp_Parent = _ROOT_Temp;
@@ -1960,7 +1959,7 @@ namespace Wang
                     }
                 }
                 //新开节点链接
-                BS_Tree_Node* _ROOT_Temp_Node = new BS_Tree::BS_Tree_Type_Node<BS_Tree_Type>(data);
+                Node* _ROOT_Temp_Node = new Node(data);
                 //链接节点
                 if(com(data , _ROOT_Temp_Parent->_data))
                 {
@@ -1976,8 +1975,8 @@ namespace Wang
         BS_Tree& pop(const BS_Tree_Type& data)
         {
             //删除节点
-            BS_Tree_Node* _ROOT_Temp = _ROOT;
-            BS_Tree_Node* _ROOT_Temp_Parent = nullptr;
+            Node* _ROOT_Temp = _ROOT;
+            Node* _ROOT_Temp_Parent = nullptr;
             while( _ROOT_Temp != nullptr )
             {
                 if(data == _ROOT_Temp->_data)
@@ -2033,8 +2032,8 @@ namespace Wang
                     else
                     {
                         //左右子树都不为空，找右子树的最左节点
-                    	BS_Tree_Node* _ROOT_Temp_right_min = _ROOT_Temp->_right;
-                        BS_Tree_Node* _ROOT_Temp_test_Parent = _ROOT_Temp;
+                    	Node* _ROOT_Temp_right_min = _ROOT_Temp->_right;
+                        Node* _ROOT_Temp_test_Parent = _ROOT_Temp;
                         while(_ROOT_Temp_right_min->_left != nullptr)
                         {
                             _ROOT_Temp_test_Parent = _ROOT_Temp_right_min;
@@ -2082,10 +2081,10 @@ namespace Wang
             size_t _size = 0;
             return _Middle_order_traversal(_ROOT,_size);
         }
-        BS_Tree_Node* find(const BS_Tree_Type& data)
+        Node* find(const BS_Tree_Type& data)
         {
             //查找函数
-            BS_Tree_Node* _ROOT_Find = _ROOT;
+            Node* _ROOT_Find = _ROOT;
             while(_ROOT_Find!= nullptr)
             {
                 if(data == _ROOT_Find->_data)
@@ -2106,7 +2105,7 @@ namespace Wang
         void insert(const BS_Tree_Type& former_data,const BS_Tree_Type& latter_data)
         {
             //在former_data后面插入latter_data
-            BS_Tree_Node* _ROOT_former_data = find(former_data);
+            Node* _ROOT_former_data = find(former_data);
             //插入节点
             if(_ROOT_former_data == nullptr)
             {
@@ -2114,7 +2113,7 @@ namespace Wang
             }
             else
             {
-                BS_Tree_Node* _ROOT_latter_data = new BS_Tree_Node(latter_data);
+                Node* _ROOT_latter_data = new Node(latter_data);
                 _ROOT_latter_data->_left = _ROOT_former_data->_right;
                 _ROOT_former_data->_right = _ROOT_latter_data;
             }
@@ -2134,20 +2133,19 @@ namespace Wang
     };
     /*############################     AVL_Tree 容器     ############################*/
     template <typename AVL_Tree_Type_K,     typename AVL_Tree_Type_V,
-    typename Imitation_function_parameter_function_AVL_Tee = Wang::STL_Imitation_functions::less < AVL_Tree_Type_K >,
+    typename Imitation_function_parameter_function_AVL_Tree = Wang::STL_Imitation_functions::less < AVL_Tree_Type_K >,
     typename AVL_Tree_Synthetic_class = Wang::STL_Demand_class::pair<AVL_Tree_Type_K,AVL_Tree_Type_V> >
     class AVL_Tree
     {
     private:
-        template<typename AVL_Tree_Type_Node_K,typename AVL_Tree_Type_Node_V>
         class AVL_Tree_Type_Node
         {
         public:
             AVL_Tree_Synthetic_class _data;
 
-            AVL_Tree_Type_Node<AVL_Tree_Type_Node_K,AVL_Tree_Type_Node_V>* _left;
-            AVL_Tree_Type_Node<AVL_Tree_Type_Node_K,AVL_Tree_Type_Node_V>* _right;
-            AVL_Tree_Type_Node<AVL_Tree_Type_Node_K,AVL_Tree_Type_Node_V>* _parent;
+            AVL_Tree_Type_Node* _left;
+            AVL_Tree_Type_Node* _right;
+            AVL_Tree_Type_Node* _parent;
             //平衡因子
             int _Balance_factor;
             AVL_Tree_Type_Node(const AVL_Tree_Type_K& Tree_Node_temp_ = AVL_Tree_Type_K(),const AVL_Tree_Type_V& Tree_Node_temp_2 = AVL_Tree_Type_V())
@@ -2161,11 +2159,11 @@ namespace Wang
                 ;
             }
         };
-        using AVL_Node = AVL_Tree_Type_Node<AVL_Tree_Type_K,AVL_Tree_Type_V>;
-        AVL_Node* _ROOT;
+        using Node = AVL_Tree_Type_Node;
+        Node* _ROOT;
 
-        Imitation_function_parameter_function_AVL_Tee com;
-        void _left_revolve(AVL_Node* parent_temp_Node)
+        Imitation_function_parameter_function_AVL_Tree com;
+        void _left_revolve(Node*& parent_temp_Node)
         {
             //传进来的值是发现该树平衡性被破坏的节点地址
             //大致思想：因为这是左单旋，所以找传进来的父亲节点的右根节点来当调整节点
@@ -2173,7 +2171,7 @@ namespace Wang
             //再把父亲节点赋值给调整节点的左根节点，！！注意：在旋转的过程中还要处理每个调整节点的父亲节点的指向和平衡因子
 
             // {
-            //     AVL_Node* Sub_right_temp = parent_temp_Node->_right;
+            //     Node* Sub_right_temp = parent_temp_Node->_right;
             //     parent_temp_Node->_right = Sub_right_temp->_left;
             //     Sub_right_temp->_left = parent_temp_Node;
             //     //错误写法：未同步调整父亲节点和判断调整节点的左根节点是否为空，以及全部需要调整节点的父亲指针的指针的指向
@@ -2183,9 +2181,9 @@ namespace Wang
                 std::cout <<"left "<< "空指针"  <<std::endl;
                 return ;
             }
-            AVL_Node* Sub_right_temp = parent_temp_Node->_right;
-            // AVL_Node* Sub_right_left_temp = Sub_right_temp->_left;
-            AVL_Node* Sub_right_left_temp = (Sub_right_temp->_left)? Sub_right_temp->_left : nullptr;
+            Node* Sub_right_temp = parent_temp_Node->_right;
+            // Node* Sub_right_left_temp = Sub_right_temp->_left;
+            Node* Sub_right_left_temp = (Sub_right_temp->_left)? Sub_right_temp->_left : nullptr;
             //防止空指针解引用
             parent_temp_Node->_right = Sub_right_left_temp;
             if(Sub_right_left_temp)
@@ -2195,7 +2193,7 @@ namespace Wang
             }
             Sub_right_temp->_left = parent_temp_Node;
             //这里先保存一下parent_temp_Node的父亲地址，防止到下面else比较的时候丢失
-            AVL_Node* parent_parent_temp_Node = parent_temp_Node->_parent;
+            Node* parent_parent_temp_Node = parent_temp_Node->_parent;
             parent_temp_Node->_parent = Sub_right_temp;
             //更新parent_temp_Node节点指向正确的地址
 
@@ -2221,7 +2219,7 @@ namespace Wang
             parent_temp_Node->_Balance_factor = Sub_right_temp->_Balance_factor = 0;
         }
 
-        void _right_revolve(AVL_Node* parent_temp_Node)
+        void _right_revolve(Node*& parent_temp_Node)
         {
             //思路同左单旋思路差不多
             if(parent_temp_Node == nullptr|| parent_temp_Node->_left == nullptr)
@@ -2229,8 +2227,8 @@ namespace Wang
                 std::cout <<"right "<< "空指针"  <<std::endl; 
                 return ;
             }
-            AVL_Node* Sub_left_temp = parent_temp_Node->_left;
-            AVL_Node* Sub_left_right_temp = (Sub_left_temp->_right) ? Sub_left_temp->_right : nullptr;
+            Node* Sub_left_temp = parent_temp_Node->_left;
+            Node* Sub_left_right_temp = (Sub_left_temp->_right) ? Sub_left_temp->_right : nullptr;
             //防止空指针解引用
             parent_temp_Node->_left = Sub_left_right_temp;
             if(Sub_left_right_temp)
@@ -2239,7 +2237,7 @@ namespace Wang
             }
             Sub_left_temp->_right = parent_temp_Node;
             //保存parent_temp_Node的父亲节点
-            AVL_Node* parent_parent_temp_Node = parent_temp_Node->_parent;
+            Node* parent_parent_temp_Node = parent_temp_Node->_parent;
             parent_temp_Node->_parent = Sub_left_temp;
 
             if(_ROOT == parent_temp_Node)
@@ -2261,15 +2259,15 @@ namespace Wang
             }
             parent_temp_Node->_Balance_factor = Sub_left_temp->_Balance_factor = 0;
         }
-        void _right_left_revolve(AVL_Node* parent_temp_Node)
+        void _right_left_revolve(Node*& parent_temp_Node)
         {
             if(parent_temp_Node==nullptr || parent_temp_Node->_right == nullptr)
             {
                 std::cout <<"right_left "<< "空指针"  <<std::endl;
                 return;
             }
-            AVL_Node* Sub_right_temp = parent_temp_Node->_right;
-            AVL_Node* Sub_right_left_temp = Sub_right_temp->_left;
+            Node* Sub_right_temp = parent_temp_Node->_right;
+            Node* Sub_right_left_temp = Sub_right_temp->_left;
             int Balance_factor_temp = Sub_right_left_temp->_Balance_factor;
 
             _right_revolve(parent_temp_Node->_right);
@@ -2295,15 +2293,15 @@ namespace Wang
                 Sub_right_left_temp->_Balance_factor = 0;
             }
         }
-        void _left_right_revolve(AVL_Node* parent_temp_Node)
+        void _left_right_revolve(Node*& parent_temp_Node)
         {   
             if(parent_temp_Node == nullptr || parent_temp_Node->_left == nullptr)
             {
                 std::cout << "left_right " << "空指针" << std::endl;
                 return ;
             }
-            AVL_Node* Sub_left_temp = parent_temp_Node->_left;
-            AVL_Node* Sub_left_right_temp = Sub_left_temp->_right;
+            Node* Sub_left_temp = parent_temp_Node->_left;
+            Node* Sub_left_right_temp = Sub_left_temp->_right;
             int Balance_factor_temp = Sub_left_right_temp->_Balance_factor;
 
             _left_revolve(parent_temp_Node->_left);
@@ -2338,12 +2336,12 @@ namespace Wang
             }
             else
             {
-                Wang::stack<AVL_Node*> _stack_temp;
+                Wang::stack<Node*> _stack_temp;
                 //前序释放
                 _stack_temp.push(_ROOT);
                 while(!_stack_temp.empty())
                 {
-                    AVL_Node* temp = _stack_temp.top();
+                    Node* temp = _stack_temp.top();
                     _stack_temp.pop();
                     if(temp->_left != nullptr)
                     {
@@ -2360,15 +2358,15 @@ namespace Wang
             }
         }
         //测试函数
-        void _Pre_order_traversal(AVL_Node* _ROOT_Temp )
+        void _Pre_order_traversal(Node* _ROOT_Temp )
         {
             //前序遍历，最外左子树全部压栈
             if(_ROOT_Temp == nullptr)
             {
                 return;
             }
-            AVL_Node* _Pre_order_traversal_test = _ROOT_Temp;
-            Wang::stack<AVL_Node*> stack_Temp;
+            Node* _Pre_order_traversal_test = _ROOT_Temp;
+            Wang::stack<Node*> stack_Temp;
             stack_Temp.push(_Pre_order_traversal_test);
             //不能添加|| _Pre_order_traversal_test != nullptr ，因为最后一层循环后_Pre_order_traversal_test还是为真后面循环无意义，反之还会破环性质
             while( !stack_Temp.empty() )
@@ -2388,10 +2386,10 @@ namespace Wang
                 }
             }
         }
-        void _Middle_order_traversal(AVL_Node* _ROOT_Temp)
+        void _Middle_order_traversal(Node* _ROOT_Temp)
         {
             //中序遍历函数
-            Wang::stack<AVL_Node*> _staic_temp_;
+            Wang::stack<Node*> _staic_temp_;
             while(_ROOT_Temp != nullptr || !_staic_temp_.empty())
             {
                 while(_ROOT_Temp!= nullptr)
@@ -2421,8 +2419,8 @@ namespace Wang
             }
             else
             {
-                AVL_Node* _Pre_order_traversal_test = _ROOT;
-                Wang::stack<AVL_Node*> stack_Temp;
+                Node* _Pre_order_traversal_test = _ROOT;
+                Wang::stack<Node*> stack_Temp;
                 stack_Temp.push(_Pre_order_traversal_test);
                 while( !stack_Temp.empty() )
                 {
@@ -2449,16 +2447,16 @@ namespace Wang
             _ROOT = nullptr;
         }
         AVL_Tree(const AVL_Tree_Type_K& Key_temp,const AVL_Tree_Type_V& val_temp = AVL_Tree_Type_V(),
-        Imitation_function_parameter_function_AVL_Tee com_temp = Imitation_function_parameter_function_AVL_Tee())
+        Imitation_function_parameter_function_AVL_Tree com_temp = Imitation_function_parameter_function_AVL_Tree())
         :_ROOT(nullptr),com(com_temp)
         {
-            _ROOT = new AVL_Node(Key_temp,val_temp);
+            _ROOT = new Node(Key_temp,val_temp);
         }
         AVL_Tree(const AVL_Tree_Synthetic_class& AVL_Tree_Pair_Temp,
-        Imitation_function_parameter_function_AVL_Tee com_temp = Imitation_function_parameter_function_AVL_Tee())
+        Imitation_function_parameter_function_AVL_Tree com_temp = Imitation_function_parameter_function_AVL_Tree())
         :_ROOT(nullptr),com(com_temp)
         {
-            _ROOT = new AVL_Node(AVL_Tree_Pair_Temp.first,AVL_Tree_Pair_Temp.second);
+            _ROOT = new Node(AVL_Tree_Pair_Temp.first,AVL_Tree_Pair_Temp.second);
         }
         AVL_Tree(const AVL_Tree& AVL_Tree_temp_)
         : _ROOT(nullptr), com(AVL_Tree_temp_.com)
@@ -2468,8 +2466,8 @@ namespace Wang
                 return;
             }
         
-            Wang::stack<Wang::STL_Demand_class::pair<AVL_Node*, AVL_Node**>> _stack_temp;
-            _stack_temp.push(Wang::STL_Demand_class::pair<AVL_Node*, AVL_Node**>(AVL_Tree_temp_._ROOT, &_ROOT));
+            Wang::stack<Wang::STL_Demand_class::pair<Node*, Node**>> _stack_temp;
+            _stack_temp.push(Wang::STL_Demand_class::pair<Node*, Node**>(AVL_Tree_temp_._ROOT, &_ROOT));
         
             while (!_stack_temp.empty())
             {
@@ -2477,21 +2475,21 @@ namespace Wang
                 _stack_temp.pop();
         
                 // 创建新节点并复制数据
-                AVL_Node* new_node = new AVL_Node(AVL_pair_temp.first->_data);
+                Node* new_node = new Node(AVL_pair_temp.first->_data);
                 new_node->_Balance_factor = AVL_pair_temp.first->_Balance_factor;
                 *AVL_pair_temp.second = new_node; // 将新节点赋值给目标位置
         
                 // 处理右子节点
                 if (AVL_pair_temp.first->_right != nullptr)
                 {
-                    _stack_temp.push(Wang::STL_Demand_class::pair<AVL_Node*, AVL_Node**>(
+                    _stack_temp.push(Wang::STL_Demand_class::pair<Node*, Node**>(
                         AVL_pair_temp.first->_right, &new_node->_right));
                 }
         
                 // 处理左子节点
                 if (AVL_pair_temp.first->_left != nullptr)
                 {
-                    _stack_temp.push(Wang::STL_Demand_class::pair<AVL_Node*, AVL_Node**>(
+                    _stack_temp.push(Wang::STL_Demand_class::pair<Node*, Node**>(
                         AVL_pair_temp.first->_left, &new_node->_left));
                 }
         
@@ -2532,13 +2530,13 @@ namespace Wang
             //插入
             if(_ROOT == nullptr)
             {
-                _ROOT = new AVL_Node(Key_temp,val_temp);
+                _ROOT = new Node(Key_temp,val_temp);
                 return true;
             }
             else
             {
-                AVL_Node* _ROOT_temp = _ROOT;
-                AVL_Node* _ROOT_temp_parent = nullptr;
+                Node* _ROOT_temp = _ROOT;
+                Node* _ROOT_temp_parent = nullptr;
                 while(_ROOT_temp)
                 {
                     _ROOT_temp_parent = _ROOT_temp;
@@ -2555,7 +2553,7 @@ namespace Wang
                         _ROOT_temp = _ROOT_temp->_right;
                     }
                 }
-                _ROOT_temp = new AVL_Node(Key_temp,val_temp);
+                _ROOT_temp = new Node(Key_temp,val_temp);
                 if(com(Key_temp,_ROOT_temp_parent->_data.first))
                 {
                     _ROOT_temp_parent->_left = _ROOT_temp;
@@ -2566,8 +2564,8 @@ namespace Wang
                 }
                 _ROOT_temp->_parent = _ROOT_temp_parent;
 
-                AVL_Node* _ROOT_temp_test = _ROOT_temp;
-                AVL_Node* _ROOT_temp_test_parent = _ROOT_temp_parent;
+                Node* _ROOT_temp_test = _ROOT_temp;
+                Node* _ROOT_temp_test_parent = _ROOT_temp_parent;
 
                 while(_ROOT_temp_test_parent)
                 {
@@ -2625,13 +2623,13 @@ namespace Wang
             //AVL树左子树比右子树高，则他俩的根节点的平衡因子为1，反之为-1，也就是说左加一，右减一，如果根节点为2和-2就要需要调整了
             if(_ROOT == nullptr)
             {
-                _ROOT = new AVL_Node(AVL_Tree_Pair_Temp.first,AVL_Tree_Pair_Temp.second);
+                _ROOT = new Node(AVL_Tree_Pair_Temp.first,AVL_Tree_Pair_Temp.second);
                 return true;
             }
             else
             {
-                AVL_Node* _ROOT_Temp = _ROOT;
-                AVL_Node* _ROOT_Temp_parent = nullptr;
+                Node* _ROOT_Temp = _ROOT;
+                Node* _ROOT_Temp_parent = nullptr;
                 while(_ROOT_Temp != nullptr)
                 {
                     _ROOT_Temp_parent = _ROOT_Temp;
@@ -2650,7 +2648,7 @@ namespace Wang
                         _ROOT_Temp = _ROOT_Temp->_right;
                     }
                 }
-                _ROOT_Temp = new AVL_Node(AVL_Tree_Pair_Temp);
+                _ROOT_Temp = new Node(AVL_Tree_Pair_Temp);
                 if(com(AVL_Tree_Pair_Temp.first,_ROOT_Temp_parent->_data.first))
                 {
                     _ROOT_Temp_parent->_left = _ROOT_Temp;
@@ -2661,8 +2659,8 @@ namespace Wang
                     _ROOT_Temp_parent->_right = _ROOT_Temp;
                 }
                 _ROOT_Temp->_parent = _ROOT_Temp_parent;
-                AVL_Node* _ROOT_Temp_test = _ROOT_Temp;
-                AVL_Node* _ROOT_Temp_test_parent = _ROOT_Temp_parent;
+                Node* _ROOT_Temp_test = _ROOT_Temp;
+                Node* _ROOT_Temp_test_parent = _ROOT_Temp_parent;
                 //更新平衡因子
                 while(_ROOT_Temp_test_parent)
                 {
@@ -2725,9 +2723,9 @@ namespace Wang
             }
             return true;
         }
-        AVL_Node* find(const AVL_Tree_Type_K& _data_temp)
+        Node* find(const AVL_Tree_Type_K& _data_temp)
         {
-            AVL_Node* _ROOT_Temp = _ROOT;
+            Node* _ROOT_Temp = _ROOT;
             while(_ROOT_Temp != nullptr)
             {
                 if(_ROOT_Temp->_data == _data_temp)
@@ -2751,16 +2749,16 @@ namespace Wang
             {
                 return *this;
             }
-            AVL_Node* _ROOT_Temp = _ROOT;
-            AVL_Node* _ROOT_Temp_parent = nullptr;
+            Node* _ROOT_Temp = _ROOT;
+            Node* _ROOT_Temp_parent = nullptr;
             while(_ROOT_Temp != nullptr)
             {
-                _ROOT_Temp_parent = _ROOT_Temp;
                 if(!com(_data_Temp,_ROOT_Temp->_data.first) && !com(_ROOT_Temp->_data.first,_data_Temp))
                 {
                     break;
                 }
-                else if (com(_ROOT_Temp->_data.first,_data_Temp))
+                _ROOT_Temp_parent = _ROOT_Temp;
+                if (com(_ROOT_Temp->_data.first,_data_Temp))
                 {
                     _ROOT_Temp = _ROOT_Temp->_right;
                 }
@@ -2769,31 +2767,12 @@ namespace Wang
                     _ROOT_Temp = _ROOT_Temp->_left;
                 }
             }
+            if(_ROOT_Temp == nullptr)
+            {
+                return *this;
+                //没有找到
+            }
             //三种情况：左空，右空，左右都不空
-            // if(_ROOT_Temp->_left == nullptr)
-            // {
-            //     if(_ROOT_Temp_parent != nullptr)
-            //     {
-            //         //根
-            //         _ROOT = _ROOT_Temp->_right;
-            //         _ROOT_Temp->_right->_parent = nullptr;
-            //     }
-            //     else
-            //     {
-            //         if(_ROOT_Temp_parent->_left == _ROOT_Temp)
-            //         {
-            //             _ROOT_Temp_parent->_left = _ROOT_Temp->_right;
-            //         }
-            //         else
-            //         {
-            //             _ROOT_Temp_parent->_right = _ROOT_Temp->_right;
-            //         }
-            //         _ROOT_Temp->_right->_parent = _ROOT_Temp_parent;
-            //         //架空_ROOT_Temp,并更新_ROOT_Temp接班人的父亲指针
-            //     }
-            //     delete _ROOT_Temp;
-            //     _ROOT_Temp = nullptr;
-            // }
             if (_ROOT_Temp->_left == nullptr) 
             {
                 if (_ROOT_Temp->_right != nullptr) 
@@ -2816,6 +2795,7 @@ namespace Wang
                     }
                 }
                 delete _ROOT_Temp;
+                _ROOT_Temp = nullptr;
             }            
             else if (_ROOT_Temp->_right == nullptr)
             {
@@ -2846,8 +2826,8 @@ namespace Wang
             else if(_ROOT_Temp->_right != nullptr && _ROOT_Temp->_left != nullptr)
             {
                 //找右子树最左节点
-                AVL_Node* _right_min = _ROOT_Temp->_right;
-                AVL_Node* _right_parent = _ROOT_Temp;
+                Node* _right_min = _ROOT_Temp->_right;
+                Node* _right_parent = _ROOT_Temp;
                 while(_right_min->_left != nullptr)
                 {
                     _right_parent = _right_min;
@@ -2867,19 +2847,19 @@ namespace Wang
                     _right_min->_right->_parent = _right_parent;
                 }
                 delete _right_min;
-                _right_min = nullptr;                
+                _right_min = nullptr;         
             }
             //更新平衡因子
-            AVL_Node* parent_BF = _ROOT_Temp_parent;
+            Node* parent_BF = _ROOT_Temp_parent;
             while(parent_BF != nullptr)
             {
                 if(parent_BF->_left == _ROOT_Temp)
                 {
-                    parent_BF->_Balance_factor++;
+                    parent_BF->_Balance_factor--;
                 }
                 else
                 {
-                    parent_BF->_Balance_factor--;
+                    parent_BF->_Balance_factor++;
                 }
                 if(parent_BF->_Balance_factor == 0)
                 {
@@ -2887,13 +2867,11 @@ namespace Wang
                 }
                 else if(parent_BF->_Balance_factor == 1 || parent_BF->_Balance_factor == -1)
                 {
-                    //高度不变，更新结束
                     _ROOT_Temp = parent_BF;
                     parent_BF = parent_BF->_parent;
                 }
                 else if(parent_BF->_Balance_factor == 2 || parent_BF->_Balance_factor == -2)
                 {
-                    //高度变了需要旋转处理
                     if(parent_BF->_Balance_factor == 2)
                     {
                         if(_ROOT_Temp->_Balance_factor == 1)
@@ -2916,476 +2894,505 @@ namespace Wang
                             _left_right_revolve(parent_BF);
                         }
                     }
-                    _ROOT_Temp = parent_BF;
                     parent_BF = parent_BF->_parent;
-                    //旋转后继续向上调整，因为旋转后父节点的平衡因子可能发生变化，每个旋转的节点都可以当作一个子树，子树旋转后，父节点平衡因子可能发生变化，需要继续向上调整
+                    _ROOT_Temp = parent_BF;
+                    //双旋的情况，先调整该节点，再调整整体
                 }
             }
             return *this;
         }
     };
+    /*############################     RB_Tree 容器     ############################*/
+    template <typename RB_Tree_Type_K, typename RB_Tree_Type_V,
+    typename Imitation_function_parameter_function_RB_Tree = Wang::STL_Imitation_functions::less <RB_Tree_Type_K>,
+    typename RB_Tree_Synthetic_class = Wang::STL_Demand_class::pair<RB_Tree_Type_K,RB_Tree_Type_V> >
+    class RB_Tree
+    {
+    private:
+    enum RB_Tree_Color
+        {
+            RED,
+            BLACK,
+        };
+        class RB_Tree_Node
+        {
+        public:
+        	RB_Tree_Synthetic_class _data;
+        	RB_Tree_Node* _left;
+        	RB_Tree_Node* _right;
+        	RB_Tree_Node* _parent;
+        	RB_Tree_Color _color;
+        };
+        using Node = RB_Tree_Node;
+        Node* _ROOT;
+    public:
+        RB_Tree()
+        {
+            _ROOT = nullptr;
+        }
+    };
 }
 int main()
 {  
-    // /*            string测试             */
-    // {
-    //     std::cout << " string 测试 " << std::endl << std::endl;
-    //     Wang::string string_test1("hello");
-    //     Wang::string string_test2("world");
+    /*            string测试             */
+    {
+        std::cout << " string 测试 " << std::endl << std::endl;
+        Wang::string string_test1("hello");
+        Wang::string string_test2("world");
         
-    //     Wang::string string_test3 = string_test1 + string_test2;
-    //     std::cout << "string_test3: " << string_test3 << std::endl;
-    //     string_test3.push_back('!');
-    //     const char* insert_str = "inserted";
-    //     string_test3.nose_Insertion_substrings(insert_str);
-    //     std::cout << "str3 after insertion: " << string_test3 << std::endl;
+        Wang::string string_test3 = string_test1 + string_test2;
+        std::cout << "string_test3: " << string_test3 << std::endl;
+        string_test3.push_back('!');
+        const char* insert_str = "inserted";
+        string_test3.nose_Insertion_substrings(insert_str);
+        std::cout << "str3 after insertion: " << string_test3 << std::endl;
 
-    //     size_t old_pos = strlen(insert_str);
-    //     Wang::string string_test4 = string_test3.str_withdraw(old_pos);
-    //     std::cout << "string_test4: " << string_test4 << std::endl;
+        size_t old_pos = strlen(insert_str);
+        Wang::string string_test4 = string_test3.str_withdraw(old_pos);
+        std::cout << "string_test4: " << string_test4 << std::endl;
 
-    //     std::cout << string_test3.conversions_oldest() << std::endl;
-    //     std::cout << string_test3.conversions_few() << std::endl;
+        std::cout << string_test3.conversions_oldest() << std::endl;
+        std::cout << string_test3.conversions_few() << std::endl;
 
-    //     Wang::string string_test5 = string_test3.str_withdraw_extremity(5);
-    //     std::cout << "string_test5: " << string_test5 << std::endl;
+        Wang::string string_test5 = string_test3.str_withdraw_extremity(5);
+        std::cout << "string_test5: " << string_test5 << std::endl;
 
-    //     Wang::string string_test6 = string_test3.str_withdraw_detail(5, 10);
-    //     std::cout << "string_test6: " << string_test6 << std::endl;
+        Wang::string string_test6 = string_test3.str_withdraw_detail(5, 10);
+        std::cout << "string_test6: " << string_test6 << std::endl;
 
-    //     std::cout << "str3 size: " << string_test3.size() << std::endl;
-    //     std::cout << "str3 capacity: " << string_test3.capacity() << std::endl;
-    //     std::cout << "string_test3 after resize: " << string_test3.resize(21, '*') << std::endl;
+        std::cout << "str3 size: " << string_test3.size() << std::endl;
+        std::cout << "str3 capacity: " << string_test3.capacity() << std::endl;
+        std::cout << "string_test3 after resize: " << string_test3.resize(21, '*') << std::endl;
 
-    //     std::cout << "string_test3 after rollback: " << string_test3.rollback() << std::endl;
+        std::cout << "string_test3 after rollback: " << string_test3.rollback() << std::endl;
 
-    //     std::cout << "string_test3 after rollback_limit: " << string_test3.rollback_limit(5, 10) << std::endl;
+        std::cout << "string_test3 after rollback_limit: " << string_test3.rollback_limit(5, 10) << std::endl;
 
-    //     string_test3.string_print();
-    //     string_test3.string_print_reverse();
+        string_test3.string_print();
+        string_test3.string_print_reverse();
 
-    //     for(auto i :string_test3)
-    //     {
-    //         std::cout << i << " ";
-    //     }
-    //     std::cout << std::endl;
+        for(auto i :string_test3)
+        {
+            std::cout << i << " ";
+        }
+        std::cout << std::endl;
 
-    //     for(Wang::string::const_iterator i = string_test3.begin();i != string_test3.end();i++)
-    //     {
-    //         std::cout << *i << " ";
-    //     }
-    //     std::cout << std::endl;
-    // }
+        for(Wang::string::const_iterator i = string_test3.begin();i != string_test3.end();i++)
+        {
+            std::cout << *i << " ";
+        }
+        std::cout << std::endl;
+    }
 
-    // /*            vector测试             */
-    // {
-    //     std::cout << " vector 测试 " << std::endl << std::endl;
-    //     Wang::vector<int> vector_test(5,1);
-    //     for(auto i: vector_test)
-    //     {
-    //         std::cout << i << " ";
-    //     }
-    //     std::cout << std::endl;
-    //     Wang::vector<int> vector_test1(vector_test);
-    //     for(const  auto& i  : vector_test1 )
-    //     {
-    //         std::cout << i << " ";
-    //     }
-    //     std::cout << std::endl;
-    //     Wang::vector<int> test2 = vector_test1;
-    //     for(const auto i : test2)
-    //     {
-    //         std::cout << i << " ";
-    //     }
-    //     Wang::string s2 = "name";
-    //     std::cout << std::endl;
-    //     Wang::vector<Wang::string> name_test(10,s2);
-    //     for(const auto& i : name_test )
-    //     {
-    //         std::cout << i << " ";
-    //     }
-    //     std::cout << std::endl;
-    //     Wang::vector<Wang::string> name_test1 =name_test ;
-    //     for(const auto& i : name_test1 )
-    //     {
-    //         std::cout << i << " ";
-    //     }
-    //     std::cout << std::endl;
-    //     Wang::string s3 = "hello word!";
-    //     name_test1.push_back(s3);
-    //     for(const auto& i : name_test1 )
-    //     {
-    //         std::cout << i << " ";
-    //     }
-    //     std::cout << std::endl;
+    /*            vector测试             */
+    {
+        std::cout << " vector 测试 " << std::endl << std::endl;
+        Wang::vector<int> vector_test(5,1);
+        for(auto i: vector_test)
+        {
+            std::cout << i << " ";
+        }
+        std::cout << std::endl;
+        Wang::vector<int> vector_test1(vector_test);
+        for(const  auto& i  : vector_test1 )
+        {
+            std::cout << i << " ";
+        }
+        std::cout << std::endl;
+        Wang::vector<int> test2 = vector_test1;
+        for(const auto i : test2)
+        {
+            std::cout << i << " ";
+        }
+        Wang::string s2 = "name";
+        std::cout << std::endl;
+        Wang::vector<Wang::string> name_test(10,s2);
+        for(const auto& i : name_test )
+        {
+            std::cout << i << " ";
+        }
+        std::cout << std::endl;
+        Wang::vector<Wang::string> name_test1 =name_test ;
+        for(const auto& i : name_test1 )
+        {
+            std::cout << i << " ";
+        }
+        std::cout << std::endl;
+        Wang::string s3 = "hello word!";
+        name_test1.push_back(s3);
+        for(const auto& i : name_test1 )
+        {
+            std::cout << i << " ";
+        }
+        std::cout << std::endl;
 
-    //     name_test1.push_front(s3);
-    //     for(const auto& i : name_test1 )
-    //     {
-    //         std::cout << i << " ";
-    //     }
-    //     std::cout << std::endl;
+        name_test1.push_front(s3);
+        for(const auto& i : name_test1 )
+        {
+            std::cout << i << " ";
+        }
+        std::cout << std::endl;
 
-    //     name_test1+=name_test;
-    //     for(const auto& i : name_test1 )
-    //     {
-    //         std::cout << i << " ";
-    //     }
-    //     std::cout << std::endl;
+        name_test1+=name_test;
+        for(const auto& i : name_test1 )
+        {
+            std::cout << i << " ";
+        }
+        std::cout << std::endl;
 
-    //     std::cout << name_test1 << std::endl;
-    //     std::cout << name_test1.pop_back() << std::endl;
-    // }
-
-
-    // /*            list测试             */
-    // {
-    //     std::cout << " list 测试 " << std::endl << std::endl;
-    //     Wang::list<int> list_test1;
-    //     for(size_t i = 1; i < 10; i++)
-    //     {
-    //         list_test1.push_back(i);
-    //     }
-    //     Wang::list<int>::const_iterator it =list_test1.cbegin();
-    //     while(it != list_test1.cend())
-    //     {
-    //         std::cout << *it  << " ";
-    //         it++;
-    //     }
-    //     std::cout << std::endl;
-    //     Wang::list<int>::reverse_const_iterator i = list_test1.rcbegin();
-    //     while(i != list_test1.rcend())
-    //     {
-    //         std::cout << *i << " ";
-    //         i++;
-    //     }
-    //     std::cout <<std::endl;
-
-    //     list_test1.pop_back(); 
-    //     Wang::list<int>::const_iterator j =list_test1.cbegin();
-    //     while(j != list_test1.cend())
-    //     {
-    //         std::cout << *j  << " ";
-    //         j++;
-    //     }
-    //     std::cout << std::endl;
-    //     std::cout << list_test1.size() << std::endl;
-
-    //     Wang::list<int> list_test2 = list_test1;
-    //     Wang::list<int>::const_iterator p =list_test2.cbegin();
-    //     while(p != list_test2.cend())
-    //     {
-    //         std::cout << *p  << " ";
-    //         p++;
-    //     }
-    //     std::cout << std::endl;
-    //     std::cout << list_test2.size() << std::endl;
-
-    //     Wang::list<int> list_test3 = list_test2 + list_test1;
-    //     Wang::list<int>::const_iterator k =list_test3.cbegin();
-    //     while(k != list_test3.cend())
-    //     {
-    //         std::cout << *k  << " ";
-    //         k++;
-    //     }
-    //     std::cout << std::endl;
-    //     std::cout << list_test3.size() << std::endl;
-
-    //     Wang::list<int> list_test4 = list_test3 + list_test1;
-    //     Wang::list<int>::const_iterator kp =list_test4.cbegin();
-    //     while(kp != list_test4.cend())
-    //     {
-    //         std::cout << *kp  << " ";
-    //         kp++;
-    //     }
-    //     std::cout << std::endl;
-    //     std::cout << list_test4.size() << std::endl;
-    //     std::cout << list_test4 << std::endl;
-    // }
-
-    // /*            staic测试             */
-    // {
-    //     std::cout << " staic 测试 " << std::endl << std::endl;
-    //     Wang::string staic_test_str1 = "hello";
-    //     Wang::string staic_test_str2 = "word";
-    //     Wang::string staic_test_str3 = "  ";
-    //     Wang::stack<Wang::string> staic_test1;
-
-    //     staic_test1.push(staic_test_str1);
-    //     staic_test1.push(staic_test_str3);
-    //     staic_test1.push(staic_test_str2);
-
-    //     std::cout << staic_test1.top() << std::endl;
-    //     staic_test1.pop();
-    //     std::cout << staic_test1.top() << std::endl;
-    //     staic_test1.pop();
-    //     std::cout << staic_test1.top() << std::endl;
-    //     staic_test1.pop();
-    // }
-
-    // /*            queue测试             */
-    // {
-    //     std::cout << " queue 测试 " << std::endl << std::endl;
-    //     Wang::string queue_test_str1 = "hello";
-    //     Wang::string queue_test_str2 = "word";
-    //     Wang::string queue_test_str3 = "  ";
-    //     Wang::queue<Wang::string,Wang::list<Wang::string>> queue_test1;
-
-    //     queue_test1.push(queue_test_str1);
-    //     queue_test1.push(queue_test_str3);
-    //     queue_test1.push(queue_test_str2);
-
-    //     std::cout << queue_test1.front() << std::endl;
-    //     std::cout << queue_test1.back()  << std::endl;
-
-    //     std::cout << queue_test1.front() << " ";
-    //     queue_test1.pop();
-    //     std::cout << queue_test1.front() << " ";
-    //     queue_test1.pop();
-    //     std::cout << queue_test1.front() << " ";
-    //     queue_test1.pop();
-    // }
-
-    // /*            priority_queue测试             */
-    // {
-    //     time_t num1 = clock();
-    //     std::cout << " priority_queue 测试 " << std::endl << std::endl;
-    //     Wang::priority_queue<int> priority_queue_test;
-    //     for(int i = 0; i < 10000 ; i++)
-    //     {
-    //         priority_queue_test.push(i);
-    //     }
-
-    //     std::cout << priority_queue_test.size() << std::endl;
-
-    //     for(size_t i = 0; i < 10000; i++)
-    //     {
-    //         std::cout << priority_queue_test.top() << " ";
-    //         priority_queue_test.pop();
-    //     }
-    //     std::cout << std::endl;
-    //     time_t num2 = clock();
-    //     std::cout << num2-num1 << std::endl;
-    // }
-
-    // /*            BS_Tree 测试             */
-    // {
-    //     time_t Binary_search_tree_num1 = clock();
-    //     Wang::BS_Tree<int,Wang::STL_Imitation_functions::greater<int>> Binary_search_tree_test;
-    //     for(size_t i = 100; i > 0; i--)
-    //     {
-    //         //相对来说这算是有序插入导致二叉树相乘时间复杂度为O(N)的链表
-    //         Binary_search_tree_test.push(i);
-    //     }
-    //     time_t Binary_search_tree_num2 = clock();
-
-    //     time_t Binary_search_tree_num3 = clock();
-    //     std::cout << Binary_search_tree_test.find(58) << std::endl;
-    //     time_t Binary_search_tree_num4 = clock();
-    //     // Binary_search_tree_test.Middle_order_traversal();
-    //     std::cout << "退化链表插入时间" << Binary_search_tree_num2-Binary_search_tree_num1 << std::endl;
-    //     std::cout << "退化链表查找时间" << Binary_search_tree_num4-Binary_search_tree_num3 << std::endl;
-    //     std::cout << std::endl << std::endl;
-    // }
-
-    // {
-    //     Wang::BS_Tree<int, Wang::STL_Imitation_functions::greater<int>> bst;
-    //     bst.push(5);
-    //     bst.push(4);
-    //     bst.push(3);
-    //     bst.push(2);
-    //     bst.push(1);
-    //     bst.Middle_order_traversal(); 
-    //     std::cout << std::endl << std::endl;
-    // }
-
-    // {
-    //     const size_t Binary_search_tree_arraySize = 10;
-    //     Wang::vector<int> Binary_search_tree_array(Binary_search_tree_arraySize);
-    //     for (size_t i = 0; i < Binary_search_tree_arraySize; ++i) 
-    //     {
-    //         Binary_search_tree_array[i] = i;
-    //     }
-
-    //     // 创建随机数引擎和分布
-    //     std::random_device rd;
-    //     std::mt19937 g(rd());
-    //     std::shuffle(Binary_search_tree_array.begin(), Binary_search_tree_array.end(), g);
-    //     //输出打乱后的数组
-    //     // for(auto& i : Binary_search_tree_array)
-    //     // {
-    //     //     std::cout << i << " ";
-    //     // }
-
-    //     //打乱数组元素顺序
-    //     size_t size = 0;
-    //     time_t Binary_search_tree_num1 = clock();
-    //     Wang::BS_Tree<int,Wang::STL_Imitation_functions::greater<int>> Binary_search_tree_test;
-    //     for(const auto& Binary_search_tree_for_test: Binary_search_tree_array)
-    //     {
-    //         if(Binary_search_tree_test.push(Binary_search_tree_for_test))
-    //         {
-    //             size++;
-    //         }
-    //     }
-    //     time_t Binary_search_tree_num2 = clock();
-
-    //     const int Binary_search_tree_find = Binary_search_tree_array[Binary_search_tree_arraySize/2];
-
-    //     time_t Binary_search_tree_num3 = clock();
-    //     Binary_search_tree_test.find(Binary_search_tree_find);
-    //     time_t Binary_search_tree_num4 = clock();
-    //     // Binary_search_tree_test.Middle_order_traversal();
-    //     std::cout << "插入个数" << size << std::endl;
-    //     std::cout << "插入时间" << Binary_search_tree_num2-Binary_search_tree_num1 << std::endl;
-    //     std::cout << "查找时间" << Binary_search_tree_num4-Binary_search_tree_num3 << std::endl;
-    //     /*              查找数据时间不稳定时间复杂度是O(logN)        */
-    //     std::cout << std::endl << std::endl;
-    // }
-
-    // {
-    //     const size_t Binary_search_tree_arraySize = 20;
-    //     Wang::vector<int> Binary_search_tree_array(Binary_search_tree_arraySize);
-    //     for (size_t i = 0; i < Binary_search_tree_arraySize; ++i) 
-    //     {
-    //         Binary_search_tree_array[i] = i;
-    //     }
-
-    //     // 创建随机数引擎和分布
-    //     std::random_device rd;
-    //     std::mt19937 g(rd());
-    //     std::shuffle(Binary_search_tree_array.begin(), Binary_search_tree_array.end(), g);
-    //     //输出打乱后的数组
-    //     // for(auto& i : Binary_search_tree_array)
-    //     // {
-    //     //     std::cout << i << " ";
-    //     // }
-
-    //     //打乱数组元素顺序
-    //     size_t size = 0;
-    //     time_t Binary_search_tree_num1 = clock();
-    //     Wang::BS_Tree<int,Wang::STL_Imitation_functions::greater<int>> Binary_search_tree_test;
-    //     for(const auto& Binary_search_tree_for_test: Binary_search_tree_array)
-    //     {
-    //         if(Binary_search_tree_test.push(Binary_search_tree_for_test))
-    //         {
-    //             size++;
-    //             std::cout << size << " ";
-    //         }
-    //     }
-    //     std::cout << std::endl;
-    //     time_t Binary_search_tree_num2 = clock();
-    //     Wang::BS_Tree<int,Wang::STL_Imitation_functions::greater<int>> Binary_search_tree_test1 = Binary_search_tree_test;
-    //     time_t Binary_search_tree_num3 = clock();
-    //     std::cout << "拷贝构造没问题 " << std::endl;
-
-    //     Binary_search_tree_test.pop(Binary_search_tree_array[2]);
-    //     std::cout << "pop(1)函数没问题 " << std::endl;
-    //     Binary_search_tree_test.pop(Binary_search_tree_array[0]);
-    //     std::cout << "pop(2)函数没问题 " << std::endl;
-    //     Binary_search_tree_test.pop(Binary_search_tree_array[1]);
-    //     std::cout << "pop(3)函数没问题 " << std::endl;
-    //     Binary_search_tree_test.pop(Binary_search_tree_array[3]);
-    //     std::cout << "pop(4)函数没问题 " << std::endl;
+        std::cout << name_test1 << std::endl;
+        std::cout << name_test1.pop_back() << std::endl;
+    }
 
 
-    //     Binary_search_tree_test.Middle_order_traversal();
-    //     std::cout << std::endl;
-    //     Binary_search_tree_test1.Middle_order_traversal();
+    /*            list测试             */
+    {
+        std::cout << " list 测试 " << std::endl << std::endl;
+        Wang::list<int> list_test1;
+        for(size_t i = 1; i < 10; i++)
+        {
+            list_test1.push_back(i);
+        }
+        Wang::list<int>::const_iterator it =list_test1.cbegin();
+        while(it != list_test1.cend())
+        {
+            std::cout << *it  << " ";
+            it++;
+        }
+        std::cout << std::endl;
+        Wang::list<int>::reverse_const_iterator i = list_test1.rcbegin();
+        while(i != list_test1.rcend())
+        {
+            std::cout << *i << " ";
+            i++;
+        }
+        std::cout <<std::endl;
 
-    //     std::cout << "前序遍历 "<< std::endl;
-    //     Binary_search_tree_test.Pre_order_traversal();
-    //     std::cout << std::endl;
-    //     Binary_search_tree_test1.Pre_order_traversal();
-    //     std::cout << std::endl;
-    //     std::cout << "插入个数" << size << std::endl;
-    //     std::cout << "插入时间" << Binary_search_tree_num2-Binary_search_tree_num1 << std::endl;
-    //     std::cout << "拷贝时间" << Binary_search_tree_num3-Binary_search_tree_num2 << std::endl;
-    // }
+        list_test1.pop_back(); 
+        Wang::list<int>::const_iterator j =list_test1.cbegin();
+        while(j != list_test1.cend())
+        {
+            std::cout << *j  << " ";
+            j++;
+        }
+        std::cout << std::endl;
+        std::cout << list_test1.size() << std::endl;
 
-    // {
-    //     Wang::string str1 = {'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'};
-    //     std::cout << str1 << std::endl;
-    //     Wang::vector <Wang::string> vector_str = {"西瓜","樱桃","苹果","西瓜","樱桃","苹果","樱桃","西瓜","樱桃","西瓜","樱桃","苹果","樱桃","苹果","樱桃"};
-    //     Wang::BS_Tree< Wang::string > BST_temp;
-    //     size_t _BST_size = vector_str.size();
-    //     for(size_t i = 0 ; i < _BST_size;i++)
-    //     {
-    //         if(BST_temp.push(vector_str[i]))
-    //         {
-    //             std::cout << "插入成功" << std::endl;
-    //         }
-    //         else
-    //         {
-    //             //当前未实现累加功能
-    //             std::cout << "插入失败" << std::endl;
-    //         }
-    //     }
-    //     BST_temp.Middle_order_traversal();
-    //     std::cout << BST_temp.size() << std::endl;
-    // }
-    // /*            pair类 测试             */
-    // {
-    //     const int i = 31; const int j = 28;
-    //     Wang::STL_Demand_class::pair<int,int> pair_test =Wang::STL_Demand_class::make_pair(i,j);
-    //     std::cout << pair_test << std::endl;
-    // }
+        Wang::list<int> list_test2 = list_test1;
+        Wang::list<int>::const_iterator p =list_test2.cbegin();
+        while(p != list_test2.cend())
+        {
+            std::cout << *p  << " ";
+            p++;
+        }
+        std::cout << std::endl;
+        std::cout << list_test2.size() << std::endl;
+
+        Wang::list<int> list_test3 = list_test2 + list_test1;
+        Wang::list<int>::const_iterator k =list_test3.cbegin();
+        while(k != list_test3.cend())
+        {
+            std::cout << *k  << " ";
+            k++;
+        }
+        std::cout << std::endl;
+        std::cout << list_test3.size() << std::endl;
+
+        Wang::list<int> list_test4 = list_test3 + list_test1;
+        Wang::list<int>::const_iterator kp =list_test4.cbegin();
+        while(kp != list_test4.cend())
+        {
+            std::cout << *kp  << " ";
+            kp++;
+        }
+        std::cout << std::endl;
+        std::cout << list_test4.size() << std::endl;
+        std::cout << list_test4 << std::endl;
+    }
+
+    /*            staic测试             */
+    {
+        std::cout << " staic 测试 " << std::endl << std::endl;
+        Wang::string staic_test_str1 = "hello";
+        Wang::string staic_test_str2 = "word";
+        Wang::string staic_test_str3 = "  ";
+        Wang::stack<Wang::string> staic_test1;
+
+        staic_test1.push(staic_test_str1);
+        staic_test1.push(staic_test_str3);
+        staic_test1.push(staic_test_str2);
+
+        std::cout << staic_test1.top() << std::endl;
+        staic_test1.pop();
+        std::cout << staic_test1.top() << std::endl;
+        staic_test1.pop();
+        std::cout << staic_test1.top() << std::endl;
+        staic_test1.pop();
+    }
+
+    /*            queue测试             */
+    {
+        std::cout << " queue 测试 " << std::endl << std::endl;
+        Wang::string queue_test_str1 = "hello";
+        Wang::string queue_test_str2 = "word";
+        Wang::string queue_test_str3 = "  ";
+        Wang::queue<Wang::string,Wang::list<Wang::string>> queue_test1;
+
+        queue_test1.push(queue_test_str1);
+        queue_test1.push(queue_test_str3);
+        queue_test1.push(queue_test_str2);
+
+        std::cout << queue_test1.front() << std::endl;
+        std::cout << queue_test1.back()  << std::endl;
+
+        std::cout << queue_test1.front() << " ";
+        queue_test1.pop();
+        std::cout << queue_test1.front() << " ";
+        queue_test1.pop();
+        std::cout << queue_test1.front() << " ";
+        queue_test1.pop();
+    }
+
+    /*            priority_queue测试             */
+    {
+        time_t num1 = clock();
+        std::cout << " priority_queue 测试 " << std::endl << std::endl;
+        Wang::priority_queue<int> priority_queue_test;
+        for(int i = 0; i < 10000 ; i++)
+        {
+            priority_queue_test.push(i);
+        }
+
+        std::cout << priority_queue_test.size() << std::endl;
+
+        for(size_t i = 0; i < 10000; i++)
+        {
+            std::cout << priority_queue_test.top() << " ";
+            priority_queue_test.pop();
+        }
+        std::cout << std::endl;
+        time_t num2 = clock();
+        std::cout << num2-num1 << std::endl;
+    }
+
+    /*            BS_Tree 测试             */
+    {
+        time_t Binary_search_tree_num1 = clock();
+        Wang::BS_Tree<int,Wang::STL_Imitation_functions::greater<int>> Binary_search_tree_test;
+        for(size_t i = 100; i > 0; i--)
+        {
+            //相对来说这算是有序插入导致二叉树相乘时间复杂度为O(N)的链表
+            Binary_search_tree_test.push(i);
+        }
+        time_t Binary_search_tree_num2 = clock();
+
+        time_t Binary_search_tree_num3 = clock();
+        std::cout << Binary_search_tree_test.find(58) << std::endl;
+        time_t Binary_search_tree_num4 = clock();
+        // Binary_search_tree_test.Middle_order_traversal();
+        std::cout << "退化链表插入时间" << Binary_search_tree_num2-Binary_search_tree_num1 << std::endl;
+        std::cout << "退化链表查找时间" << Binary_search_tree_num4-Binary_search_tree_num3 << std::endl;
+        std::cout << std::endl << std::endl;
+    }
+
+    {
+        Wang::BS_Tree<int, Wang::STL_Imitation_functions::greater<int>> bst;
+        bst.push(5);
+        bst.push(4);
+        bst.push(3);
+        bst.push(2);
+        bst.push(1);
+        bst.Middle_order_traversal(); 
+        std::cout << std::endl << std::endl;
+    }
+
+    {
+        const size_t Binary_search_tree_arraySize = 10;
+        Wang::vector<int> Binary_search_tree_array(Binary_search_tree_arraySize);
+        for (size_t i = 0; i < Binary_search_tree_arraySize; ++i) 
+        {
+            Binary_search_tree_array[i] = i;
+        }
+
+        // 创建随机数引擎和分布
+        std::random_device rd;
+        std::mt19937 g(rd());
+        std::shuffle(Binary_search_tree_array.begin(), Binary_search_tree_array.end(), g);
+        //输出打乱后的数组
+        // for(auto& i : Binary_search_tree_array)
+        // {
+        //     std::cout << i << " ";
+        // }
+
+        //打乱数组元素顺序
+        size_t size = 0;
+        time_t Binary_search_tree_num1 = clock();
+        Wang::BS_Tree<int,Wang::STL_Imitation_functions::greater<int>> Binary_search_tree_test;
+        for(const auto& Binary_search_tree_for_test: Binary_search_tree_array)
+        {
+            if(Binary_search_tree_test.push(Binary_search_tree_for_test))
+            {
+                size++;
+            }
+        }
+        time_t Binary_search_tree_num2 = clock();
+
+        const int Binary_search_tree_find = Binary_search_tree_array[Binary_search_tree_arraySize/2];
+
+        time_t Binary_search_tree_num3 = clock();
+        Binary_search_tree_test.find(Binary_search_tree_find);
+        time_t Binary_search_tree_num4 = clock();
+        // Binary_search_tree_test.Middle_order_traversal();
+        std::cout << "插入个数" << size << std::endl;
+        std::cout << "插入时间" << Binary_search_tree_num2-Binary_search_tree_num1 << std::endl;
+        std::cout << "查找时间" << Binary_search_tree_num4-Binary_search_tree_num3 << std::endl;
+        /*              查找数据时间不稳定时间复杂度是O(logN)        */
+        std::cout << std::endl << std::endl;
+    }
+
+    {
+        const size_t Binary_search_tree_arraySize = 20;
+        Wang::vector<int> Binary_search_tree_array(Binary_search_tree_arraySize);
+        for (size_t i = 0; i < Binary_search_tree_arraySize; ++i) 
+        {
+            Binary_search_tree_array[i] = i;
+        }
+
+        // 创建随机数引擎和分布
+        std::random_device rd;
+        std::mt19937 g(rd());
+        std::shuffle(Binary_search_tree_array.begin(), Binary_search_tree_array.end(), g);
+        //输出打乱后的数组
+        // for(auto& i : Binary_search_tree_array)
+        // {
+        //     std::cout << i << " ";
+        // }
+
+        //打乱数组元素顺序
+        size_t size = 0;
+        time_t Binary_search_tree_num1 = clock();
+        Wang::BS_Tree<int,Wang::STL_Imitation_functions::greater<int>> Binary_search_tree_test;
+        for(const auto& Binary_search_tree_for_test: Binary_search_tree_array)
+        {
+            if(Binary_search_tree_test.push(Binary_search_tree_for_test))
+            {
+                size++;
+                std::cout << size << " ";
+            }
+        }
+        std::cout << std::endl;
+        time_t Binary_search_tree_num2 = clock();
+        Wang::BS_Tree<int,Wang::STL_Imitation_functions::greater<int>> Binary_search_tree_test1 = Binary_search_tree_test;
+        time_t Binary_search_tree_num3 = clock();
+        std::cout << "拷贝构造没问题 " << std::endl;
+
+        Binary_search_tree_test.pop(Binary_search_tree_array[2]);
+        std::cout << "pop(1)函数没问题 " << std::endl;
+        Binary_search_tree_test.pop(Binary_search_tree_array[0]);
+        std::cout << "pop(2)函数没问题 " << std::endl;
+        Binary_search_tree_test.pop(Binary_search_tree_array[1]);
+        std::cout << "pop(3)函数没问题 " << std::endl;
+        Binary_search_tree_test.pop(Binary_search_tree_array[3]);
+        std::cout << "pop(4)函数没问题 " << std::endl;
+
+
+        Binary_search_tree_test.Middle_order_traversal();
+        std::cout << std::endl;
+        Binary_search_tree_test1.Middle_order_traversal();
+
+        std::cout << "前序遍历 "<< std::endl;
+        Binary_search_tree_test.Pre_order_traversal();
+        std::cout << std::endl;
+        Binary_search_tree_test1.Pre_order_traversal();
+        std::cout << std::endl;
+        std::cout << "插入个数" << size << std::endl;
+        std::cout << "插入时间" << Binary_search_tree_num2-Binary_search_tree_num1 << std::endl;
+        std::cout << "拷贝时间" << Binary_search_tree_num3-Binary_search_tree_num2 << std::endl;
+    }
+
+    {
+        Wang::string str1 = {'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'};
+        std::cout << str1 << std::endl;
+        Wang::vector <Wang::string> vector_str = {"西瓜","樱桃","苹果","西瓜","樱桃","苹果","樱桃","西瓜","樱桃","西瓜","樱桃","苹果","樱桃","苹果","樱桃"};
+        Wang::BS_Tree< Wang::string > BST_temp;
+        size_t _BST_size = vector_str.size();
+        for(size_t i = 0 ; i < _BST_size;i++)
+        {
+            if(BST_temp.push(vector_str[i]))
+            {
+                std::cout << "插入成功" << std::endl;
+            }
+            else
+            {
+                //当前未实现累加功能
+                std::cout << "插入失败" << std::endl;
+            }
+        }
+        BST_temp.Middle_order_traversal();
+        std::cout << BST_temp.size() << std::endl;
+    }
+    /*            pair类 测试             */
+    {
+        const int i = 31; const int j = 28;
+        Wang::STL_Demand_class::pair<int,int> pair_test =Wang::STL_Demand_class::make_pair(i,j);
+        std::cout << pair_test << std::endl;
+    }
     /*            AVL_Tree 测试             */
-    // {
-    //     Wang::AVL_Tree<Wang::STL_Demand_class::pair<int,int>,int> AVL_Tree_test_pair(Wang::STL_Demand_class::pair(9,0), 10);
-    //     Wang::STL_Demand_class::pair<Wang::STL_Demand_class::pair<int,int>,int> pair_test_ (Wang::STL_Demand_class::pair(9,0), 10);
-    //     Wang::AVL_Tree<Wang::STL_Demand_class::pair<int,int>,int> AVL_Tree_test(pair_test_);
-    //     //两个构造函数，根据传值调用来查看调用情况
-    //     Wang::AVL_Tree<Wang::string,int> AVL_Tree_test2;
-    //     AVL_Tree_test2.~AVL_Tree();
-    // }
-    // {
-    //     Wang::AVL_Tree<int,int> AVL_Tree_test_pair;
-    //     Wang::vector<Wang::STL_Demand_class::pair<int,int>> AVL_Tree_array_pair = {{22,0},{16,0},{13,0},{15,0},{11,0},{12,0},{14,0},{10,0},{2,0},{10,0}};
-    //     for(auto& i : AVL_Tree_array_pair)
-    //     {
-    //         AVL_Tree_test_pair.push(i);
-    //     }
-    //     std::cout << "前序遍历 "<< std::endl;
-    //     AVL_Tree_test_pair.Pre_order_traversal();
-    //     std::cout << std::endl;
-    //     std::cout << "中序遍历 "<< std::endl;
-    //     AVL_Tree_test_pair.Middle_order_traversal();
-    //     std::cout << std::endl;
-    // }
-    // {
-    //     Wang::AVL_Tree<int,int> AVL_Tree_test_pair;
-    //     Wang::vector<Wang::STL_Demand_class::pair<int,int>> AVL_Tree_array_pair = {{22,0},{16,0},{13,0},{15,0},{11,0},{12,0},{14,0},{10,0},{2,0},{10,0}};
-    //     for(auto& i : AVL_Tree_array_pair)
-    //     {
-    //         AVL_Tree_test_pair.push(i);
-    //     }
-    //     std::cout << "前序遍历 "<< std::endl;
-    //     AVL_Tree_test_pair.Pre_order_traversal();
-    //     std::cout << std::endl;
-    //     std::cout << "中序遍历 "<< std::endl;
-    //     AVL_Tree_test_pair.Middle_order_traversal();
-    //     std::cout << std::endl; 
-    //     Wang::AVL_Tree<int,int>AVL_Tree_test_pair1(AVL_Tree_test_pair);
-    //     std::cout << "前序遍历 "<< std::endl;
-    //     AVL_Tree_test_pair1.Pre_order_traversal();
-    //     std::cout << std::endl;
-    //     std::cout << "中序遍历 "<< std::endl;
-    //     AVL_Tree_test_pair1.Middle_order_traversal();
-    //     std::cout << std::endl; 
+    {
+        Wang::AVL_Tree<Wang::STL_Demand_class::pair<int,int>,int> AVL_Tree_test_pair(Wang::STL_Demand_class::pair(9,0), 10);
+        Wang::STL_Demand_class::pair<Wang::STL_Demand_class::pair<int,int>,int> pair_test_ (Wang::STL_Demand_class::pair(9,0), 10);
+        Wang::AVL_Tree<Wang::STL_Demand_class::pair<int,int>,int> AVL_Tree_test(pair_test_);
+        //两个构造函数，根据传值调用来查看调用情况
+        Wang::AVL_Tree<Wang::string,int> AVL_Tree_test2;
+        AVL_Tree_test2.~AVL_Tree();
+    }
+    {
+        Wang::AVL_Tree<int,int> AVL_Tree_test_pair;
+        Wang::vector<Wang::STL_Demand_class::pair<int,int>> AVL_Tree_array_pair = {{22,0},{16,0},{13,0},{15,0},{11,0},{12,0},{14,0},{10,0},{2,0},{10,0}};
+        for(auto& i : AVL_Tree_array_pair)
+        {
+            AVL_Tree_test_pair.push(i);
+        }
+        std::cout << "前序遍历 "<< std::endl;
+        AVL_Tree_test_pair.Pre_order_traversal();
+        std::cout << std::endl;
+        std::cout << "中序遍历 "<< std::endl;
+        AVL_Tree_test_pair.Middle_order_traversal();
+        std::cout << std::endl;
+    }
+    {
+        Wang::AVL_Tree<int,int> AVL_Tree_test_pair;
+        Wang::vector<Wang::STL_Demand_class::pair<int,int>> AVL_Tree_array_pair = {{22,0},{16,0},{13,0},{15,0},{11,0},{12,0},{14,0},{10,0},{2,0},{10,0}};
+        for(auto& i : AVL_Tree_array_pair)
+        {
+            AVL_Tree_test_pair.push(i);
+        }
+        std::cout << "前序遍历 "<< std::endl;
+        AVL_Tree_test_pair.Pre_order_traversal();
+        std::cout << std::endl;
+        std::cout << "中序遍历 "<< std::endl;
+        AVL_Tree_test_pair.Middle_order_traversal();
+        std::cout << std::endl; 
+        Wang::AVL_Tree<int,int>AVL_Tree_test_pair1(AVL_Tree_test_pair);
+        std::cout << "前序遍历 "<< std::endl;
+        AVL_Tree_test_pair1.Pre_order_traversal();
+        std::cout << std::endl;
+        std::cout << "中序遍历 "<< std::endl;
+        AVL_Tree_test_pair1.Middle_order_traversal();
+        std::cout << std::endl; 
 
-    //     Wang::BS_Tree<char> BS_Tr;
-    //     Wang::string str1 = {'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'};
-    //     for(auto& i :str1)
-    //     {
-    //         BS_Tr.push(i);
-    //     }
-    //     BS_Tr.Middle_order_traversal();
-    //     std::cout << std::endl;
-    //     Wang::BS_Tree<char> BS_TREE(BS_Tr);
-    //     BS_TREE.Middle_order_traversal();
-    //     std::cout << std::endl;
-    // }
+        Wang::BS_Tree<char> BS_Tr;
+        Wang::string str1 = {'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'};
+        for(auto& i :str1)
+        {
+            BS_Tr.push(i);
+        }
+        BS_Tr.Middle_order_traversal();
+        std::cout << std::endl;
+        Wang::BS_Tree<char> BS_TREE(BS_Tr);
+        BS_TREE.Middle_order_traversal();
+        std::cout << std::endl;
+    }
     {
         //删除测试
         Wang::AVL_Tree<int,int> AVL_Tree_test_pair;
@@ -3397,44 +3404,47 @@ int main()
         std::cout << "前序遍历 "<< std::endl;
         AVL_Tree_test_pair.Pre_order_traversal();
         std::cout << std::endl;
+        std::cout << "开始删除 "<< std::endl;
         for(auto& i : AVL_Tree_array_pair)
         {
             AVL_Tree_test_pair.pop(i.first);
+            AVL_Tree_test_pair.Pre_order_traversal();
+            std::cout << std::endl;
         }
         std::cout << std::endl;
     }
-    // {
-    //     //性能测试
-    //     /*                   pair 类型                */
-    //     Wang::AVL_Tree<size_t,int> AVL_Tree_test_pair;
-    //     Wang::vector<Wang::STL_Demand_class::pair<size_t,int>> AVL_Tree_array_pair;
-    //     size_t size = 100000;
-    //     for(size_t i = 0; i < size; i++)
-    //     {
-    //         AVL_Tree_array_pair.push_back(Wang::STL_Demand_class::pair<size_t,int>(i,0));
-    //     }
-    //     time_t AVL_Tree_num1 = clock();
-    //     for(auto& i : AVL_Tree_array_pair)
-    //     {
-    //         AVL_Tree_test_pair.push(i);
-    //     }
-    //     time_t AVL_Tree_num2 = clock();
-    //     std::cout << "插入个数:" << AVL_Tree_test_pair.size()  << " " << " 插入时间:" << AVL_Tree_num2 - AVL_Tree_num1 << std::endl;
+    {
+        //性能测试
+        /*                   pair 类型                */
+        Wang::AVL_Tree<size_t,int> AVL_Tree_test_pair;
+        Wang::vector<Wang::STL_Demand_class::pair<size_t,int>> AVL_Tree_array_pair;
+        size_t size = 100000;
+        for(size_t i = 0; i < size; i++)
+        {
+            AVL_Tree_array_pair.push_back(Wang::STL_Demand_class::pair<size_t,int>(i,0));
+        }
+        time_t AVL_Tree_num1 = clock();
+        for(auto& i : AVL_Tree_array_pair)
+        {
+            AVL_Tree_test_pair.push(i);
+        }
+        time_t AVL_Tree_num2 = clock();
+        std::cout << "插入个数:" << AVL_Tree_test_pair.size()  << " " << " 插入时间:" << AVL_Tree_num2 - AVL_Tree_num1 << std::endl;
 
-    //     /*                  非pair 类型               */
-    //     Wang::AVL_Tree<size_t,int> AVL_Tree_test;
-    //     Wang::vector<size_t> AVL_Tree_array;
-    //     for(size_t j = 0; j < size ; j++)
-    //     {
-    //         AVL_Tree_array.push_back(j);
-    //     }
-    //     time_t AVL_Tree_num3 = clock();
-    //     for(auto& j : AVL_Tree_array)
-    //     {
-    //         AVL_Tree_test.push(j);
-    //     }
-    //     time_t AVL_Tree_num4 = clock();
-    //     std::cout << "插入个数:" << AVL_Tree_test.size()  << " " << " 插入时间:" << AVL_Tree_num4 - AVL_Tree_num3 << std::endl;
-    // }
+        /*                  非pair 类型               */
+        Wang::AVL_Tree<size_t,int> AVL_Tree_test;
+        Wang::vector<size_t> AVL_Tree_array;
+        for(size_t j = 0; j < size ; j++)
+        {
+            AVL_Tree_array.push_back(j);
+        }
+        time_t AVL_Tree_num3 = clock();
+        for(auto& j : AVL_Tree_array)
+        {
+            AVL_Tree_test.push(j);
+        }
+        time_t AVL_Tree_num4 = clock();
+        std::cout << "插入个数:" << AVL_Tree_test.size()  << " " << " 插入时间:" << AVL_Tree_num4 - AVL_Tree_num3 << std::endl;
+    }
     return 0;
 }

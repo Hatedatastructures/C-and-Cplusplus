@@ -1753,13 +1753,13 @@ namespace Wang
                 _right = nullptr;
             }
         };
-        using BS_Tree_Node = BS_Tree_Type_Node <BS_Tree_Type>;
-        BS_Tree_Node* _ROOT;
+        using Node = BS_Tree_Type_Node <BS_Tree_Type>;
+        Node* _ROOT;
         Imitation_function_parameter_function_BS_Tree com;
-        void _Middle_order_traversal(BS_Tree_Node* _ROOT_Temp)
+        void _Middle_order_traversal(Node* _ROOT_Temp)
         {
             //中序遍历函数
-            Wang::stack<BS_Tree_Node*> _staic_temp_;
+            Wang::stack<Node*> _staic_temp_;
             while(_ROOT_Temp != nullptr || !_staic_temp_.empty())
             {
                 while(_ROOT_Temp!= nullptr)
@@ -1780,9 +1780,9 @@ namespace Wang
                 _ROOT_Temp = _ROOT_Temp->_right;
             }
         }
-        size_t _Middle_order_traversal(BS_Tree_Node* _ROOT_Temp,size_t& _size_temp_ )
+        size_t _Middle_order_traversal(Node* _ROOT_Temp,size_t& _size_temp_ )
         {
-            Wang::stack<BS_Tree_Node*> _staic_temp_;
+            Wang::stack<Node*> _staic_temp_;
             while(_ROOT_Temp != nullptr || !_staic_temp_.empty())
             {
                 while(_ROOT_Temp!= nullptr)
@@ -1802,15 +1802,15 @@ namespace Wang
             }
             return _size_temp_;
         }
-        void _Pre_order_traversal(BS_Tree_Node* _ROOT_Temp )
+        void _Pre_order_traversal(Node* _ROOT_Temp )
         {
             //前序遍历，最外左子树全部压栈
             if(_ROOT_Temp == nullptr)
             {
                 return;
             }
-            BS_Tree_Node* _Pre_order_traversal_test = _ROOT_Temp;
-            Wang::stack<BS_Tree_Node*> stack_Temp;
+            Node* _Pre_order_traversal_test = _ROOT_Temp;
+            Wang::stack<Node*> stack_Temp;
             stack_Temp.push(_Pre_order_traversal_test);
             //不能添加|| _Pre_order_traversal_test != nullptr ，因为最后一层循环后_Pre_order_traversal_test还是为真后面循环无意义，反之还会破环性质
             while( !stack_Temp.empty() )
@@ -1836,8 +1836,8 @@ namespace Wang
                 return;
             }
             //循环释放资源
-            BS_Tree_Node* _ROOT_Temp = _ROOT;
-            Wang::stack<BS_Tree_Node*> _staic_clear_temp_;
+            Node* _ROOT_Temp = _ROOT;
+            Wang::stack<Node*> _staic_clear_temp_;
             _staic_clear_temp_.push(_ROOT_Temp);
             while(_staic_clear_temp_.empty() == false)
             {
@@ -1873,28 +1873,28 @@ namespace Wang
         BS_Tree(const BS_Tree_Type& BST_Temp = BS_Tree_Type(),Imitation_function_parameter_function_BS_Tree com_temp = Imitation_function_parameter_function_BS_Tree())
         :_ROOT(nullptr),com(com_temp)
         {   
-            _ROOT = new BS_Tree_Node(BST_Temp);
+            _ROOT = new Node(BST_Temp);
         }
         BS_Tree(const BS_Tree& _Binary_search_tree_temp)
         :_ROOT(nullptr),com(_Binary_search_tree_temp.com)
         //这个拷贝构造不需要传模板参数，因为模板参数是在编译时确定的，而不是在运行时确定的，对于仿函数，直接拿传进来的引用初始化就可以了
         {
             //拷贝构造，时间复杂度为O(n)
-            BS_Tree_Node* _Binary_search_tree_temp_copy = _Binary_search_tree_temp._ROOT;
+            Node* _Binary_search_tree_temp_copy = _Binary_search_tree_temp._ROOT;
             if(_Binary_search_tree_temp_copy == nullptr)
             {
                 return;
             }
-            Wang::stack<Wang::STL_Demand_class::pair<BS_Tree_Node*,BS_Tree_Node**> > _staic_temp_;
+            Wang::stack<Wang::STL_Demand_class::pair<Node*,Node**> > _staic_temp_;
             //注意这里把本地_ROOT类型传过去，是因为要对本地的_ROOT进行操作，所以要传二级指针
             //这里传引用也不行，这里的对象是动态变化的，所以传引用也不行
             //如果是对全局的_ROOT进行操作，就传一级指针
-            _staic_temp_.push(Wang::STL_Demand_class::pair<BS_Tree_Node*,BS_Tree_Node**>(_Binary_search_tree_temp_copy,&_ROOT));
+            _staic_temp_.push(Wang::STL_Demand_class::pair<Node*,Node**>(_Binary_search_tree_temp_copy,&_ROOT));
             while( !_staic_temp_.empty() )
             {
                 auto _staic_temp_pair = _staic_temp_.top();
                 _staic_temp_.pop();
-                *(_staic_temp_pair.second) = new BS_Tree_Node(_staic_temp_pair.first->_data);
+                *(_staic_temp_pair.second) = new Node(_staic_temp_pair.first->_data);
                 // BS_Tree_Node* _staic_temp_pair_second = *(_staic_temp_pair.second);
                 // if(_staic_temp_pair.first->_left!= nullptr)
                 // {
@@ -1907,11 +1907,11 @@ namespace Wang
                 //移除临时变量，直接使用指针解引用
                 if(_staic_temp_pair.first->_left!= nullptr)
                 {
-                    _staic_temp_.push(Wang::STL_Demand_class::pair<BS_Tree_Node*,BS_Tree_Node**>(_staic_temp_pair.first->_left,&((*_staic_temp_pair.second)->_left)));
+                    _staic_temp_.push(Wang::STL_Demand_class::pair<Node*,Node**>(_staic_temp_pair.first->_left,&((*_staic_temp_pair.second)->_left)));
                 }
                 if(_staic_temp_pair.first->_right!= nullptr)
                 {
-                    _staic_temp_.push(Wang::STL_Demand_class::pair<BS_Tree_Node*,BS_Tree_Node**>(_staic_temp_pair.first->_right,&((*_staic_temp_pair.second)->_right)));
+                    _staic_temp_.push(Wang::STL_Demand_class::pair<Node*,Node**>(_staic_temp_pair.first->_right,&((*_staic_temp_pair.second)->_right)));
                 }
             }
         }
@@ -1934,8 +1934,8 @@ namespace Wang
             }
             else
             {
-                BS_Tree_Node* _ROOT_Temp = _ROOT;
-                BS_Tree_Node* _ROOT_Temp_Parent = nullptr;
+                Node* _ROOT_Temp = _ROOT;
+                Node* _ROOT_Temp_Parent = nullptr;
                 while(_ROOT_Temp!= nullptr)
                 {
                     _ROOT_Temp_Parent = _ROOT_Temp;
@@ -1954,7 +1954,7 @@ namespace Wang
                     }
                 }
                 //新开节点链接
-                BS_Tree_Node* _ROOT_Temp_Node = new BS_Tree::BS_Tree_Type_Node<BS_Tree_Type>(data);
+                Node* _ROOT_Temp_Node = new BS_Tree::BS_Tree_Type_Node<BS_Tree_Type>(data);
                 //链接节点
                 if(com(data , _ROOT_Temp_Parent->_data))
                 {
@@ -1970,8 +1970,8 @@ namespace Wang
         BS_Tree& pop(const BS_Tree_Type& data)
         {
             //删除节点
-            BS_Tree_Node* _ROOT_Temp = _ROOT;
-            BS_Tree_Node* _ROOT_Temp_Parent = nullptr;
+            Node* _ROOT_Temp = _ROOT;
+            Node* _ROOT_Temp_Parent = nullptr;
             while( _ROOT_Temp != nullptr )
             {
                 if(data == _ROOT_Temp->_data)
@@ -2027,8 +2027,8 @@ namespace Wang
                     else
                     {
                         //左右子树都不为空，找右子树的最左节点
-                    	BS_Tree_Node* _ROOT_Temp_right_min = _ROOT_Temp->_right;
-                        BS_Tree_Node* _ROOT_Temp_test_Parent = _ROOT_Temp;
+                    	Node* _ROOT_Temp_right_min = _ROOT_Temp->_right;
+                        Node* _ROOT_Temp_test_Parent = _ROOT_Temp;
                         while(_ROOT_Temp_right_min->_left != nullptr)
                         {
                             _ROOT_Temp_test_Parent = _ROOT_Temp_right_min;
@@ -2076,10 +2076,10 @@ namespace Wang
             size_t _size = 0;
             return _Middle_order_traversal(_ROOT,_size);
         }
-        BS_Tree_Node* find(const BS_Tree_Type& data)
+        Node* find(const BS_Tree_Type& data)
         {
             //查找函数
-            BS_Tree_Node* _ROOT_Find = _ROOT;
+            Node* _ROOT_Find = _ROOT;
             while(_ROOT_Find!= nullptr)
             {
                 if(data == _ROOT_Find->_data)
@@ -2100,7 +2100,7 @@ namespace Wang
         void insert(const BS_Tree_Type& former_data,const BS_Tree_Type& latter_data)
         {
             //在former_data后面插入latter_data
-            BS_Tree_Node* _ROOT_former_data = find(former_data);
+            Node* _ROOT_former_data = find(former_data);
             //插入节点
             if(_ROOT_former_data == nullptr)
             {
@@ -2108,7 +2108,7 @@ namespace Wang
             }
             else
             {
-                BS_Tree_Node* _ROOT_latter_data = new BS_Tree_Node(latter_data);
+                Node* _ROOT_latter_data = new Node(latter_data);
                 _ROOT_latter_data->_left = _ROOT_former_data->_right;
                 _ROOT_former_data->_right = _ROOT_latter_data;
             }
@@ -2128,7 +2128,7 @@ namespace Wang
     };
     /*############################     AVL_Tree 容器     ############################*/
     template <typename AVL_Tree_Type_K,     typename AVL_Tree_Type_V,
-    typename Imitation_function_parameter_function_AVL_Tee = Wang::STL_Imitation_functions::less < AVL_Tree_Type_K >,
+    typename Imitation_function_parameter_function_AVL_Tree = Wang::STL_Imitation_functions::less < AVL_Tree_Type_K >,
     typename AVL_Tree_Synthetic_class = Wang::STL_Demand_class::pair<AVL_Tree_Type_K,AVL_Tree_Type_V> >
     class AVL_Tree
     {
@@ -2159,21 +2159,21 @@ namespace Wang
 
         AVL_Node* _ROOT;
 
-        Imitation_function_parameter_function_AVL_Tee com;
+        Imitation_function_parameter_function_AVL_Tree com;
     public:
         AVL_Tree()
         {
             _ROOT = nullptr;
         }
         AVL_Tree(const AVL_Tree_Type_K& Key_temp = AVL_Tree_Type_K(),const AVL_Tree_Type_V& val_temp = AVL_Tree_Type_V(),
-        Imitation_function_parameter_function_AVL_Tee com_temp = Imitation_function_parameter_function_AVL_Tee())
+        Imitation_function_parameter_function_AVL_Tree com_temp = Imitation_function_parameter_function_AVL_Tree())
         :_ROOT(nullptr),com(com_temp)
         {
             std::cout << "单一赋值" << std::endl;
             _ROOT = new AVL_Node(Key_temp,val_temp);
         }
         AVL_Tree(const AVL_Tree_Synthetic_class& AVL_Tree_Pair_Temp,
-        Imitation_function_parameter_function_AVL_Tee com_temp = Imitation_function_parameter_function_AVL_Tee())
+        Imitation_function_parameter_function_AVL_Tree com_temp = Imitation_function_parameter_function_AVL_Tree())
         :_ROOT(nullptr),com(com_temp)
         {
             std::cout << "合并赋值" << std::endl;
