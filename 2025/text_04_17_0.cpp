@@ -2989,6 +2989,7 @@ namespace Wang
         {
             _ROOT = nullptr;
         }
+        //拷贝，析构，反向迭代器，正向迭代器函数，插入函数，删除函数，查找函数，未完成
     };
     /*############################     Map 容器     ############################*/
     template <typename Map_Type_K,typename Map_Type_V>
@@ -3006,6 +3007,7 @@ namespace Wang
         RB_TREE _ROOT_Tree;
     public:
         using iterator = typename RB_TREE::iterator;
+        //函数实现未完成
     };
     /*############################     Set 容器     ############################*/
     template <typename Set_Type_K>
@@ -3020,6 +3022,8 @@ namespace Wang
             }
         };
         using RB_TREE = RB_Tree<Set_Type_K,Key_Val_Type,Key_Val>;
+    public:
+        //函数实现未完成
     };
 }
 int main()
