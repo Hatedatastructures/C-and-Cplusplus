@@ -2,7 +2,7 @@
 #include <cstring>
 #include <random>
 #include <algorithm>
-namespace Wang
+namespace Container
 {
     namespace STL_Imitation_functions
     {
@@ -267,7 +267,7 @@ namespace Wang
             _size = data_str.size();
             _capacity = _size;
             _data = new char[_capacity + 1];
-            Wang::algorithm::copy(data_str.begin(), data_str.end(), _data);
+            Container::algorithm::copy(data_str.begin(), data_str.end(), _data);
             _data[_size] = '\0';
         }
         ~string()
@@ -523,9 +523,9 @@ namespace Wang
         }
         string& swap(string& data_str)
         {
-            Wang::algorithm::swap(_data,data_str._data);
-            Wang::algorithm::swap(_size,data_str._size);
-            Wang::algorithm::swap(_capacity,data_str._capacity);
+            Container::algorithm::swap(_data,data_str._data);
+            Container::algorithm::swap(_size,data_str._size);
+            Container::algorithm::swap(_capacity,data_str._capacity);
             return *this;
         }
         string rollback()
@@ -812,7 +812,7 @@ namespace Wang
     std::ostream& operator<<(std::ostream& string_ostream,string &data_str) 
     {
         //当前没实现【】访问.可以用迭代器
-        for(Wang::string::const_iterator originate = data_str.begin();originate != data_str.end();originate++)
+        for(Container::string::const_iterator originate = data_str.begin();originate != data_str.end();originate++)
         {
             string_ostream << *originate;
         }
@@ -957,9 +957,9 @@ namespace Wang
         }
         void swap(vector<vector_Type>& temp_data)
         {
-            Wang::algorithm::swap(_data_pointer, temp_data._data_pointer);
-            Wang::algorithm::swap(_size_pointer, temp_data._size_pointer);
-            Wang::algorithm::swap(_capacity_pointer, temp_data._capacity_pointer);
+            Container::algorithm::swap(_data_pointer, temp_data._data_pointer);
+            Container::algorithm::swap(_size_pointer, temp_data._size_pointer);
+            Container::algorithm::swap(_capacity_pointer, temp_data._capacity_pointer);
         }
         iterator erase(iterator pos)
         {
@@ -1289,9 +1289,9 @@ namespace Wang
             list<list_Type> _temp_ (_list_data.cbegin(),_list_data.cend());
             swap(_temp_);
         }
-        void swap(Wang::list<list_Type>& _swap_temp)
+        void swap(Container::list<list_Type>& _swap_temp)
         {
-            Wang::algorithm::swap(_head,_swap_temp._head);
+            Container::algorithm::swap(_head,_swap_temp._head);
         }
         iterator begin()
         {
@@ -1511,7 +1511,7 @@ namespace Wang
         return list_ostream;
     }
     /*############################     staic适配器     ############################*/
-    template <typename staic_Type,typename Container_staic = Wang::vector<staic_Type>>
+    template <typename staic_Type,typename Container_staic = Container::vector<staic_Type>>
     class stack
     {
     private:
@@ -1564,7 +1564,7 @@ namespace Wang
         }
     };
     /*############################     queue适配器     ############################*/
-    template <typename queue_Type ,typename Container_queue = Wang::list<queue_Type> >
+    template <typename queue_Type ,typename Container_queue = Container::list<queue_Type> >
     class queue
     {
         //注意队列适配器不会自动检测队列有没有元素，为学异常，注意空间元素
@@ -1629,8 +1629,8 @@ namespace Wang
     };
     /*############################     priority_queue适配器     ############################*/
     template <typename priority_queue_Type,
-    typename Imitation_function_parameter_function = Wang::STL_Imitation_functions::less<priority_queue_Type>,
-    typename Container_priority_queue = Wang::vector<priority_queue_Type>>
+    typename Imitation_function_parameter_function = Container::STL_Imitation_functions::less<priority_queue_Type>,
+    typename Container_priority_queue = Container::vector<priority_queue_Type>>
     class priority_queue
     {
         //创建容器对象
@@ -1646,7 +1646,7 @@ namespace Wang
             {
                 if(com(Container_priority_queue_temp[parent],Container_priority_queue_temp[Adjust_upwards_child]))
                 {
-                    Wang::algorithm::swap(Container_priority_queue_temp[parent],Container_priority_queue_temp[Adjust_upwards_child]);
+                    Container::algorithm::swap(Container_priority_queue_temp[parent],Container_priority_queue_temp[Adjust_upwards_child]);
                     Adjust_upwards_child = parent;
                     parent = (Adjust_upwards_child-1)/2;
                 }
@@ -1671,7 +1671,7 @@ namespace Wang
                 if(com(Container_priority_queue_temp[parent],Container_priority_queue_temp[priority_queue_Adjust_downwards_child]))
                 {
                     //建大堆把小的换下去，建小堆把大的换下去
-                    Wang::algorithm::swap( Container_priority_queue_temp[parent] , Container_priority_queue_temp[priority_queue_Adjust_downwards_child]);
+                    Container::algorithm::swap( Container_priority_queue_temp[parent] , Container_priority_queue_temp[priority_queue_Adjust_downwards_child]);
 
                     //换完之后如果是大堆，则父亲节点是较大的值，需要更新孩子节点继续向下找比孩子节点大的值，如果有继续交换
                     parent = priority_queue_Adjust_downwards_child;
@@ -1707,7 +1707,7 @@ namespace Wang
         }
         void pop()
         {
-            Wang::algorithm::swap(Container_priority_queue_temp[0],Container_priority_queue_temp[Container_priority_queue_temp.size()-(size_t)1]);
+            Container::algorithm::swap(Container_priority_queue_temp[0],Container_priority_queue_temp[Container_priority_queue_temp.size()-(size_t)1]);
             Container_priority_queue_temp.pop_back();
             priority_queue_Adjust_downwards();
         }
@@ -1737,7 +1737,7 @@ namespace Wang
         }
     };
     /*############################     BS_Tree 容器     ############################*/
-    template <typename BS_Tree_Type,typename Imitation_function_parameter_function_BS_Tree = Wang::STL_Imitation_functions::less <BS_Tree_Type> >
+    template <typename BS_Tree_Type,typename Imitation_function_parameter_function_BS_Tree = Container::STL_Imitation_functions::less <BS_Tree_Type> >
     class BS_Tree
     {
     private:
@@ -1765,7 +1765,7 @@ namespace Wang
         void _Middle_order_traversal(Node* _ROOT_Temp)
         {
             //中序遍历函数
-            Wang::stack<Node*> _staic_temp_;
+            Container::stack<Node*> _staic_temp_;
             while(_ROOT_Temp != nullptr || !_staic_temp_.empty())
             {
                 while(_ROOT_Temp!= nullptr)
@@ -1788,7 +1788,7 @@ namespace Wang
         }
         size_t _Middle_order_traversal(Node* _ROOT_Temp,size_t& _size_temp_ )
         {
-            Wang::stack<Node*> _staic_temp_;
+            Container::stack<Node*> _staic_temp_;
             while(_ROOT_Temp != nullptr || !_staic_temp_.empty())
             {
                 while(_ROOT_Temp!= nullptr)
@@ -1816,7 +1816,7 @@ namespace Wang
                 return;
             }
             Node* _Pre_order_traversal_test = _ROOT_Temp;
-            Wang::stack<Node*> stack_Temp;
+            Container::stack<Node*> stack_Temp;
             stack_Temp.push(_Pre_order_traversal_test);
             //不能添加|| _Pre_order_traversal_test != nullptr ，因为最后一层循环后_Pre_order_traversal_test还是为真后面循环无意义，反之还会破环性质
             while( !stack_Temp.empty() )
@@ -1843,7 +1843,7 @@ namespace Wang
                 return;
             }
             //循环释放资源
-            Wang::stack<Node*> _staic_clear_temp_;
+            Container::stack<Node*> _staic_clear_temp_;
             _staic_clear_temp_.push(_ROOT);
             while(_staic_clear_temp_.empty() == false)
             {
@@ -1890,11 +1890,11 @@ namespace Wang
             {
                 return;
             }
-            Wang::stack<Wang::STL_Demand_class::pair<Node*,Node**> > _staic_temp_;
+            Container::stack<Container::STL_Demand_class::pair<Node*,Node**> > _staic_temp_;
             //注意这里把本地_ROOT类型传过去，是因为要对本地的_ROOT进行操作，所以要传二级指针
             //这里传引用也不行，这里的对象是动态变化的，所以传引用也不行
             //如果是对全局的_ROOT进行操作，就传一级指针
-            _staic_temp_.push(Wang::STL_Demand_class::pair<Node*,Node**>(_Binary_search_tree_temp_copy,&_ROOT));
+            _staic_temp_.push(Container::STL_Demand_class::pair<Node*,Node**>(_Binary_search_tree_temp_copy,&_ROOT));
             while( !_staic_temp_.empty() )
             {
                 auto _staic_temp_pair = _staic_temp_.top();
@@ -1903,20 +1903,20 @@ namespace Wang
                 // Node* _staic_temp_pair_second = *(_staic_temp_pair.second);
                 // if(_staic_temp_pair.first->_left!= nullptr)
                 // {
-                //     _staic_temp_.push(Wang::STL_Demand_class::pair<Node*,Node**>(_staic_temp_pair.first->_left,&_staic_temp_pair_second->_left));
+                //     _staic_temp_.push(Container::STL_Demand_class::pair<Node*,Node**>(_staic_temp_pair.first->_left,&_staic_temp_pair_second->_left));
                 // }
                 // if(_staic_temp_pair.first->_right!= nullptr)
                 // {
-                //     _staic_temp_.push(Wang::STL_Demand_class::pair<Node*,Node**>(_staic_temp_pair.first->_right,&_staic_temp_pair_second->_right));
+                //     _staic_temp_.push(Container::STL_Demand_class::pair<Node*,Node**>(_staic_temp_pair.first->_right,&_staic_temp_pair_second->_right));
                 // }
                 //移除临时变量，直接使用指针解引用
                 if(_staic_temp_pair.first->_right!= nullptr)
                 {
-                    _staic_temp_.push(Wang::STL_Demand_class::pair<Node*,Node**>(_staic_temp_pair.first->_right,&((*_staic_temp_pair.second)->_right)));
+                    _staic_temp_.push(Container::STL_Demand_class::pair<Node*,Node**>(_staic_temp_pair.first->_right,&((*_staic_temp_pair.second)->_right)));
                 }
                 if(_staic_temp_pair.first->_left!= nullptr)
                 {
-                    _staic_temp_.push(Wang::STL_Demand_class::pair<Node*,Node**>(_staic_temp_pair.first->_left,&((*_staic_temp_pair.second)->_left)));
+                    _staic_temp_.push(Container::STL_Demand_class::pair<Node*,Node**>(_staic_temp_pair.first->_left,&((*_staic_temp_pair.second)->_left)));
                 }
             }
         }
@@ -2040,7 +2040,7 @@ namespace Wang
                             _ROOT_Temp_right_min = _ROOT_Temp_right_min->_left;
                         }
                         //找到最左节点	
-                        Wang::algorithm::swap(_ROOT_Temp->_data,_ROOT_Temp_right_min->_data);
+                        Container::algorithm::swap(_ROOT_Temp->_data,_ROOT_Temp_right_min->_data);
                         //因为右树最左节点已经被删，但是还需要把被删的上一节点的左子树指向被删节点的右子树，不管右子树有没有节点都要连接上
                         if(_ROOT_Temp_test_Parent == _ROOT_Temp)
                         {
@@ -2126,15 +2126,15 @@ namespace Wang
                 clear();
                 com = _Binary_search_tree_temp.com;
                 BS_Tree _Binary_search_tree_temp_copy = _Binary_search_tree_temp;
-                Wang::algorithm::swap(_Binary_search_tree_temp_copy._ROOT,_ROOT);
+                Container::algorithm::swap(_Binary_search_tree_temp_copy._ROOT,_ROOT);
             }
             return *this;
         }
     };
     /*############################     AVL_Tree 容器     ############################*/
     template <typename AVL_Tree_Type_K,     typename AVL_Tree_Type_V,
-    typename Imitation_function_parameter_function_AVL_Tree = Wang::STL_Imitation_functions::less < AVL_Tree_Type_K >,
-    typename AVL_Tree_Synthetic_class = Wang::STL_Demand_class::pair<AVL_Tree_Type_K,AVL_Tree_Type_V> >
+    typename Imitation_function_parameter_function_AVL_Tree = Container::STL_Imitation_functions::less < AVL_Tree_Type_K >,
+    typename AVL_Tree_Synthetic_class = Container::STL_Demand_class::pair<AVL_Tree_Type_K,AVL_Tree_Type_V> >
     class AVL_Tree
     {
     private:
@@ -2336,7 +2336,7 @@ namespace Wang
             }
             else
             {
-                Wang::stack<Node*> _stack_temp;
+                Container::stack<Node*> _stack_temp;
                 //前序释放
                 _stack_temp.push(_ROOT);
                 while(!_stack_temp.empty())
@@ -2366,7 +2366,7 @@ namespace Wang
                 return;
             }
             Node* _Pre_order_traversal_test = _ROOT_Temp;
-            Wang::stack<Node*> stack_Temp;
+            Container::stack<Node*> stack_Temp;
             stack_Temp.push(_Pre_order_traversal_test);
             //不能添加|| _Pre_order_traversal_test != nullptr ，因为最后一层循环后_Pre_order_traversal_test还是为真后面循环无意义，反之还会破环性质
             while( !stack_Temp.empty() )
@@ -2389,7 +2389,7 @@ namespace Wang
         void _Middle_order_traversal(Node* _ROOT_Temp)
         {
             //中序遍历函数
-            Wang::stack<Node*> _staic_temp_;
+            Container::stack<Node*> _staic_temp_;
             while(_ROOT_Temp != nullptr || !_staic_temp_.empty())
             {
                 while(_ROOT_Temp!= nullptr)
@@ -2420,7 +2420,7 @@ namespace Wang
             else
             {
                 Node* _Pre_order_traversal_test = _ROOT;
-                Wang::stack<Node*> stack_Temp;
+                Container::stack<Node*> stack_Temp;
                 stack_Temp.push(_Pre_order_traversal_test);
                 while( !stack_Temp.empty() )
                 {
@@ -2466,8 +2466,8 @@ namespace Wang
                 return;
             }
         
-            Wang::stack<Wang::STL_Demand_class::pair<Node*, Node**>> _stack_temp;
-            _stack_temp.push(Wang::STL_Demand_class::pair<Node*, Node**>(AVL_Tree_temp_._ROOT, &_ROOT));
+            Container::stack<Container::STL_Demand_class::pair<Node*, Node**>> _stack_temp;
+            _stack_temp.push(Container::STL_Demand_class::pair<Node*, Node**>(AVL_Tree_temp_._ROOT, &_ROOT));
         
             while (!_stack_temp.empty())
             {
@@ -2482,14 +2482,14 @@ namespace Wang
                 // 处理右子节点
                 if (AVL_pair_temp.first->_right != nullptr)
                 {
-                    _stack_temp.push(Wang::STL_Demand_class::pair<Node*, Node**>(
+                    _stack_temp.push(Container::STL_Demand_class::pair<Node*, Node**>(
                         AVL_pair_temp.first->_right, &new_node->_right));
                 }
         
                 // 处理左子节点
                 if (AVL_pair_temp.first->_left != nullptr)
                 {
-                    _stack_temp.push(Wang::STL_Demand_class::pair<Node*, Node**>(
+                    _stack_temp.push(Container::STL_Demand_class::pair<Node*, Node**>(
                         AVL_pair_temp.first->_left, &new_node->_left));
                 }
         
@@ -2833,7 +2833,7 @@ namespace Wang
                     _right_parent = _right_min;
                     _right_min = _right_min->_left;
                 }
-                Wang::algorithm::swap(_right_min->_data,_ROOT_Temp->_data);
+                Container::algorithm::swap(_right_min->_data,_ROOT_Temp->_data);
                 if (_right_parent == _ROOT_Temp) 
                 {
                     _right_parent->_right = (_right_min->_right != nullptr) ? _right_min->_right : nullptr;
@@ -2904,8 +2904,8 @@ namespace Wang
     };
     /*############################     RB_Tree 容器     ############################*/
     template <typename RB_Tree_Type_Key, typename RB_Tree_Type_Val,
-    typename Imitation_function_parameter_function_RB_Tree = Wang::STL_Imitation_functions::less <RB_Tree_Type_Key>,
-    typename RB_Tree_Synthetic_class = Wang::STL_Demand_class::pair<RB_Tree_Type_Key,RB_Tree_Type_Val> >
+    typename Imitation_function_parameter_function_RB_Tree = Container::STL_Imitation_functions::less <RB_Tree_Type_Key>,
+    typename RB_Tree_Synthetic_class = Container::STL_Demand_class::pair<RB_Tree_Type_Key,RB_Tree_Type_Val> >
     class RB_Tree
     {
     private:
