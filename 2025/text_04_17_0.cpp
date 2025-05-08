@@ -822,699 +822,705 @@ namespace Container
         }
     }
     /*############################     vector容器     ############################*/
-    template <typename vector_Type>
-    class vector
+    namespace vector_Container
     {
-    public:
-        using iterator = vector_Type*;
-        using const_iterator = const vector_Type*;
-        using reverse_iterator = vector_Type*;
-        using const_reverse_iterator = const vector_Type*;
-    private:
-        iterator _data_pointer;     //指向数据的头
-        iterator _size_pointer;     //指向数据的尾
-        iterator _capacity_pointer; //指向容量的尾
-    public:
-        iterator begin()
+        template <typename vector_Type>
+        class vector
         {
-            return _data_pointer;
-        }
-        iterator end()
-        {
-            return _size_pointer;
-        }
-        size_t size()
-        {
-            return _data_pointer ? (_size_pointer - _data_pointer) : 0;
-        }
-        size_t capacity()
-        {
-            return _data_pointer ? (_capacity_pointer - _data_pointer) : 0;
-        }
-        size_t size() const
-        {
-            return _data_pointer ? (_size_pointer - _data_pointer) : 0;
-        }
-        size_t capacity() const 
-        {
-            return _data_pointer ? (_capacity_pointer - _data_pointer) : 0;
-        }
-        vector_Type& front()
-        {
-            return head();
-        }
-        vector_Type& back()
-        {
-            return tail();
-        }
-        vector()
-        {
-            _data_pointer = nullptr;
-            _size_pointer = nullptr;
-            _capacity_pointer = nullptr;
-        }
-        vector(const size_t& sum_size , const vector_Type& data = vector_Type())
-        :_data_pointer(new vector_Type[sum_size]),_size_pointer(_data_pointer + sum_size)
-        ,_capacity_pointer(_data_pointer + sum_size)
-        {
-            for(size_t i = 0;i < sum_size;i++)
+        public:
+            using iterator = vector_Type*;
+            using const_iterator = const vector_Type*;
+            using reverse_iterator = vector_Type*;
+            using const_reverse_iterator = const vector_Type*;
+        private:
+            iterator _data_pointer;     //指向数据的头
+            iterator _size_pointer;     //指向数据的尾
+            iterator _capacity_pointer; //指向容量的尾
+        public:
+            iterator begin()
             {
-                _data_pointer[i] = data;
+                return _data_pointer;
             }
-        }
-        vector(std::initializer_list<vector_Type> list_temp)
-        :_data_pointer(new vector_Type[list_temp.size()]),_size_pointer(_data_pointer + list_temp.size())
-        ,_capacity_pointer(_data_pointer + list_temp.size())
-        {
-            //链式拷贝
-            size_t i = 0;
-            for(auto& e:list_temp)
+            iterator end()
             {
-                _data_pointer[i] = e;
-                i++;
+                return _size_pointer;
             }
-        }
-        bool empty()
-        {
-            return size() == 0; // 直接通过 size() 判断
-        }
-        vector_Type& head()
-        {
-            return *_data_pointer;
-        }
-        vector_Type& tail()
-        {
-            return *(_size_pointer-1);
-        }
-        vector_Type& find(const size_t& find_size_)
-        {
-            if(find_size_ >= size())
+            size_t size()
             {
-                //先默认返回空数组,但是需要提前写该类型的默认构造函数
-                static vector_Type dummy;
-                return dummy;
+                return _data_pointer ? (_size_pointer - _data_pointer) : 0;
             }
-            return _data_pointer[find_size_];
-        }
-        vector<vector_Type>& Completion(const size_t& Completion_size_ , const vector<vector_Type>& Completion_temp_)
-        {
-            size_t Completion_temp_size_ =size();
-            size_t Completion_capacity_  =capacity();
-            if(Completion_size_ > Completion_capacity_)
+            size_t capacity()
             {
-                resize(Completion_size_);
-                for(size_t i = Completion_capacity_; i < Completion_size_ ; i++)
+                return _data_pointer ? (_capacity_pointer - _data_pointer) : 0;
+            }
+            size_t size() const
+            {
+                return _data_pointer ? (_size_pointer - _data_pointer) : 0;
+            }
+            size_t capacity() const 
+            {
+                return _data_pointer ? (_capacity_pointer - _data_pointer) : 0;
+            }
+            vector_Type& front()
+            {
+                return head();
+            }
+            vector_Type& back()
+            {
+                return tail();
+            }
+            vector()
+            {
+                _data_pointer = nullptr;
+                _size_pointer = nullptr;
+                _capacity_pointer = nullptr;
+            }
+            vector(const size_t& sum_size , const vector_Type& data = vector_Type())
+            :_data_pointer(new vector_Type[sum_size]),_size_pointer(_data_pointer + sum_size)
+            ,_capacity_pointer(_data_pointer + sum_size)
+            {
+                for(size_t i = 0;i < sum_size;i++)
                 {
-                    _data_pointer[i] = Completion_temp_;
+                    _data_pointer[i] = data;
                 }
             }
-            else
+            vector(std::initializer_list<vector_Type> list_temp)
+            :_data_pointer(new vector_Type[list_temp.size()]),_size_pointer(_data_pointer + list_temp.size())
+            ,_capacity_pointer(_data_pointer + list_temp.size())
             {
-                if(Completion_size_ > Completion_temp_size_)
+                //链式拷贝
+                size_t i = 0;
+                for(auto& e:list_temp)
                 {
-                    for(size_t i = Completion_temp_size_; i < Completion_size_ ; i++)
+                    _data_pointer[i] = e;
+                    i++;
+                }
+            }
+            bool empty()
+            {
+                return size() == 0; // 直接通过 size() 判断
+            }
+            vector_Type& head()
+            {
+                return *_data_pointer;
+            }
+            vector_Type& tail()
+            {
+                return *(_size_pointer-1);
+            }
+            vector_Type& find(const size_t& find_size_)
+            {
+                if(find_size_ >= size())
+                {
+                    //先默认返回空数组,但是需要提前写该类型的默认构造函数
+                    static vector_Type dummy;
+                    return dummy;
+                }
+                return _data_pointer[find_size_];
+            }
+            vector<vector_Type>& Completion(const size_t& Completion_size_ , const vector<vector_Type>& Completion_temp_)
+            {
+                size_t Completion_temp_size_ =size();
+                size_t Completion_capacity_  =capacity();
+                if(Completion_size_ > Completion_capacity_)
+                {
+                    resize(Completion_size_);
+                    for(size_t i = Completion_capacity_; i < Completion_size_ ; i++)
                     {
                         _data_pointer[i] = Completion_temp_;
                     }
                 }
-                else if (Completion_size_ < Completion_temp_size_)
+                else
                 {
-                    _size_pointer = _data_pointer + Completion_size_;
+                    if(Completion_size_ > Completion_temp_size_)
+                    {
+                        for(size_t i = Completion_temp_size_; i < Completion_size_ ; i++)
+                        {
+                            _data_pointer[i] = Completion_temp_;
+                        }
+                    }
+                    else if (Completion_size_ < Completion_temp_size_)
+                    {
+                        _size_pointer = _data_pointer + Completion_size_;
+                    }
                 }
+                return *this;
             }
-            return *this;
-        }
-        vector(const vector<vector_Type>& temp_data)
-        :_data_pointer(temp_data.capacity() ? new vector_Type[temp_data.capacity()] : nullptr),
-        _size_pointer(_data_pointer + temp_data.size()),_capacity_pointer(_data_pointer + temp_data.capacity())
-        {
-           for(size_t i = 0; i < temp_data.size();i++)
-           {
-                _data_pointer[i] = temp_data._data_pointer[i];
-           }
-        }
-        ~vector()
-        {
-            delete[] _data_pointer;
-            _data_pointer = _size_pointer =_capacity_pointer = nullptr;
-        }
-        void swap(vector<vector_Type>& temp_data)
-        {
-            Container::algorithm::swap(_data_pointer, temp_data._data_pointer);
-            Container::algorithm::swap(_size_pointer, temp_data._size_pointer);
-            Container::algorithm::swap(_capacity_pointer, temp_data._capacity_pointer);
-        }
-        iterator erase(iterator pos)
-        {
-            //删除元素
-            iterator temp = pos + 1;
-            while (temp != _size_pointer)
+            vector(const vector<vector_Type>& temp_data)
+            :_data_pointer(temp_data.capacity() ? new vector_Type[temp_data.capacity()] : nullptr),
+            _size_pointer(_data_pointer + temp_data.size()),_capacity_pointer(_data_pointer + temp_data.capacity())
             {
-                //(temp-1)就是pos的位置，从pos位置开始覆盖，覆盖到倒数第1个结束，最后一个会被--屏蔽掉
-                *(temp-1) = *temp;
-                temp++;
+            for(size_t i = 0; i < temp_data.size();i++)
+            {
+                    _data_pointer[i] = temp_data._data_pointer[i];
             }
-            --_size_pointer;
-            return temp;
-            //返回下一个位置地址
-        }
-        vector<vector_Type>& resize(const size_t& new_capacity)
-        {
-            size_t old_size = size();  // 先保存原来的元素数量
-            if ((size_t)(_capacity_pointer - _data_pointer) < new_capacity) 
+            }
+            ~vector()
             {
-                //涉及到迭代器失效问题，不能调用size()函数，会释放未知空间
-                iterator new_data = new vector_Type[new_capacity]; 
-                // 复制原先的数据
-                for (size_t i = 0; i < old_size; i++) 
+                delete[] _data_pointer;
+                _data_pointer = _size_pointer =_capacity_pointer = nullptr;
+            }
+            void swap(vector<vector_Type>& temp_data)
+            {
+                Container::algorithm::swap(_data_pointer, temp_data._data_pointer);
+                Container::algorithm::swap(_size_pointer, temp_data._size_pointer);
+                Container::algorithm::swap(_capacity_pointer, temp_data._capacity_pointer);
+            }
+            iterator erase(iterator pos)
+            {
+                //删除元素
+                iterator temp = pos + 1;
+                while (temp != _size_pointer)
                 {
-                    new_data[i] = _data_pointer[i];
-                }
-                delete [] _data_pointer;
-                _data_pointer = new_data;
-                //对于自定义类型delete会释放资源，而new_data是新new出来的因该不会导致资源泄露
-                _size_pointer = _data_pointer + old_size;  // 使用 old_size 来重建 _size_pointer
-                _capacity_pointer = _data_pointer + new_capacity;
-            }
-            return *this;
-        }
-        vector<vector_Type>& push_back(const vector_Type& push_back_temp_)
-        {
-            if(_size_pointer == _capacity_pointer)
-            {
-                size_t push_banck_size_ = _data_pointer == nullptr ? 10 : (size_t)(_capacity_pointer-_data_pointer)*2;
-                resize(push_banck_size_);
-            }
-            //注意—_size_pointer是原生迭代器指针，需要解引用才能赋值
-            *_size_pointer = push_back_temp_;
-            _size_pointer++;
-            return *this;
-        }
-        vector<vector_Type>& pop_back() 
-        {
-            if (_size_pointer > _data_pointer) 
-            { // 至少有一个元素
-                --_size_pointer; // 尾指针前移
-            }
-            return *this;
-        }
-        vector<vector_Type>& push_front(const vector_Type& pop_back_temp_)
-        {
-            //头插
-            if(_size_pointer == _capacity_pointer)
-            {
-                size_t pop_banck_size_ = _data_pointer == nullptr ? 10 : (size_t)(_capacity_pointer-_data_pointer)*2;
-                resize(pop_banck_size_);
-            }
-            for(size_t pop_back_for_size = size();pop_back_for_size>0;--pop_back_for_size)
-            {
-                _data_pointer[pop_back_for_size] = _data_pointer[pop_back_for_size -1];
-            }
-            *_data_pointer = pop_back_temp_;
-            ++_size_pointer;
-            return *this;
-        }
-        vector<vector_Type>& pop_front()
-        {
-            if( size() > 0 )
-            {
-                for(size_t i = 1;i<size();i++)
-                {
-                    _data_pointer[i-1] = _data_pointer[i];
+                    //(temp-1)就是pos的位置，从pos位置开始覆盖，覆盖到倒数第1个结束，最后一个会被--屏蔽掉
+                    *(temp-1) = *temp;
+                    temp++;
                 }
                 --_size_pointer;
+                return temp;
+                //返回下一个位置地址
             }
-            return *this;
-        }
-        vector_Type& operator[](const size_t& _size_operator)
-        {
-            return _data_pointer[_size_operator];
-        }
-        const vector_Type& operator[](const size_t& _size_operator)const 
-        {
-            return _data_pointer[_size_operator];
-        }
-        vector<vector_Type>& operator=(const vector<vector_Type>&vector_temp_)
-        {
-            if (this != &vector_temp_) 
+            vector<vector_Type>& resize(const size_t& new_capacity)
             {
-                vector<vector_Type> temp(vector_temp_); // 拷贝构造
-                swap(temp); // 交换资源，temp析构时会释放原资源
-            }
-            return *this;
-        }
-        vector<vector_Type>& operator+=(const vector<vector_Type>& _temp_)
-        {
-            if(_temp_.size() == 0|| _temp_._data_pointer == nullptr)
-            {
+                size_t old_size = size();  // 先保存原来的元素数量
+                if ((size_t)(_capacity_pointer - _data_pointer) < new_capacity) 
+                {
+                    //涉及到迭代器失效问题，不能调用size()函数，会释放未知空间
+                    iterator new_data = new vector_Type[new_capacity]; 
+                    // 复制原先的数据
+                    for (size_t i = 0; i < old_size; i++) 
+                    {
+                        new_data[i] = _data_pointer[i];
+                    }
+                    delete [] _data_pointer;
+                    _data_pointer = new_data;
+                    //对于自定义类型delete会释放资源，而new_data是新new出来的因该不会导致资源泄露
+                    _size_pointer = _data_pointer + old_size;  // 使用 old_size 来重建 _size_pointer
+                    _capacity_pointer = _data_pointer + new_capacity;
+                }
                 return *this;
             }
-            size_t _temp_size_ = _temp_.size();
-            size_t _size_ = size();
-            size_t _capacity_ = capacity();
-            if(_temp_size_ + _size_ > _capacity_)
+            vector<vector_Type>& push_back(const vector_Type& push_back_temp_)
             {
-                resize(_temp_size_ + _size_);
-               
-            } 
-            size_t sum = 0;
-            for(size_t i = _size_ ; i < (_temp_size_ + _size_); i++)
-            {
-                _data_pointer[i] = _temp_._data_pointer[sum++];
+                if(_size_pointer == _capacity_pointer)
+                {
+                    size_t push_banck_size_ = _data_pointer == nullptr ? 10 : (size_t)(_capacity_pointer-_data_pointer)*2;
+                    resize(push_banck_size_);
+                }
+                //注意—_size_pointer是原生迭代器指针，需要解引用才能赋值
+                *_size_pointer = push_back_temp_;
+                _size_pointer++;
+                return *this;
             }
-            _size_pointer = _data_pointer + (_temp_size_ + _size_);
-            return *this;
-        }
+            vector<vector_Type>& pop_back() 
+            {
+                if (_size_pointer > _data_pointer) 
+                { // 至少有一个元素
+                    --_size_pointer; // 尾指针前移
+                }
+                return *this;
+            }
+            vector<vector_Type>& push_front(const vector_Type& pop_back_temp_)
+            {
+                //头插
+                if(_size_pointer == _capacity_pointer)
+                {
+                    size_t pop_banck_size_ = _data_pointer == nullptr ? 10 : (size_t)(_capacity_pointer-_data_pointer)*2;
+                    resize(pop_banck_size_);
+                }
+                for(size_t pop_back_for_size = size();pop_back_for_size>0;--pop_back_for_size)
+                {
+                    _data_pointer[pop_back_for_size] = _data_pointer[pop_back_for_size -1];
+                }
+                *_data_pointer = pop_back_temp_;
+                ++_size_pointer;
+                return *this;
+            }
+            vector<vector_Type>& pop_front()
+            {
+                if( size() > 0 )
+                {
+                    for(size_t i = 1;i<size();i++)
+                    {
+                        _data_pointer[i-1] = _data_pointer[i];
+                    }
+                    --_size_pointer;
+                }
+                return *this;
+            }
+            vector_Type& operator[](const size_t& _size_operator)
+            {
+                return _data_pointer[_size_operator];
+            }
+            const vector_Type& operator[](const size_t& _size_operator)const 
+            {
+                return _data_pointer[_size_operator];
+            }
+            vector<vector_Type>& operator=(const vector<vector_Type>&vector_temp_)
+            {
+                if (this != &vector_temp_) 
+                {
+                    vector<vector_Type> temp(vector_temp_); // 拷贝构造
+                    swap(temp); // 交换资源，temp析构时会释放原资源
+                }
+                return *this;
+            }
+            vector<vector_Type>& operator+=(const vector<vector_Type>& _temp_)
+            {
+                if(_temp_.size() == 0|| _temp_._data_pointer == nullptr)
+                {
+                    return *this;
+                }
+                size_t _temp_size_ = _temp_.size();
+                size_t _size_ = size();
+                size_t _capacity_ = capacity();
+                if(_temp_size_ + _size_ > _capacity_)
+                {
+                    resize(_temp_size_ + _size_);
+                
+                } 
+                size_t sum = 0;
+                for(size_t i = _size_ ; i < (_temp_size_ + _size_); i++)
+                {
+                    _data_pointer[i] = _temp_._data_pointer[sum++];
+                }
+                _size_pointer = _data_pointer + (_temp_size_ + _size_);
+                return *this;
+            }
+            template <typename const_vector_Output_templates>
+            friend std::ostream& operator<< (std::ostream& vector_ostream, const vector<const_vector_Output_templates>& Dynamic_arrays_data);
+        };
         template <typename const_vector_Output_templates>
-        friend std::ostream& operator<< (std::ostream& vector_ostream, const vector<const_vector_Output_templates>& Dynamic_arrays_data);
-    };
-    template <typename const_vector_Output_templates>
-    std::ostream& operator<<(std::ostream& vector_ostream, const vector<const_vector_Output_templates>& Dynamic_arrays_data)
-    {
-        for(size_t i = 0; i < Dynamic_arrays_data.size(); i++)
+        std::ostream& operator<<(std::ostream& vector_ostream, const vector<const_vector_Output_templates>& Dynamic_arrays_data)
         {
-            vector_ostream << Dynamic_arrays_data[i] << " ";
+            for(size_t i = 0; i < Dynamic_arrays_data.size(); i++)
+            {
+                vector_ostream << Dynamic_arrays_data[i] << " ";
+            }
+            return vector_ostream;
         }
-        return vector_ostream;
     }
+
     /*############################     list容器     ############################*/
-    
-    template <typename list_Type>
-    class list
+    namespace list_Container
     {
-        template<typename list_Type_Function_Node>
-        struct listNode
+        template <typename list_Type>
+        class list
         {
-            //节点类
-            listNode<list_Type_Function_Node>* _prev;
-            listNode<list_Type_Function_Node>* _next;
-            list_Type_Function_Node _data;
-
-            listNode(const list_Type_Function_Node& data = list_Type_Function_Node())
-            :_prev(nullptr), _next(nullptr), _data(data)
+            template<typename list_Type_Function_Node>
+            struct listNode
             {
-                //列表初始化
+                //节点类
+                listNode<list_Type_Function_Node>* _prev;
+                listNode<list_Type_Function_Node>* _next;
+                list_Type_Function_Node _data;
+
+                listNode(const list_Type_Function_Node& data = list_Type_Function_Node())
+                :_prev(nullptr), _next(nullptr), _data(data)
+                {
+                    //列表初始化
+                }
+                
+            };
+            template <typename list_Node_Type_iterator ,typename Ref ,typename Ptr >
+            class _list_iterator_
+            {
+            public:
+                //迭代器类
+                using Node      = listNode<list_Node_Type_iterator> ;
+                using iterator  = _list_iterator_<list_Node_Type_iterator ,list_Node_Type_iterator& ,list_Node_Type_iterator*>;
+                using reference = Ref ;
+                using pointer   = Ptr ;
+                Node* _node;
+                _list_iterator_(Node* node)
+                :_node(node)
+                {
+                    //拿一个指针来构造迭代器
+                }
+                Ref operator*()
+                {
+                    //返回该节点的自定义类型的数据
+                    return _node->_data;
+                }
+                _list_iterator_& operator++()
+                {
+                    //先加在用
+                    _node = _node -> _next;
+                    return *this;
+                    //返回类型名，如果为迭代器就会因为const 报错
+                }
+                _list_iterator_ operator++(int)
+                {
+                    //先用在加
+                    _list_iterator_ temp(_node);
+                    _node = _node->_next;
+                    //把本体指向下一个位置
+                    return temp;
+                }
+                _list_iterator_& operator--()
+                {
+                    _node = _node->_prev;
+                    return *this;
+                }
+                _list_iterator_ operator--(int)
+                {
+                    _list_iterator_ temp (_node);
+                    _node = _node->_prev;
+                    return temp;
+                }
+                bool operator!= (const _list_iterator_& _iterator_temp_)
+                {
+                    //比较两个指针及其上一个和下一个指针地址
+                    return _node != _iterator_temp_._node;
+                }
+                Ptr operator->()
+                {
+                    return &(_node->_data);
+                }
+            };
+            template <typename iterator>
+            class _Reverse_list_iterator_
+            {
+                //创建反向迭代器
+                using  Ref = typename iterator::reference;
+                using  Ptr = typename iterator::pointer ;
+                using  _const_reverse_list_iterator = _Reverse_list_iterator_<iterator>;
+            public:
+                iterator _it;
+                _Reverse_list_iterator_(iterator it)
+                :_it(it)
+                {
+                    ;
+                } 
+                Ref& operator*()
+                {
+                    //因为反向迭代器起始位置在哨兵节点所以通过指向上一个来找到准确位置
+                    //正好到rend位置停下来的时候已经遍历到rend位置
+                    iterator temp(_it);
+                    --(temp);
+                    return *temp;
+                }
+                Ptr operator->()
+                {
+                    //两者函数差不多可直接调用
+                    return &(operator*());
+                }
+                _Reverse_list_iterator_& operator++()
+                {
+                    --_it;
+                    return *this;
+                }
+                _Reverse_list_iterator_ operator++(int)
+                {
+                    _Reverse_list_iterator_ _temp (_it);
+                    --_it;
+                    return _temp;
+                }
+                _Reverse_list_iterator_& operator--()
+                {
+                    ++_it;
+                    return *this;
+                }
+                _Reverse_list_iterator_ operator--(int)
+                {
+                    _Reverse_list_iterator_ _temp (_it);
+                    ++_it;
+                    return _temp;
+                }
+                bool operator!=(const _const_reverse_list_iterator& _temp_)
+                {
+                    return _it != _temp_._it;
+                }
+            };
+            using Node = listNode<list_Type>;
+
+            Node* _head;
+            //_head为哨兵位
+            void CreateHead()
+            {
+                _head = new Node;
+                _head -> _prev = _head;
+                _head -> _next = _head;
             }
+        public:
+            using iterator = _list_iterator_<list_Type,list_Type& ,list_Type*>;
+            using const_iterator = _list_iterator_<list_Type,const list_Type&,const list_Type*>;
+
+            //拿正向迭代器构造反向迭代器，可以直接调用 iterator 已经重载的运算符和函数，相当于在封装一层类
+            using reverse_iterator = _Reverse_list_iterator_<iterator> ;
+            using reverse_const_iterator = _Reverse_list_iterator_<const_iterator>;
+            list()
+            {
+                CreateHead();
+            }
+            ~list()
+            {
+                clear();
+                delete _head;
+                _head = nullptr;
+            }
+            list(iterator first , iterator last)
+            {
+                //通过另一个list对象构建一个list
+                CreateHead();
+                //已经创建一个哨兵节点
+                while (first != last)
+                {
+                    push_back(*first);
+                    ++first;
+                }
+            }
+            list(std::initializer_list<list_Type> list_temp)
+            {
+                //通过初始化列表构建一个list
+                CreateHead();
+                for(auto& e:list_temp)
+                {
+                    push_back(e);
+                }
+            }
+            list(const_iterator first , const_iterator last)
+            {
+                //通过另一个list对象构建一个list
+                CreateHead();
+                //已经创建一个哨兵节点
+                while (first != last)
+                {
+                    push_back(*first);
+                    ++first;
+                }
+            }
+            list(const list<list_Type>& _list_data)
+            {
+                //拷贝构造
+                CreateHead();
+                list<list_Type> _temp_ (_list_data.cbegin(),_list_data.cend());
+                swap(_temp_);
+            }
+            void swap(Container::list_Container::list<list_Type>& _swap_temp)
+            {
+                Container::algorithm::swap(_head,_swap_temp._head);
+            }
+            iterator begin()
+            {
+                //因为_head为哨兵位，所以哨兵下一个结点为有效数据
+                return iterator(_head ->_next);
+            }
+            iterator end()
+            {
+                return iterator(_head);
+            }
+            const_iterator cbegin()const
+            {
+                //因为_head为哨兵位，所以哨兵下一个结点为有效数据
+                return const_iterator(_head ->_next);
+            }
+            const_iterator cend()const
+            {
+                return const_iterator(_head);
+            }
+            size_t size()const
+            {
+                Node* cur = _head->_next;
+                size_t count = 0;
+                while (cur != _head)
+                {
+                    count++;
+                    cur = cur->_next;
+                }
+                return count;
+            }
+            bool empty()const
+            {
+                return _head->_next == _head;
+            }
+            reverse_iterator rbegin()
+            {
+                return reverse_iterator(_head->_prev);
+            }
+            reverse_iterator rend()
+            {
+                return reverse_iterator(_head);
+            }
+            reverse_const_iterator rcbegin()const
+            {
+                return reverse_const_iterator(cend());
+            }
+            reverse_const_iterator rcend()const
+            {
+                return reverse_const_iterator(cbegin());
+            }
+            /*
+            元素访问操作
+            */
+            list_Type& front()
+            {
+                return _head->_next->_data;
+            }
+
+            const list_Type& front()const
+            {
+                return _head->_next->_data;
+            }
+
+            list_Type& back()
+            {
+                return _head->_prev->_data;
+            }
+
+            const list_Type& back()const
+            {
+                return _head->_prev->_data;
+            }
+            /*
+            插入删除操作
+            */
+            void push_back(const list_Type& push_back_data)
+            {
+                insert(end(),push_back_data);
+            }
+            void push_front(const list_Type& push_front_data)
+            {
+                //插入到头
+                insert(begin(),push_front_data);
+            }
+            void pop_back() 
+            { 
+                //删除尾
+                erase(--end()); 
+            }
+            iterator pop_front() 
+            { 
+                //删除头
+                return erase(begin()); 
+            }
+            iterator insert(iterator pos ,const list_Type& val)
+            {
+                Node* Pnew_node = new Node(val);
+                //开辟新节点
+                Node* Pcur = pos._node;
+                //保存pos位置的值
+                Pnew_node->_prev = Pcur->_prev;
+                Pnew_node->_next = Pcur;
+                Pnew_node->_prev->_next = Pnew_node;
+                Pcur->_prev = Pnew_node;
+                return iterator(Pnew_node);
+            }
+            iterator erase(iterator pos)
+            {
+                // 找到待删除的节点
+                Node* pDel = pos._node;
+                Node* pRet = pDel->_next;
+
+                // 将该节点从链表中拆下来并删除
+                pDel->_prev->_next = pDel->_next;
+                pDel->_next->_prev = pDel->_prev;
+                delete pDel;
+
+                return iterator(pRet);
+            }
+            void resize(size_t newsize, const list_Type& data = list_Type())
+            {
+                //将data插入到链表中
+                size_t oldsize = size();
+                if (newsize <= oldsize)
+                {
+                    // 有效元素个数减少到newsize
+                    while (newsize < oldsize)
+                    {
+                        pop_back();
+                        oldsize--;
+                    }
+                }
+                else
+                {
+                    while (oldsize < newsize)
+                    {
+                        push_back(data);
+                        oldsize++;
+                    }
+                }
+            }
+            void clear()
+            {
+                //循环释放资源
+                Node* cur = _head->_next;
+                // 采用头删除
+                while (cur != _head)
+                {
+                    _head->_next = cur->_next;
+                    delete cur;
+                    cur = _head->_next;
+                }
+
+                _head->_next = _head->_prev = _head;
+            }
+            list& operator=(list<list_Type> _lsit_temp)
+            {
+                //运算符重载
+                if( this != &_lsit_temp)
+                {
+                    swap(_lsit_temp);
+                }
+                return *this;
+            }
+            list operator+(const list<list_Type>& _list_temp_)
+            {
+                list<list_Type> _return_temp_ (cbegin(),cend());
+                const_iterator _begin = _list_temp_.cbegin();
+                const_iterator _end  = _list_temp_.cend();
+                while(_begin != _end)
+                {
+                    _return_temp_.push_back(*_begin);
+                    ++_begin;
+                }
+                return _return_temp_;
+            }
+            list& operator+=(const list<list_Type>& _lsit_temp_)
+            {
+                const_iterator _begin = _lsit_temp_.cbegin();
+                const_iterator _end  = _lsit_temp_.cend();
+                while(_begin != _end)
+                {
+                    push_back(*_begin);
+                    ++_begin;
+                }
+                return *this;
+            }
+            template <typename const_list_Output_templates>
+            friend std::ostream& operator<< (std::ostream& list_ostream, const list<const_list_Output_templates>& Dynamic_arrays_data);
             
+            template <typename list_Output_templates>
+            friend std::ostream& operator<< (std::ostream& list_ostream, list<list_Output_templates>& Dynamic_arrays_data);
         };
-        template <typename list_Node_Type_iterator ,typename Ref ,typename Ptr >
-        class _list_iterator_
-        {
-        public:
-            //迭代器类
-            using Node      = listNode<list_Node_Type_iterator> ;
-            using iterator  = _list_iterator_<list_Node_Type_iterator ,list_Node_Type_iterator& ,list_Node_Type_iterator*>;
-            using reference = Ref ;
-            using pointer   = Ptr ;
-            Node* _node;
-            _list_iterator_(Node* node)
-            :_node(node)
-            {
-                //拿一个指针来构造迭代器
-            }
-            Ref operator*()
-            {
-                //返回该节点的自定义类型的数据
-                return _node->_data;
-            }
-            _list_iterator_& operator++()
-            {
-                //先加在用
-                _node = _node -> _next;
-                return *this;
-                //返回类型名，如果为迭代器就会因为const 报错
-            }
-            _list_iterator_ operator++(int)
-            {
-                //先用在加
-                _list_iterator_ temp(_node);
-                _node = _node->_next;
-                //把本体指向下一个位置
-                return temp;
-            }
-            _list_iterator_& operator--()
-            {
-                _node = _node->_prev;
-                return *this;
-            }
-            _list_iterator_ operator--(int)
-            {
-                _list_iterator_ temp (_node);
-                _node = _node->_prev;
-                return temp;
-            }
-            bool operator!= (const _list_iterator_& _iterator_temp_)
-            {
-                //比较两个指针及其上一个和下一个指针地址
-                return _node != _iterator_temp_._node;
-            }
-            Ptr operator->()
-            {
-                return &(_node->_data);
-            }
-        };
-        template <typename iterator>
-        class _Reverse_list_iterator_
-        {
-            //创建反向迭代器
-            using  Ref = typename iterator::reference;
-            using  Ptr = typename iterator::pointer ;
-            using  _const_reverse_list_iterator = _Reverse_list_iterator_<iterator>;
-        public:
-            iterator _it;
-            _Reverse_list_iterator_(iterator it)
-            :_it(it)
-            {
-                ;
-            } 
-            Ref& operator*()
-            {
-                //因为反向迭代器起始位置在哨兵节点所以通过指向上一个来找到准确位置
-                //正好到rend位置停下来的时候已经遍历到rend位置
-                iterator temp(_it);
-                --(temp);
-                return *temp;
-            }
-            Ptr operator->()
-            {
-                //两者函数差不多可直接调用
-                return &(operator*());
-            }
-            _Reverse_list_iterator_& operator++()
-            {
-                --_it;
-                return *this;
-            }
-            _Reverse_list_iterator_ operator++(int)
-            {
-                _Reverse_list_iterator_ _temp (_it);
-                --_it;
-                return _temp;
-            }
-            _Reverse_list_iterator_& operator--()
-            {
-                ++_it;
-                return *this;
-            }
-            _Reverse_list_iterator_ operator--(int)
-            {
-                _Reverse_list_iterator_ _temp (_it);
-                ++_it;
-                return _temp;
-            }
-            bool operator!=(const _const_reverse_list_iterator& _temp_)
-            {
-                return _it != _temp_._it;
-            }
-        };
-        using Node = listNode<list_Type>;
-
-        Node* _head;
-        //_head为哨兵位
-        void CreateHead()
-        {
-            _head = new Node;
-            _head -> _prev = _head;
-            _head -> _next = _head;
-        }
-    public:
-        using iterator = _list_iterator_<list_Type,list_Type& ,list_Type*>;
-        using const_iterator = _list_iterator_<list_Type,const list_Type&,const list_Type*>;
-
-        //拿正向迭代器构造反向迭代器，可以直接调用 iterator 已经重载的运算符和函数，相当于在封装一层类
-        using reverse_iterator = _Reverse_list_iterator_<iterator> ;
-        using reverse_const_iterator = _Reverse_list_iterator_<const_iterator>;
-        list()
-        {
-            CreateHead();
-        }
-        ~list()
-        {
-            clear();
-            delete _head;
-            _head = nullptr;
-        }
-        list(iterator first , iterator last)
-        {
-            //通过另一个list对象构建一个list
-            CreateHead();
-            //已经创建一个哨兵节点
-            while (first != last)
-            {
-                push_back(*first);
-                ++first;
-            }
-        }
-        list(std::initializer_list<list_Type> list_temp)
-        {
-            //通过初始化列表构建一个list
-            CreateHead();
-            for(auto& e:list_temp)
-            {
-                push_back(e);
-            }
-        }
-        list(const_iterator first , const_iterator last)
-        {
-            //通过另一个list对象构建一个list
-            CreateHead();
-            //已经创建一个哨兵节点
-            while (first != last)
-            {
-                push_back(*first);
-                ++first;
-            }
-        }
-        list(const list<list_Type>& _list_data)
-        {
-            //拷贝构造
-            CreateHead();
-            list<list_Type> _temp_ (_list_data.cbegin(),_list_data.cend());
-            swap(_temp_);
-        }
-        void swap(Container::list<list_Type>& _swap_temp)
-        {
-            Container::algorithm::swap(_head,_swap_temp._head);
-        }
-        iterator begin()
-        {
-            //因为_head为哨兵位，所以哨兵下一个结点为有效数据
-            return iterator(_head ->_next);
-        }
-        iterator end()
-        {
-            return iterator(_head);
-        }
-        const_iterator cbegin()const
-        {
-            //因为_head为哨兵位，所以哨兵下一个结点为有效数据
-            return const_iterator(_head ->_next);
-        }
-        const_iterator cend()const
-        {
-            return const_iterator(_head);
-        }
-        size_t size()const
-		{
-			Node* cur = _head->_next;
-			size_t count = 0;
-			while (cur != _head)
-			{
-				count++;
-				cur = cur->_next;
-			}
-			return count;
-		}
-        bool empty()const
-		{
-			return _head->_next == _head;
-		}
-        reverse_iterator rbegin()
-        {
-            return reverse_iterator(_head->_prev);
-        }
-        reverse_iterator rend()
-        {
-            return reverse_iterator(_head);
-        }
-        reverse_const_iterator rcbegin()const
-        {
-            return reverse_const_iterator(cend());
-        }
-        reverse_const_iterator rcend()const
-        {
-            return reverse_const_iterator(cbegin());
-        }
-        /*
-        元素访问操作
-        */
-        list_Type& front()
-		{
-			return _head->_next->_data;
-		}
-
-		const list_Type& front()const
-		{
-			return _head->_next->_data;
-		}
-
-		list_Type& back()
-		{
-			return _head->_prev->_data;
-		}
-
-		const list_Type& back()const
-		{
-			return _head->_prev->_data;
-		}
-        /*
-        插入删除操作
-        */
-        void push_back(const list_Type& push_back_data)
-        {
-            insert(end(),push_back_data);
-        }
-        void push_front(const list_Type& push_front_data)
-        {
-            //插入到头
-            insert(begin(),push_front_data);
-        }
-        void pop_back() 
-		{ 
-            //删除尾
-			erase(--end()); 
-		}
-        iterator pop_front() 
-		{ 
-            //删除头
-			return erase(begin()); 
-		}
-        iterator insert(iterator pos ,const list_Type& val)
-        {
-            Node* Pnew_node = new Node(val);
-            //开辟新节点
-            Node* Pcur = pos._node;
-            //保存pos位置的值
-            Pnew_node->_prev = Pcur->_prev;
-            Pnew_node->_next = Pcur;
-            Pnew_node->_prev->_next = Pnew_node;
-            Pcur->_prev = Pnew_node;
-            return iterator(Pnew_node);
-        }
-        iterator erase(iterator pos)
-		{
-			// 找到待删除的节点
-			Node* pDel = pos._node;
-			Node* pRet = pDel->_next;
-
-			// 将该节点从链表中拆下来并删除
-			pDel->_prev->_next = pDel->_next;
-			pDel->_next->_prev = pDel->_prev;
-			delete pDel;
-
-			return iterator(pRet);
-		}
-        void resize(size_t newsize, const list_Type& data = list_Type())
-		{
-            //将data插入到链表中
-			size_t oldsize = size();
-			if (newsize <= oldsize)
-			{
-				// 有效元素个数减少到newsize
-				while (newsize < oldsize)
-				{
-					pop_back();
-					oldsize--;
-				}
-			}
-			else
-			{
-				while (oldsize < newsize)
-				{
-					push_back(data);
-					oldsize++;
-				}
-			}
-		}
-        void clear()
-		{
-            //循环释放资源
-			Node* cur = _head->_next;
-			// 采用头删除
-			while (cur != _head)
-			{
-				_head->_next = cur->_next;
-				delete cur;
-				cur = _head->_next;
-			}
-
-			_head->_next = _head->_prev = _head;
-		}
-        list& operator=(list<list_Type> _lsit_temp)
-        {
-            //运算符重载
-            if( this != &_lsit_temp)
-            {
-                swap(_lsit_temp);
-            }
-            return *this;
-        }
-        list operator+(const list<list_Type>& _list_temp_)
-        {
-            list<list_Type> _return_temp_ (cbegin(),cend());
-            const_iterator _begin = _list_temp_.cbegin();
-            const_iterator _end  = _list_temp_.cend();
-            while(_begin != _end)
-            {
-                _return_temp_.push_back(*_begin);
-                ++_begin;
-            }
-            return _return_temp_;
-        }
-        list& operator+=(const list<list_Type>& _lsit_temp_)
-        {
-            const_iterator _begin = _lsit_temp_.cbegin();
-            const_iterator _end  = _lsit_temp_.cend();
-            while(_begin != _end)
-            {
-                push_back(*_begin);
-                ++_begin;
-            }
-            return *this;
-        }
         template <typename const_list_Output_templates>
-        friend std::ostream& operator<< (std::ostream& list_ostream, const list<const_list_Output_templates>& Dynamic_arrays_data);
-        
-        template <typename list_Output_templates>
-        friend std::ostream& operator<< (std::ostream& list_ostream, list<list_Output_templates>& Dynamic_arrays_data);
-    };
-    template <typename const_list_Output_templates>
-    std::ostream& operator<< (std::ostream& list_ostream, const list<const_list_Output_templates>& Dynamic_arrays_data)
-    {
-        //typename声明这是一个类型而不是表达式
-        typename list<const_list_Output_templates>::const_iterator it = Dynamic_arrays_data.cbegin();
-        while (it != Dynamic_arrays_data.cend()) 
+        std::ostream& operator<< (std::ostream& list_ostream, const list<const_list_Output_templates>& Dynamic_arrays_data)
         {
-            list_ostream << *it << " ";
-            ++it;
+            //typename声明这是一个类型而不是表达式
+            typename list<const_list_Output_templates>::const_iterator it = Dynamic_arrays_data.cbegin();
+            while (it != Dynamic_arrays_data.cend()) 
+            {
+                list_ostream << *it << " ";
+                ++it;
+            }
+            return list_ostream;
         }
-        return list_ostream;
-    }
 
-    template <typename list_Output_templates>
-    std::ostream& operator<< (std::ostream& list_ostream, list<list_Output_templates>& Dynamic_arrays_data)
-    {
-        //typename声明这是一个类型而不是表达式
-        typename list<list_Output_templates>::iterator it = Dynamic_arrays_data.begin();
-        while (it != Dynamic_arrays_data.end()) 
+        template <typename list_Output_templates>
+        std::ostream& operator<< (std::ostream& list_ostream, list<list_Output_templates>& Dynamic_arrays_data)
         {
-            list_ostream << *it << " ";
-            ++it;
+            //typename声明这是一个类型而不是表达式
+            typename list<list_Output_templates>::iterator it = Dynamic_arrays_data.begin();
+            while (it != Dynamic_arrays_data.end()) 
+            {
+                list_ostream << *it << " ";
+                ++it;
+            }
+            return list_ostream;
         }
-        return list_ostream;
     }
     /*############################     staic适配器     ############################*/
-    template <typename staic_Type,typename Container_staic = Container::vector<staic_Type>>
+    template <typename staic_Type,typename Container_staic = Container::vector_Container::vector<staic_Type>>
     class stack
     {
     private:
@@ -1567,7 +1573,7 @@ namespace Container
         }
     };
     /*############################     queue适配器     ############################*/
-    template <typename queue_Type ,typename Container_queue = Container::list<queue_Type> >
+    template <typename queue_Type ,typename Container_queue = Container::list_Container::list<queue_Type> >
     class queue
     {
         //注意队列适配器不会自动检测队列有没有元素，为学异常，注意空间元素
@@ -1633,7 +1639,7 @@ namespace Container
     /*############################     priority_queue适配器     ############################*/
     template <typename priority_queue_Type,
     typename Imitation_function_parameter_function = Container::STL_Imitation_functions::less<priority_queue_Type>,
-    typename Container_priority_queue = Container::vector<priority_queue_Type>>
+    typename Container_priority_queue = Container::vector_Container::vector<priority_queue_Type>>
     class priority_queue
     {
         //创建容器对象
@@ -2996,7 +3002,7 @@ namespace Container
             }
             bool push(const RB_Tree_Type_Val& Val_Temp_)
             {
-                ;
+                return true;
             }
             //拷贝，析构，反向迭代器，正向迭代器函数，插入函数，删除函数，查找函数，未完成
         };
@@ -3091,32 +3097,32 @@ int main()
     /*            vector测试             */
     {
         std::cout << " vector 测试 " << std::endl << std::endl;
-        Container::vector<int> vector_test(5,1);
+        Container::vector_Container::vector<int> vector_test(5,1);
         for(auto i: vector_test)
         {
             std::cout << i << " ";
         }
         std::cout << std::endl;
-        Container::vector<int> vector_test1(vector_test);
+        Container::vector_Container::vector<int> vector_test1(vector_test);
         for(const  auto& i  : vector_test1 )
         {
             std::cout << i << " ";
         }
         std::cout << std::endl;
-        Container::vector<int> test2 = vector_test1;
+        Container::vector_Container::vector<int> test2 = vector_test1;
         for(const auto i : test2)
         {
             std::cout << i << " ";
         }
         Container::string_Container::string s2 = "name";
         std::cout << std::endl;
-        Container::vector<Container::string_Container::string> name_test(10,s2);
+        Container::vector_Container::vector<Container::string_Container::string> name_test(10,s2);
         for(const auto& i : name_test )
         {
             std::cout << i << " ";
         }
         std::cout << std::endl;
-        Container::vector<Container::string_Container::string> name_test1 =name_test ;
+        Container::vector_Container::vector<Container::string_Container::string> name_test1 =name_test ;
         for(const auto& i : name_test1 )
         {
             std::cout << i << " ";
@@ -3152,19 +3158,19 @@ int main()
     /*            list测试             */
     {
         std::cout << " list 测试 " << std::endl << std::endl;
-        Container::list<int> list_test1;
+        Container::list_Container::list<int> list_test1;
         for(size_t i = 1; i < 10; i++)
         {
             list_test1.push_back(i);
         }
-        Container::list<int>::const_iterator it =list_test1.cbegin();
+        Container::list_Container::list<int>::const_iterator it =list_test1.cbegin();
         while(it != list_test1.cend())
         {
             std::cout << *it  << " ";
             it++;
         }
         std::cout << std::endl;
-        Container::list<int>::reverse_const_iterator i = list_test1.rcbegin();
+        Container::list_Container::list<int>::reverse_const_iterator i = list_test1.rcbegin();
         while(i != list_test1.rcend())
         {
             std::cout << *i << " ";
@@ -3173,7 +3179,7 @@ int main()
         std::cout <<std::endl;
 
         list_test1.pop_back(); 
-        Container::list<int>::const_iterator j =list_test1.cbegin();
+        Container::list_Container::list<int>::const_iterator j =list_test1.cbegin();
         while(j != list_test1.cend())
         {
             std::cout << *j  << " ";
@@ -3182,8 +3188,8 @@ int main()
         std::cout << std::endl;
         std::cout << list_test1.size() << std::endl;
 
-        Container::list<int> list_test2 = list_test1;
-        Container::list<int>::const_iterator p =list_test2.cbegin();
+        Container::list_Container::list<int> list_test2 = list_test1;
+        Container::list_Container::list<int>::const_iterator p =list_test2.cbegin();
         while(p != list_test2.cend())
         {
             std::cout << *p  << " ";
@@ -3192,8 +3198,8 @@ int main()
         std::cout << std::endl;
         std::cout << list_test2.size() << std::endl;
 
-        Container::list<int> list_test3 = list_test2 + list_test1;
-        Container::list<int>::const_iterator k =list_test3.cbegin();
+        Container::list_Container::list<int> list_test3 = list_test2 + list_test1;
+        Container::list_Container::list<int>::const_iterator k =list_test3.cbegin();
         while(k != list_test3.cend())
         {
             std::cout << *k  << " ";
@@ -3202,8 +3208,8 @@ int main()
         std::cout << std::endl;
         std::cout << list_test3.size() << std::endl;
 
-        Container::list<int> list_test4 = list_test3 + list_test1;
-        Container::list<int>::const_iterator kp =list_test4.cbegin();
+        Container::list_Container::list<int> list_test4 = list_test3 + list_test1;
+        Container::list_Container::list<int>::const_iterator kp =list_test4.cbegin();
         while(kp != list_test4.cend())
         {
             std::cout << *kp  << " ";
@@ -3240,7 +3246,7 @@ int main()
         Container::string_Container::string queue_test_str1 = "hello";
         Container::string_Container::string queue_test_str2 = "word";
         Container::string_Container::string queue_test_str3 = "  ";
-        Container::queue< Container::string_Container::string,Container::list< Container::string_Container::string>> queue_test1;
+        Container::queue< Container::string_Container::string,Container::list_Container::list< Container::string_Container::string>> queue_test1;
 
         queue_test1.push(queue_test_str1);
         queue_test1.push(queue_test_str3);
@@ -3312,7 +3318,7 @@ int main()
 
     {
         const size_t Binary_search_tree_arraySize = 10;
-        Container::vector<int> Binary_search_tree_array(Binary_search_tree_arraySize);
+        Container::vector_Container::vector<int> Binary_search_tree_array(Binary_search_tree_arraySize);
         for (size_t i = 0; i < Binary_search_tree_arraySize; ++i) 
         {
             Binary_search_tree_array[i] = i;
@@ -3356,7 +3362,7 @@ int main()
 
     {
         const size_t Binary_search_tree_arraySize = 20;
-        Container::vector<int> Binary_search_tree_array(Binary_search_tree_arraySize);
+        Container::vector_Container::vector<int> Binary_search_tree_array(Binary_search_tree_arraySize);
         for (size_t i = 0; i < Binary_search_tree_arraySize; ++i) 
         {
             Binary_search_tree_array[i] = i;
@@ -3417,7 +3423,7 @@ int main()
     {
         Container::string_Container::string str1 = {'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'};
         std::cout << str1 << std::endl;
-        Container::vector < Container::string_Container::string> vector_str = 
+        Container::vector_Container::vector< Container::string_Container::string> vector_str = 
         {"西瓜","樱桃","苹果","西瓜","樱桃","苹果","樱桃","西瓜","樱桃","西瓜","樱桃","苹果","樱桃","苹果","樱桃"};
 
         Container::BS_Tree< Container::string_Container::string> BST_temp;
@@ -3454,7 +3460,8 @@ int main()
     }
     {
         Container::AVL_Tree<int,int> AVL_Tree_test_pair;
-        Container::vector<Container::STL_Demand_class::pair<int,int>> AVL_Tree_array_pair = {{22,0},{16,0},{13,0},{15,0},{11,0},{12,0},{14,0},{10,0},{2,0},{10,0}};
+        Container::vector_Container::vector<Container::STL_Demand_class::pair<int,int>> AVL_Tree_array_pair = 
+        {{22,0},{16,0},{13,0},{15,0},{11,0},{12,0},{14,0},{10,0},{2,0},{10,0}};
         for(auto& i : AVL_Tree_array_pair)
         {
             AVL_Tree_test_pair.push(i);
@@ -3468,7 +3475,9 @@ int main()
     }
     {
         Container::AVL_Tree<int,int> AVL_Tree_test_pair;
-        Container::vector<Container::STL_Demand_class::pair<int,int>> AVL_Tree_array_pair = {{22,0},{16,0},{13,0},{15,0},{11,0},{12,0},{14,0},{10,0},{2,0},{10,0}};
+        Container::vector_Container::vector<Container::STL_Demand_class::pair<int,int>> AVL_Tree_array_pair = 
+        {{22,0},{16,0},{13,0},{15,0},{11,0},{12,0},{14,0},{10,0},{2,0},{10,0}};
+
         for(auto& i : AVL_Tree_array_pair)
         {
             AVL_Tree_test_pair.push(i);
@@ -3502,7 +3511,8 @@ int main()
     {
         //删除测试
         Container::AVL_Tree<int,int> AVL_Tree_test_pair;
-        Container::vector<Container::STL_Demand_class::pair<int,int>> AVL_Tree_array_pair = {{22,0},{16,0},{13,0},{15,0},{11,0},{12,0},{14,0},{10,0},{2,0},{10,0}};
+        Container::vector_Container::vector<Container::STL_Demand_class::pair<int,int>> AVL_Tree_array_pair = 
+        {{22,0},{16,0},{13,0},{15,0},{11,0},{12,0},{14,0},{10,0},{2,0},{10,0}};
         for(auto& i : AVL_Tree_array_pair)
         {
             AVL_Tree_test_pair.push(i);
@@ -3523,7 +3533,7 @@ int main()
         //性能测试
         /*                   pair 类型                */
         Container::AVL_Tree<size_t,int> AVL_Tree_test_pair;
-        Container::vector<Container::STL_Demand_class::pair<size_t,int>> AVL_Tree_array_pair;
+        Container::vector_Container::vector<Container::STL_Demand_class::pair<size_t,int>> AVL_Tree_array_pair;
         size_t size = 100000;
         for(size_t i = 0; i < size; i++)
         {
@@ -3539,7 +3549,7 @@ int main()
 
         /*                  非pair 类型               */
         Container::AVL_Tree<size_t,int> AVL_Tree_test;
-        Container::vector<size_t> AVL_Tree_array;
+        Container::vector_Container::vector<size_t> AVL_Tree_array;
         for(size_t j = 0; j < size ; j++)
         {
             AVL_Tree_array.push_back(j);
