@@ -4,7 +4,7 @@
 #include <algorithm>
 namespace MY_Template
 {
-    namespace STL_Imitation_functions
+    namespace Imitation_functions
     {
         //仿函数命名空间
         template<typename Imitation_functions_less>
@@ -42,7 +42,7 @@ namespace MY_Template
             return os;
         }
     }
-    namespace STL_Demand_class
+    namespace Practicality
     {
         template<typename Data_Type_example_pair_T,typename Data_Type_example_pair_K>
         class pair
@@ -1629,7 +1629,7 @@ namespace MY_Template
     };
     /*############################     priority_queue适配器     ############################*/
     template <typename priority_queue_Type,
-    typename Imitation_function_parameter_function = MY_Template::STL_Imitation_functions::less<priority_queue_Type>,
+    typename Imitation_function_parameter_function = MY_Template::Imitation_functions::less<priority_queue_Type>,
     typename Container_priority_queue = MY_Template::vector<priority_queue_Type>>
     class priority_queue
     {
@@ -1737,7 +1737,7 @@ namespace MY_Template
         }
     };
     /*############################     BS_Tree 容器     ############################*/
-    template <typename BS_Tree_Type,typename Imitation_function_parameter_function_BS_Tree = MY_Template::STL_Imitation_functions::less <BS_Tree_Type> >
+    template <typename BS_Tree_Type,typename Imitation_function_parameter_function_BS_Tree = MY_Template::Imitation_functions::less <BS_Tree_Type> >
     class BS_Tree
     {
     private:
@@ -1890,11 +1890,11 @@ namespace MY_Template
             {
                 return;
             }
-            MY_Template::stack<MY_Template::STL_Demand_class::pair<Node*,Node**> > _staic_temp_;
+            MY_Template::stack<MY_Template::Practicality::pair<Node*,Node**> > _staic_temp_;
             //注意这里把本地_ROOT类型传过去，是因为要对本地的_ROOT进行操作，所以要传二级指针
             //这里传引用也不行，这里的对象是动态变化的，所以传引用也不行
             //如果是对全局的_ROOT进行操作，就传一级指针
-            _staic_temp_.push(MY_Template::STL_Demand_class::pair<Node*,Node**>(_Binary_search_tree_temp_copy,&_ROOT));
+            _staic_temp_.push(MY_Template::Practicality::pair<Node*,Node**>(_Binary_search_tree_temp_copy,&_ROOT));
             while( !_staic_temp_.empty() )
             {
                 auto _staic_temp_pair = _staic_temp_.top();
@@ -1912,11 +1912,11 @@ namespace MY_Template
                 //移除临时变量，直接使用指针解引用
                 if(_staic_temp_pair.first->_right!= nullptr)
                 {
-                    _staic_temp_.push(MY_Template::STL_Demand_class::pair<Node*,Node**>(_staic_temp_pair.first->_right,&((*_staic_temp_pair.second)->_right)));
+                    _staic_temp_.push(MY_Template::Practicality::pair<Node*,Node**>(_staic_temp_pair.first->_right,&((*_staic_temp_pair.second)->_right)));
                 }
                 if(_staic_temp_pair.first->_left!= nullptr)
                 {
-                    _staic_temp_.push(MY_Template::STL_Demand_class::pair<Node*,Node**>(_staic_temp_pair.first->_left,&((*_staic_temp_pair.second)->_left)));
+                    _staic_temp_.push(MY_Template::Practicality::pair<Node*,Node**>(_staic_temp_pair.first->_left,&((*_staic_temp_pair.second)->_left)));
                 }
             }
         }
@@ -2133,8 +2133,8 @@ namespace MY_Template
     };
     /*############################     AVL_Tree 容器     ############################*/
     template <typename AVL_Tree_Type_K,     typename AVL_Tree_Type_V,
-    typename Imitation_function_parameter_function_AVL_Tree = MY_Template::STL_Imitation_functions::less < AVL_Tree_Type_K >,
-    typename AVL_Tree_Synthetic_class = MY_Template::STL_Demand_class::pair<AVL_Tree_Type_K,AVL_Tree_Type_V> >
+    typename Imitation_function_parameter_function_AVL_Tree = MY_Template::Imitation_functions::less < AVL_Tree_Type_K >,
+    typename AVL_Tree_Synthetic_class = MY_Template::Practicality::pair<AVL_Tree_Type_K,AVL_Tree_Type_V> >
     class AVL_Tree
     {
     private:
@@ -2466,8 +2466,8 @@ namespace MY_Template
                 return;
             }
         
-            MY_Template::stack<MY_Template::STL_Demand_class::pair<Node*, Node**>> _stack_temp;
-            _stack_temp.push(MY_Template::STL_Demand_class::pair<Node*, Node**>(AVL_Tree_temp_._ROOT, &_ROOT));
+            MY_Template::stack<MY_Template::Practicality::pair<Node*, Node**>> _stack_temp;
+            _stack_temp.push(MY_Template::Practicality::pair<Node*, Node**>(AVL_Tree_temp_._ROOT, &_ROOT));
         
             while (!_stack_temp.empty())
             {
@@ -2482,14 +2482,14 @@ namespace MY_Template
                 // 处理右子节点
                 if (AVL_pair_temp.first->_right != nullptr)
                 {
-                    _stack_temp.push(MY_Template::STL_Demand_class::pair<Node*, Node**>(
+                    _stack_temp.push(MY_Template::Practicality::pair<Node*, Node**>(
                         AVL_pair_temp.first->_right, &new_node->_right));
                 }
         
                 // 处理左子节点
                 if (AVL_pair_temp.first->_left != nullptr)
                 {
-                    _stack_temp.push(MY_Template::STL_Demand_class::pair<Node*, Node**>(
+                    _stack_temp.push(MY_Template::Practicality::pair<Node*, Node**>(
                         AVL_pair_temp.first->_left, &new_node->_left));
                 }
         
@@ -2904,8 +2904,8 @@ namespace MY_Template
     };
     /*############################     RB_Tree 容器     ############################*/
     template <typename RB_Tree_Type_Key, typename RB_Tree_Type_Val,
-    typename Imitation_function_parameter_function_RB_Tree = MY_Template::STL_Imitation_functions::less <RB_Tree_Type_Key>,
-    typename RB_Tree_Synthetic_class = MY_Template::STL_Demand_class::pair<RB_Tree_Type_Key,RB_Tree_Type_Val> >
+    typename Imitation_function_parameter_function_RB_Tree = MY_Template::Imitation_functions::less <RB_Tree_Type_Key>,
+    typename RB_Tree_Synthetic_class = MY_Template::Practicality::pair<RB_Tree_Type_Key,RB_Tree_Type_Val> >
     class RB_Tree
     {
     private:
