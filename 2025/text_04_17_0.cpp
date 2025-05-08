@@ -2987,15 +2987,70 @@ namespace MY_Template
             Node* _ROOT;
             Type_imitation_function Element;
             Imitation_function_parameter_function_RB_Tree com;
+            using Return_iterator = MY_Template::Practicality::pair<iterator,bool>;
         public:
             using iterator = RBTree_iterator<RB_Tree_Type_Val,RB_Tree_Type_Val&,RB_Tree_Type_Val*>; 
             RB_Tree()
             {
                 _ROOT = nullptr;
             }
-            bool push(const RB_Tree_Type_Val& Val_Temp_)
+            ~RB_Tree()
             {
-                return true;
+                ;//clear()
+            }
+            Return_iterator push(const RB_Tree_Type_Val& Val_Temp_)
+            {
+                if(_ROOT == nullptr)
+                {
+                    _ROOT = new RB_Tree_Type_Val(Val_Temp_);
+                    _ROOT->_color = BLACK;
+                    return Return_iterator(iterator(_ROOT),true);
+                }
+                else
+                {
+                    Node* _ROOT_Temp = _ROOT;
+                    Node* _ROOT_Temp_parent = nullptr;
+                    while(_ROOT_Temp != nullptr)
+                    {
+                        _ROOT_Temp_parent = _ROOT_Temp;
+                        if(!com(Element(_ROOT_Temp->_data),Element(Val_Temp_) && !com(Element(Val_Temp_),Element(_ROOT_Temp->_data))))
+                        {
+                            //插入失败，找到相同的值，开始返回
+                            return Return_iterator(iterator(_ROOT_Temp),false);
+                        }
+                        else if(com(Element(_ROOT_Temp->_data),Element(Val_Temp_)))
+                        {
+                            _ROOT_Temp = _ROOT_Temp->_right;
+                        }
+                        else
+                        {
+                            _ROOT_Temp = _ROOT_Temp->_left;
+                        }
+                    }
+                    //找到插入位置
+                    _ROOT_Temp = new Node(Val_Temp_);
+                    if(com(Element(_ROOT_Temp_parent->_data),Element(_ROOT_Temp->_data)))
+                    {
+                        _ROOT_Temp_parent->_right = _ROOT_Temp;
+                    }
+                    else
+                    {
+                        _ROOT_Temp_parent->_left = _ROOT_Temp;
+                    }
+                    _ROOT_Temp->_color = RED;
+                    _ROOT_Temp->_parent = _ROOT_Temp_parent;
+                    //开始调整，向上调整颜色节点
+                    while(_ROOT_Temp_parent && _ROOT_Temp_parent->_color == RED )
+                    {
+                        Node* _ROOT_Temp_Grandfther = _ROOT_Temp_parent->_parent;
+                        if(_ROOT_Temp_Grandfther->_left == _ROOT_Temp_parent)
+                        {
+                            //叔叔节点
+                            Node* uncle = _ROOT_Temp_Grandfther->_right;
+                            
+                        }
+                    }
+                }
             }
             //拷贝，析构，反向迭代器，正向迭代器函数，插入函数，删除函数，查找函数，未完成
         };
