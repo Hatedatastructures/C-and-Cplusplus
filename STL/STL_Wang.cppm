@@ -3,7 +3,7 @@
 #include <random>
 #include <algorithm>
 //C++20模块
-namespace Container
+namespace MY_Template
 {
     namespace STL_Imitation_functions
     {
@@ -262,7 +262,7 @@ namespace Container
             _size = data_str.size();
             _capacity = _size;
             _data = new char[_capacity + 1];
-            Container::algorithm::copy(data_str.begin(), data_str.end(), _data);
+            MY_Template::algorithm::copy(data_str.begin(), data_str.end(), _data);
             _data[_size] = '\0';
         }
         ~string()
@@ -518,9 +518,9 @@ namespace Container
         }
         string& swap(string& data_str)
         {
-            Container::algorithm::swap(_data,data_str._data);
-            Container::algorithm::swap(_size,data_str._size);
-            Container::algorithm::swap(_capacity,data_str._capacity);
+            MY_Template::algorithm::swap(_data,data_str._data);
+            MY_Template::algorithm::swap(_size,data_str._size);
+            MY_Template::algorithm::swap(_capacity,data_str._capacity);
             return *this;
         }
         string rollback()
@@ -807,7 +807,7 @@ namespace Container
     std::ostream& operator<<(std::ostream& string_ostream,string &data_str) 
     {
         //当前没实现【】访问.可以用迭代器
-        for(Container::string::const_iterator originate = data_str.begin();originate != data_str.end();originate++)
+        for(MY_Template::string::const_iterator originate = data_str.begin();originate != data_str.end();originate++)
         {
             string_ostream << *originate;
         }
@@ -952,9 +952,9 @@ namespace Container
         }
         void swap(vector<vector_Type>& temp_data)
         {
-            Container::algorithm::swap(_data_pointer, temp_data._data_pointer);
-            Container::algorithm::swap(_size_pointer, temp_data._size_pointer);
-            Container::algorithm::swap(_capacity_pointer, temp_data._capacity_pointer);
+            MY_Template::algorithm::swap(_data_pointer, temp_data._data_pointer);
+            MY_Template::algorithm::swap(_size_pointer, temp_data._size_pointer);
+            MY_Template::algorithm::swap(_capacity_pointer, temp_data._capacity_pointer);
         }
         iterator erase(iterator pos)
         {
@@ -1284,9 +1284,9 @@ namespace Container
             list<list_Type> _temp_ (_list_data.cbegin(),_list_data.cend());
             swap(_temp_);
         }
-        void swap(Container::list<list_Type>& _swap_temp)
+        void swap(MY_Template::list<list_Type>& _swap_temp)
         {
-            Container::algorithm::swap(_head,_swap_temp._head);
+            MY_Template::algorithm::swap(_head,_swap_temp._head);
         }
         iterator begin()
         {
@@ -1506,7 +1506,7 @@ namespace Container
         return list_ostream;
     }
     /*############################     staic适配器     ############################*/
-    template <typename staic_Type,typename Container_staic = Container::vector<staic_Type>>
+    template <typename staic_Type,typename Container_staic = MY_Template::vector<staic_Type>>
     class stack
     {
         Container_staic Container_stack_temp_;
@@ -1558,7 +1558,7 @@ namespace Container
         }
     };
     /*############################     queue适配器     ############################*/
-    template <typename queue_Type ,typename Container_queue = Container::list<queue_Type> >
+    template <typename queue_Type ,typename Container_queue = MY_Template::list<queue_Type> >
     class queue
     {
         //注意队列适配器不会自动检测队列有没有元素，为学异常，注意空间元素
@@ -1623,8 +1623,8 @@ namespace Container
     };
     /*############################     priority_queue适配器     ############################*/
     template <typename priority_queue_Type,
-    typename Imitation_function_parameter_function = Container::STL_Imitation_functions::less<priority_queue_Type>,
-    typename Container_priority_queue = Container::vector<priority_queue_Type>>
+    typename Imitation_function_parameter_function = MY_Template::STL_Imitation_functions::less<priority_queue_Type>,
+    typename Container_priority_queue = MY_Template::vector<priority_queue_Type>>
     class priority_queue
     {
         //创建容器对象
@@ -1640,7 +1640,7 @@ namespace Container
             {
                 if(com(Container_priority_queue_temp[parent],Container_priority_queue_temp[Adjust_upwards_child]))
                 {
-                    Container::algorithm::swap(Container_priority_queue_temp[parent],Container_priority_queue_temp[Adjust_upwards_child]);
+                    MY_Template::algorithm::swap(Container_priority_queue_temp[parent],Container_priority_queue_temp[Adjust_upwards_child]);
                     Adjust_upwards_child = parent;
                     parent = (Adjust_upwards_child-1)/2;
                 }
@@ -1665,7 +1665,7 @@ namespace Container
                 if(com(Container_priority_queue_temp[parent],Container_priority_queue_temp[priority_queue_Adjust_downwards_child]))
                 {
                     //建大堆把小的换下去，建小堆把大的换下去
-                    Container::algorithm::swap( Container_priority_queue_temp[parent] , Container_priority_queue_temp[priority_queue_Adjust_downwards_child]);
+                    MY_Template::algorithm::swap( Container_priority_queue_temp[parent] , Container_priority_queue_temp[priority_queue_Adjust_downwards_child]);
 
                     //换完之后如果是大堆，则父亲节点是较大的值，需要更新孩子节点继续向下找比孩子节点大的值，如果有继续交换
                     parent = priority_queue_Adjust_downwards_child;
@@ -1701,7 +1701,7 @@ namespace Container
         }
         void pop()
         {
-            Container::algorithm::swap(Container_priority_queue_temp[0],Container_priority_queue_temp[Container_priority_queue_temp.size()-(size_t)1]);
+            MY_Template::algorithm::swap(Container_priority_queue_temp[0],Container_priority_queue_temp[Container_priority_queue_temp.size()-(size_t)1]);
             Container_priority_queue_temp.pop_back();
             priority_queue_Adjust_downwards();
         }
@@ -1731,7 +1731,7 @@ namespace Container
         }
     };
     /*############################     Binary_search_tree 容器     ############################*/
-    template <typename BS_Tree_Type,typename Imitation_function_parameter_function_BS_Tree = Container::STL_Imitation_functions::less <BS_Tree_Type> >
+    template <typename BS_Tree_Type,typename Imitation_function_parameter_function_BS_Tree = MY_Template::STL_Imitation_functions::less <BS_Tree_Type> >
     class BS_Tree
     {
     private:
@@ -1760,7 +1760,7 @@ namespace Container
         void _Middle_order_traversal(Node* _ROOT_Temp)
         {
             //中序遍历函数
-            Container::stack<Node*> _staic_temp_;
+            MY_Template::stack<Node*> _staic_temp_;
             while(_ROOT_Temp != nullptr || !_staic_temp_.empty())
             {
                 while(_ROOT_Temp!= nullptr)
@@ -1783,7 +1783,7 @@ namespace Container
         }
         size_t _Middle_order_traversal(Node* _ROOT_Temp,size_t& _size_temp_ )
         {
-            Container::stack<Node*> _staic_temp_;
+            MY_Template::stack<Node*> _staic_temp_;
             while(_ROOT_Temp != nullptr || !_staic_temp_.empty())
             {
                 while(_ROOT_Temp!= nullptr)
@@ -1811,7 +1811,7 @@ namespace Container
                 return;
             }
             Node* _Pre_order_traversal_test = _ROOT_Temp;
-            Container::stack<Node*> stack_Temp;
+            MY_Template::stack<Node*> stack_Temp;
             stack_Temp.push(_Pre_order_traversal_test);
             //不能添加|| _Pre_order_traversal_test != nullptr ，因为最后一层循环后_Pre_order_traversal_test还是为真后面循环无意义，反之还会破环性质
             while( !stack_Temp.empty() )
@@ -1838,7 +1838,7 @@ namespace Container
             }
             //循环释放资源
             Node* _ROOT_Temp = _ROOT;
-            Container::stack<Node*> _staic_clear_temp_;
+            MY_Template::stack<Node*> _staic_clear_temp_;
             _staic_clear_temp_.push(_ROOT_Temp);
             while(_staic_clear_temp_.empty() == false)
             {
@@ -1886,11 +1886,11 @@ namespace Container
             {
                 return;
             }
-            Container::stack<Container::STL_Demand_class::pair<Node*,Node**> > _staic_temp_;
+            MY_Template::stack<MY_Template::STL_Demand_class::pair<Node*,Node**> > _staic_temp_;
             //注意这里把本地_ROOT类型传过去，是因为要对本地的_ROOT进行操作，所以要传二级指针
             //这里传引用也不行，这里的对象是动态变化的，所以传引用也不行
             //如果是对全局的_ROOT进行操作，就传一级指针
-            _staic_temp_.push(Container::STL_Demand_class::pair<Node*,Node**>(_Binary_search_tree_temp_copy,&_ROOT));
+            _staic_temp_.push(MY_Template::STL_Demand_class::pair<Node*,Node**>(_Binary_search_tree_temp_copy,&_ROOT));
             while( !_staic_temp_.empty() )
             {
                 auto _staic_temp_pair = _staic_temp_.top();
@@ -1908,11 +1908,11 @@ namespace Container
                 //移除临时变量，直接使用指针解引用
                 if(_staic_temp_pair.first->_left!= nullptr)
                 {
-                    _staic_temp_.push(Container::STL_Demand_class::pair<Node*,Node**>(_staic_temp_pair.first->_left,&((*_staic_temp_pair.second)->_left)));
+                    _staic_temp_.push(MY_Template::STL_Demand_class::pair<Node*,Node**>(_staic_temp_pair.first->_left,&((*_staic_temp_pair.second)->_left)));
                 }
                 if(_staic_temp_pair.first->_right!= nullptr)
                 {
-                    _staic_temp_.push(Container::STL_Demand_class::pair<Node*,Node**>(_staic_temp_pair.first->_right,&((*_staic_temp_pair.second)->_right)));
+                    _staic_temp_.push(MY_Template::STL_Demand_class::pair<Node*,Node**>(_staic_temp_pair.first->_right,&((*_staic_temp_pair.second)->_right)));
                 }
             }
         }
@@ -2036,7 +2036,7 @@ namespace Container
                             _ROOT_Temp_right_min = _ROOT_Temp_right_min->_left;
                         }
                         //找到最左节点	
-                        Container::algorithm::swap(_ROOT_Temp->_data,_ROOT_Temp_right_min->_data);
+                        MY_Template::algorithm::swap(_ROOT_Temp->_data,_ROOT_Temp_right_min->_data);
                         //因为右树最左节点已经被删，但是还需要把被删的上一节点的左子树指向被删节点的右子树，不管右子树有没有节点都要连接上
                         if(_ROOT_Temp_test_Parent == _ROOT_Temp)
                         {
@@ -2122,15 +2122,15 @@ namespace Container
                 clear();
                 com = _Binary_search_tree_temp.com;
                 BS_Tree _Binary_search_tree_temp_copy = _Binary_search_tree_temp;
-                Container::algorithm::swap(_Binary_search_tree_temp_copy._ROOT,_ROOT);
+                MY_Template::algorithm::swap(_Binary_search_tree_temp_copy._ROOT,_ROOT);
             }
             return *this;
         }
     };
     /*############################     AVL_Tree 容器     ############################*/
     template <typename AVL_Tree_Type_K,     typename AVL_Tree_Type_V,
-    typename Imitation_function_parameter_function_AVL_Tree = Container::STL_Imitation_functions::less < AVL_Tree_Type_K >,
-    typename AVL_Tree_Synthetic_class = Container::STL_Demand_class::pair<AVL_Tree_Type_K,AVL_Tree_Type_V> >
+    typename Imitation_function_parameter_function_AVL_Tree = MY_Template::STL_Imitation_functions::less < AVL_Tree_Type_K >,
+    typename AVL_Tree_Synthetic_class = MY_Template::STL_Demand_class::pair<AVL_Tree_Type_K,AVL_Tree_Type_V> >
     class AVL_Tree
     {
     private:
