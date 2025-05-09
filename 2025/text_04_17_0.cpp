@@ -3043,7 +3043,7 @@ namespace MY_Template
             }
             void _right_revolve(Node*& parent_temp_Node)
             {
-                //思路同左单旋思路差不多
+                //思路同左单旋思路差不多,但是相反
                 if(parent_temp_Node == nullptr|| parent_temp_Node->_left == nullptr)
                 {
                     std::cout <<"right "<< "空指针"  <<std::endl; 
@@ -3121,11 +3121,41 @@ namespace MY_Template
                     _ROOT_Temp = _staic_temp_.top();
                     _staic_temp_.pop();
                     std::cout <<  _ROOT_Temp->_data << " ";
+                    // std::cout <<  _ROOT_Temp->_data << "节点颜色" << _ROOT_Temp->_color <<" ";
                     _ROOT_Temp = _ROOT_Temp->_right;
+                }
+            }
+            void _Pre_order_traversal(Node* _ROOT_Temp )
+            {
+                //前序遍历，最外左子树全部压栈
+                if(_ROOT_Temp == nullptr)
+                {
+                    return;
+                }
+                Node* _Pre_order_traversal_test = _ROOT_Temp;
+                MY_Template::stack_Adapter::stack<Node*> stack_Temp;
+                stack_Temp.push(_Pre_order_traversal_test);
+                while( !stack_Temp.empty() )
+                {
+                    _Pre_order_traversal_test = stack_Temp.top();
+                    stack_Temp.pop();
+
+                    std::cout << _Pre_order_traversal_test->_data << " ";
+                    // std::cout <<  _Pre_order_traversal_test->_data << "节点颜色" << _Pre_order_traversal_test->_color <<" ";
+                    //修改逻辑错误，先压右子树再压左子树，因为这是栈
+                    if(_Pre_order_traversal_test->_right != nullptr)
+                    {
+                        stack_Temp.push(_Pre_order_traversal_test->_right);
+                    }
+                    if(_Pre_order_traversal_test->_left != nullptr)
+                    {
+                        stack_Temp.push(_Pre_order_traversal_test->_left);
+                    }
                 }
             }
         public:
             using iterator = RBTree_iterator<RB_Tree_Type_Val,RB_Tree_Type_Val&,RB_Tree_Type_Val*>; 
+            using RB_Tree_iterator = MY_Template::Practicality::pair<iterator,bool>;
             RB_Tree()
             {
                 _ROOT = nullptr;
@@ -3134,14 +3164,13 @@ namespace MY_Template
             {
                 clear(_ROOT);
             }
-            using Return_iterator = MY_Template::Practicality::pair<iterator,bool>;
-            Return_iterator push(const RB_Tree_Type_Val& Val_Temp_)
+            RB_Tree_iterator push(const RB_Tree_Type_Val& Val_Temp_)
             {
                 if(_ROOT == nullptr)
                 {
                     _ROOT = new Node(Val_Temp_);
                     _ROOT->_color = BLACK;
-                    return Return_iterator(iterator(_ROOT),true);
+                    return RB_Tree_iterator(iterator(_ROOT),true);
                 }
                 else
                 {
@@ -3153,7 +3182,7 @@ namespace MY_Template
                         if(!com(Element(_ROOT_Temp->_data),Element(Val_Temp_)) && !com(Element(Val_Temp_),Element(_ROOT_Temp->_data)))
                         {
                             //插入失败，找到相同的值，开始返回
-                            return Return_iterator(iterator(_ROOT_Temp),false);
+                            return RB_Tree_iterator(iterator(_ROOT_Temp),false);
                         }
                         else if(com(Element(_ROOT_Temp->_data),Element(Val_Temp_)))
                         {
@@ -3179,12 +3208,13 @@ namespace MY_Template
                     Node* Return_Node_Push = _ROOT_Temp;
                     //保存节点
                     //开始调整，向上调整颜色节点
-                    while(_ROOT_Temp_parent && _ROOT_Temp_parent->_color == RED )
+                    while(_ROOT_Temp_parent != nullptr && _ROOT_Temp_parent->_color == RED )
                     {
                         Node* _ROOT_Temp_Grandfther = _ROOT_Temp_parent->_parent;
                         if(_ROOT_Temp_Grandfther->_left == _ROOT_Temp_parent)
                         {
                             //叔叔节点
+                            // std::cout << "push" <<" ";
                             Node* uncle = _ROOT_Temp_Grandfther->_right;
                             //情况1：uncle存在，且为红
                             //情况2: uncle不存在，那么_ROOT_Temp就是新增节点
@@ -3195,23 +3225,23 @@ namespace MY_Template
                                 _ROOT_Temp_parent->_color = uncle->_color = BLACK;
                                 _ROOT_Temp_Grandfther->_color = RED;
                                 //颜色反转完成
-                                _ROOT_Temp->_parent = _ROOT_Temp_Grandfther;
+                                _ROOT_Temp = _ROOT_Temp_Grandfther;
                                 _ROOT_Temp_parent = _ROOT_Temp->_parent;
-                                //向上调整
+                                //向上调整,继续从红色节点开始
                             }
                             else
                             {
                                 //情况3：该情况双旋转单旋
-                                if(_ROOT_Temp == _ROOT_Temp->_right)
+                                if(_ROOT_Temp == _ROOT_Temp_parent->_right)
                                 {
                                     _left_revolve(_ROOT_Temp_parent);
                                     MY_Template::algorithm::swap(_ROOT_Temp,_ROOT_Temp_parent);
+                                    //折线调整，交换位置调整为情况2
                                 }
-                                //情况2：单旋
+                                //情况2：直接单旋
                                 _right_revolve(_ROOT_Temp_Grandfther);
                                 _ROOT_Temp_Grandfther->_color = RED;
                                 _ROOT_Temp_parent->_color = BLACK;
-                                break;
                             }
                         }
                         else
@@ -3224,32 +3254,47 @@ namespace MY_Template
                                 _ROOT_Temp_parent->_color = uncle->_color = BLACK;
                                 _ROOT_Temp_Grandfther->_color = RED;
                                 //颜色反转完成
-                                _ROOT_Temp->_parent = _ROOT_Temp_Grandfther;
+                                _ROOT_Temp = _ROOT_Temp_Grandfther;
                                 _ROOT_Temp_parent = _ROOT_Temp->_parent;
-                                //向上调整
                             }
                             else
                             {
                                 //情况3：该情况双旋转单旋
-                                if(_ROOT_Temp == _ROOT_Temp->_right)
+                                if(_ROOT_Temp == _ROOT_Temp_parent->_left)
                                 {
                                     _right_revolve(_ROOT_Temp_parent);
                                     MY_Template::algorithm::swap(_ROOT_Temp,_ROOT_Temp_parent);
+                                    //交换指针转换为单旋
                                 }
                                 //情况2：单旋
                                 _left_revolve(_ROOT_Temp_Grandfther);
                                 _ROOT_Temp_Grandfther->_color = RED;
                                 _ROOT_Temp_parent->_color = BLACK;
-                                break;
                             }
                         }
                     }
-                    return Return_iterator(iterator(Return_Node_Push),true);
+                    _ROOT->_color = BLACK;
+                    return RB_Tree_iterator(iterator(Return_Node_Push),true);
+                }
+            }
+            RB_Tree_iterator pop(const RB_Tree_Type_Val& RB_Tree_Temp)
+            {
+                if(_ROOT == nullptr)
+                {
+                    return RB_Tree_iterator(iterator(nullptr),false);
+                }
+                else
+                {
+
                 }
             }
             void Middle_order_traversal()
             {
                 _Middle_order_traversal(_ROOT);
+            }
+            void Pre_order_traversal()
+            {
+                _Pre_order_traversal(_ROOT);
             }
             //拷贝，析构，反向迭代器，删除函数，查找函数，未完成
         };
@@ -3272,7 +3317,23 @@ namespace MY_Template
             RB_TREE _ROOT_Tree;
         public:
             using iterator = typename RB_TREE::iterator;
-            //函数实现未完成
+            using Map_iterator = MY_Template::Practicality::pair<iterator,bool>;
+            ~Map()
+            {
+                _ROOT_Tree.~RB_Tree();
+            }
+            Map_iterator push(const Key_Val_Type& Map_Temp)
+            {
+                return _ROOT_Tree.push(Map_Temp);
+            }
+            void Middle_order_traversal()
+            {
+                _ROOT_Tree.Middle_order_traversal();
+            }
+            void Pre_order_traversal()
+            {
+                _ROOT_Tree.Pre_order_traversal();
+            }
         };
         template <typename unordered_Map_Type_K>
         class unordered_Map
@@ -3838,19 +3899,42 @@ int main()
     //     std::cout << "插入个数:" << AVL_Tree_test.size()  << " " << " 插入时间:" << AVL_Tree_num4 - AVL_Tree_num3 << std::endl;
     // }
     /*            RB_Tree 测试             */
+    // {
+    //     MY_Template::RB_Tree_Base_class::RB_Tree<size_t,size_t,MY_Template::Test_class::Key_Val<size_t>> RB_Tree_Test;
+    //     size_t size = 10;
+    //     MY_Template::vector_Container::vector<size_t> arr;
+    //     for(size_t i = 0; i < size; i++ )
+    //     {
+    //         arr.push_back(i);
+    //     }
+    //     std::cout << arr << std::endl;
+    //     for(auto& j : arr)
+    //     {
+    //         RB_Tree_Test.push(j);
+    //         std::cout << "前序遍历" << " ";
+    //         RB_Tree_Test.Pre_order_traversal();
+    //         std::cout << "   " << "中序遍历" << " ";
+    //         RB_Tree_Test.Middle_order_traversal();
+    //         std::cout << std::endl;
+    //     }
+    // }
+    /*            Map 测试             */
     {
-        MY_Template::RB_Tree_Base_class::RB_Tree<size_t,size_t,MY_Template::Test_class::Key_Val<size_t>> RB_Tree_Test;
-        size_t size = 10;
-        MY_Template::vector_Container::vector<size_t> arr;
+        MY_Template::Map_Container::Map<size_t,size_t> Map_Test;
+        size_t size = 20;
+        MY_Template::vector_Container::vector<MY_Template::Practicality::pair<size_t,size_t>> arr;
         for(size_t i = 0; i < size; i++ )
         {
-            arr.push_back(i);
+            arr.push_back(MY_Template::Practicality::pair<size_t,size_t>(i,i++));
         }
         std::cout << arr << std::endl;
-         for(auto& j : arr)
+        for(auto& j : arr)
         {
-            RB_Tree_Test.push(j);
-            RB_Tree_Test.Middle_order_traversal();
+            Map_Test.push(j);
+            std::cout << "前序遍历" << " ";
+            Map_Test.Pre_order_traversal();
+            std::cout << "   " << "中序遍历" << " ";
+            Map_Test.Middle_order_traversal();
             std::cout << std::endl;
         }
     }
