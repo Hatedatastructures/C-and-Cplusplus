@@ -3226,6 +3226,11 @@ namespace MY_Template
             using iterator = typename RB_TREE::iterator;
             //函数实现未完成
         };
+        template <typename unordered_Map_Type_K>
+        class unordered_Map
+        {
+
+        };
     }
     /*############################     Set 容器     ############################*/
     namespace Set_Container
@@ -3244,6 +3249,11 @@ namespace MY_Template
             using RB_TREE = RB_Tree_Base_class::RB_Tree<Set_Type_K,Key_Val_Type,Key_Val>;
         public:
             //函数实现未完成
+        };
+        template <typename unordered_Set_Type_K>
+        class unordered_Set
+        {
+
         };
     }
 }
