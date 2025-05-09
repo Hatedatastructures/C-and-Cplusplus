@@ -2983,6 +2983,99 @@ namespace MY_Template
 
                 }
             };
+            void _left_revolve(Node*& parent_temp_Node)
+            {
+                //传进来的值是发现该树平衡性被破坏的节点地址
+                //大致思想：因为这是左单旋，所以找传进来的父亲节点的右根节点来当调整节点
+                //然后把调整节点的左根节点赋值给传进来的父亲节点的右根节点 (刚才已经用节点保存过调整节点，所以这里直接赋值)，
+                //再把父亲节点赋值给调整节点的左根节点，！！注意：在旋转的过程中还要处理每个调整节点的父亲节点的指向和平衡因子
+
+                // {
+                //     Node* Sub_right_temp = parent_temp_Node->_right;
+                //     parent_temp_Node->_right = Sub_right_temp->_left;
+                //     Sub_right_temp->_left = parent_temp_Node;
+                //     //错误写法：未同步调整父亲节点和判断调整节点的左根节点是否为空，以及全部需要调整节点的父亲指针的指针的指向
+                // }
+                if(parent_temp_Node == nullptr|| parent_temp_Node->_right == nullptr)
+                {
+                    std::cout <<"left "<< "空指针"  <<std::endl;
+                    return ;
+                }
+                Node* Sub_right_temp = parent_temp_Node->_right;
+                // Node* Sub_right_left_temp = Sub_right_temp->_left;
+                Node* Sub_right_left_temp = (Sub_right_temp->_left)? Sub_right_temp->_left : nullptr;
+                //防止空指针解引用
+                parent_temp_Node->_right = Sub_right_left_temp;
+                if(Sub_right_left_temp)
+                {
+                    Sub_right_left_temp->_parent = parent_temp_Node;
+                    //如果Sub_right_left_temp(调整节点的左根节点)不等于空，还需要调整Sub_right_left_temp它的父亲节点
+                }
+                Sub_right_temp->_left = parent_temp_Node;
+                //这里先保存一下parent_temp_Node的父亲地址，防止到下面else比较的时候丢失
+                Node* parent_parent_temp_Node = parent_temp_Node->_parent;
+                parent_temp_Node->_parent = Sub_right_temp;
+                //更新parent_temp_Node节点指向正确的地址
+
+                if(_ROOT == parent_temp_Node)
+                {
+                    //如果要调整的节点是根根节点，直接把调整节点赋值给根节点，然后把调整节点的父亲节点置空
+                    _ROOT = Sub_right_temp;
+                    Sub_right_temp->_parent = nullptr;
+                }
+                else
+                {
+                    //调整前parent_temp_Node是这个树的根现在是Sub_right_temp是这个树的根
+                    if(parent_parent_temp_Node->_left == parent_temp_Node)
+                    {
+                        parent_parent_temp_Node->_left = Sub_right_temp;
+                    }
+                    else
+                    {
+                        parent_parent_temp_Node->_right = Sub_right_temp;
+                    }
+                    Sub_right_temp->_parent = parent_parent_temp_Node;
+                }
+            }
+            void _right_revolve(Node*& parent_temp_Node)
+            {
+                //思路同左单旋思路差不多
+                if(parent_temp_Node == nullptr|| parent_temp_Node->_left == nullptr)
+                {
+                    std::cout <<"right "<< "空指针"  <<std::endl; 
+                    return ;
+                }
+                Node* Sub_left_temp = parent_temp_Node->_left;
+                Node* Sub_left_right_temp = (Sub_left_temp->_right) ? Sub_left_temp->_right : nullptr;
+                //防止空指针解引用
+                parent_temp_Node->_left = Sub_left_right_temp;
+                if(Sub_left_right_temp)
+                {
+                    Sub_left_right_temp->_parent = parent_temp_Node;
+                }
+                Sub_left_temp->_right = parent_temp_Node;
+                //保存parent_temp_Node的父亲节点
+                Node* parent_parent_temp_Node = parent_temp_Node->_parent;
+                parent_temp_Node->_parent = Sub_left_temp;
+
+                if(_ROOT == parent_temp_Node)
+                {
+                    _ROOT = Sub_left_temp;
+                    Sub_left_temp->_parent = nullptr;
+                }
+                else
+                {
+                    if(parent_parent_temp_Node->_left == parent_temp_Node)
+                    {
+                        parent_parent_temp_Node->_left = Sub_left_temp;
+                    }
+                    else
+                    {
+                        parent_parent_temp_Node->_right = Sub_left_temp;
+                    }
+                    Sub_left_temp->_parent = parent_parent_temp_Node;
+                }
+            }
             using Node = RB_Tree_Node;
             Node* _ROOT;
             Type_imitation_function Element;
@@ -3039,6 +3132,8 @@ namespace MY_Template
                     }
                     _ROOT_Temp->_color = RED;
                     _ROOT_Temp->_parent = _ROOT_Temp_parent;
+                    Node* Return_Node_Push = _ROOT_Temp;
+                    //保存节点
                     //开始调整，向上调整颜色节点
                     while(_ROOT_Temp_parent && _ROOT_Temp_parent->_color == RED )
                     {
@@ -3047,12 +3142,68 @@ namespace MY_Template
                         {
                             //叔叔节点
                             Node* uncle = _ROOT_Temp_Grandfther->_right;
-                            
+                            //情况1：uncle存在，且为红
+                            //情况2: uncle不存在，那么_ROOT_Temp就是新增节点
+                            //情况3：uncle存在且为黑，说明_ROOT_Temp不是新增节点
+                            if(uncle && uncle->_color == RED)
+                            {
+                                //情况1：
+                                _ROOT_Temp_Parent->_color = uncle->_color = BLACK;
+                                _ROOT_Temp_Grandfther->_color = RED;
+                                //颜色反转完成
+                                _ROOT_Temp->_parent = _ROOT_Temp_Grandfther;
+                                _ROOT_Temp_Parent = _ROOT_Temp->_parent;
+                                //向上调整
+                            }
+                            else
+                            {
+                                //情况3：该情况双旋转单旋
+                                if(_ROOT_Temp == _ROOT_Temp->_right)
+                                {
+                                    _left_revolve(_ROOT_Temp_Parent);
+                                    MY_Template::algorithm::swap(_ROOT_Temp,_ROOT_Temp_Parent);
+                                }
+                                //情况2：单旋
+                                _right_revolve(_ROOT_Temp_Grandfther);
+                                _ROOT_Temp_Grandfther->_color = RED;
+                                _ROOT_Temp_Parent->_color = BLACK;
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            Node* uncle = _ROOT_Temp_Grandfther->_left;
+                            //与上面相反
+                            if(uncle && uncle->_color == RED)
+                            {
+                                //情况1：
+                                _ROOT_Temp_Parent->_color = uncle->_color = BLACK;
+                                _ROOT_Temp_Grandfther->_color = RED;
+                                //颜色反转完成
+                                _ROOT_Temp->_parent = _ROOT_Temp_Grandfther;
+                                _ROOT_Temp_Parent = _ROOT_Temp->_parent;
+                                //向上调整
+                            }
+                            else
+                            {
+                                //情况3：该情况双旋转单旋
+                                if(_ROOT_Temp == _ROOT_Temp->_right)
+                                {
+                                    _right_revolve(_ROOT_Temp_Parent);
+                                    MY_Template::algorithm::swap(_ROOT_Temp,_ROOT_Temp_Parent);
+                                }
+                                //情况2：单旋
+                                _left_revolve(_ROOT_Temp_Grandfther);
+                                _ROOT_Temp_Grandfther->_color = RED;
+                                _ROOT_Temp_Parent->_color = BLACK;
+                                break;
+                            }
                         }
                     }
+                    return Return_iterator(iterator(Return_Node_Push),true);
                 }
             }
-            //拷贝，析构，反向迭代器，正向迭代器函数，插入函数，删除函数，查找函数，未完成
+            //拷贝，析构，反向迭代器，删除函数，查找函数，未完成
         };
     }
     /*############################     Map 容器     ############################*/
