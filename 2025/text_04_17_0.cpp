@@ -3282,8 +3282,13 @@ namespace MY_Template
                     return RB_Tree_iterator(iterator(Return_Node_Push),true);
                 }
             }
+            void Delete_Adjust(Node* cur ,Node* parent)
+            {
+               
+            }
             RB_Tree_iterator pop(const RB_Tree_Type_Val& RB_Tree_Temp)
             {
+                RB_Tree_Color Delete_color;
                 if(_ROOT == nullptr)
                 {
                     return RB_Tree_iterator(iterator(nullptr),false);
@@ -3292,6 +3297,8 @@ namespace MY_Template
                 {
                     Node* _ROOT_Temp = _ROOT;
                     Node* _ROOT_Temp_parent = nullptr;
+                    Node* _Adjust_Node = nullptr;
+                    Node* _Adjust_Node_parent = nullptr;
                     while(_ROOT_Temp != nullptr)
                     {
                         _ROOT_Temp_parent = _ROOT_Temp;
@@ -3322,6 +3329,9 @@ namespace MY_Template
                                         _ROOT_Temp_parent->_right = _ROOT_Temp->_right;
                                     }
                                 }
+                                _Adjust_Node = _ROOT_Temp->_right;
+                                _Adjust_Node_parent = _ROOT_Temp_parent;
+                                Delete_color = _ROOT_Temp->_color;
                                 delete _ROOT_Temp;
                                 _ROOT_Temp = nullptr;
                             }
@@ -3348,6 +3358,9 @@ namespace MY_Template
                                         _ROOT_Temp_parent->_right = _ROOT_Temp->_left;
                                     }
                                 }
+                                _Adjust_Node = _ROOT_Temp->_left;
+                                _Adjust_Node_parent = _ROOT_Temp_parent;
+                                Delete_color = _ROOT_Temp->_color;
                                 delete _ROOT_Temp;
                                 _ROOT_Temp = nullptr;
                             }
@@ -3361,7 +3374,7 @@ namespace MY_Template
                                     _right_min = _right_min->_left;
                                 }
                                 MY_Template::algorithm::swap(_right_min->_data,_ROOT_Temp->_data);
-                                if(_right_parent->left == _ROOT_Temp)
+                                if(_right_parent->_left == _ROOT_Temp)
                                 {
                                     _right_parent->_right = _right_min->_right;
                                 }
@@ -3373,13 +3386,18 @@ namespace MY_Template
                                 {
                                     _right_min->_right->_parent = _right_parent;
                                 }
+                                _Adjust_Node = _right_min->_right;
+                                _Adjust_Node_parent = _right_parent;
+                                Delete_color = _ROOT_Temp->_color;
                                 delete _right_min;
                                 _right_min = nullptr;
                             }
                             //更新颜色
-                            
+                            if( Delete_color == BLACK )
+                            {
+                               Delete_Adjust(_Adjust_Node,_Adjust_Node_parent);
+                            }
                         }
-                        _ROOT_Temp_parent = _ROOT_Temp;
                         if(com(Element(_ROOT_Temp->_data),Element(RB_Tree_Temp)))
                         {
                             _ROOT_Temp = _ROOT_Temp->_right;
@@ -3388,6 +3406,10 @@ namespace MY_Template
                         {
                             _ROOT_Temp = _ROOT_Temp->_left;
                         }
+                    }
+                    if(_ROOT != nullptr)
+                    {
+                        _ROOT->_color = BLACK;
                     }
                     return RB_Tree_iterator(iterator(nullptr),false);
                 }
@@ -4087,6 +4109,15 @@ int main()
         for(auto& j : arr)
         {
             Map_Test.push(j);
+            std::cout << "前序" << " ";
+            Map_Test.Pre_order_traversal();
+            std::cout << "   " << "中序" << " ";
+            Map_Test.Middle_order_traversal();
+            std::cout << std::endl;
+        }
+        for(auto& j : arr)
+        {
+            Map_Test.pop(j);
             std::cout << "前序" << " ";
             Map_Test.Pre_order_traversal();
             std::cout << "   " << "中序" << " ";
