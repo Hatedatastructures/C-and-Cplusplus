@@ -2814,10 +2814,13 @@ namespace MY_Template
                 }            
                 else if (_ROOT_Temp->_right == nullptr)
                 {
+                    if(_ROOT_Temp->_left != nullptr)
+                    {
+                        _ROOT_Temp->_left->_parent = _ROOT_Temp_parent;
+                    }
                     if(_ROOT_Temp_parent == nullptr)
                     {
                         _ROOT = _ROOT_Temp->_left;
-                        _ROOT_Temp->_left->_parent = nullptr;
                     }
                     else
                     {
@@ -2919,7 +2922,7 @@ namespace MY_Template
         };
     }
     /*############################     RB_Tree 基类容器     ############################*/
-    namespace RB_Tree_Base_class
+    namespace Base_Class_Container
     {
         template <typename RB_Tree_Type_Key, typename RB_Tree_Type_Val, typename Type_imitation_function,
         typename Imitation_function_parameter_function_RB_Tree = MY_Template::Imitation_functions::less<RB_Tree_Type_Key> >
@@ -3121,7 +3124,7 @@ namespace MY_Template
                     _ROOT_Temp = _staic_temp_.top();
                     _staic_temp_.pop();
                     std::cout <<  _ROOT_Temp->_data << " ";
-                    // std::cout <<  _ROOT_Temp->_data << "节点颜色" << _ROOT_Temp->_color <<" ";
+                    // std::cout << _ROOT_Temp->_color <<" ";
                     _ROOT_Temp = _ROOT_Temp->_right;
                 }
             }
@@ -3141,7 +3144,7 @@ namespace MY_Template
                     stack_Temp.pop();
 
                     std::cout << _Pre_order_traversal_test->_data << " ";
-                    // std::cout <<  _Pre_order_traversal_test->_data << "节点颜色" << _Pre_order_traversal_test->_color <<" ";
+                    // std::cout << _Pre_order_traversal_test->_color <<" ";
                     //修改逻辑错误，先压右子树再压左子树，因为这是栈
                     if(_Pre_order_traversal_test->_right != nullptr)
                     {
@@ -3236,6 +3239,7 @@ namespace MY_Template
                                 {
                                     _left_revolve(_ROOT_Temp_parent);
                                     MY_Template::algorithm::swap(_ROOT_Temp,_ROOT_Temp_parent);
+                                    // _ROOT_Temp = _ROOT_Temp_parent;
                                     //折线调整，交换位置调整为情况2
                                 }
                                 //情况2：直接单旋
@@ -3264,6 +3268,7 @@ namespace MY_Template
                                 {
                                     _right_revolve(_ROOT_Temp_parent);
                                     MY_Template::algorithm::swap(_ROOT_Temp,_ROOT_Temp_parent);
+                                    // _ROOT_Temp = _ROOT_Temp_parent;
                                     //交换指针转换为单旋
                                 }
                                 //情况2：单旋
@@ -3285,9 +3290,128 @@ namespace MY_Template
                 }
                 else
                 {
-
+                    Node* _ROOT_Temp = _ROOT;
+                    Node* _ROOT_Temp_parent = nullptr;
+                    while(_ROOT_Temp != nullptr)
+                    {
+                        _ROOT_Temp_parent = _ROOT_Temp;
+                        if(!com(Element(_ROOT_Temp->_data),Element(RB_Tree_Temp)) && !com(Element(_ROOT_Temp->_data),Element(RB_Tree_Temp)))
+                        {
+                            //找到位置开始删除
+                            if(_ROOT_Temp->_left == nullptr)
+                            {
+                                if(_ROOT_Temp->_right != nullptr)
+                                {
+                                    //右节点有值
+                                    _ROOT_Temp->_right->_parent = _ROOT_Temp_parent;
+                                }
+                                if(_ROOT_Temp_parent == nullptr)
+                                {
+                                    //根节点
+                                    _ROOT = _ROOT_Temp->_right;
+                                }
+                                else
+                                {
+                                    //不为空，代表要删除的数不是在根节点上
+                                    if(_ROOT_Temp_parent->_left == _ROOT_Temp)
+                                    {
+                                        _ROOT_Temp_parent->_left = _ROOT_Temp->_right;
+                                    }
+                                    else
+                                    {
+                                        _ROOT_Temp_parent->_right = _ROOT_Temp->_right;
+                                    }
+                                }
+                                delete _ROOT_Temp;
+                                _ROOT_Temp = nullptr;
+                            }
+                            else if (_ROOT_Temp->_right == nullptr)
+                            {
+                                if(_ROOT_Temp->_left != nullptr)
+                                {
+                                    _ROOT_Temp->_left->_parent = _ROOT_Temp_parent;
+                                    //链接父节点
+                                }
+                                if(_ROOT_Temp_parent == nullptr)
+                                {
+                                    //与上同理
+                                    _ROOT = _ROOT_Temp->_left;
+                                }
+                                else
+                                {
+                                    if(_ROOT_Temp_parent->_left == _ROOT_Temp)
+                                    {
+                                        _ROOT_Temp_parent->_left = _ROOT_Temp->_left;
+                                    }
+                                    else
+                                    {
+                                        _ROOT_Temp_parent->_right = _ROOT_Temp->_left;
+                                    }
+                                }
+                                delete _ROOT_Temp;
+                                _ROOT_Temp = nullptr;
+                            }
+                            else if(_ROOT_Temp->_right != nullptr && _ROOT_Temp->_left != nullptr)
+                            {
+                                Node* _right_min = _ROOT_Temp->_right;
+                                Node* _right_parent = _ROOT_Temp;
+                                while(_right_min->_left != nullptr)
+                                {
+                                    _right_parent = _right_min;
+                                    _right_min = _right_min->_left;
+                                }
+                                MY_Template::algorithm::swap(_right_min->_data,_ROOT_Temp->_data);
+                                if(_right_parent->left == _ROOT_Temp)
+                                {
+                                    _right_parent->_right = _right_min->_right;
+                                }
+                                else
+                                {
+                                    _right_parent->_left  = _right_min->_right;
+                                }
+                                if(_right_min->_right != nullptr)
+                                {
+                                    _right_min->_right->_parent = _right_parent;
+                                }
+                                delete _right_min;
+                                _right_min = nullptr;
+                            }
+                            //更新颜色
+                            
+                        }
+                        _ROOT_Temp_parent = _ROOT_Temp;
+                        if(com(Element(_ROOT_Temp->_data),Element(RB_Tree_Temp)))
+                        {
+                            _ROOT_Temp = _ROOT_Temp->_right;
+                        }
+                        else
+                        {
+                            _ROOT_Temp = _ROOT_Temp->_left;
+                        }
+                    }
+                    return RB_Tree_iterator(iterator(nullptr),false);
                 }
             }
+            iterator find(const RB_Tree_Type_Val& RB_Tree_Temp_)
+            {
+                if(_ROOT == nullptr)
+                {
+                    return iterator(nullptr);
+                }
+            }
+            iterator begin()
+            {
+                Node* _iterator_ROOT = _ROOT;
+                while(_iterator_ROOT != nullptr &&  _iterator_ROOT->_left != nullptr)
+                {
+                    _iterator_ROOT = _iterator_ROOT->_left;
+                }
+                return iterator(_iterator_ROOT);
+            }
+            // iterator end()
+            // {
+            //     return ;
+            // }
             void Middle_order_traversal()
             {
                 _Middle_order_traversal(_ROOT);
@@ -3296,7 +3420,7 @@ namespace MY_Template
             {
                 _Pre_order_traversal(_ROOT);
             }
-            //拷贝，析构，反向迭代器，删除函数，查找函数，未完成
+            //拷贝，析构，反向迭代器,查找函数，未完成
         };
     }
     /*############################     Map 容器     ############################*/
@@ -3313,26 +3437,34 @@ namespace MY_Template
                     return Temp_Key_.first;
                 }
             };
-            using RB_TREE = RB_Tree_Base_class::RB_Tree <Map_Type_K,Key_Val_Type,Key_Val>;
-            RB_TREE _ROOT_Tree;
+            using RB_TREE = Base_Class_Container::RB_Tree <Map_Type_K,Key_Val_Type,Key_Val>;
+            RB_TREE _ROOT_Map;
         public:
             using iterator = typename RB_TREE::iterator;
             using Map_iterator = MY_Template::Practicality::pair<iterator,bool>;
             ~Map()
             {
-                _ROOT_Tree.~RB_Tree();
+                _ROOT_Map.~RB_Tree();
             }
             Map_iterator push(const Key_Val_Type& Map_Temp)
             {
-                return _ROOT_Tree.push(Map_Temp);
+                return _ROOT_Map.push(Map_Temp);
+            }
+            Map_iterator pop(const Key_Val_Type& Map_Temp)
+            {
+                return _ROOT_Map.pop(Map_Temp);
+            }
+            iterator find(const Key_Val_Type& Map_Temp)
+            {
+                return _ROOT_Map.find(Map_Temp);
             }
             void Middle_order_traversal()
             {
-                _ROOT_Tree.Middle_order_traversal();
+                _ROOT_Map.Middle_order_traversal();
             }
             void Pre_order_traversal()
             {
-                _ROOT_Tree.Pre_order_traversal();
+                _ROOT_Map.Pre_order_traversal();
             }
         };
         template <typename unordered_Map_Type_K>
@@ -3350,13 +3482,37 @@ namespace MY_Template
             using Key_Val_Type = Set_Type_K;
             struct Key_Val
             {
+                /* 仿函数，返回比较的值 */
                 const Set_Type_K& operator()(const Key_Val_Type& Temp_Key_)
                 {
                     return Temp_Key_;
                 }
             };
-            using RB_TREE = RB_Tree_Base_class::RB_Tree<Set_Type_K,Key_Val_Type,Key_Val>;
+            using RB_TREE = Base_Class_Container::RB_Tree<Set_Type_K,Key_Val_Type,Key_Val>;
+            RB_TREE _ROOT_Set;
         public:
+            using iterator = typename RB_TREE::iterator;
+            using Set_iterator = MY_Template::Practicality::pair<iterator,bool>;
+            Set_iterator push(const Key_Val_Type& Set_Temp)
+            {
+                return _ROOT_Set.push(Set_Temp);
+            }
+            Set_iterator pop(const Key_Val_Type& Set_Temp)
+            {
+                return _ROOT_Set.pop(Set_Temp);
+            }
+            iterator find(const Key_Val_Type& Set_Temp)
+            {
+                return _ROOT_Set.find(Set_Temp);
+            }
+            void Middle_order_traversal()
+            {
+                _ROOT_Set.Middle_order_traversal();
+            }
+            void Pre_order_traversal()
+            {
+                _ROOT_Set.Pre_order_traversal();
+            }
             //函数实现未完成
         };
         template <typename unordered_Set_Type_K>
@@ -3367,7 +3523,7 @@ namespace MY_Template
     }
     namespace Test_class
     {
-        //测试红黑树所需函数
+        /* 测试红黑树所需函数 */
         template <typename Set_Type_K>
         struct Key_Val
         {
@@ -3900,7 +4056,7 @@ int main()
     // }
     /*            RB_Tree 测试             */
     // {
-    //     MY_Template::RB_Tree_Base_class::RB_Tree<size_t,size_t,MY_Template::Test_class::Key_Val<size_t>> RB_Tree_Test;
+    //     MY_Template::Base_Class_Container::RB_Tree<size_t,size_t,MY_Template::Test_class::Key_Val<size_t>> RB_Tree_Test;
     //     size_t size = 10;
     //     MY_Template::vector_Container::vector<size_t> arr;
     //     for(size_t i = 0; i < size; i++ )
@@ -3921,7 +4077,7 @@ int main()
     /*            Map 测试             */
     {
         MY_Template::Map_Container::Map<size_t,size_t> Map_Test;
-        size_t size = 20;
+        size_t size = 30;
         MY_Template::vector_Container::vector<MY_Template::Practicality::pair<size_t,size_t>> arr;
         for(size_t i = 0; i < size; i++ )
         {
@@ -3931,12 +4087,33 @@ int main()
         for(auto& j : arr)
         {
             Map_Test.push(j);
-            std::cout << "前序遍历" << " ";
+            std::cout << "前序" << " ";
             Map_Test.Pre_order_traversal();
-            std::cout << "   " << "中序遍历" << " ";
+            std::cout << "   " << "中序" << " ";
             Map_Test.Middle_order_traversal();
             std::cout << std::endl;
         }
+        std::cout << std::endl;
     }
+    // /*            Set 测试             */
+    // {
+    //     MY_Template::Set_Container::Set<size_t> Set_test;
+    //     size_t size = 20;
+    //     MY_Template::vector_Container::vector<size_t> arr;
+    //     for(size_t i = 0; i < size; i++ )
+    //     {
+    //         arr.push_back(i);
+    //     }
+    //      std::cout << arr << std::endl;
+    //     for(auto& j : arr)
+    //     {
+    //         Set_test.push(j);
+    //         std::cout << "前序" << " ";
+    //         Set_test.Pre_order_traversal();
+    //         std::cout << "   " << "中序" << " ";
+    //         Set_test.Middle_order_traversal();
+    //         std::cout << std::endl;
+    //     }
+    // }
     return 0;
 }
