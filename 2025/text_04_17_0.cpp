@@ -3207,6 +3207,34 @@ namespace MY_Template
             {
                 return Get_color(cur) == BLACK;
             }
+            size_t _size()
+            {
+                size_t size = 0;
+                Node* _ROOT_Temp = _ROOT;
+                if(_ROOT_Temp == nullptr)
+                {
+                    return size;
+                }
+                Node* _Pre_order_traversal_test = _ROOT_Temp;
+                MY_Template::stack_Adapter::stack<Node*> stack_Temp;
+                stack_Temp.push(_Pre_order_traversal_test);
+                while( !stack_Temp.empty() )
+                {
+                    _Pre_order_traversal_test = stack_Temp.top();
+                    stack_Temp.pop();
+
+                    size++;
+                    if(_Pre_order_traversal_test->_right != nullptr)
+                    {
+                        stack_Temp.push(_Pre_order_traversal_test->_right);
+                    }
+                    if(_Pre_order_traversal_test->_left != nullptr)
+                    {
+                        stack_Temp.push(_Pre_order_traversal_test->_left);
+                    }
+                }
+                return size;
+            }
         public:
             using iterator = RBTree_iterator<RB_Tree_Type_Val,RB_Tree_Type_Val&,RB_Tree_Type_Val*>; 
             using RB_Tree_iterator = MY_Template::Practicality::pair<iterator,bool>;
@@ -3810,6 +3838,14 @@ namespace MY_Template
             {
                 _ROOT_Map.Pre_order_traversal();
             }
+            size_t size()
+            {
+                return _ROOT_Map.size();
+            }
+            bool empty()
+            {
+                return _ROOT_Map.empty();
+            }
         };
         template <typename unordered_Map_Type_K>
         class unordered_Map
@@ -3856,6 +3892,14 @@ namespace MY_Template
             void Pre_order_traversal()
             {
                 _ROOT_Set.Pre_order_traversal();
+            }
+            size_t size()
+            {
+                return _ROOT_Set.size();
+            }
+            bool empty()
+            {
+                return _ROOT_Set.empty();
             }
             //函数实现未完成
         };
@@ -4434,7 +4478,7 @@ int main()
             Map_Test.push(j);
             // std::cout << "前序" << " ";
             // Map_Test.Pre_order_traversal();
-            std::cout << "   " << "中序" << " ";
+            std::cout << "   " << "中序:"<< Map_Test.size() << " " << Map_Test.empty() << " ";
             Map_Test.Middle_order_traversal();
             std::cout << std::endl;
         }
@@ -4443,31 +4487,32 @@ int main()
             Map_Test.pop(j);
             // std::cout << "前序" << " ";
             // Map_Test.Pre_order_traversal();
-            std::cout << "   " << "中序" << " ";
+            std::cout << "   " << "中序:"<< Map_Test.size() << " " << Map_Test.empty() << " ";
             Map_Test.Middle_order_traversal();
             std::cout << std::endl;
         }
+        std::cout << Map_Test.empty() << " ";
         std::cout << std::endl;
     }
-    /*            Set 测试             */
-    {
-        MY_Template::Set_Container::Set<size_t> Set_test;
-        size_t size = 20;
-        MY_Template::vector_Container::vector<size_t> arr;
-        for(size_t i = 0; i < size; i++ )
-        {
-            arr.push_back(i);
-        }
-         std::cout << arr << std::endl;
-        for(auto& j : arr)
-        {
-            Set_test.push(j);
-            std::cout << "前序" << " ";
-            Set_test.Pre_order_traversal();
-            std::cout << "   " << "中序" << " ";
-            Set_test.Middle_order_traversal();
-            std::cout << std::endl;
-        }
-    }
+    // /*            Set 测试             */
+    // {
+    //     MY_Template::Set_Container::Set<size_t> Set_test;
+    //     size_t size = 20;
+    //     MY_Template::vector_Container::vector<size_t> arr;
+    //     for(size_t i = 0; i < size; i++ )
+    //     {
+    //         arr.push_back(i);
+    //     }
+    //      std::cout << arr << std::endl;
+    //     for(auto& j : arr)
+    //     {
+    //         Set_test.push(j);
+    //         std::cout << "前序" << " ";
+    //         Set_test.Pre_order_traversal();
+    //         std::cout << "   " << "中序" << " ";
+    //         Set_test.Middle_order_traversal();
+    //         std::cout << std::endl;
+    //     }
+    // }
     return 0;
 }
