@@ -2960,9 +2960,10 @@ namespace MY_Template
             }
         };
     }
-    /*############################     RB_Tree 基类容器     ############################*/
+    /*############################     基类容器命名空间     ############################*/
     namespace Base_Class_Container
     {
+        /*############################     RB_Tree 容器     ############################*/
         template <typename RB_Tree_Type_Key, typename RB_Tree_Type_Val, typename Type_imitation_function,
         typename Imitation_function_parameter_function_RB_Tree = MY_Template::Imitation_functions::less<RB_Tree_Type_Key> >
         class RB_Tree
@@ -3792,8 +3793,10 @@ namespace MY_Template
             {
                 _Pre_order_traversal(_ROOT);
             }
-            //拷贝，析构，反向迭代器,查找函数，未完成
+            //反向迭代器,查找函数，未完成
         };
+        /*############################     hash 容器     ############################*/
+
     }
     /*############################     Map 容器     ############################*/
     namespace Map_Container
@@ -3817,6 +3820,22 @@ namespace MY_Template
             ~Map()
             {
                 _ROOT_Map.~RB_Tree();
+            }
+            Map(const Map& Map_Temp)
+            {
+                _ROOT_Map = Map_Temp._ROOT_Map;
+            }
+            Map(const Key_Val_Type& Map_Temp)
+            {
+                _ROOT_Map.push(Map_Temp);
+            }
+            Map& operator=(const Map& Map_Temp)
+            {
+                if(this != &Map_Temp)
+                {
+                    _ROOT_Map = Map_Temp._ROOT_Map;
+                }
+                return *this;
             }
             Map_iterator push(const Key_Val_Type& Map_Temp)
             {
