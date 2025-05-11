@@ -3320,8 +3320,8 @@ namespace MY_Template
                             //继续向下调整
                             brother = parent->_right;
                         }
-                        if(brother != nullptr && (brother->_left != nullptr || brother->_right != nullptr) &&
-                        BLACK_Get(brother->_left) && BLACK_Get(brother->_right) && BLACK_Get(brother) )
+                        if( (brother != nullptr && BLACK_Get(brother))  && ( brother->_left == nullptr || (brother->_left)) && 
+                        (brother->_right == nullptr || BLACK_Get(brother->_right)))
                         {
                             //情况2：兄弟节点为黑，且兄弟节点两个子节点都为黑
                             brother->_color = RED;
@@ -3333,8 +3333,8 @@ namespace MY_Template
                                 break;
                             }
                         }
-                        else if(brother != nullptr && brother->_left != nullptr && brother->_right != nullptr &&
-                        BLACK_Get(brother) &&  BLACK_Get(brother->_right) && RED_Get(brother->_left) )
+                        else if( (brother != nullptr && BLACK_Get(brother)) &&  (brother->_right == nullptr || BLACK_Get(brother->_right)) && 
+                        (brother->_left != nullptr && RED_Get(brother->_left)) )
                         {
                             //情况3：兄弟节点为黑，兄弟节点左节点为红，右节点为黑
                             brother->_left->_color = BLACK;
@@ -3344,8 +3344,7 @@ namespace MY_Template
                             //继续向下调整
                             brother = parent->_right;
                         }
-                        else if( brother != nullptr && brother->_left != nullptr && brother->_right != nullptr &&
-                        BLACK_Get(brother) && RED_Get(brother->_right))
+                        else if( (brother != nullptr ||BLACK_Get(brother))  && (brother->_right != nullptr && RED_Get(brother->_right)) )
                         {
                             //情况4：兄弟节点为黑，兄弟节点右节点为红
                             brother->_color = parent->_color;
@@ -3368,8 +3367,8 @@ namespace MY_Template
                             //调整后，兄弟节点为黑
                             brother = parent->_left;
                         }
-                        if( brother != nullptr && brother->_left != nullptr && brother->_right != nullptr &&
-                        BLACK_Get(brother->_left) && BLACK_Get(brother->_right) && BLACK_Get(brother) )
+                        if( brother != nullptr && BLACK_Get(brother) && (brother->_left == nullptr || BLACK_Get(brother->_left)) &&
+                        (brother->_right == nullptr || BLACK_Get(brother->_right)) )
                         {
                             //情况2：兄弟节点为黑，且兄弟节点两个子节点都为黑
                             brother->_color = RED;
@@ -3381,8 +3380,8 @@ namespace MY_Template
                                 break;
                             }
                         }
-                        else if(brother != nullptr && brother->_left != nullptr && brother->_right != nullptr && 
-                        BLACK_Get(brother) &&  BLACK_Get(brother->_right) && RED_Get(brother->_left))
+                        else if (brother != nullptr && BLACK_Get(brother) && (brother->_right != nullptr && RED_Get(brother->_right)) &&
+                        (brother->_left == nullptr || BLACK_Get(brother->_left)) )
                         {
                             //情况3：兄弟节点为黑，兄弟节点左节点为红，右节点为黑
                             brother->_right->_color = BLACK;
@@ -3392,8 +3391,7 @@ namespace MY_Template
                             //继续向下调整
                             brother = parent->_left;
                         }
-                        else if(brother != nullptr && brother->_left != nullptr && brother->_right != nullptr &&
-                        BLACK_Get(brother) && RED_Get(brother->_right))
+                        else if(brother != nullptr && BLACK_Get(brother) && brother->_left != nullptr && RED_Get(brother->_left))
                         {
                             //情况4：兄弟节点为黑，兄弟节点右节点为红
                             brother->_color = parent->_color;
@@ -3425,11 +3423,12 @@ namespace MY_Template
                     Node* _Adjust_Node_parent = nullptr;
                     while(_ROOT_Temp != nullptr)
                     {
-                        _ROOT_Temp_parent = _ROOT_Temp;
                         if(!com(Element(_ROOT_Temp->_data),Element(RB_Tree_Temp)) && !com(Element(RB_Tree_Temp),Element(_ROOT_Temp->_data)))
                         {
                             break;
                         }
+                        //防止父亲自赋值
+                        _ROOT_Temp_parent = _ROOT_Temp;
                         if(com(Element(_ROOT_Temp->_data),Element(RB_Tree_Temp)))
                         {
                             _ROOT_Temp = _ROOT_Temp->_right;
