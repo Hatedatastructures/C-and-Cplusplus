@@ -2480,44 +2480,83 @@ namespace MY_Template
                 {
                     return;
                 }
-            
-                MY_Template::stack_Adapter::stack<MY_Template::Practicality::pair<Node*, Node**>> _stack_temp;
-                _stack_temp.push(MY_Template::Practicality::pair<Node*, Node**>(AVL_Tree_temp_._ROOT, &_ROOT));
-            
-                while (!_stack_temp.empty())
+
+                // 使用单栈，存储源节点和目标父节点（均为一级指针）
+                MY_Template::stack_Adapter::stack<MY_Template::Practicality::pair<Node*, Node*>> stack;
+                
+                // 创建根节点
+                _ROOT = new Node(AVL_Tree_temp_._ROOT->_data);
+                _ROOT->_Balance_factor = AVL_Tree_temp_._ROOT->_Balance_factor;
+                _ROOT->_parent = nullptr; // 根节点的父节点为nullptr
+                
+                // 初始化栈，将根节点的子节点压入（注意：这里父节点是 _ROOT，一级指针）
+                if (AVL_Tree_temp_._ROOT->_right != nullptr)
                 {
-                    auto AVL_pair_temp = _stack_temp.top();
-                    _stack_temp.pop();
-            
+                    stack.push(MY_Template::Practicality::pair<Node*, Node*>(AVL_Tree_temp_._ROOT->_right, _ROOT));
+                }
+                if (AVL_Tree_temp_._ROOT->_left != nullptr)
+                {
+                    stack.push(MY_Template::Practicality::pair<Node*, Node*>(AVL_Tree_temp_._ROOT->_left, _ROOT));
+                }
+
+                // 遍历并复制剩余节点
+                while (!stack.empty())
+                {
+                    auto [source_node, parent_node] = stack.top();
+                    stack.pop();
+                    
                     // 创建新节点并复制数据
-                    Node* new_node = new Node(AVL_pair_temp.first->_data);
-                    new_node->_Balance_factor = AVL_pair_temp.first->_Balance_factor;
-                    *AVL_pair_temp.second = new_node; // 将新节点赋值给目标位置
-            
-                    // 处理右子节点
-                    if (AVL_pair_temp.first->_right != nullptr)
+                    Node* new_node = new Node(source_node->_data);
+                    new_node->_Balance_factor = source_node->_Balance_factor;
+                    
+                    // 设置父节点关系（注意：parent_node 是一级指针）
+                    new_node->_parent = parent_node;
+                    
+                    // 判断源节点在原树中是左子还是右子
+                    bool is_left_child = false;
+                    if (source_node->_parent != nullptr) 
                     {
-                        _stack_temp.push(MY_Template::Practicality::pair<Node*, Node**>(
-                            AVL_pair_temp.first->_right, &new_node->_right));
+                        is_left_child = (source_node->_parent->_left == source_node);
                     }
-            
-                    // 处理左子节点
-                    if (AVL_pair_temp.first->_left != nullptr)
+                    
+                    // 将新节点链接到父节点的正确位置（注意：直接使用 parent_node）
+                    if (is_left_child) 
                     {
-                        _stack_temp.push(MY_Template::Practicality::pair<Node*, Node**>(
-                            AVL_pair_temp.first->_left, &new_node->_left));
+                        parent_node->_left = new_node;
+                    } 
+                    else 
+                    {
+                        parent_node->_right = new_node;
                     }
-            
-                    // 设置子节点的父指针
-                    if (new_node->_left != nullptr)
+
+                    // 处理子节点（注意：压栈时父节点是 new_node，一级指针）
+                    if (source_node->_right != nullptr)
                     {
-                        new_node->_left->_parent = new_node;
+                        stack.push(MY_Template::Practicality::pair<Node*, Node*>(source_node->_right, new_node));
                     }
-                    if (new_node->_right != nullptr)
+                    if (source_node->_left != nullptr)
                     {
-                        new_node->_right->_parent = new_node;
+                        stack.push(MY_Template::Practicality::pair<Node*, Node*>(source_node->_left, new_node));
                     }
                 }
+            }
+            AVL_Tree& operator=(const AVL_Tree AVL_Tree_temp_)
+            {
+                if(_ROOT != nullptr)
+                {
+                    clear();
+                }
+                if(&AVL_Tree_temp_ == this)
+                {
+                    return *this;
+                }
+                if (AVL_Tree_temp_._ROOT == nullptr)
+                {
+                    return *this;
+                }
+                MY_Template::algorithm::swap(com,AVL_Tree_temp_.com);
+                MY_Template::algorithm::swap(_ROOT,AVL_Tree_temp_._ROOT);
+                return *this;
             }
             ~AVL_Tree()
             {
@@ -3175,6 +3214,102 @@ namespace MY_Template
             {
                 _ROOT = nullptr;
             }
+            RB_Tree(const RB_Tree_Type_Val& RB_Tree_Temp)
+            {
+                _ROOT = new Node(RB_Tree_Temp);
+                _ROOT->_color = BLACK;
+            }
+            RB_Tree(const RB_Tree& RB_Tree_Temp)
+            {
+                if(_ROOT != nullptr)
+                {
+                    clear(_ROOT);
+                }
+                else
+                {
+                    _ROOT = nullptr;
+                    if(RB_Tree_Temp._ROOT == nullptr)
+                    {
+                        _ROOT = nullptr;
+                    }
+                    else
+                    {
+                        // 使用单栈，存储源节点和目标父节点（均为一级指针）
+                        MY_Template::stack_Adapter::stack<MY_Template::Practicality::pair<Node*, Node*>> stack;
+                        
+                        // 创建根节点
+                        _ROOT = new Node(RB_Tree_Temp._ROOT->_data);
+                        _ROOT->_color = RB_Tree_Temp._ROOT->_color;
+                        _ROOT->_parent = nullptr; // 根节点的父节点为nullptr
+                        
+                        // 初始化栈，将根节点的子节点压入（注意：这里父节点是 _ROOT，一级指针）
+                        if (RB_Tree_Temp._ROOT->_right != nullptr)
+                        {
+                            stack.push(MY_Template::Practicality::pair<Node*, Node*>(RB_Tree_Temp._ROOT->_right, _ROOT));
+                        }
+                        if (RB_Tree_Temp._ROOT->_left != nullptr)
+                        {
+                            stack.push(MY_Template::Practicality::pair<Node*, Node*>(RB_Tree_Temp._ROOT->_left, _ROOT));
+                        }
+
+                        // 遍历并复制剩余节点
+                        while (!stack.empty())
+                        {
+                            auto [source_node, parent_node] = stack.top();
+                            stack.pop();
+                            
+                            // 创建新节点并复制数据
+                            Node* new_node = new Node(source_node->_data);
+                            new_node->_color = source_node-> _color;
+                            
+                            // 设置父节点关系（注意：parent_node 是一级指针）
+                            new_node->_parent = parent_node;
+                            
+                            // 判断源节点在原树中是左子还是右子
+                            bool is_left_child = false;
+                            if (source_node->_parent != nullptr) 
+                            {
+                                is_left_child = (source_node->_parent->_left == source_node);
+                            }
+                            
+                            // 将新节点链接到父节点的正确位置（注意：直接使用 parent_node）
+                            if (is_left_child) 
+                            {
+                                parent_node->_left = new_node;
+                            } 
+                            else 
+                            {
+                                parent_node->_right = new_node;
+                            }
+
+                            // 处理子节点（注意：压栈时父节点是 new_node，一级指针）
+                            if (source_node->_right != nullptr)
+                            {
+                                stack.push(MY_Template::Practicality::pair<Node*, Node*>(source_node->_right, new_node));
+                            }
+                            if (source_node->_left != nullptr)
+                            {
+                                stack.push(MY_Template::Practicality::pair<Node*, Node*>(source_node->_left, new_node));
+                            }
+                        }
+                    }
+                }
+            }
+            RB_Tree& operator=(const RB_Tree RB_Tree_Temp)
+            {
+                if(this == &RB_Tree_Temp)
+                {
+                    return *this;
+                }
+                else
+                {
+                    clear(_ROOT);
+                    MY_Template::algorithm::swap(RB_Tree_Temp._ROOT,_ROOT);
+                    MY_Template::algorithm::swap(RB_Tree_Temp.Element,Element);
+                    MY_Template::algorithm::swap(RB_Tree_Temp.com,com);
+                    return *this;
+                }
+            }
             ~RB_Tree()
             {
                 clear(_ROOT);
@@ -3294,6 +3429,30 @@ namespace MY_Template
                     return RB_Tree_iterator(iterator(Return_Node_Push),true);
                 }
             }
+            /*
+            删除节点后，调整红黑树颜色，分左右子树来调整，每颗子树分为4种情况
+            情况 1：兄弟节点为红色
+                    将兄弟节点设为黑色。
+                    将父节点设为红色。
+                    对父节点进行旋转（左子树删除则左旋，右子树删除则右旋）。
+                    更新兄弟节点为新的兄弟（旋转后父节点的新子节点）。
+
+            情况 2：兄弟节点为黑色，且兄弟的两个子节点都是黑色
+                    将兄弟节点设为红色。
+                    当前节点（cur）上移至父节点（parent）。
+                    若上移后的节点是红色，将其设为黑色并结束调整；否则继续循环。
+            情况 3：兄弟节点为黑色，兄弟的内侧子节点为红色，外侧子节点为黑色
+                    将兄弟节点的内侧子节点设为黑色。
+                    将兄弟节点设为红色。
+                    对兄弟节点进行反向旋转（左子树删除则右旋，右子树删除则左旋）。
+                    更新兄弟节点为新的兄弟（旋转后父节点的子节点）。
+            情况 4：兄弟节点为黑色，且兄弟的外侧子节点为红色，内侧子节点为任意颜色
+                    将兄弟节点的颜色设为父节点的颜色。
+                    将父节点设为黑色。
+                    将兄弟的外侧子节点设为黑色。
+                    对父节点进行旋转（左子树删除则右旋，右子树删除则左旋）。
+                    结束调整。
+            */
             void Delete_Adjust(Node* cur ,Node* parent)
             {
                 //cur为被删节点的替代节点
@@ -3438,6 +3597,10 @@ namespace MY_Template
                             _ROOT_Temp = _ROOT_Temp->_left;
                         }
                     }
+                    if(_ROOT_Temp == nullptr )
+                    {
+                        return RB_Tree_iterator(iterator(nullptr),false);
+                    }
                     //找到位置开始删除
                     Delete_color = _ROOT_Temp->_color;
                     if(_ROOT_Temp->_left == nullptr)
@@ -3551,6 +3714,34 @@ namespace MY_Template
                 {
                     return iterator(nullptr);
                 }
+                else
+                {
+                    Node* _iterator_ROOT = _ROOT;
+                    while(_iterator_ROOT != nullptr)
+                    {
+                       if(!com(Element(_iterator_ROOT->_data),Element(RB_Tree_Temp_)))
+                       {
+                           return iterator(_iterator_ROOT);
+                       }
+                       else if(com(Element(_iterator_ROOT->_data),Element(RB_Tree_Temp_)))
+                       {
+                           _iterator_ROOT = _iterator_ROOT->_right;
+                       }
+                       else
+                       {
+                           _iterator_ROOT = _iterator_ROOT->_left;
+                       }
+                    }
+                    return iterator(nullptr);
+                }
+            }
+            size_t size()
+            {
+                return _size();
+            }
+            bool empty()
+            {
+                return _ROOT == nullptr;
             }
             iterator begin()
             {
@@ -4258,25 +4449,25 @@ int main()
         }
         std::cout << std::endl;
     }
-    // /*            Set 测试             */
-    // {
-    //     MY_Template::Set_Container::Set<size_t> Set_test;
-    //     size_t size = 20;
-    //     MY_Template::vector_Container::vector<size_t> arr;
-    //     for(size_t i = 0; i < size; i++ )
-    //     {
-    //         arr.push_back(i);
-    //     }
-    //      std::cout << arr << std::endl;
-    //     for(auto& j : arr)
-    //     {
-    //         Set_test.push(j);
-    //         std::cout << "前序" << " ";
-    //         Set_test.Pre_order_traversal();
-    //         std::cout << "   " << "中序" << " ";
-    //         Set_test.Middle_order_traversal();
-    //         std::cout << std::endl;
-    //     }
-    // }
+    /*            Set 测试             */
+    {
+        MY_Template::Set_Container::Set<size_t> Set_test;
+        size_t size = 20;
+        MY_Template::vector_Container::vector<size_t> arr;
+        for(size_t i = 0; i < size; i++ )
+        {
+            arr.push_back(i);
+        }
+         std::cout << arr << std::endl;
+        for(auto& j : arr)
+        {
+            Set_test.push(j);
+            std::cout << "前序" << " ";
+            Set_test.Pre_order_traversal();
+            std::cout << "   " << "中序" << " ";
+            Set_test.Middle_order_traversal();
+            std::cout << std::endl;
+        }
+    }
     return 0;
 }
