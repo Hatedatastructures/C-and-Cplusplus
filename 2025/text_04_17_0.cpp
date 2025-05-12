@@ -2993,6 +2993,8 @@ namespace MY_Template
             { 
                 using Self = RBTree_iterator<T,Ref,Ptr>;
                 using Node_iterator = RB_Tree_Node;
+                using reference = Ref;
+                using pointer = Ptr;
                 Node_iterator* _Node;
             public:
 
@@ -3001,7 +3003,7 @@ namespace MY_Template
                 {
                     ;
                 }
-                Ref operator* ()
+                Ref operator*()
                 {
                     return _Node->_data;
                 }
@@ -3009,21 +3011,135 @@ namespace MY_Template
                 {
                     return &(_Node->_data);
                 }
-                Self operator++()
+                Self& operator++()
                 {
-
+                    if(_Node == nullptr)
+                    {
+                        return *this;
+                    }
+                    if(_Node->_right != nullptr)
+                    {
+                        Node* Sub = _Node->_right;
+                        while(Sub->_left != nullptr)
+                        {
+                            Sub = Sub->_left;
+                        }
+                        _Node = Sub;
+                    }
+                    else
+                    {
+                        //代表右子树已经走完，需要向上遍历，继续向上找右子树，如果停下来，说明走完整棵树或者是走到根节点
+                        Node_iterator* parent_temp = _Node->_parent;
+                        Node_iterator* Sub_temp = _Node;
+                        while(parent_temp != nullptr && Sub_temp == parent_temp->_right)
+                        {
+                            Sub_temp = parent_temp;
+                            parent_temp = parent_temp->_parent;
+                        }
+                        _Node = parent_temp;
+                        //如果跳出循环，说明走到了根节点，或者找到了右子树
+                    }
+                    return *this;
                 }
                 Self operator++(int)
                 {
-
+                    Self Temp = *this;
+                    ++(*this);
+                    return Temp;
                 }
-                Self operator--()
+                Self& operator--()
                 {
-
+                    if(_Node->_left != nullptr)
+                    {
+                        Node_iterator* Sub = _Node->_left;
+                        while(Sub->_right != nullptr)
+                        {
+                            Sub = Sub->_right;
+                        }
+                        _Node = Sub;
+                    }
+                    else
+                    {
+                        Node_iterator* parent_temp = _Node->_parent;
+                        Node_iterator* Sub_temp = _Node;
+                        while(parent_temp != nullptr && Sub_temp == parent_temp->_left)
+                        {
+                            Sub_temp = parent_temp;
+                            parent_temp = parent_temp->_parent;
+                        }
+                        _Node = parent_temp;
+                    }
+                    return *this;
                 }
                 Self operator--(int)
                 {
+                    Self Temp = *this;
+                    --(*this);
+                    return Temp;
+                }
+                bool operator==(const Self& it_temp) const
+                {
+                    return _Node == it_temp._Node;
+                }
+                bool operator!=(const Self& it_temp) const
+                {
+                    return _Node != it_temp._Node;
+                }
+            };
+            template <typename iterator>
+            class RBTree_reverse_iterator
+            {
+                using Self = RBTree_reverse_iterator<iterator>;
+                using Ref  = typename iterator::reference;
+                using Ptr  = typename iterator::pointer;
+                iterator _it;
+            public:
+                RBTree_reverse_iterator(iterator it_temp)
+                :_it(it_temp)
+                {
+                    ;
+                }
+                Ref operator*()
+                {
+                    return *_it;
+                }
+                Ptr operator->()
+                {
+                    return &(*this);
+                }
+                // 前置自增：对应正向迭代器的自减
+                RBTree_reverse_iterator& operator++() 
+                { 
+                    --_it; 
+                    return *this; 
+                }
+                RBTree_reverse_iterator operator++(int) 
+                { 
+                    auto tmp = *this; 
+                    --_it; 
+                    return tmp; 
+                }
 
+                // 前置自减：对应正向迭代器的自增
+                RBTree_reverse_iterator& operator--() 
+                { 
+                    ++_it; 
+                    return *this; 
+                }
+                RBTree_reverse_iterator operator--(int) 
+                { 
+                    auto tmp = *this; 
+                    ++_it; return tmp; 
+                }
+
+                // 比较运算符
+                bool operator==(const RBTree_reverse_iterator& other) const 
+                { 
+                    return _it == other._it; 
+                }
+                bool operator!=(const RBTree_reverse_iterator& other) const 
+                { 
+                    return _it != other._it; 
                 }
             };
             using Node = RB_Tree_Node;
@@ -3238,7 +3354,12 @@ namespace MY_Template
             }
         public:
             using iterator = RBTree_iterator<RB_Tree_Type_Val,RB_Tree_Type_Val&,RB_Tree_Type_Val*>; 
-            using RB_Tree_iterator = MY_Template::Practicality::pair<iterator,bool>;
+            using const_iterator =  RBTree_iterator<RB_Tree_Type_Val const,RB_Tree_Type_Val const&,RB_Tree_Type_Val const*>;
+
+            using reverse_iterator = RBTree_reverse_iterator<iterator>;
+            using const_reverse_iterator = RBTree_reverse_iterator<const_iterator>;
+
+            using insert_result = MY_Template::Practicality::pair<iterator,bool>;
             RB_Tree()
             {
                 _ROOT = nullptr;
@@ -3343,13 +3464,13 @@ namespace MY_Template
             {
                 clear(_ROOT);
             }
-            RB_Tree_iterator push(const RB_Tree_Type_Val& Val_Temp_)
+            insert_result push(const RB_Tree_Type_Val& Val_Temp_)
             {
                 if(_ROOT == nullptr)
                 {
                     _ROOT = new Node(Val_Temp_);
                     _ROOT->_color = BLACK;
-                    return RB_Tree_iterator(iterator(_ROOT),true);
+                    return insert_result(iterator(_ROOT),true);
                 }
                 else
                 {
@@ -3361,7 +3482,7 @@ namespace MY_Template
                         if(!com(Element(_ROOT_Temp->_data),Element(Val_Temp_)) && !com(Element(Val_Temp_),Element(_ROOT_Temp->_data)))
                         {
                             //插入失败，找到相同的值，开始返回
-                            return RB_Tree_iterator(iterator(_ROOT_Temp),false);
+                            return insert_result(iterator(_ROOT_Temp),false);
                         }
                         else if(com(Element(_ROOT_Temp->_data),Element(Val_Temp_)))
                         {
@@ -3455,7 +3576,7 @@ namespace MY_Template
                         }
                     }
                     _ROOT->_color = BLACK;
-                    return RB_Tree_iterator(iterator(Return_Node_Push),true);
+                    return insert_result(iterator(Return_Node_Push),true);
                 }
             }
             /*
@@ -3596,12 +3717,12 @@ namespace MY_Template
                     cur->_color = BLACK;
                 }
             }
-            RB_Tree_iterator pop(const RB_Tree_Type_Val& RB_Tree_Temp)
+            insert_result pop(const RB_Tree_Type_Val& RB_Tree_Temp)
             {
                 RB_Tree_Color Delete_color;
                 if(_ROOT == nullptr)
                 {
-                    return RB_Tree_iterator(iterator(nullptr),false);
+                    return insert_result(iterator(nullptr),false);
                 }
                 else
                 {
@@ -3628,7 +3749,7 @@ namespace MY_Template
                     }
                     if(_ROOT_Temp == nullptr )
                     {
-                        return RB_Tree_iterator(iterator(nullptr),false);
+                        return insert_result(iterator(nullptr),false);
                     }
                     //找到位置开始删除
                     Delete_color = _ROOT_Temp->_color;
@@ -3734,7 +3855,7 @@ namespace MY_Template
                     {
                         _ROOT->_color = BLACK;
                     }
-                    return RB_Tree_iterator(iterator(nullptr),false);
+                    return insert_result(iterator(nullptr),false);
                 }
             }
             iterator find(const RB_Tree_Type_Val& RB_Tree_Temp_)
@@ -3781,10 +3902,10 @@ namespace MY_Template
                 }
                 return iterator(_iterator_ROOT);
             }
-            // iterator end()
-            // {
-            //     return ;
-            // }
+            iterator end()
+            {
+                return iterator(nullptr);
+            }
             void Middle_order_traversal()
             {
                 _Middle_order_traversal(_ROOT);
@@ -3793,7 +3914,6 @@ namespace MY_Template
             {
                 _Pre_order_traversal(_ROOT);
             }
-            //反向迭代器,查找函数，未完成
         };
         /*############################     hash 容器     ############################*/
 
@@ -3816,10 +3936,18 @@ namespace MY_Template
             RB_TREE _ROOT_Map;
         public:
             using iterator = typename RB_TREE::iterator;
+            using const_iterator = typename RB_TREE::const_iterator;
+            using reverse_iterator = typename RB_TREE::reverse_iterator;
+            using const_reverse_iterator = typename RB_TREE::const_reverse_iterator;
+            
             using Map_iterator = MY_Template::Practicality::pair<iterator,bool>;
             ~Map()
             {
                 _ROOT_Map.~RB_Tree();
+            }
+            Map()
+            {
+                ;
             }
             Map(const Map& Map_Temp)
             {
@@ -3865,6 +3993,14 @@ namespace MY_Template
             {
                 return _ROOT_Map.empty();
             }
+            iterator begin()
+            {
+                return _ROOT_Map.begin();
+            }
+            iterator end()
+            {
+                return _ROOT_Map.end();
+            }
         };
         template <typename unordered_Map_Type_K>
         class unordered_Map
@@ -3891,6 +4027,10 @@ namespace MY_Template
             RB_TREE _ROOT_Set;
         public:
             using iterator = typename RB_TREE::iterator;
+            using const_iterator = typename RB_TREE::const_iterator;
+            using reverse_iterator = typename RB_TREE::reverse_iterator;
+            using const_reverse_iterator = typename RB_TREE::const_reverse_iterator;
+            
             using Set_iterator = MY_Template::Practicality::pair<iterator,bool>;
             Set_iterator push(const Key_Val_Type& Set_Temp)
             {
@@ -4492,26 +4632,34 @@ int main()
             arr.push_back(MY_Template::Practicality::pair<size_t,size_t>(i,l));
         }
         std::cout << arr << std::endl;
-        for(auto& j : arr)
-        {
-            Map_Test.push(j);
-            // std::cout << "前序" << " ";
-            // Map_Test.Pre_order_traversal();
-            std::cout << "   " << "中序:"<< Map_Test.size() << " " << Map_Test.empty() << " ";
-            Map_Test.Middle_order_traversal();
-            std::cout << std::endl;
-        }
-        for(auto& j : arr)
-        {
-            Map_Test.pop(j);
-            // std::cout << "前序" << " ";
-            // Map_Test.Pre_order_traversal();
-            std::cout << "   " << "中序:"<< Map_Test.size() << " " << Map_Test.empty() << " ";
-            Map_Test.Middle_order_traversal();
-            std::cout << std::endl;
-        }
+        // for(auto& j : arr)
+        // {
+        //     Map_Test.push(j);
+        //     // std::cout << "前序" << " ";
+        //     // Map_Test.Pre_order_traversal();
+        //     std::cout << "   " << "中序:"<< Map_Test.size() << " " << Map_Test.empty() << " ";
+        //     Map_Test.Middle_order_traversal();
+        //     std::cout << std::endl;
+        // }
+        // for(auto& j : arr)
+        // {
+        //     Map_Test.pop(j);
+        //     // std::cout << "前序" << " ";
+        //     // Map_Test.Pre_order_traversal();
+        //     std::cout << "   " << "中序:"<< Map_Test.size() << " " << Map_Test.empty() << " ";
+        //     Map_Test.Middle_order_traversal();
+        //     std::cout << std::endl;
+        // }
         std::cout << Map_Test.empty() << " ";
         std::cout << std::endl;
+        // for(auto& Map : Map_Test)
+        // {
+        //     std::cout << Map->first << " " << Map.second << std::endl;
+        // }
+        for(auto it = Map_Test.begin(); it != Map_Test.end(); it++)
+        {
+            std::cout << it->first << " " << it->second << std::endl;
+        }
     }
     // /*            Set 测试             */
     // {
