@@ -3003,7 +3003,7 @@ namespace MY_Template
                 {
                     ;
                 }
-                Ref operator*()
+                Ref& operator*()
                 {
                     return _Node->_data;
                 }
@@ -3099,7 +3099,7 @@ namespace MY_Template
                 {
                     ;
                 }
-                Ref operator*()
+                Ref& operator*()
                 {
                     return *_it;
                 }
@@ -4632,15 +4632,15 @@ int main()
             arr.push_back(MY_Template::Practicality::pair<size_t,size_t>(i,l));
         }
         std::cout << arr << std::endl;
-        // for(auto& j : arr)
-        // {
-        //     Map_Test.push(j);
-        //     // std::cout << "前序" << " ";
-        //     // Map_Test.Pre_order_traversal();
-        //     std::cout << "   " << "中序:"<< Map_Test.size() << " " << Map_Test.empty() << " ";
-        //     Map_Test.Middle_order_traversal();
-        //     std::cout << std::endl;
-        // }
+        for(auto& j : arr)
+        {
+            Map_Test.push(j);
+            // std::cout << "前序" << " ";
+            // Map_Test.Pre_order_traversal();
+            std::cout << "   " << "中序:"<< Map_Test.size() << " " << Map_Test.empty() << " ";
+            Map_Test.Middle_order_traversal();
+            std::cout << std::endl;
+        }
         // for(auto& j : arr)
         // {
         //     Map_Test.pop(j);
@@ -4652,14 +4652,14 @@ int main()
         // }
         std::cout << Map_Test.empty() << " ";
         std::cout << std::endl;
-        // for(auto& Map : Map_Test)
-        // {
-        //     std::cout << Map->first << " " << Map.second << std::endl;
-        // }
-        for(auto it = Map_Test.begin(); it != Map_Test.end(); it++)
+        for(const auto& Map : Map_Test)
         {
-            std::cout << it->first << " " << it->second << std::endl;
+            std::cout << Map << " ";
         }
+        // for(auto it = Map_Test.begin(); it != Map_Test.end(); it++)
+        // {
+        //     std::cout << *it << std::endl;
+        // }
     }
     // /*            Set 测试             */
     // {
