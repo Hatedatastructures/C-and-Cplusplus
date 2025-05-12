@@ -187,16 +187,6 @@ namespace MY_Template
             {
                 return _size == 0;
             }
-            size_t size()
-            {
-                //返回有效字符串长度
-                return _size;
-            }
-            size_t capacity()
-            {
-                //返回容量
-                return _capacity;
-            }
             size_t size()const
             {
                 //返回有效字符串长度
@@ -2993,11 +2983,10 @@ namespace MY_Template
             { 
                 using Self = RBTree_iterator<T,Ref,Ptr>;
                 using Node_iterator = RB_Tree_Node;
-                using reference = Ref;
-                using pointer = Ptr;
                 Node_iterator* _Node;
             public:
-
+                using reference = Ref;
+                using pointer = Ptr;
                 RBTree_iterator(Node_iterator* Node_temp_)
                 :_Node(Node_temp_)
                 {
@@ -3324,7 +3313,7 @@ namespace MY_Template
             {
                 return Get_color(cur) == BLACK;
             }
-            size_t _size()
+            size_t _size() const 
             {
                 size_t size = 0;
                 Node* _ROOT_Temp = _ROOT;
@@ -3889,9 +3878,21 @@ namespace MY_Template
             {
                 return _size();
             }
+            size_t size() const
+            {
+                return _size();
+            }
             bool empty()
             {
                 return _ROOT == nullptr;
+            }
+            void Middle_order_traversal()
+            {
+                _Middle_order_traversal(_ROOT);
+            }
+            void Pre_order_traversal()
+            {
+                _Pre_order_traversal(_ROOT);
             }
             iterator begin()
             {
@@ -3906,13 +3907,48 @@ namespace MY_Template
             {
                 return iterator(nullptr);
             }
-            void Middle_order_traversal()
+            const_iterator cbegin() const
             {
-                _Middle_order_traversal(_ROOT);
+                Node* _iterator_ROOT = _ROOT;
+                while(_iterator_ROOT != nullptr &&  _iterator_ROOT->_left != nullptr)
+                {
+                    _iterator_ROOT = _iterator_ROOT->_left;
+                }
+                return const_iterator(_iterator_ROOT);
             }
-            void Pre_order_traversal()
+            const_iterator cend() const
             {
-                _Pre_order_traversal(_ROOT);
+                return const_iterator(nullptr);
+            }
+            reverse_iterator rbegin()
+            {
+                Node* _iterator_Node = _ROOT;
+                while(_iterator_Node != nullptr && _iterator_Node->_right != nullptr)
+                {
+                    _iterator_Node = _iterator_Node->_right;
+                }
+                return reverse_iterator(_iterator_Node);
+            }
+            reverse_iterator rend()
+            {
+                return reverse_iterator(nullptr);
+            }
+            const_reverse_iterator crbegin() const
+            {
+                Node* _iterator_Node = _ROOT;
+                while(_iterator_Node!= nullptr && _iterator_Node->_right!= nullptr)
+                {
+                    _iterator_Node = _iterator_Node->_right;
+                }
+                return const_reverse_iterator(_iterator_Node);
+            }
+            const_reverse_iterator crend() const
+            {
+                return const_reverse_iterator(nullptr);
+            }
+            iterator operator[](const RB_Tree_Type_Val& RB_Tree_Temp)
+            {
+                return find(RB_Tree_Temp);
             }
         };
         /*############################     hash 容器     ############################*/
@@ -3945,18 +3981,6 @@ namespace MY_Template
             {
                 _ROOT_Map.~RB_Tree();
             }
-            Map()
-            {
-                ;
-            }
-            Map(const Map& Map_Temp)
-            {
-                _ROOT_Map = Map_Temp._ROOT_Map;
-            }
-            Map(const Key_Val_Type& Map_Temp)
-            {
-                _ROOT_Map.push(Map_Temp);
-            }
             Map& operator=(const Map& Map_Temp)
             {
                 if(this != &Map_Temp)
@@ -3965,42 +3989,25 @@ namespace MY_Template
                 }
                 return *this;
             }
-            Map_iterator push(const Key_Val_Type& Map_Temp)
-            {
-                return _ROOT_Map.push(Map_Temp);
-            }
-            Map_iterator pop(const Key_Val_Type& Map_Temp)
-            {
-                return _ROOT_Map.pop(Map_Temp);
-            }
-            iterator find(const Key_Val_Type& Map_Temp)
-            {
-                return _ROOT_Map.find(Map_Temp);
-            }
-            void Middle_order_traversal()
-            {
-                _ROOT_Map.Middle_order_traversal();
-            }
-            void Pre_order_traversal()
-            {
-                _ROOT_Map.Pre_order_traversal();
-            }
-            size_t size()
-            {
-                return _ROOT_Map.size();
-            }
-            bool empty()
-            {
-                return _ROOT_Map.empty();
-            }
-            iterator begin()
-            {
-                return _ROOT_Map.begin();
-            }
-            iterator end()
-            {
-                return _ROOT_Map.end();
-            }
+            Map()                                                   {  ;                                     }
+            Map(const Map& Map_Temp)                                {  _ROOT_Map = Map_Temp._ROOT_Map;       }
+            Map(const Key_Val_Type& Map_Temp)                       {  _ROOT_Map.push(Map_Temp);             }
+            Map_iterator push(const Key_Val_Type& Map_Temp)         {  return _ROOT_Map.push(Map_Temp);      }
+            Map_iterator pop(const Key_Val_Type& Map_Temp)          {  return _ROOT_Map.pop(Map_Temp);       }
+            iterator find(const Key_Val_Type& Map_Temp)             {  return _ROOT_Map.find(Map_Temp);      }
+            void Middle_order_traversal()                           {  _ROOT_Map.Middle_order_traversal();   }
+            void Pre_order_traversal()                              {  _ROOT_Map.Pre_order_traversal();      }
+            size_t size() const                                     {  return _ROOT_Map.size();              }
+            bool empty()                                            {  return _ROOT_Map.empty();             }
+            iterator begin()                                        {  return _ROOT_Map.begin();             }
+            iterator end()                                          {  return _ROOT_Map.end();               }
+            const_iterator cbegin()                                 {  return _ROOT_Map.cbegin();            }
+            const_iterator cend()                                   {  return _ROOT_Map.cend();              }
+            reverse_iterator rbegin()                               {  return _ROOT_Map.rbegin();            }
+            reverse_iterator rend()                                 {  return _ROOT_Map.rend();              }
+            const_reverse_iterator crbegin()                        {  return _ROOT_Map.crbegin();           }
+            const_reverse_iterator crend()                          {  return _ROOT_Map.crend();             }
+            iterator operator[](const Key_Val_Type& Map_Temp)       {  return _ROOT_Map[Map_Temp];           }
         };
         template <typename unordered_Map_Type_K>
         class unordered_Map
@@ -4032,35 +4039,37 @@ namespace MY_Template
             using const_reverse_iterator = typename RB_TREE::const_reverse_iterator;
             
             using Set_iterator = MY_Template::Practicality::pair<iterator,bool>;
-            Set_iterator push(const Key_Val_Type& Set_Temp)
-            {
-                return _ROOT_Set.push(Set_Temp);
+            ~Set()                                        
+            {  
+                _ROOT_Set.~RB_Tree();                      
             }
-            Set_iterator pop(const Key_Val_Type& Set_Temp)
-            {
-                return _ROOT_Set.pop(Set_Temp);
+            Set& operator=(const Set& Set_Temp)             
+            {  
+                if(this!= &Set_Temp)                     
+                {  
+                    _ROOT_Set = Set_Temp._ROOT_Set;      
+                }  
+                return *this; 
             }
-            iterator find(const Key_Val_Type& Set_Temp)
-            {
-                return _ROOT_Set.find(Set_Temp);
-            }
-            void Middle_order_traversal()
-            {
-                _ROOT_Set.Middle_order_traversal();
-            }
-            void Pre_order_traversal()
-            {
-                _ROOT_Set.Pre_order_traversal();
-            }
-            size_t size()
-            {
-                return _ROOT_Set.size();
-            }
-            bool empty()
-            {
-                return _ROOT_Set.empty();
-            }
-            //函数实现未完成
+            Set()                                               {  ;                                        }
+            Set(const Set& Set_Temp)                            {  _ROOT_Set = Set_Temp._ROOT_Set;          }
+            Set(const Key_Val_Type& Set_Temp)                   {  _ROOT_Set.push(Set_Temp);                }
+            Set_iterator push(const Key_Val_Type& Set_Temp)     {  return _ROOT_Set.push(Set_Temp);         }
+            Set_iterator pop(const Key_Val_Type& Set_Temp)      {  return _ROOT_Set.pop(Set_Temp);          }
+            iterator find(const Key_Val_Type& Set_Temp)         {  return _ROOT_Set.find(Set_Temp);         }
+            void Middle_order_traversal()                       {  _ROOT_Set.Middle_order_traversal();      }    
+            void Pre_order_traversal()                          {  _ROOT_Set.Pre_order_traversal();         }  
+            size_t size() const                                 {  return _ROOT_Set.size();                 }
+            bool empty()                                        {  return _ROOT_Set.empty();                }  
+            iterator begin()                                    {  return _ROOT_Set.begin();                }
+            iterator end()                                      {  return _ROOT_Set.end();                  }
+            const_iterator cbegin()                             {  return _ROOT_Set.cbegin();               }
+            const_iterator cend()                               {  return _ROOT_Set.cend();                 }
+            reverse_iterator rbegin()                           {  return _ROOT_Set.rbegin();               }
+            reverse_iterator rend()                             {  return _ROOT_Set.rend();                 }
+            const_reverse_iterator crbegin()                    {  return _ROOT_Set.crbegin();              }
+            const_reverse_iterator crend()                      {  return _ROOT_Set.crend();                }
+            iterator operator[](const Key_Val_Type& Set_Temp)   {  return _ROOT_Set[Set_Temp];              }
         };
         template <typename unordered_Set_Type_K>
         class unordered_Set
@@ -4635,51 +4644,62 @@ int main()
         for(auto& j : arr)
         {
             Map_Test.push(j);
+            std::cout << "前序" << " ";
+            Map_Test.Pre_order_traversal();
+            std::cout << "   " << "中序:"<< Map_Test.size() << " " << Map_Test.empty() << " ";
+            Map_Test.Middle_order_traversal();
+            std::cout << std::endl;
+        }
+        std::cout << Map_Test.empty() << " ";
+        std::cout << "正向" << std::endl;
+        for(const auto& Map : Map_Test)
+        {
+            std::cout << Map << " ";
+        }
+        std::cout << "反向" << std::endl;
+        for(auto it = Map_Test.crbegin(); it != Map_Test.crend(); it++)
+        {
+            std::cout << *it << " ";
+        }
+        for(auto& j : arr)
+        {
+            Map_Test.pop(j);
             // std::cout << "前序" << " ";
             // Map_Test.Pre_order_traversal();
             std::cout << "   " << "中序:"<< Map_Test.size() << " " << Map_Test.empty() << " ";
             Map_Test.Middle_order_traversal();
             std::cout << std::endl;
         }
-        // for(auto& j : arr)
-        // {
-        //     Map_Test.pop(j);
-        //     // std::cout << "前序" << " ";
-        //     // Map_Test.Pre_order_traversal();
-        //     std::cout << "   " << "中序:"<< Map_Test.size() << " " << Map_Test.empty() << " ";
-        //     Map_Test.Middle_order_traversal();
-        //     std::cout << std::endl;
-        // }
-        std::cout << Map_Test.empty() << " ";
-        std::cout << std::endl;
-        for(const auto& Map : Map_Test)
-        {
-            std::cout << Map << " ";
-        }
-        // for(auto it = Map_Test.begin(); it != Map_Test.end(); it++)
-        // {
-        //     std::cout << *it << std::endl;
-        // }
     }
-    // /*            Set 测试             */
-    // {
-    //     MY_Template::Set_Container::Set<size_t> Set_test;
-    //     size_t size = 20;
-    //     MY_Template::vector_Container::vector<size_t> arr;
-    //     for(size_t i = 0; i < size; i++ )
-    //     {
-    //         arr.push_back(i);
-    //     }
-    //      std::cout << arr << std::endl;
-    //     for(auto& j : arr)
-    //     {
-    //         Set_test.push(j);
-    //         std::cout << "前序" << " ";
-    //         Set_test.Pre_order_traversal();
-    //         std::cout << "   " << "中序" << " ";
-    //         Set_test.Middle_order_traversal();
-    //         std::cout << std::endl;
-    //     }
-    // }
+    /*            Set 测试             */
+    {
+        MY_Template::Set_Container::Set<size_t> Set_test;
+        size_t size = 20;
+        MY_Template::vector_Container::vector<size_t> arr;
+        for(size_t i = 0; i < size; i++ )
+        {
+            arr.push_back(i);
+        }
+         std::cout << arr << std::endl;
+        for(auto& j : arr)
+        {
+            Set_test.push(j);
+            std::cout << "前序" << " ";
+            Set_test.Pre_order_traversal();
+            std::cout << "   " << "中序" << " ";
+            Set_test.Middle_order_traversal();
+            std::cout << std::endl;
+        }
+        std::cout << "正向"<< std::endl;
+        for(auto& j : Set_test)
+        {
+            std::cout << j << " ";
+        }
+        std::cout << std::endl << "反向"<< std::endl;
+        for(auto j = Set_test.crbegin(); j != Set_test.crend(); j++)
+        {
+            std::cout << *j << " ";
+        }
+    }
     return 0;
 }

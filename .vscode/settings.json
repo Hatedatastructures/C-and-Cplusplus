@@ -59,5 +59,15 @@
     },
     "C_Cpp.errorSquiggles": "disabled",
     "Codegeex.CompletionDelay": 2,
-    "Codegeex.GenerationPreference": "automatic"
+    "Codegeex.GenerationPreference": "automatic",
+    "workbench.editor.autoLockGroups": {
+        "workbench.input.interactive": true,
+        "mainThreadWebview-markdown.preview": true,
+        "vscode.audioPreview": true,
+        "vscode.videoPreview": true,
+        "jsProfileVisualizer.cpuprofile.table": true,
+        "default": true,
+        "hexEditor.hexedit": true,
+        "imagePreview.previewEditor": true
+    }
 }
