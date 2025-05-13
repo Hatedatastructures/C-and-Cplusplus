@@ -25,6 +25,14 @@ namespace MY_Template
                 return _test1 > _test2;
             }
         };
+        class Hash_Imitation_functions
+        {
+        public:
+            size_t operator()(const int data_str)
+            {
+                return data_str;
+            }
+        };
     }
     namespace Practicality
     {
@@ -3952,7 +3960,93 @@ namespace MY_Template
             }
         };
         /*############################     hash 容器     ############################*/
-
+        template <typename Hash_Table_Type_Key, typename Hash_Table_Type_Val,typename Hash_Table_Functor,typename Type_imitation_function = std::hash<Hash_Table_Type_Val> >
+        class Hash_Table
+        {
+            class Hash_Table_Node
+            {
+                Hash_Table_Type_Val _data;
+                Hash_Table_Node* _next;
+                Hash_Table_Node* Link_prev;
+                Hash_Table_Node* Link_next;
+            public:
+                Hash_Table_Node(const Hash_Table_Type_Val& Temp_Val)
+                {
+                    _data = Temp_Val;
+                    _next = nullptr;
+                    Link_prev = nullptr;
+                    Link_next = nullptr;
+                }
+            };
+            using Node = Hash_Table_Node;
+            Hash_Table_Functor _Hash_Functor;                           //仿函数
+            size_t _size;                                               //哈希表大小
+            size_t Load_factor;                                         //负载因子   
+            size_t Capacity;                                            //哈希表容量
+            MY_Template::vector_Container::vector<Node*> _Hash_Table;   //哈希表
+            Type_imitation_function _Type_imitation_function;           //哈希函数
+            Node* _previous_data = nullptr;                             //上一个数据
+        public:  
+            Hash_Table()
+            {
+                _size = 0;
+                Load_factor = 7;
+                Capacity = 100;
+                _Hash_Table.resize(Capacity);
+            }
+            bool push (const Hash_Table_Type_Val& Temp_Val)
+            {
+                if(find(Temp_Val))
+                {
+                    return false;
+                }
+                size_t Temp_Hash = _Type_imitation_function(Temp_Val);
+                size_t Hash_Location_data = Temp_Hash % Capacity;
+                //找到映射位置
+                Node* _Temp_Node = _Hash_Table[Hash_Location_data];
+                if(_Temp_Node == nullptr)
+                {
+                    Node* _push_Node = new Node(Temp_Val);
+                    _Hash_Table[Hash_Location_data] = _push_Node;
+                    _push_Node->Link_prev= nullptr;
+                    _previous_data = _push_Node;
+                    _size++;
+                }
+                else
+                {
+                    Node* _push_Node = new Node(Temp_Val);
+                    _push_Node->_next = _Temp_Node;
+                    _Hash_Table[Hash_Location_data] = _push_Node;
+                    _push_Node->Link_prev = _previous_data;
+                    _previous_data->Link_next = _push_Node;
+                    _previous_data = _push_Node;
+                    _size++;
+                }
+            }
+            bool find(const Hash_Table_Type_Val& Temp_Val)
+            {
+                if(_Hash_Table.size() == 0)
+                {
+                    return false;
+                }
+                else
+                {
+                    size_t Temp_Hash = _Type_imitation_function(Temp_Val);
+                    size_t Hash_Location_data = Temp_Hash % Capacity;
+                    //找到映射位置
+                    Node* _Temp_Node = _Hash_Table[Hash_Location_data];
+                    while(_Temp_Node!= nullptr)
+                    {
+                        if(_Temp_Node->_data == Temp_Val)
+                        {
+                            return true;
+                        }
+                        _Temp_Node = _Temp_Node->_next;
+                    }
+                    return false;
+                }
+            }                             
+        }
     }
     /*############################     Map 容器     ############################*/
     namespace Map_Container
@@ -4009,10 +4103,18 @@ namespace MY_Template
             const_reverse_iterator crend()                          {  return _ROOT_Map.crend();             }
             iterator operator[](const Key_Val_Type& Map_Temp)       {  return _ROOT_Map[Map_Temp];           }
         };
-        template <typename unordered_Map_Type_K>
+        template <typename unordered_Map_Type_K,typename unordered_Map_Type_K>
         class unordered_Map
         {
-
+            using Key_Val_Type = MY_Template::Practicality::pair<unordered_Map_Type_K,unordered_Map_Type_K>;
+            struct Key_Val
+            {
+                const unordered_Map_Type_K& operator()(const Key_Val_Type& Temp_Key_)
+                {
+                    return Temp_Key_.first;
+                }
+            };
+            using Hash_Table = Base_Class_Container::Hash_Table<unordered_Map_Type_K,Key_Val_Type,Key_Val>;
         };
     }
     /*############################     Set 容器     ############################*/
