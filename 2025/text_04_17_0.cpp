@@ -32,6 +32,10 @@ namespace MY_Template
             {
                 return data_str;
             }
+            size_t operator()(const size_t data_num)
+            {
+                return data_num;
+            }
         };
     }
     namespace Practicality
@@ -977,7 +981,7 @@ namespace MY_Template
                     delete [] _data_pointer;
                     _data_pointer = new_data;
                     //对于自定义类型delete会释放资源，而new_data是新new出来的因该不会导致资源泄露
-                    _size_pointer = _data_pointer + old_size;  // 使用 old_size 来重建 _size_pointer
+                    _size_pointer = _data_pointer + new_capacity;  // 使用 old_size 来重建 _size_pointer
                     _capacity_pointer = _data_pointer + new_capacity;
                 }
                 return *this;
@@ -3965,11 +3969,12 @@ namespace MY_Template
         {
             class Hash_Table_Node
             {
+            public:
                 Hash_Table_Type_Val _data;
                 Hash_Table_Node* _next;
                 Hash_Table_Node* Link_prev;
+                //全局链表指针，方便按照插入的顺序有序遍历哈希表
                 Hash_Table_Node* Link_next;
-            public:
                 Hash_Table_Node(const Hash_Table_Type_Val& Temp_Val)
                 {
                     _data = Temp_Val;
@@ -3986,13 +3991,66 @@ namespace MY_Template
             MY_Template::vector_Container::vector<Node*> _Hash_Table;   //哈希表
             Type_imitation_function _Type_imitation_function;           //哈希函数
             Node* _previous_data = nullptr;                             //上一个数据
+            Node* _Head_data = nullptr;                                 //插入头数据
         public:  
             Hash_Table()
             {
                 _size = 0;
                 Load_factor = 7;
-                Capacity = 100;
+                Capacity = 10;
                 _Hash_Table.resize(Capacity);
+            }
+            Hash_Table(size_t Temp_capacity)
+            {
+                _size = 0;
+                Load_factor = 7;
+                Capacity = Temp_capacity;
+                _Hash_Table.resize(Capacity);
+            }
+            Hash_Table(const Hash_Table& Temp_Hash_Table)
+            :_Hash_Functor(Temp_Hash_Table._Hash_Functor),_size(Temp_Hash_Table._size),_previous_data(Temp_Hash_Table._previous_data),
+            Load_factor(Temp_Hash_Table.Load_factor),Capacity(Temp_Hash_Table.Capacity),_Type_imitation_function(Temp_Hash_Table._Type_imitation_function)
+            {
+                if(Capacity == 0)
+                {
+                    return;
+                }
+                _Hash_Table.resize(Capacity);
+                for(size_t i = 0;i < Capacity;++i)
+                {
+                    Node* _Temp_Node = Temp_Hash_Table._Hash_Table[i];
+                    while(_Temp_Node != nullptr)
+                    {
+                        Node* _Temp_Node_prev = _Temp_Node;
+                        _Temp_Node = _Temp_Node->_next;
+                        _Temp_Node_prev->_next = nullptr;
+                        insert(_Temp_Node_prev->_data);
+                    }//未完成
+                }
+                MY_Template::Practicality::pair<Node*,Node*> _Temp_pair(Temp_Hash_Table._Hash_Table[0],Temp_Hash_Table._Hash_Table[0]);
+            }
+            ~Hash_Table()
+            {
+                for(size_t i = 0;i < _Hash_Table.size();++i)
+                {
+                    Node* _Temp_Node = _Hash_Table[i];
+                    while(_Temp_Node != nullptr)
+                    {
+                        Node* _Temp_Node_prev = _Temp_Node;
+                        _Temp_Node = _Temp_Node->_next;
+                        delete _Temp_Node_prev;
+                        _Temp_Node_prev = nullptr;
+                    }
+                }
+            }
+            bool Change_Load_factor(size_t Temp_Load_factor)
+            {
+                if(Temp_Load_factor < 1)
+                {
+                    return false;
+                }
+                Load_factor = Temp_Load_factor;
+                return true;
             }
             bool push (const Hash_Table_Type_Val& Temp_Val)
             {
@@ -4000,28 +4058,121 @@ namespace MY_Template
                 {
                     return false;
                 }
+                //判断扩容
+                if( _size * 10 >= Capacity * Load_factor)
+                {
+                    //扩容
+                    size_t NewCapacity = (Capacity == 0 ||_Hash_Table.size() == 0) ? 10 : Capacity * 2;
+                    //新容量
+                    MY_Template::vector_Container::vector<Node*> _New_Hash_Table;
+                    _New_Hash_Table.resize(NewCapacity);
+                    size_t _New_size = 0;
+                    //重新映射,按照插入链表顺序
+                    Node* _Temp_Head_Node = nullptr;
+                    Node* _Temp_previous_data = nullptr;
+                    Node* _Temp_Node = _Head_data;
+                    while( _Temp_Node != nullptr)
+                    {
+                        size_t Temp_Hash = _Type_imitation_function(_Temp_Node->_data) % NewCapacity;
+                        //重新计算映射值
+                        Node* New_Mapping_location = _New_Hash_Table[Temp_Hash];
+                        if(New_Mapping_location == nullptr)
+                        {
+                            Node* _push_Node = new Node(_Temp_Node->_data);
+                            if(_Temp_Head_Node == nullptr)
+                            {
+                                _push_Node->Link_prev = nullptr;
+                                _Temp_Head_Node = _Temp_previous_data =_push_Node;
+                            }
+                            else
+                            {
+                                _push_Node->Link_prev = _Temp_previous_data;
+                                _Temp_previous_data->Link_next = _push_Node;
+                                _Temp_previous_data = _push_Node;
+                            }
+                            _New_Hash_Table[Temp_Hash] = _push_Node;
+                            //保存之前的遍历链表信息
+                        }
+                        else
+                        {
+                            Node* _push_Node = new Node(_Temp_Node->_data);
+                            if(_Temp_Head_Node == nullptr)
+                            {
+                                _push_Node->Link_prev = nullptr;
+                                _Temp_Head_Node = _Temp_previous_data =_push_Node;
+                            }
+                            else
+                            {
+                                _push_Node->Link_prev = _Temp_previous_data;
+                                _Temp_previous_data->Link_next = _push_Node;
+                                _Temp_previous_data = _push_Node;
+                            }
+                            _push_Node->_next = New_Mapping_location;
+                            _New_Hash_Table[Temp_Hash] = _push_Node;
+                            //头插节点
+                        }
+                        ++_New_size;
+                        _Temp_Node = _Temp_Node->Link_next;
+                    }
+                    //释放旧哈希表
+                    for(size_t i = 0;i < _Hash_Table.size(); ++i)
+                    {
+                        Node* _Temp_Node = _Hash_Table[i];
+                        while(_Temp_Node!= nullptr)
+                        {
+                            Node* _Temp_Node_prev = _Temp_Node;
+                            _Temp_Node = _Temp_Node->_next;
+                            delete _Temp_Node_prev;
+                            _Temp_Node_prev = nullptr;
+                        }
+                    }
+                    _size = _New_size;
+                    _Hash_Table.swap(_New_Hash_Table);
+                    Capacity = NewCapacity;
+                    _Head_data = _Temp_Head_Node;
+                    _previous_data = _Temp_previous_data;
+                    //重新映射,按照插入链表顺序
+                }
                 size_t Temp_Hash = _Type_imitation_function(Temp_Val);
                 size_t Hash_Location_data = Temp_Hash % Capacity;
                 //找到映射位置
                 Node* _Temp_Node = _Hash_Table[Hash_Location_data];
-                if(_Temp_Node == nullptr)
+
+                Node* _push_Node = new Node(Temp_Val);
+                _push_Node->_next = _Temp_Node;
+                _Hash_Table[Hash_Location_data] = _push_Node;
+                if(_size == 0 && _Head_data == nullptr)
                 {
-                    Node* _push_Node = new Node(Temp_Val);
-                    _Hash_Table[Hash_Location_data] = _push_Node;
-                    _push_Node->Link_prev= nullptr;
-                    _previous_data = _push_Node;
-                    _size++;
+                    _Head_data = _previous_data = _push_Node;
                 }
                 else
                 {
-                    Node* _push_Node = new Node(Temp_Val);
-                    _push_Node->_next = _Temp_Node;
-                    _Hash_Table[Hash_Location_data] = _push_Node;
                     _push_Node->Link_prev = _previous_data;
                     _previous_data->Link_next = _push_Node;
-                    _previous_data = _push_Node;
-                    _size++;
                 }
+                _previous_data = _push_Node;
+                _size++;
+                return true;
+            }
+            bool pop(const Hash_Table_Type_Val& Temp_Val)
+            {
+                if( !find(Temp_Val ))
+                {
+                    return false;
+                }
+                size_t Temp_Hash = _Type_imitation_function(Temp_Val);
+                size_t Hash_Location_data = Temp_Hash % Capacity;
+                //找到映射位置
+                Node* _Temp_Node = _Hash_Table[Hash_Location_data];
+                while(_Temp_Node!= nullptr)
+                {
+                    if(_Temp_Node->_data == Temp_Val)
+                    {
+                        //调整全局链表，以及删除节点，考虑多种情况
+                    }
+                    _Temp_Node = _Temp_Node->_next;       
+                }
+                return true;
             }
             bool find(const Hash_Table_Type_Val& Temp_Val)
             {
@@ -4046,7 +4197,12 @@ namespace MY_Template
                     return false;
                 }
             }                             
-        }
+        };
+        /*############################     Bitmap 容器     ############################*/
+        class Bitmap
+        {
+
+        };
     }
     /*############################     Map 容器     ############################*/
     namespace Map_Container
@@ -4103,10 +4259,10 @@ namespace MY_Template
             const_reverse_iterator crend()                          {  return _ROOT_Map.crend();             }
             iterator operator[](const Key_Val_Type& Map_Temp)       {  return _ROOT_Map[Map_Temp];           }
         };
-        template <typename unordered_Map_Type_K,typename unordered_Map_Type_K>
+        template <typename unordered_Map_Type_K,typename unordered_Map_Type_V>
         class unordered_Map
         {
-            using Key_Val_Type = MY_Template::Practicality::pair<unordered_Map_Type_K,unordered_Map_Type_K>;
+            using Key_Val_Type = MY_Template::Practicality::pair<unordered_Map_Type_K,unordered_Map_Type_V>;
             struct Key_Val
             {
                 const unordered_Map_Type_K& operator()(const Key_Val_Type& Temp_Key_)
@@ -4114,7 +4270,29 @@ namespace MY_Template
                     return Temp_Key_.first;
                 }
             };
-            using Hash_Table = Base_Class_Container::Hash_Table<unordered_Map_Type_K,Key_Val_Type,Key_Val>;
+            class Hash_Functor
+            {
+            public:
+                size_t operator()(const Key_Val_Type& Temp_Key_)
+                {
+                    size_t num_One =  MY_Template::Imitation_functions::Hash_Imitation_functions()(Temp_Key_.first);
+                    num_One = num_One * 131;
+                    size_t num_Two =  MY_Template::Imitation_functions::Hash_Imitation_functions()(Temp_Key_.second);
+                    num_Two = num_Two * 31;
+                    return (num_One + num_Two);
+                }
+            };
+            using Hash_Table = Base_Class_Container::Hash_Table<unordered_Map_Type_K,Key_Val_Type,Key_Val,Hash_Functor>;
+            Hash_Table _Hash_Map;
+        public:
+            unordered_Map()
+            {
+                ;
+            }
+            bool push(const Key_Val_Type& Map_Temp)
+            {
+                return _Hash_Map.push(Map_Temp);
+            }
         };
     }
     /*############################     Set 容器     ############################*/
@@ -4732,76 +4910,92 @@ int main()
     //         std::cout << std::endl;
     //     }
     // }
-    /*            Map 测试             */
+    // /*            Map 测试             */
+    // {
+    //     MY_Template::Map_Container::Map<size_t,size_t> Map_Test;
+    //     size_t size = 10;
+    //     MY_Template::vector_Container::vector<MY_Template::Practicality::pair<size_t,size_t>> arr;
+    //     size_t l = 0;
+    //     for(size_t i = 0 ; i < size; i++ ,l = i)
+    //     {
+    //         arr.push_back(MY_Template::Practicality::pair<size_t,size_t>(i,l));
+    //     }
+    //     std::cout << arr << std::endl;
+    //     for(auto& j : arr)
+    //     {
+    //         Map_Test.push(j);
+    //         std::cout << "前序" << " ";
+    //         Map_Test.Pre_order_traversal();
+    //         std::cout << "   " << "中序:"<< Map_Test.size() << " " << Map_Test.empty() << " ";
+    //         Map_Test.Middle_order_traversal();
+    //         std::cout << std::endl;
+    //     }
+    //     std::cout << Map_Test.empty() << " ";
+    //     std::cout << "正向" << std::endl;
+    //     for(const auto& Map : Map_Test)
+    //     {
+    //         std::cout << Map << " ";
+    //     }
+    //     std::cout << "反向" << std::endl;
+    //     for(auto it = Map_Test.crbegin(); it != Map_Test.crend(); it++)
+    //     {
+    //         std::cout << *it << " ";
+    //     }
+    //     for(auto& j : arr)
+    //     {
+    //         Map_Test.pop(j);
+    //         // std::cout << "前序" << " ";
+    //         // Map_Test.Pre_order_traversal();
+    //         std::cout << "   " << "中序:"<< Map_Test.size() << " " << Map_Test.empty() << " ";
+    //         Map_Test.Middle_order_traversal();
+    //         std::cout << std::endl;
+    //     }
+    // }
+    // /*            Set 测试             */
+    // {
+    //     MY_Template::Set_Container::Set<size_t> Set_test;
+    //     size_t size = 20;
+    //     MY_Template::vector_Container::vector<size_t> arr;
+    //     for(size_t i = 0; i < size; i++ )
+    //     {
+    //         arr.push_back(i);
+    //     }
+    //      std::cout << arr << std::endl;
+    //     for(auto& j : arr)
+    //     {
+    //         Set_test.push(j);
+    //         std::cout << "前序" << " ";
+    //         Set_test.Pre_order_traversal();
+    //         std::cout << "   " << "中序" << " ";
+    //         Set_test.Middle_order_traversal();
+    //         std::cout << std::endl;
+    //     }
+    //     std::cout << "正向"<< std::endl;
+    //     for(auto& j : Set_test)
+    //     {
+    //         std::cout << j << " ";
+    //     }
+    //     std::cout << std::endl << "反向"<< std::endl;
+    //     for(auto j = Set_test.crbegin(); j != Set_test.crend(); j++)
+    //     {
+    //         std::cout << *j << " ";
+    //     }
+    // }
+    /*            unordered_Map 测试             */
     {
-        MY_Template::Map_Container::Map<size_t,size_t> Map_Test;
-        size_t size = 10;
+        MY_Template::Map_Container::unordered_Map<size_t,size_t> unordered_Map_test;
+        size_t size = 11;
         MY_Template::vector_Container::vector<MY_Template::Practicality::pair<size_t,size_t>> arr;
         size_t l = 0;
-        for(size_t i = 0 ; i < size; i++ ,l = i)
+        for(size_t i = 0 ; i < size; i++,l = i)
         {
             arr.push_back(MY_Template::Practicality::pair<size_t,size_t>(i,l));
         }
+        for(size_t i = 0; i < size; i++)
+        {
+            unordered_Map_test.push(arr[i]);
+        }
         std::cout << arr << std::endl;
-        for(auto& j : arr)
-        {
-            Map_Test.push(j);
-            std::cout << "前序" << " ";
-            Map_Test.Pre_order_traversal();
-            std::cout << "   " << "中序:"<< Map_Test.size() << " " << Map_Test.empty() << " ";
-            Map_Test.Middle_order_traversal();
-            std::cout << std::endl;
-        }
-        std::cout << Map_Test.empty() << " ";
-        std::cout << "正向" << std::endl;
-        for(const auto& Map : Map_Test)
-        {
-            std::cout << Map << " ";
-        }
-        std::cout << "反向" << std::endl;
-        for(auto it = Map_Test.crbegin(); it != Map_Test.crend(); it++)
-        {
-            std::cout << *it << " ";
-        }
-        for(auto& j : arr)
-        {
-            Map_Test.pop(j);
-            // std::cout << "前序" << " ";
-            // Map_Test.Pre_order_traversal();
-            std::cout << "   " << "中序:"<< Map_Test.size() << " " << Map_Test.empty() << " ";
-            Map_Test.Middle_order_traversal();
-            std::cout << std::endl;
-        }
-    }
-    /*            Set 测试             */
-    {
-        MY_Template::Set_Container::Set<size_t> Set_test;
-        size_t size = 20;
-        MY_Template::vector_Container::vector<size_t> arr;
-        for(size_t i = 0; i < size; i++ )
-        {
-            arr.push_back(i);
-        }
-         std::cout << arr << std::endl;
-        for(auto& j : arr)
-        {
-            Set_test.push(j);
-            std::cout << "前序" << " ";
-            Set_test.Pre_order_traversal();
-            std::cout << "   " << "中序" << " ";
-            Set_test.Middle_order_traversal();
-            std::cout << std::endl;
-        }
-        std::cout << "正向"<< std::endl;
-        for(auto& j : Set_test)
-        {
-            std::cout << j << " ";
-        }
-        std::cout << std::endl << "反向"<< std::endl;
-        for(auto j = Set_test.crbegin(); j != Set_test.crend(); j++)
-        {
-            std::cout << *j << " ";
-        }
     }
     return 0;
 }
