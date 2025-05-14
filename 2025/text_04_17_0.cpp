@@ -36,6 +36,19 @@ namespace MY_Template
             {
                 return data_num;
             }
+            size_t operator()(const char data_char)
+            {
+                return data_char;
+            }
+            // size_t operator()(const MY_Template::string_Container::string& data_string)
+            // {
+            //     size_t hash_value = 0;
+            //     for(size_t i = 0; i < data_string._size; ++i)
+            //     {
+            //         hash_value = hash_value * 31 + data_string._data[i];
+            //     }
+            //     return hash_value;
+            // }
         };
     }
     namespace Practicality
@@ -966,7 +979,7 @@ namespace MY_Template
                 return temp;
                 //返回下一个位置地址
             }
-            vector<vector_Type>& resize(const size_t& new_capacity)
+            vector<vector_Type>& resize(const size_t& new_capacity, const vector_Type& data = vector_Type())
             {
                 size_t old_size = size();  // 先保存原来的元素数量
                 if ((size_t)(_capacity_pointer - _data_pointer) < new_capacity) 
@@ -978,10 +991,14 @@ namespace MY_Template
                     {
                         new_data[i] = _data_pointer[i];
                     }
+                    for(size_t i = old_size; i < new_capacity; i++)
+                    {
+                        new_data[i] = data;
+                    }
                     delete [] _data_pointer;
                     _data_pointer = new_data;
                     //对于自定义类型delete会释放资源，而new_data是新new出来的因该不会导致资源泄露
-                    _size_pointer = _data_pointer + new_capacity;  // 使用 old_size 来重建 _size_pointer
+                    _size_pointer = _data_pointer + old_size;  // 使用 old_size 来重建 _size_pointer
                     _capacity_pointer = _data_pointer + new_capacity;
                 }
                 return *this;
@@ -4052,8 +4069,29 @@ namespace MY_Template
                 Load_factor = Temp_Load_factor;
                 return true;
             }
+            Hash_Table_Type_Val operator[](const size_t& Temp_size)
+            {
+                if(_Hash_Table[Temp_size]!= nullptr)
+                {
+                    return _Hash_Table[Temp_size]->_data;
+                }
+                else
+                {
+                    // std::cout << "NULL" << " ";
+                    return Hash_Table_Type_Val();
+                }
+            }
+            size_t size()                 {   return _size;         }
+            size_t size()  const          {   return _size;         }
+            bool empty()                  {   return _size == 0;    }
+            size_t capacity()             {   return Capacity;      }
+            size_t capacity()  const      {   return Capacity;      }
+
             bool push (const Hash_Table_Type_Val& Temp_Val)
             {
+                std::cout << _Hash_Table.size() << std::endl;
+                std::cout << Capacity  << " " << _size << std::endl;
+                std::cout << find(Temp_Val) << std::endl;
                 if(find(Temp_Val))
                 {
                     return false;
@@ -4062,10 +4100,10 @@ namespace MY_Template
                 if( _size * 10 >= Capacity * Load_factor)
                 {
                     //扩容
-                    size_t NewCapacity = (Capacity == 0 ||_Hash_Table.size() == 0) ? 10 : Capacity * 2;
+                    size_t NewCapacity = (Capacity == 0 && _Hash_Table.size() == 0) ? 10 : Capacity * 2;
                     //新容量
                     MY_Template::vector_Container::vector<Node*> _New_Hash_Table;
-                    _New_Hash_Table.resize(NewCapacity);
+                    _New_Hash_Table.resize(NewCapacity,nullptr);
                     size_t _New_size = 0;
                     //重新映射,按照插入链表顺序
                     Node* _Temp_Head_Node = nullptr;
@@ -4073,6 +4111,7 @@ namespace MY_Template
                     Node* _Temp_Node = _Head_data;
                     while( _Temp_Node != nullptr)
                     {
+                        ////////////////////////////////bug
                         size_t Temp_Hash = _Type_imitation_function(_Temp_Node->_data) % NewCapacity;
                         //重新计算映射值
                         Node* New_Mapping_location = _New_Hash_Table[Temp_Hash];
@@ -4082,6 +4121,7 @@ namespace MY_Template
                             if(_Temp_Head_Node == nullptr)
                             {
                                 _push_Node->Link_prev = nullptr;
+                                _push_Node->Link_next = nullptr;
                                 _Temp_Head_Node = _Temp_previous_data =_push_Node;
                             }
                             else
@@ -4143,19 +4183,30 @@ namespace MY_Template
                 _Hash_Table[Hash_Location_data] = _push_Node;
                 if(_size == 0 && _Head_data == nullptr)
                 {
+                    _push_Node->Link_prev = nullptr;
                     _Head_data = _previous_data = _push_Node;
                 }
                 else
                 {
                     _push_Node->Link_prev = _previous_data;
                     _previous_data->Link_next = _push_Node;
+                    _previous_data = _push_Node;
                 }
-                _previous_data = _push_Node;
                 _size++;
                 return true;
             }
+            void printf()
+            {
+                Node* _Temp_Node = _Head_data;
+                while(_Temp_Node!= nullptr)
+                {
+                    std::cout << _Temp_Node->_data << " ";
+                    _Temp_Node = _Temp_Node->Link_next;
+                }
+            }
             bool pop(const Hash_Table_Type_Val& Temp_Val)
             {
+                //空表判断
                 if( !find(Temp_Val ))
                 {
                     return false;
@@ -4164,19 +4215,130 @@ namespace MY_Template
                 size_t Hash_Location_data = Temp_Hash % Capacity;
                 //找到映射位置
                 Node* _Temp_Node = _Hash_Table[Hash_Location_data];
+                Node* _Temp_Node_parent = nullptr;
                 while(_Temp_Node!= nullptr)
                 {
+                    //找到位置
                     if(_Temp_Node->_data == Temp_Val)
                     {
-                        //调整全局链表，以及删除节点，考虑多种情况
+                        if(_Temp_Node == _Head_data)
+                        {
+                            if(_Temp_Node->Link_next == nullptr && _Temp_Node->Link_prev == nullptr && _Temp_Node == _previous_data)
+                            {
+                                //只有一个节点
+                                _Head_data = _previous_data = nullptr;
+                                delete _Temp_Node;
+                                _Temp_Node = nullptr;
+                                _size--;
+                            }
+                            else  if(_Head_data->Link_next != nullptr && _Temp_Node->Link_prev == nullptr && _Temp_Node != _previous_data)
+                            {
+                                //全局链表头结点
+                                if(_Temp_Node->_next != nullptr )
+                                {
+                                    if(_Temp_Node == _Hash_Table[Hash_Location_data] && _Temp_Node_parent == nullptr)
+                                    {
+                                        _Hash_Table[Hash_Location_data] = _Temp_Node->_next;
+                                        delete _Temp_Node;
+                                        _Temp_Node = nullptr;
+                                        _size--;
+                                    }
+                                    else
+                                    {
+                                        _Temp_Node_parent->_next = _Temp_Node->_next;
+                                        delete _Temp_Node;
+                                        _Temp_Node = nullptr;
+                                        _size--;
+                                    }
+                                }
+                                else
+                                {
+                                    _Temp_Node_parent->_next = nullptr;
+                                    delete _Temp_Node;
+                                    _Temp_Node = nullptr;
+                                    _size--;
+                                }
+                                _previous_data = _Head_data->Link_prev;
+                                _Head_data = _Head_data->Link_next;
+                                _Head_data->Link_prev = nullptr;
+                            }
+                            else if(_Head_data->Link_next != nullptr && _Temp_Node->Link_prev == nullptr && _Temp_Node == _previous_data)
+                            {
+                                //全局链表头结点
+                                if(_Temp_Node->_next != nullptr )
+                                {
+                                    if(_Temp_Node == _Hash_Table[Hash_Location_data] && _Temp_Node_parent == nullptr)
+                                    {
+                                        _Hash_Table[Hash_Location_data] = _Temp_Node->_next;
+                                        delete _Temp_Node;
+                                        _Temp_Node = nullptr;
+                                        _size--;
+                                    }
+                                    else
+                                    {
+                                        _Temp_Node_parent->_next = _Temp_Node->_next;
+                                        delete _Temp_Node;
+                                        _Temp_Node = nullptr;
+                                        _size--;
+                                    }
+                                }
+                                else
+                                {
+                                    if(_Temp_Node == _Hash_Table[Hash_Location_data] && _Temp_Node_parent == nullptr)
+                                    {
+                                        _Hash_Table[Hash_Location_data] = _Temp_Node->_next;
+                                        delete _Temp_Node;
+                                        _Temp_Node = nullptr;
+                                        _size--;
+                                    }
+                                    else
+                                    {
+                                        _Temp_Node_parent->_next = _Temp_Node->_next;
+                                        delete _Temp_Node;
+                                        _Temp_Node = nullptr;
+                                        _size--;
+                                    }
+                                }
+                                _previous_data = _Head_data->Link_prev;
+                                _Head_data = _Head_data->Link_next;
+                                _Head_data->Link_prev = nullptr;
+                            }
+                        }
+                        else if(_Temp_Node->Link_next == nullptr && _Temp_Node->Link_prev != nullptr && _Temp_Node != _Head_data)
+                        {
+                            //全局链表尾结点
+                            if(_Temp_Node == _previous_data)
+                            {
+                                _previous_data = _previous_data->Link_prev;
+                                _previous_data->Link_next = nullptr;
+                            }
+                            else
+                            {
+                                _Temp_Node->Link_prev->Link_next = nullptr;
+                            }
+                            delete _Temp_Node;
+                            _Temp_Node = nullptr;
+                            _size--;
+                        }
+                        else
+                        {
+                            _Temp_Node->Link_prev->Link_next = _Temp_Node->Link_next;
+                            _Temp_Node->Link_next->Link_prev = _Temp_Node->Link_prev;
+                            delete _Temp_Node;
+                            _Temp_Node = nullptr;
+                            _size--;
+                        }
+                        return true;
                     }
+                    _Temp_Node_parent = _Temp_Node;
                     _Temp_Node = _Temp_Node->_next;       
                 }
-                return true;
+                return false;
             }
             bool find(const Hash_Table_Type_Val& Temp_Val)
             {
-                if(_Hash_Table.size() == 0)
+                /////////////////////////////bug
+                if(_Hash_Table.size() == 0 || _size == 0)
                 {
                     return false;
                 }
@@ -4278,7 +4440,7 @@ namespace MY_Template
                     size_t num_One =  MY_Template::Imitation_functions::Hash_Imitation_functions()(Temp_Key_.first);
                     num_One = num_One * 131;
                     size_t num_Two =  MY_Template::Imitation_functions::Hash_Imitation_functions()(Temp_Key_.second);
-                    num_Two = num_Two * 31;
+                    num_Two = num_Two * 131;
                     return (num_One + num_Two);
                 }
             };
@@ -4293,6 +4455,23 @@ namespace MY_Template
             {
                 return _Hash_Map.push(Map_Temp);
             }
+            bool pop(const Key_Val_Type& Map_Temp)
+            {
+                return _Hash_Map.pop(Map_Temp);
+            }
+            bool find(const Key_Val_Type& Map_Temp)
+            {
+                return _Hash_Map.find(Map_Temp);
+            }
+            void printf()
+            {
+                _Hash_Map.printf();
+            }
+            Key_Val_Type operator[](const size_t& Map_size)
+            {
+                return _Hash_Map[Map_size];
+            }
+            
         };
     }
     /*############################     Set 容器     ############################*/
@@ -4984,7 +5163,7 @@ int main()
     /*            unordered_Map 测试             */
     {
         MY_Template::Map_Container::unordered_Map<size_t,size_t> unordered_Map_test;
-        size_t size = 11;
+        size_t size = 23;
         MY_Template::vector_Container::vector<MY_Template::Practicality::pair<size_t,size_t>> arr;
         size_t l = 0;
         for(size_t i = 0 ; i < size; i++,l = i)
@@ -4995,7 +5174,15 @@ int main()
         {
             unordered_Map_test.push(arr[i]);
         }
+        unordered_Map_test.printf();
+        std::cout << std::endl;
+        for(size_t i = 0; i < size; i++)
+        {
+            std::cout << unordered_Map_test[i] << " ";
+        }
+        std::cout << std::endl;
         std::cout << arr << std::endl;
+        std::cout << unordered_Map_test.find(MY_Template::Practicality::pair<size_t,size_t>(20,20)) << std::endl;
     }
     return 0;
 }
