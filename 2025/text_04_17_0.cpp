@@ -998,6 +998,14 @@ namespace MY_Template
                     delete [] _data_pointer;
                     _data_pointer = new_data;
                     //对于自定义类型delete会释放资源，而new_data是新new出来的因该不会导致资源泄露
+                    // if(old_size == 0)
+                    // {
+                    //     _size_pointer = _data_pointer + new_capacity;  // 使用 old_size 来重建 _size_pointer
+                    // }
+                    // else
+                    // {
+                    //     _size_pointer = _data_pointer + old_size;  // 使用 old_size 来重建 _size_pointer
+                    // }
                     _size_pointer = _data_pointer + old_size;  // 使用 old_size 来重建 _size_pointer
                     _capacity_pointer = _data_pointer + new_capacity;
                 }
@@ -4083,15 +4091,15 @@ namespace MY_Template
             }
             size_t size()                 {   return _size;         }
             size_t size()  const          {   return _size;         }
-            bool empty()                  {   return _size == 0;    }
+            bool   empty()                {   return _size == 0;    }
             size_t capacity()             {   return Capacity;      }
             size_t capacity()  const      {   return Capacity;      }
 
             bool push (const Hash_Table_Type_Val& Temp_Val)
             {
-                std::cout << _Hash_Table.size() << std::endl;
-                std::cout << Capacity  << " " << _size << std::endl;
-                std::cout << find(Temp_Val) << std::endl;
+                // std::cout << _Hash_Table.size() << std::endl;
+                // std::cout << Capacity  << " " << _size << std::endl;
+                // std::cout << find(Temp_Val) << std::endl;
                 if(find(Temp_Val))
                 {
                     return false;
@@ -4111,7 +4119,6 @@ namespace MY_Template
                     Node* _Temp_Node = _Head_data;
                     while( _Temp_Node != nullptr)
                     {
-                        ////////////////////////////////bug
                         size_t Temp_Hash = _Type_imitation_function(_Temp_Node->_data) % NewCapacity;
                         //重新计算映射值
                         Node* New_Mapping_location = _New_Hash_Table[Temp_Hash];
@@ -4216,6 +4223,7 @@ namespace MY_Template
                 //找到映射位置
                 Node* _Temp_Node = _Hash_Table[Hash_Location_data];
                 Node* _Temp_Node_parent = nullptr;
+                //////////////////////////////////////逻辑问题
                 while(_Temp_Node!= nullptr)
                 {
                     //找到位置
@@ -4337,8 +4345,7 @@ namespace MY_Template
             }
             bool find(const Hash_Table_Type_Val& Temp_Val)
             {
-                /////////////////////////////bug
-                if(_Hash_Table.size() == 0 || _size == 0)
+                if( _size == 0)
                 {
                     return false;
                 }
@@ -4438,9 +4445,9 @@ namespace MY_Template
                 size_t operator()(const Key_Val_Type& Temp_Key_)
                 {
                     size_t num_One =  MY_Template::Imitation_functions::Hash_Imitation_functions()(Temp_Key_.first);
-                    num_One = num_One * 131;
+                    num_One = num_One * 31;
                     size_t num_Two =  MY_Template::Imitation_functions::Hash_Imitation_functions()(Temp_Key_.second);
-                    num_Two = num_Two * 131;
+                    num_Two = num_Two * 31;
                     return (num_One + num_Two);
                 }
             };
@@ -4466,6 +4473,18 @@ namespace MY_Template
             void printf()
             {
                 _Hash_Map.printf();
+            }
+            size_t size()
+            {
+                return _Hash_Map.size();
+            }
+            bool empty()
+            {
+                return _Hash_Map.empty();
+            }
+            size_t capacity()
+            {
+                return _Hash_Map.capacity();
             }
             Key_Val_Type operator[](const size_t& Map_size)
             {
@@ -4533,7 +4552,15 @@ namespace MY_Template
         template <typename unordered_Set_Type_K>
         class unordered_Set
         {
-
+            using Key_Val_Type = unordered_Set_Type_K;
+            class Hash_Functor
+            {
+            public:
+                size_t operator()(const Key_Val_Type& Temp_Key_)
+                {
+                    return MY_Template::Imitation_functions::Hash_Imitation_functions()(Temp_Key_)* 131;
+                }
+            };
         };
     }
     namespace Test_class
@@ -5182,7 +5209,18 @@ int main()
         }
         std::cout << std::endl;
         std::cout << arr << std::endl;
-        std::cout << unordered_Map_test.find(MY_Template::Practicality::pair<size_t,size_t>(20,20)) << std::endl;
+        // std::cout << unordered_Map_test.find(MY_Template::Practicality::pair<size_t,size_t>(20,20)) << std::endl;
+        for(size_t i = 0; i < size; i++)
+        {
+            std::cout << unordered_Map_test.find(MY_Template::Practicality::pair<size_t,size_t>(i,i)) << " ";
+        }
+        std::cout << std::endl;
+        // for(size_t i = 0; i < (size - 10); i++)
+        // {
+        //     unordered_Map_test.pop(MY_Template::Practicality::pair<size_t,size_t>(i,i));
+        // }
+        // std::cout << std::endl;
+        // unordered_Map_test.printf();
     }
     return 0;
 }
