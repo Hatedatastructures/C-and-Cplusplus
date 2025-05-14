@@ -136,7 +136,7 @@ void swap(T& a, T& b);
 
 | 函数原型 | 逻辑 & 执行过程 | 返回值 | 示例 |
 |---|---|---|---|
-| `string(const char* s)` | 分配 `strlen(s)+1`，拷贝并 "\0"结尾 | —构造 `string` 对象 | `string s("Hi");` |
+| `string(const char* s)` | 分配 `strlen(s)+1`，拷贝并以 "\0"结尾 | —构造 `string` 对象 | `string s("Hi");` |
 | `push_back(char c)` | 若 `_size==_capacity` 扩容，否则在 `_data[_size] = c`，`_size++` | `string&` | `s.push_back('!'); // "Hi!" 😃` |
 | `resize(n, c)` | 若 `n>_capacity` 扩容至 `n`，填充 `c`；否则截断 | `string&` | `s.resize(5, '-'); // "Hi!--"` |
 | `rollback()` | 从末尾到头依次 `push_back`，构造逆序新串 | 新 `string` | `s.rollback(); // "!iH"` |
