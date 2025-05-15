@@ -4017,6 +4017,28 @@ namespace MY_Template
             Type_imitation_function _Type_imitation_function;           //哈希函数
             Node* _previous_data = nullptr;                             //上一个数据
             Node* _Head_data = nullptr;                                 //插入头数据
+            template <typename Hash_Table_iterator_Key, typename Hash_Table_iterator_Val>
+            class Hash_iterator
+            {
+                using iterator_Node = Node;
+                using Ref  = Hash_Table_iterator_Val&;
+                using Ptr  = Hash_Table_iterator_Val*;
+                using Self = Hash_iterator<Hash_Table_iterator_Key,Hash_Table_iterator_Val>;
+                iterator_Node* _Hash_Table_iterator_Node;
+            public:
+                Hash_iterator(iterator_Node* Temp_Node)      {      _Hash_Table_iterator_Node = Temp_Node;        }
+                Ref operator*()                              {      return _Hash_Table_iterator_Node->_data;      }
+                Ptr operator->()                             {      return &_Hash_Table_iterator_Node->_data;     }
+                Self operator++()                            {       _Hash_Table_iterator_Node = _Hash_Table_iterator_Node->Link_next;     return *this;     }
+                bool operator!=(const Self& Temp_Self)       {   return _Hash_Table_iterator_Node != Temp_Self._Hash_Table_iterator_Node;     }
+                bool operator==(const Self& Temp_Self)       {   return _Hash_Table_iterator_Node == Temp_Self._Hash_Table_iterator_Node;     }
+                Self operator++(int)                         
+                {       
+                    Self Temp_Self = *this;
+                    _Hash_Table_iterator_Node = _Hash_Table_iterator_Node->Link_next;
+                    return Temp_Self;
+                }
+            };
             void parent_Judgment(Node*& _Temp_Node_parent,Node*& _Temp_Node,size_t& Hash_Location_data)
             {
                 if(_Temp_Node_parent!= nullptr)
@@ -4031,6 +4053,8 @@ namespace MY_Template
                 }
             } 
         public:  
+            using iterator = Hash_iterator<Hash_Table_Type_Key,Hash_Table_Type_Val>;
+            using const_iterator = Hash_iterator<const Hash_Table_Type_Key,const Hash_Table_Type_Val>;
             Hash_Table()
             {
                 _size = 0;
@@ -4102,11 +4126,15 @@ namespace MY_Template
                     return Hash_Table_Type_Val();
                 }
             }
-            size_t size()                 {   return _size;         }
-            size_t size()  const          {   return _size;         }
-            bool   empty()                {   return _size == 0;    }
-            size_t capacity()             {   return Capacity;      }
-            size_t capacity()  const      {   return Capacity;      }
+            iterator begin()                    {   return iterator(_Head_data);        }
+            const_iterator cbegin() const       {   return const_iterator(_Head_data);  }
+            iterator end()                      {   return iterator(nullptr);           }
+            const_iterator cend() const         {   return const_iterator(nullptr);     }
+            size_t size()                       {   return _size;                       }
+            size_t size() const                 {   return _size;                       }
+            bool   empty()                      {   return _size == 0;                  }
+            size_t capacity()                   {   return Capacity;                    }
+            size_t capacity() const             {   return Capacity;                    }
 
             bool push (const Hash_Table_Type_Val& Temp_Val)
             {
@@ -4391,43 +4419,28 @@ namespace MY_Template
             using Hash_Table = Base_Class_Container::Hash_Table<unordered_Map_Type_K,Key_Val_Type,Key_Val,Hash_Functor>;
             Hash_Table _Hash_Map;
         public:
-            unordered_Map()
+            using iterator = typename Hash_Table::iterator;
+            using const_iterator = typename Hash_Table::const_iterator;
+            unordered_Map()                                 {   ;                                 }  
+            unordered_Map(const Key_Val_Type& Temp_Key_)    {  _Hash_Map.push(Temp_Key_);         }
+            ~unordered_Map()                                {  _Hash_Map.~Hash_Table();           }
+            bool push(const Key_Val_Type& Temp_Key_)        {  return _Hash_Map.push(Temp_Key_);  }
+            bool pop(const Key_Val_Type& Temp_Key_)         {  return _Hash_Map.pop(Temp_Key_);   }
+            bool find(const Key_Val_Type& Temp_Key_)        {  return _Hash_Map.find(Temp_Key_);  }
+            void Middle_order_traversal()                   {  _Hash_Map.printf();                }
+            size_t size()                                   {  return _Hash_Map.size();           }
+            size_t size() const                             {  return _Hash_Map.size();           }
+            size_t capacity() const                         {  return _Hash_Map.capacity();       } 
+            bool empty()                                    {  return _Hash_Map.empty();          }
+            iterator begin()                                {  return _Hash_Map.begin();          }
+            iterator end()                                  {  return _Hash_Map.end();            }
+            const_iterator cbegin()                         {  return _Hash_Map.cbegin();         }
+            const_iterator cend()                           {  return _Hash_Map.cend();           }
+            void printf()                                   {  _Hash_Map.printf();                }
+            Key_Val_Type operator[](const size_t& Temp_size)
             {
-                ;
+                return _Hash_Map[Temp_size];
             }
-            bool push(const Key_Val_Type& Map_Temp)
-            {
-                return _Hash_Map.push(Map_Temp);
-            }
-            bool pop(const Key_Val_Type& Map_Temp)
-            {
-                return _Hash_Map.pop(Map_Temp);
-            }
-            bool find(const Key_Val_Type& Map_Temp)
-            {
-                return _Hash_Map.find(Map_Temp);
-            }
-            void printf()
-            {
-                _Hash_Map.printf();
-            }
-            size_t size()
-            {
-                return _Hash_Map.size();
-            }
-            bool empty()
-            {
-                return _Hash_Map.empty();
-            }
-            size_t capacity()
-            {
-                return _Hash_Map.capacity();
-            }
-            Key_Val_Type operator[](const size_t& Map_size)
-            {
-                return _Hash_Map[Map_size];
-            }
-            
         };
     }
     /*############################     Set 容器     ############################*/
@@ -5154,6 +5167,17 @@ int main()
         for(size_t i = 0; i < (size - 10); i++)
         {
             std::cout <<  unordered_Map_test.pop(MY_Template::Practicality::pair<size_t,size_t>(i,i)) <<" ";
+        }
+        auto it = unordered_Map_test.begin();
+        for(size_t i = 0; i < size; i++)
+        {
+            std::cout << *it <<" ";
+            ++it;
+        }
+        std::cout << std::endl;
+        for(auto& i : unordered_Map_test)
+        {
+            std::cout << i << " ";
         }
         std::cout << std::endl;
         unordered_Map_test.printf();
