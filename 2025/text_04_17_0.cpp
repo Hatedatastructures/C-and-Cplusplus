@@ -4105,7 +4105,7 @@ namespace MY_Template
                     }
                 }
             }
-            bool Change_Load_factor(size_t Temp_Load_factor)
+            bool Change_Load_factor(const size_t& Temp_Load_factor)
             {
                 if(Temp_Load_factor < 1)
                 {
@@ -4114,16 +4114,27 @@ namespace MY_Template
                 Load_factor = Temp_Load_factor;
                 return true;
             }
-            Hash_Table_Type_Val operator[](const size_t& Temp_size)
+            iterator operator[](const Hash_Table_Type_Key& Temp_Key)
             {
-                if(_Hash_Table[Temp_size]!= nullptr)
+                if( _size == 0)
                 {
-                    return _Hash_Table[Temp_size]->_data;
+                    return iterator(nullptr);
                 }
                 else
                 {
-                    // std::cout << "NULL" << " ";
-                    return Hash_Table_Type_Val();
+                    size_t Temp_Hash = _Type_imitation_function(Temp_Key);
+                    size_t Hash_Location_data = Temp_Hash % Capacity;
+                    //找到映射位置
+                    Node* _Temp_Node = _Hash_Table[Hash_Location_data];
+                    while(_Temp_Node!= nullptr)
+                    {
+                        if(_Hash_Functor(_Temp_Node->_data) == _Hash_Functor(Temp_Key))
+                        {
+                            return iterator(_Temp_Node);
+                        }
+                        _Temp_Node = _Temp_Node->_next;
+                    }
+                    return iterator(nullptr);
                 }
             }
             iterator begin()                    {   return iterator(_Head_data);        }
@@ -4138,7 +4149,7 @@ namespace MY_Template
 
             bool push (const Hash_Table_Type_Val& Temp_Val)
             {
-                if(find(Temp_Val))
+                if( find(Temp_Val) != nullptr)
                 {
                     return false;
                 }
@@ -4240,20 +4251,10 @@ namespace MY_Template
                 _size++;
                 return true;
             }
-            void printf()
-            {
-                Node* _Temp_Node = _Head_data;
-                while(_Temp_Node!= nullptr)
-                {
-                    std::cout << _Temp_Node->_data << " ";
-                    _Temp_Node = _Temp_Node->Link_next;
-                }
-            }
-            //////////////////////////        //仿函数未使用
             bool pop(const Hash_Table_Type_Val& Temp_Val)
             {
                 //空表判断
-                if( !find(Temp_Val ))
+                if( find(Temp_Val) == nullptr)
                 {
                     return false;
                 }
@@ -4265,7 +4266,7 @@ namespace MY_Template
                 while(_Temp_Node!= nullptr)
                 {
                     //找到位置
-                    if(_Temp_Node->_data == Temp_Val)
+                    if(_Hash_Functor(_Temp_Node->_data) == _Hash_Functor(Temp_Val))
                     {
                         if(_Head_data == _Temp_Node)
                         {
@@ -4309,11 +4310,11 @@ namespace MY_Template
                 }
                 return false;
             }
-            bool find(const Hash_Table_Type_Val& Temp_Val)
+            iterator find(const Hash_Table_Type_Val& Temp_Val)
             {
                 if( _size == 0)
                 {
-                    return false;
+                    return iterator(nullptr);
                 }
                 else
                 {
@@ -4323,13 +4324,13 @@ namespace MY_Template
                     Node* _Temp_Node = _Hash_Table[Hash_Location_data];
                     while(_Temp_Node!= nullptr)
                     {
-                        if(_Temp_Node->_data == Temp_Val)
+                        if(_Hash_Functor(_Temp_Node->_data) == _Hash_Functor(Temp_Val))
                         {
-                            return true;
+                            return iterator(_Temp_Node);
                         }
                         _Temp_Node = _Temp_Node->_next;
                     }
-                    return false;
+                    return iterator(nullptr);
                 }
             }                             
         };
@@ -4422,26 +4423,21 @@ namespace MY_Template
         public:
             using iterator = typename Hash_Table::iterator;
             using const_iterator = typename Hash_Table::const_iterator;
-            unordered_Map()                                 {   ;                                 }  
-            unordered_Map(const Key_Val_Type& Temp_Key_)    {  _Hash_Map.push(Temp_Key_);         }
-            ~unordered_Map()                                {  _Hash_Map.~Hash_Table();           }
-            bool push(const Key_Val_Type& Temp_Key_)        {  return _Hash_Map.push(Temp_Key_);  }
-            bool pop(const Key_Val_Type& Temp_Key_)         {  return _Hash_Map.pop(Temp_Key_);   }
-            bool find(const Key_Val_Type& Temp_Key_)        {  return _Hash_Map.find(Temp_Key_);  }
-            void Middle_order_traversal()                   {  _Hash_Map.printf();                }
-            size_t size()                                   {  return _Hash_Map.size();           }
-            size_t size() const                             {  return _Hash_Map.size();           }
-            size_t capacity() const                         {  return _Hash_Map.capacity();       } 
-            bool empty()                                    {  return _Hash_Map.empty();          }
-            iterator begin()                                {  return _Hash_Map.begin();          }
-            iterator end()                                  {  return _Hash_Map.end();            }
-            const_iterator cbegin()                         {  return _Hash_Map.cbegin();         }
-            const_iterator cend()                           {  return _Hash_Map.cend();           }
-            void printf()                                   {  _Hash_Map.printf();                }
-            Key_Val_Type operator[](const size_t& Temp_size)
-            {
-                return _Hash_Map[Temp_size];
-            }
+            unordered_Map()                                     {   ;                                 }  
+            unordered_Map(const Key_Val_Type& Temp_Key_)        {  _Hash_Map.push(Temp_Key_);         }
+            ~unordered_Map()                                    {  _Hash_Map.~Hash_Table();           }
+            bool push(const Key_Val_Type& Temp_Key_)            {  return _Hash_Map.push(Temp_Key_);  }
+            bool pop(const Key_Val_Type& Temp_Key_)             {  return _Hash_Map.pop(Temp_Key_);   }
+            iterator find(const Key_Val_Type& Temp_Key_)        {  return _Hash_Map.find(Temp_Key_);  }
+            size_t size()                                       {  return _Hash_Map.size();           }
+            size_t size() const                                 {  return _Hash_Map.size();           }
+            size_t capacity() const                             {  return _Hash_Map.capacity();       } 
+            bool empty()                                        {  return _Hash_Map.empty();          }
+            iterator begin()                                    {  return _Hash_Map.begin();          }
+            iterator end()                                      {  return _Hash_Map.end();            }
+            const_iterator cbegin()                             {  return _Hash_Map.cbegin();         }
+            const_iterator cend()                               {  return _Hash_Map.cend();           }
+            iterator operator[](const Key_Val_Type& Temp_Key_)  {  return _Hash_Map[Temp_Key_];       }
         };
     }
     /*############################     Set 容器     ############################*/
@@ -4512,17 +4508,33 @@ namespace MY_Template
                     return MY_Template::Imitation_functions::Hash_Imitation_functions()(Temp_Key_)* 131;
                 }
             };
-            using Hash_Table = MY_Template::Base_Class_Container::Hash_Table<unordered_Set_Type_K,Key_Val_Type,Key_Val_Type,Hash_Functor>;
+            class Key_Val
+            {
+            public:
+                const Key_Val_Type& operator()(const Key_Val_Type& Temp_Key_)
+                {
+                    return Temp_Key_;
+                }
+            };
+            using Hash_Table = MY_Template::Base_Class_Container::Hash_Table<unordered_Set_Type_K,Key_Val_Type,Key_Val,Hash_Functor>;
             Hash_Table _Hash_Set;
         public:
-            unordered_Set()                                {  ;                                        }
-            bool push(const Key_Val_Type& Set_Temp)        {  return _Hash_Set.push(Set_Temp);         }
-            bool pop(const Key_Val_Type& Set_Temp)         {  return _Hash_Set.pop(Set_Temp);          }            
-            bool find(const Key_Val_Type& Set_Temp)        {  return _Hash_Set.find(Set_Temp);         }
-            void printf()                                  {  _Hash_Set.printf();                      }
-            size_t size()                                  {  return _Hash_Set.size();                 }
-            bool empty()                                   {  return _Hash_Set.empty();                }
-            size_t capacity()                              {  return _Hash_Set.capacity();             }
+            using iterator = typename Hash_Table::iterator;
+            using const_iterator = typename Hash_Table::const_iterator;
+            unordered_Set()                                     {  ;                                        }
+            bool push(const Key_Val_Type& Set_Temp)             {  return _Hash_Set.push(Set_Temp);         }
+            bool pop(const Key_Val_Type& Set_Temp)              {  return _Hash_Set.pop(Set_Temp);          }            
+            iterator find(const Key_Val_Type& Set_Temp)         {  return _Hash_Set.find(Set_Temp);         }
+            size_t size()                                       {  return _Hash_Set.size();                 }
+            bool empty()                                        {  return _Hash_Set.empty();                }
+            size_t capacity()                                   {  return _Hash_Set.capacity();             }
+            size_t size() const                                 {  return _Hash_Set.size();                 }
+            size_t capacity() const                             {  return _Hash_Set.capacity();             }
+            iterator begin()                                    {  return _Hash_Set.begin();                }
+            iterator end()                                      {  return _Hash_Set.end();                  }
+            const_iterator cbegin()                             {  return _Hash_Set.cbegin();               }
+            const_iterator cend()                               {  return _Hash_Set.cend();                 }
+            iterator operator[](const Key_Val_Type& Set_Temp)   {  return _Hash_Set[Set_Temp];              }
         };
     }
 }
@@ -5151,18 +5163,13 @@ int main()
         {
             unordered_Map_test.push(arr[i]);
         }
-        unordered_Map_test.printf();
         std::cout << std::endl;
-        for(size_t i = 0; i < size; i++)
-        {
-            std::cout << unordered_Map_test[i] << " ";
-        }
-        std::cout << std::endl;
+
         std::cout << arr << std::endl;
-        std::cout << unordered_Map_test.find(MY_Template::Practicality::pair<size_t,size_t>(20,20)) << std::endl;
+        std::cout << *unordered_Map_test.find(MY_Template::Practicality::pair<size_t,size_t>(20,20)) << std::endl;
         for(size_t i = 0; i < size; i++)
         {
-            std::cout << unordered_Map_test.find(MY_Template::Practicality::pair<size_t,size_t>(i,i)) << " ";
+            std::cout << *unordered_Map_test.find(MY_Template::Practicality::pair<size_t,size_t>(i,i)) << " ";
         }
         std::cout << std::endl;
         for(size_t i = 0; i < (size - 10); i++)
@@ -5182,7 +5189,6 @@ int main()
         //     std::cout << i << " ";
         // }
         std::cout << std::endl;
-        unordered_Map_test.printf();
     }
     return 0;
 }
