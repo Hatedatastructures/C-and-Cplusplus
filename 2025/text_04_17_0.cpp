@@ -4017,6 +4017,19 @@ namespace MY_Template
             Type_imitation_function _Type_imitation_function;           //哈希函数
             Node* _previous_data = nullptr;                             //上一个数据
             Node* _Head_data = nullptr;                                 //插入头数据
+            void parent_Judgment(Node*& _Temp_Node_parent,Node*& _Temp_Node,size_t& Hash_Location_data)
+            {
+                if(_Temp_Node_parent!= nullptr)
+                {
+                    //父亲节点不为空，防止空指针错误
+                    _Temp_Node_parent->_next = _Temp_Node->_next;
+                }
+                else
+                {
+                    //父亲节点为空，直接将映射位置置空
+                    _Hash_Table[Hash_Location_data] = nullptr;
+                }
+            } 
         public:  
             Hash_Table()
             {
@@ -4097,9 +4110,6 @@ namespace MY_Template
 
             bool push (const Hash_Table_Type_Val& Temp_Val)
             {
-                // std::cout << _Hash_Table.size() << std::endl;
-                // std::cout << Capacity  << " " << _size << std::endl;
-                // std::cout << find(Temp_Val) << std::endl;
                 if(find(Temp_Val))
                 {
                     return false;
@@ -4223,123 +4233,50 @@ namespace MY_Template
                 //找到映射位置
                 Node* _Temp_Node = _Hash_Table[Hash_Location_data];
                 Node* _Temp_Node_parent = nullptr;
-                //////////////////////////////////////逻辑问题
                 while(_Temp_Node!= nullptr)
                 {
                     //找到位置
                     if(_Temp_Node->_data == Temp_Val)
                     {
-                        if(_Temp_Node == _Head_data)
+                        if(_Head_data == _Temp_Node)
                         {
-                            if(_Temp_Node->Link_next == nullptr && _Temp_Node->Link_prev == nullptr && _Temp_Node == _previous_data)
+                            //头节点删除情况
+                            if(_Temp_Node == _previous_data)
                             {
                                 //只有一个节点
                                 _Head_data = _previous_data = nullptr;
-                                delete _Temp_Node;
-                                _Temp_Node = nullptr;
-                                _size--;
-                            }
-                            else  if(_Head_data->Link_next != nullptr && _Temp_Node->Link_prev == nullptr && _Temp_Node != _previous_data)
-                            {
-                                //全局链表头结点
-                                if(_Temp_Node->_next != nullptr )
-                                {
-                                    if(_Temp_Node == _Hash_Table[Hash_Location_data] && _Temp_Node_parent == nullptr)
-                                    {
-                                        _Hash_Table[Hash_Location_data] = _Temp_Node->_next;
-                                        delete _Temp_Node;
-                                        _Temp_Node = nullptr;
-                                        _size--;
-                                    }
-                                    else
-                                    {
-                                        _Temp_Node_parent->_next = _Temp_Node->_next;
-                                        delete _Temp_Node;
-                                        _Temp_Node = nullptr;
-                                        _size--;
-                                    }
-                                }
-                                else
-                                {
-                                    _Temp_Node_parent->_next = nullptr;
-                                    delete _Temp_Node;
-                                    _Temp_Node = nullptr;
-                                    _size--;
-                                }
-                                _previous_data = _Head_data->Link_prev;
-                                _Head_data = _Head_data->Link_next;
-                                _Head_data->Link_prev = nullptr;
-                            }
-                            else if(_Head_data->Link_next != nullptr && _Temp_Node->Link_prev == nullptr && _Temp_Node == _previous_data)
-                            {
-                                //全局链表头结点
-                                if(_Temp_Node->_next != nullptr )
-                                {
-                                    if(_Temp_Node == _Hash_Table[Hash_Location_data] && _Temp_Node_parent == nullptr)
-                                    {
-                                        _Hash_Table[Hash_Location_data] = _Temp_Node->_next;
-                                        delete _Temp_Node;
-                                        _Temp_Node = nullptr;
-                                        _size--;
-                                    }
-                                    else
-                                    {
-                                        _Temp_Node_parent->_next = _Temp_Node->_next;
-                                        delete _Temp_Node;
-                                        _Temp_Node = nullptr;
-                                        _size--;
-                                    }
-                                }
-                                else
-                                {
-                                    if(_Temp_Node == _Hash_Table[Hash_Location_data] && _Temp_Node_parent == nullptr)
-                                    {
-                                        _Hash_Table[Hash_Location_data] = _Temp_Node->_next;
-                                        delete _Temp_Node;
-                                        _Temp_Node = nullptr;
-                                        _size--;
-                                    }
-                                    else
-                                    {
-                                        _Temp_Node_parent->_next = _Temp_Node->_next;
-                                        delete _Temp_Node;
-                                        _Temp_Node = nullptr;
-                                        _size--;
-                                    }
-                                }
-                                _previous_data = _Head_data->Link_prev;
-                                _Head_data = _Head_data->Link_next;
-                                _Head_data->Link_prev = nullptr;
-                            }
-                        }
-                        else if(_Temp_Node->Link_next == nullptr && _Temp_Node->Link_prev != nullptr && _Temp_Node != _Head_data)
-                        {
-                            //全局链表尾结点
-                            if(_Temp_Node == _previous_data)
-                            {
-                                _previous_data = _previous_data->Link_prev;
-                                _previous_data->Link_next = nullptr;
+                                parent_Judgment(_Temp_Node_parent,_Temp_Node,Hash_Location_data);
                             }
                             else
                             {
-                                _Temp_Node->Link_prev->Link_next = nullptr;
+                                //是头节点，不是尾节点
+                                parent_Judgment(_Temp_Node_parent,_Temp_Node,Hash_Location_data);
+                                _Head_data = _Head_data->Link_next;
+                                _Head_data->Link_prev = nullptr;
                             }
-                            delete _Temp_Node;
-                            _Temp_Node = nullptr;
-                            _size--;
+                        }
+                        else if(_Temp_Node == _previous_data)
+                        {
+                            //尾节点删除情况
+                            parent_Judgment(_Temp_Node_parent,_Temp_Node,Hash_Location_data);
+                            _previous_data = _previous_data->Link_prev;
+                            _previous_data->Link_next = nullptr;
                         }
                         else
                         {
+                            //中间节点删除情况
+                            parent_Judgment(_Temp_Node_parent,_Temp_Node,Hash_Location_data);
                             _Temp_Node->Link_prev->Link_next = _Temp_Node->Link_next;
                             _Temp_Node->Link_next->Link_prev = _Temp_Node->Link_prev;
-                            delete _Temp_Node;
-                            _Temp_Node = nullptr;
-                            _size--;
                         }
+                        delete _Temp_Node;
+                        _Temp_Node = nullptr;
+                        --_size;
                         return true;
                     }
                     _Temp_Node_parent = _Temp_Node;
-                    _Temp_Node = _Temp_Node->_next;       
+                    _Temp_Node = _Temp_Node->_next;
+                    //向下遍历
                 }
                 return false;
             }
@@ -4561,18 +4498,17 @@ namespace MY_Template
                     return MY_Template::Imitation_functions::Hash_Imitation_functions()(Temp_Key_)* 131;
                 }
             };
-        };
-    }
-    namespace Test_class
-    {
-        /* 测试红黑树所需函数 */
-        template <typename Set_Type_K>
-        struct Key_Val
-        {
-            const Set_Type_K& operator()(const Set_Type_K& Temp_Key_)
-            {
-                return Temp_Key_;
-            }
+            using Hash_Table = MY_Template::Base_Class_Container::Hash_Table<unordered_Set_Type_K,Key_Val_Type,Key_Val_Type,Hash_Functor>;
+            Hash_Table _Hash_Set;
+        public:
+            unordered_Set()                                {  ;                                        }
+            bool push(const Key_Val_Type& Set_Temp)        {  return _Hash_Set.push(Set_Temp);         }
+            bool pop(const Key_Val_Type& Set_Temp)         {  return _Hash_Set.pop(Set_Temp);          }            
+            bool find(const Key_Val_Type& Set_Temp)        {  return _Hash_Set.find(Set_Temp);         }
+            void printf()                                  {  _Hash_Set.printf();                      }
+            size_t size()                                  {  return _Hash_Set.size();                 }
+            bool empty()                                   {  return _Hash_Set.empty();                }
+            size_t capacity()                              {  return _Hash_Set.capacity();             }
         };
     }
 }
@@ -5209,18 +5145,18 @@ int main()
         }
         std::cout << std::endl;
         std::cout << arr << std::endl;
-        // std::cout << unordered_Map_test.find(MY_Template::Practicality::pair<size_t,size_t>(20,20)) << std::endl;
+        std::cout << unordered_Map_test.find(MY_Template::Practicality::pair<size_t,size_t>(20,20)) << std::endl;
         for(size_t i = 0; i < size; i++)
         {
             std::cout << unordered_Map_test.find(MY_Template::Practicality::pair<size_t,size_t>(i,i)) << " ";
         }
         std::cout << std::endl;
-        // for(size_t i = 0; i < (size - 10); i++)
-        // {
-        //     unordered_Map_test.pop(MY_Template::Practicality::pair<size_t,size_t>(i,i));
-        // }
-        // std::cout << std::endl;
-        // unordered_Map_test.printf();
+        for(size_t i = 0; i < (size - 10); i++)
+        {
+            std::cout <<  unordered_Map_test.pop(MY_Template::Practicality::pair<size_t,size_t>(i,i)) <<" ";
+        }
+        std::cout << std::endl;
+        unordered_Map_test.printf();
     }
     return 0;
 }
