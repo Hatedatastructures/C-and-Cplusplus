@@ -28,18 +28,20 @@ namespace MY_Template
         class Hash_Imitation_functions
         {
         public:
-            size_t operator()(const int data_str)
-            {
-                return data_str;
-            }
-            size_t operator()(const size_t data_num)
-            {
-                return data_num;
-            }
-            size_t operator()(const char data_char)
-            {
-                return data_char;
-            }
+            size_t operator()(const int data_str)                       {       return data_str;        }
+            size_t operator()(const size_t data_num)                    {       return data_num;        }
+            size_t operator()(const char data_char)                     {       return data_char;       }
+            size_t operator()(const double data_double)                 {       return data_double;     }
+            size_t operator()(const float data_float)                   {       return data_float;      }
+            size_t operator()(const long data_long)                     {       return data_long;       }
+            size_t operator()(const short data_short)                   {       return data_short;      }
+            size_t operator()(const long long data_long_long)           {       return data_long_long;  }
+            size_t operator()(const unsigned int data_unsigned)         {       return data_unsigned;   }
+            size_t operator()(const unsigned long data_unsigned_long)   { return data_unsigned_long; }
+            size_t operator()(const unsigned long long data_unsigned_long_long) { return data_unsigned_long_long; }
+            size_t operator()(const unsigned short data_unsigned_short) { return data_unsigned_short; }
+            size_t operator()(const char* data_char)                    {       return std::hash<const char*>{}(data_char); }
+  
             // size_t operator()(const MY_Template::string_Container::string& data_string)
             // {
             //     size_t hash_value = 0;
@@ -4335,7 +4337,8 @@ namespace MY_Template
             }                             
         };
         /*############################     Bitmap 容器     ############################*/
-        class Bitmap
+        template <typename BitMap_Type_Val >
+        class BitMap
         {
 
         };
@@ -4424,8 +4427,8 @@ namespace MY_Template
             using iterator = typename Hash_Table::iterator;
             using const_iterator = typename Hash_Table::const_iterator;
             unordered_Map()                                     {   ;                                 }  
-            unordered_Map(const Key_Val_Type& Temp_Key_)        {  _Hash_Map.push(Temp_Key_);         }
             ~unordered_Map()                                    {  _Hash_Map.~Hash_Table();           }
+            unordered_Map(const Key_Val_Type& Temp_Key_)        {  _Hash_Map.push(Temp_Key_);         }
             bool push(const Key_Val_Type& Temp_Key_)            {  return _Hash_Map.push(Temp_Key_);  }
             bool pop(const Key_Val_Type& Temp_Key_)             {  return _Hash_Map.pop(Temp_Key_);   }
             iterator find(const Key_Val_Type& Temp_Key_)        {  return _Hash_Map.find(Temp_Key_);  }
@@ -4464,10 +4467,6 @@ namespace MY_Template
             using const_reverse_iterator = typename RB_TREE::const_reverse_iterator;
             
             using Set_iterator = MY_Template::Practicality::pair<iterator,bool>;
-            ~Set()                                        
-            {  
-                _ROOT_Set.~RB_Tree();                      
-            }
             Set& operator=(const Set& Set_Temp)             
             {  
                 if(this!= &Set_Temp)                     
@@ -4477,6 +4476,7 @@ namespace MY_Template
                 return *this; 
             }
             Set()                                               {  ;                                        }
+            ~Set()                                              {  _ROOT_Set.~RB_Tree();                    }
             Set(const Set& Set_Temp)                            {  _ROOT_Set = Set_Temp._ROOT_Set;          }
             Set(const Key_Val_Type& Set_Temp)                   {  _ROOT_Set.push(Set_Temp);                }
             Set_iterator push(const Key_Val_Type& Set_Temp)     {  return _ROOT_Set.push(Set_Temp);         }
@@ -4522,6 +4522,7 @@ namespace MY_Template
             using iterator = typename Hash_Table::iterator;
             using const_iterator = typename Hash_Table::const_iterator;
             unordered_Set()                                     {  ;                                        }
+            ~unordered_Set()                                    {   _Hash_Set.~Hash_Table();                }
             bool push(const Key_Val_Type& Set_Temp)             {  return _Hash_Set.push(Set_Temp);         }
             bool pop(const Key_Val_Type& Set_Temp)              {  return _Hash_Set.pop(Set_Temp);          }            
             iterator find(const Key_Val_Type& Set_Temp)         {  return _Hash_Set.find(Set_Temp);         }
@@ -4535,6 +4536,15 @@ namespace MY_Template
             const_iterator cbegin()                             {  return _Hash_Set.cbegin();               }
             const_iterator cend()                               {  return _Hash_Set.cend();                 }
             iterator operator[](const Key_Val_Type& Set_Temp)   {  return _Hash_Set[Set_Temp];              }
+        };
+    }
+    /*############################     BloomFilter 容器     ############################*/
+    namespace BloomFilter_Container
+    {
+        template <typename BloomFilter_Type_Val>
+        class BloomFilter
+        {
+            using BitMap = MY_Template::Base_Class_Container::BitMap<BloomFilter_Type_Val>;
         };
     }
 }
