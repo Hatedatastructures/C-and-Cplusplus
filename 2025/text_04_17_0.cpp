@@ -4336,11 +4336,29 @@ namespace MY_Template
                 }
             }                             
         };
-        /*############################     Bitmap 容器     ############################*/
-        template <typename BitMap_Type_Val >
-        class BitMap
+        /*############################     BitSet 容器     ############################*/
+        template <typename BitSet_Type_Val, typename Hash_One,typename Hash_two,typename Hash_Three>
+        class BitSet
         {
-
+            MY_Template::vector_Container::vector<BitSet_Type_Val> _BitMap;
+        public:
+            BitSet() {  ;  }
+            BitSet(const BitSet& BitMap_Temp)
+            {
+                _BitMap = BitMap_Temp._BitMap;
+            }
+            BitSet& operator=(const BitSet& BitMap_Temp)
+            {
+                if(this != &BitMap_Temp)
+                {
+                    _BitMap = BitMap_Temp._BitMap;
+                }
+                return *this;
+            }
+            void push(const BitSet_Type_Val& Temp_Val)
+            {
+                
+            }
         };
     }
     /*############################     Map 容器     ############################*/
@@ -4541,10 +4559,11 @@ namespace MY_Template
     /*############################     BloomFilter 容器     ############################*/
     namespace BloomFilter_Container
     {
-        template <typename BloomFilter_Type_Val>
+        template <size_t BloomFilter_Type,typename BloomFilter_Type_Val>
         class BloomFilter
         {
-            using BitMap = MY_Template::Base_Class_Container::BitMap<BloomFilter_Type_Val>;
+            using BitSet = MY_Template::Base_Class_Container::BitSet<BloomFilter_Type>;
+            BitSet _vector_BitSet;
         };
     }
 }
