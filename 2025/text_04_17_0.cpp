@@ -28,19 +28,18 @@ namespace MY_Template
         class Hash_Imitation_functions
         {
         public:
-            size_t operator()(const int data_str)                       {       return data_str;        }
-            size_t operator()(const size_t data_num)                    {       return data_num;        }
-            size_t operator()(const char data_char)                     {       return data_char;       }
-            size_t operator()(const double data_double)                 {       return data_double;     }
-            size_t operator()(const float data_float)                   {       return data_float;      }
-            size_t operator()(const long data_long)                     {       return data_long;       }
-            size_t operator()(const short data_short)                   {       return data_short;      }
-            size_t operator()(const long long data_long_long)           {       return data_long_long;  }
-            size_t operator()(const unsigned int data_unsigned)         {       return data_unsigned;   }
-            size_t operator()(const unsigned long data_unsigned_long)   { return data_unsigned_long; }
-            size_t operator()(const unsigned long long data_unsigned_long_long) { return data_unsigned_long_long; }
-            size_t operator()(const unsigned short data_unsigned_short) { return data_unsigned_short; }
-            size_t operator()(const char* data_char)                    {       return std::hash<const char*>{}(data_char); }
+            size_t operator()(const int data_str)                               {       return data_str;                }
+            size_t operator()(const size_t data_num)                            {       return data_num;                }
+            size_t operator()(const char data_char)                             {       return data_char;               }
+            size_t operator()(const double data_double)                         {       return data_double;             }
+            size_t operator()(const float data_float)                           {       return data_float;              }
+            size_t operator()(const long data_long)                             {       return data_long;               }
+            size_t operator()(const short data_short)                           {       return data_short;              }
+            size_t operator()(const long long data_long_long)                   {       return data_long_long;          }
+            size_t operator()(const unsigned int data_unsigned)                 {       return data_unsigned;           }
+            size_t operator()(const unsigned long data_unsigned_long)           {       return data_unsigned_long;      }
+            size_t operator()(const unsigned short data_unsigned_short)         {       return data_unsigned_short;     }
+            
   
             // size_t operator()(const MY_Template::string_Container::string& data_string)
             // {
@@ -157,6 +156,45 @@ namespace MY_Template
             data_type_swap temp = a;
             a = b;
             b = temp;
+        }
+        namespace Hash_algorithm
+        {
+            template <typename Hash_algorithm_Type ,typename Hash_IF = MY_Template::Imitation_functions::Hash_Imitation_functions>
+            class Hash_function
+            {
+            public:
+                Hash_IF Hash_Imitation_functions_object;
+                size_t Hash_SDBMHash(const Hash_algorithm_Type& data_Hahs)
+                {
+                    size_t return_value = Hash_Imitation_functions_object(data_Hahs);
+                    return_value = 65599 * return_value;
+                    return return_value;
+                }
+                size_t Hash_BKDRHash(const Hash_algorithm_Type& data_Hahs)
+                {
+                    size_t return_value = Hash_Imitation_functions_object(data_Hahs);
+                    return_value = 131 * return_value;
+                    return return_value;
+                }
+                size_t Hash_DJBHash(const Hash_algorithm_Type& data_Hahs)
+                {
+                    size_t return_value = Hash_Imitation_functions_object(data_Hahs);
+                    return_value = 33 * return_value;
+                    return return_value;
+                }
+                size_t Hash_APHash(const Hash_algorithm_Type& data_Hahs)
+                {
+                    size_t return_value = Hash_Imitation_functions_object(data_Hahs);
+                    return_value = return_value * 1031;
+                    return return_value;
+                }
+                size_t Hash_PJWHash(const Hash_algorithm_Type& data_Hahs)
+                {
+                    size_t return_value = Hash_Imitation_functions_object(data_Hahs);
+                    return_value = (return_value << 2) + return_value;
+                    return return_value;
+                }
+            };
         }
     }
     /*############################     string容器     ############################*/
@@ -4379,7 +4417,7 @@ namespace MY_Template
                 //其他位如果是1那么就还是1，如果是0那么就还是0，因为|是两个条件满足一个条件就行
                 _size++;
             }
-            void reset(const BitSet_Type_Val& Temp_Val)
+            void reset(const size_t& Temp_Val)
             {
                 //删除映射的位置的函数
                 size_t BitSet_Location = Temp_Val / 32;
@@ -4390,9 +4428,10 @@ namespace MY_Template
                 //其他位如果是1那么就不会改变原来的，如果是0那么还是为0，因为与是两个条件都需要满足
                 _size--;
             }
+            size_t size()       { return _size; }
             bool test(const size_t& Temp_Val)
             {
-                if(_size == 0 || _size < Temp_Val)
+                if(_size == 0)
                 {
                     return false;
                 }
@@ -4602,12 +4641,53 @@ namespace MY_Template
     /*############################     BloomFilter 容器     ############################*/
     namespace BloomFilter_Container
     {
-        template <typename BloomFilter_Type_Val>
+        template <typename BloomFilter_Type_Val,typename Hash_Functor_BloomFilter = MY_Template::algorithm::Hash_algorithm::Hash_function<BloomFilter_Type_Val> >
         class BloomFilter
         {
+            Hash_Functor_BloomFilter   _Hash;
             using BitSet = MY_Template::Base_Class_Container::BitSet;
             BitSet _vector_BitSet;
             size_t _Capacity;
+        public:
+            BloomFilter()
+            {
+                _Capacity = 1000;
+                _vector_BitSet.resize(_Capacity);
+            }
+            BloomFilter(const size_t& Temp_Capacity)
+            {
+                _Capacity = Temp_Capacity;
+                _vector_BitSet.resize(_Capacity);
+            }
+            size_t size()
+            {
+                return _vector_BitSet.size();
+            }
+            size_t capacity()
+            {
+                return _Capacity;
+            }
+            bool test(const BloomFilter_Type_Val& Temp_Val)
+            {
+                size_t num_One   = _Hash.Hash_SDBMHash(Temp_Val) % _Capacity;
+                size_t num_Two   = _Hash.Hash_DJBHash (Temp_Val) % _Capacity;
+                size_t num_Three = _Hash.Hash_PJWHash (Temp_Val) % _Capacity;
+                if(_vector_BitSet.test(num_One) == true && _vector_BitSet.test(num_Two) == true && _vector_BitSet.test(num_Three) && true)
+                {
+                    return true;
+                    /* 有一个为0就返回false */
+                }
+                return false;
+            }
+            void set(const BloomFilter_Type_Val& Temp_Val)
+            {
+                size_t num_One   = _Hash.Hash_SDBMHash(Temp_Val) % _Capacity;
+                size_t num_Two   = _Hash.Hash_DJBHash (Temp_Val) % _Capacity;
+                size_t num_Three = _Hash.Hash_PJWHash (Temp_Val) % _Capacity;
+                _vector_BitSet.set(num_One);
+                _vector_BitSet.set(num_Two);
+                _vector_BitSet.set(num_Three);
+            }
         };
     }
 }
@@ -5223,44 +5303,65 @@ int main()
     //     }
     // }
     /*            unordered_Map 测试             */
-    {
-        MY_Template::Map_Container::unordered_Map<size_t,size_t> unordered_Map_test;
-        size_t size = 23;
-        MY_Template::vector_Container::vector<MY_Template::Practicality::pair<size_t,size_t>> arr;
-        size_t l = 0;
-        for(size_t i = 0 ; i < size; i++,l = i)
-        {
-            arr.push_back(MY_Template::Practicality::pair<size_t,size_t>(i,l));
-        }
-        for(size_t i = 0; i < size; i++)
-        {
-            unordered_Map_test.push(arr[i]);
-        }
-        std::cout << std::endl;
+    // {
+    //     MY_Template::Map_Container::unordered_Map<size_t,size_t> unordered_Map_test;
+    //     size_t size = 23;
+    //     MY_Template::vector_Container::vector<MY_Template::Practicality::pair<size_t,size_t>> arr;
+    //     size_t l = 0;
+    //     for(size_t i = 0 ; i < size; i++,l = i)
+    //     {
+    //         arr.push_back(MY_Template::Practicality::pair<size_t,size_t>(i,l));
+    //     }
+    //     for(size_t i = 0; i < size; i++)
+    //     {
+    //         unordered_Map_test.push(arr[i]);
+    //     }
+    //     std::cout << std::endl;
 
+    //     std::cout << arr << std::endl;
+    //     std::cout << *unordered_Map_test.find(MY_Template::Practicality::pair<size_t,size_t>(20,20)) << std::endl;
+    //     for(size_t i = 0; i < size; i++)
+    //     {
+    //         std::cout << *unordered_Map_test.find(MY_Template::Practicality::pair<size_t,size_t>(i,i)) << " ";
+    //     }
+    //     std::cout << std::endl;
+    //     for(size_t i = 0; i < (size - 10); i++)
+    //     {
+    //         std::cout <<  unordered_Map_test.pop(MY_Template::Practicality::pair<size_t,size_t>(i,i)) <<" ";
+    //     }
+    //     // auto it = unordered_Map_test.begin();//迭代器越界
+    //     // for(size_t i = 0; i < size; i++)
+    //     // {
+    //     //     //
+    //     //     std::cout << *it <<" ";
+    //     //     ++it;
+    //     // }
+    //     std::cout << std::endl;
+    //     // for(auto& i : unordered_Map_test)
+    //     // {
+    //     //     std::cout << i << " ";
+    //     // }
+    //     std::cout << std::endl;
+    // }
+    /*            BloomFilter 测试             */
+    {
+        MY_Template::BloomFilter_Container::BloomFilter<size_t> BloomFilter_test(3000000000);
+        size_t size = 20;
+        MY_Template::vector_Container::vector<size_t> arr;
+        for(size_t i = 0; i < size; i++ )
+        {
+            arr.push_back(i);
+        }
         std::cout << arr << std::endl;
-        std::cout << *unordered_Map_test.find(MY_Template::Practicality::pair<size_t,size_t>(20,20)) << std::endl;
-        for(size_t i = 0; i < size; i++)
+        for(auto& j : arr)
         {
-            std::cout << *unordered_Map_test.find(MY_Template::Practicality::pair<size_t,size_t>(i,i)) << " ";
+            BloomFilter_test.set(j);
         }
-        std::cout << std::endl;
-        for(size_t i = 0; i < (size - 10); i++)
+        for(auto& j : arr)
         {
-            std::cout <<  unordered_Map_test.pop(MY_Template::Practicality::pair<size_t,size_t>(i,i)) <<" ";
+            std::cout << BloomFilter_test.test(j) << " ";
         }
-        // auto it = unordered_Map_test.begin();//迭代器越界
-        // for(size_t i = 0; i < size; i++)
-        // {
-        //     //
-        //     std::cout << *it <<" ";
-        //     ++it;
-        // }
-        std::cout << std::endl;
-        // for(auto& i : unordered_Map_test)
-        // {
-        //     std::cout << i << " ";
-        // }
+        std::cout << BloomFilter_test.test(100) << " ";
         std::cout << std::endl;
     }
     return 0;
