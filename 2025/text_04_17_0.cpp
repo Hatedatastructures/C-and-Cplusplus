@@ -2239,7 +2239,42 @@ namespace MY_Template
                 {
                     ;
                 }
-                /////////未完成
+                Ptr operator->()
+                {
+                    return &_Node->_data.second;
+                }
+                Ref operator*()
+                {
+                    return _Node->_data.second;
+                }
+                bool operator!=(const Self& Self_temp)
+                {
+                    return _Node != Self_temp._Node;
+                }
+                bool operator==(const Self& Self_temp)
+                {
+                    return _Node == Self_temp._Node;
+                }
+                Self& operator++()
+                {
+
+                }
+                Self operator++(int)
+                {
+                    Self temp = *this;
+                    ++(*this);
+                    return temp;
+                }
+                Self& operator--()
+                {
+
+                }
+                Self operator--(int)
+                {
+                    Self temp = *this;
+                    --(*this);
+                    return temp;
+                }
             };
             using Node = AVL_Tree_Type_Node;
             Node* _ROOT;
@@ -2524,6 +2559,8 @@ namespace MY_Template
                 return temp;
             }
         public:
+            using iterator = AVL_Tree_iterator<AVL_Tree_Type_K,AVL_Tree_Type_V&,AVL_Tree_Type_V*>;
+            ////////////////////////////////
             AVL_Tree()
             {
                 _ROOT = nullptr;
@@ -4127,7 +4164,7 @@ namespace MY_Template
                         _Temp_Node = _Temp_Node->_next;
                         _Temp_Node_prev->_next = nullptr;
                         insert(_Temp_Node_prev->_data);
-                    }//未完成
+                    }
                 }
                 MY_Template::Practicality::pair<Node*,Node*> _Temp_pair(Temp_Hash_Table._Hash_Table[0],Temp_Hash_Table._Hash_Table[0]);
             }
