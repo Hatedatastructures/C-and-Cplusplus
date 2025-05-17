@@ -4337,27 +4337,70 @@ namespace MY_Template
             }                             
         };
         /*############################     BitSet 容器     ############################*/
-        template <typename BitSet_Type_Val, typename Hash_One,typename Hash_two,typename Hash_Three>
         class BitSet
         {
-            MY_Template::vector_Container::vector<BitSet_Type_Val> _BitMap;
+            MY_Template::vector_Container::vector<int> _BitSet;
+            size_t _size;
         public:
             BitSet() {  ;  }
+            BitSet(const size_t& Temp_size)
+            {
+                _size = 0;
+                _BitSet.resize((Temp_size / 32) + 1,0);
+                //多开一个int的空间，防止不够
+            }
+            void resize(const size_t& Temp_size)
+            {
+                _size = 0;
+                _BitSet.resize((Temp_size / 32) + 1,0);
+            }
             BitSet(const BitSet& BitMap_Temp)
             {
-                _BitMap = BitMap_Temp._BitMap;
+                _BitSet = BitMap_Temp._BitSet;
+                _size = BitMap_Temp._size;
             }
             BitSet& operator=(const BitSet& BitMap_Temp)
             {
                 if(this != &BitMap_Temp)
                 {
-                    _BitMap = BitMap_Temp._BitMap;
+                    _BitSet = BitMap_Temp._BitSet;
+                    _size = BitMap_Temp._size;
                 }
                 return *this;
             }
-            void push(const BitSet_Type_Val& Temp_Val)
+            void set(const size_t& Temp_Val)
             {
-                
+                //把数映射到BitSet上的函数
+                size_t BitSet_Location = Temp_Val / 32; //定位到BitSet的位置在哪个int上
+                size_t BitSet_Location_Val = Temp_Val % 32; //定位到BitSet的位置在哪个int上的第几位
+                _BitSet[BitSet_Location] = _BitSet[BitSet_Location] | (1 << BitSet_Location_Val);
+                //比较当前位置是否为1，若为1则不需要改变，若为0则需要改变，注意|只改变当前位不会改变其他位
+                //|是两个条件满足一个条件就行，&是两个条件都满足才行
+                //其他位如果是1那么就还是1，如果是0那么就还是0，因为|是两个条件满足一个条件就行
+                _size++;
+            }
+            void reset(const BitSet_Type_Val& Temp_Val)
+            {
+                //删除映射的位置的函数
+                size_t BitSet_Location = Temp_Val / 32;
+                size_t BitSet_Location_Val = Temp_Val % 32;
+                _BitSet[BitSet_Location] = _BitSet[BitSet_Location] & (~(1 << BitSet_Location_Val));
+                //&是两个条件都满足，~是取反，^是两个条件不同时满足
+                //1取反关键位是0其他位是1，这样就成功与掉，&要求是两个条件都需要满足
+                //其他位如果是1那么就不会改变原来的，如果是0那么还是为0，因为与是两个条件都需要满足
+                _size--;
+            }
+            bool test(const size_t& Temp_Val)
+            {
+                if(_size == 0 || _size < Temp_Val)
+                {
+                    return false;
+                }
+                size_t BitSet_Location = Temp_Val / 32;
+                size_t BitSet_Location_Val = Temp_Val % 32;
+                bool return_BitSet = _BitSet[BitSet_Location] & (1 << BitSet_Location_Val);
+                //如果_BitSet[BitSet_Location]里对应的位是1那么就返回true，否则返回false
+                return return_BitSet;
             }
         };
     }
@@ -4559,11 +4602,12 @@ namespace MY_Template
     /*############################     BloomFilter 容器     ############################*/
     namespace BloomFilter_Container
     {
-        template <size_t BloomFilter_Type,typename BloomFilter_Type_Val>
+        template <typename BloomFilter_Type_Val>
         class BloomFilter
         {
-            using BitSet = MY_Template::Base_Class_Container::BitSet<BloomFilter_Type>;
+            using BitSet = MY_Template::Base_Class_Container::BitSet;
             BitSet _vector_BitSet;
+            size_t _Capacity;
         };
     }
 }
