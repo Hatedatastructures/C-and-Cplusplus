@@ -107,6 +107,8 @@ namespace MY_Template
             {
                 return this;
             }
+            // pair& operator*() { return *this; }
+            // const pair& operator*() const { return *this; }
             template<typename pair_ostream_T,typename pair_ostream_K>
             friend std::ostream& operator<<(std::ostream& os,const pair<pair_ostream_T,pair_ostream_K>& p);
         };
@@ -2233,6 +2235,8 @@ namespace MY_Template
             public:
                 using iterator_Node = AVL_Tree_Type_Node;
                 using Self = AVL_Tree_iterator<T,Ref,Ptr>;
+                using pointer = Ptr;
+                using reference = Ref;
                 iterator_Node* _Node;
                 AVL_Tree_iterator(iterator_Node* _Node_Temp)
                 :_Node(_Node_Temp)
@@ -2241,23 +2245,40 @@ namespace MY_Template
                 }
                 Ptr operator->()
                 {
-                    return &_Node->_data.second;
+                    return &(_Node->_data);
                 }
                 Ref operator*()
                 {
-                    return _Node->_data.second;
+                    return _Node->_data;
                 }
                 bool operator!=(const Self& Self_temp)
                 {
                     return _Node != Self_temp._Node;
                 }
-                bool operator==(const Self& Self_temp)
+                bool operator==(const Self& Self_temp) 
                 {
                     return _Node == Self_temp._Node;
                 }
                 Self& operator++()
                 {
-
+                    if(_Node->_right != nullptr)
+                    {
+                        _Node = _Node->_right;
+                        while(_Node->_left != nullptr)
+                        {
+                            _Node = _Node->_left;
+                        }
+                    }
+                    else
+                    {
+                        Node* _Node_temp = _Node;
+                        while(_Node_temp->_parent != nullptr && _Node_temp == _Node_temp->_parent->_right)
+                        {
+                            _Node_temp = _Node_temp->_parent;
+                        }
+                        _Node = _Node_temp->_parent;
+                    }
+                    return *this;
                 }
                 Self operator++(int)
                 {
@@ -2267,7 +2288,24 @@ namespace MY_Template
                 }
                 Self& operator--()
                 {
-
+                    if(_Node->_left != nullptr)
+                    {
+                        _Node = _Node->_left;
+                        while(_Node->_right != nullptr)
+                        {
+                            _Node = _Node->_right;
+                        }
+                    }
+                    else
+                    {
+                        Node* _Node_temp = _Node;
+                        while(_Node_temp->_parent != nullptr && _Node_temp == _Node_temp->_parent->_left)
+                        {
+                            _Node_temp = _Node_temp->_parent;
+                        }
+                        _Node = _Node_temp->_parent;
+                    }
+                    return *this;
                 }
                 Self operator--(int)
                 {
@@ -2275,6 +2313,59 @@ namespace MY_Template
                     --(*this);
                     return temp;
                 }
+            };
+            template<typename iterator>
+            class AVL_Tree_reverse_iterator
+            {
+            public:
+                using Self = AVL_Tree_reverse_iterator<iterator>;
+                iterator _it;
+                using Ptr = typename iterator::pointer;
+                using Ref = typename iterator::reference;
+                AVL_Tree_reverse_iterator(iterator _it_Temp)
+                :_it(_it_Temp)
+                {
+                    ;
+                }
+                Ptr operator->()
+                {
+                    return &(*this);
+                }
+                Ref operator*()
+                {
+                    return *_it;
+                }
+                bool operator!=(const Self& Self_temp)
+                {
+                    return _it != Self_temp._it;
+                }
+                bool operator==(const Self& Self_temp)
+                {
+                    return _it == Self_temp._it;
+                }
+                Self& operator++()
+                {
+                    --_it;
+                    return *this;
+                }
+                Self operator++(int)
+                {
+                    Self temp = *this;
+                    --(*this);
+                    return temp;
+                }
+                Self& operator--()
+                {
+                    ++_it;
+                    return *this;
+                }
+                Self operator--(int)
+                {
+                    Self temp = *this;
+                    ++(*this);
+                    return temp;
+                }
+                
             };
             using Node = AVL_Tree_Type_Node;
             Node* _ROOT;
@@ -2559,8 +2650,68 @@ namespace MY_Template
                 return temp;
             }
         public:
-            using iterator = AVL_Tree_iterator<AVL_Tree_Type_K,AVL_Tree_Type_V&,AVL_Tree_Type_V*>;
-            ////////////////////////////////
+            using iterator = AVL_Tree_iterator<AVL_Tree_Synthetic_class,AVL_Tree_Synthetic_class&,AVL_Tree_Synthetic_class*>;
+            using const_iterator = AVL_Tree_iterator<AVL_Tree_Synthetic_class,const AVL_Tree_Synthetic_class&,const AVL_Tree_Synthetic_class*>;
+
+            using reverse_iterator = AVL_Tree_reverse_iterator<iterator>;
+            using const_reverse_iterator = AVL_Tree_reverse_iterator<const_iterator>;
+
+            iterator begin()                    
+            {
+                Node* _begin_temp = _ROOT;
+                while(_begin_temp != nullptr && _begin_temp->_left!= nullptr)
+                {
+                    _begin_temp = _begin_temp->_left;
+                }
+                return iterator(_begin_temp);
+            }
+            iterator end()
+            {
+                return iterator(nullptr);
+            }
+            const_iterator cbegin() const
+            {
+                Node* _begin_temp = _ROOT;
+                while(_begin_temp != nullptr && _begin_temp->_left!= nullptr)
+                {
+                    _begin_temp = _begin_temp->_left;
+                }
+                return const_iterator(_begin_temp);
+            }
+            const_iterator cend() const
+            {
+                return const_iterator(nullptr);
+            }
+            reverse_iterator rbegin()
+            {
+                Node* _rbegin_temp = _ROOT;
+                while(_rbegin_temp!= nullptr && _rbegin_temp->_right!= nullptr)
+                {
+                    _rbegin_temp = _rbegin_temp->_right;
+                }
+                return reverse_iterator(iterator(_rbegin_temp));
+            }
+            reverse_iterator rend()
+            {
+                return reverse_iterator(iterator(nullptr));
+            }
+            const_reverse_iterator crbegin() const
+            {
+                Node* _rbegin_temp = _ROOT;
+                while(_rbegin_temp!= nullptr && _rbegin_temp->_right!= nullptr)
+                {
+                    _rbegin_temp = _rbegin_temp->_right;
+                }
+                return const_reverse_iterator(const_iterator(_rbegin_temp));
+            }
+            const_reverse_iterator crend() const
+            {
+                return const_reverse_iterator(const_iterator(nullptr));
+            }
+            bool empty()
+            {
+                return _ROOT == nullptr;
+            }
             AVL_Tree()
             {
                 _ROOT = nullptr;
@@ -4725,6 +4876,7 @@ namespace MY_Template
                 _vector_BitSet.set(num_Two);
                 _vector_BitSet.set(num_Three);
             }
+            //布隆过滤器只支持插入和查找，不支持删除
         };
     }
 }
@@ -5194,6 +5346,34 @@ int main()
     //     BS_TREE.Middle_order_traversal();
     //     std::cout << std::endl;
     // }
+    {
+        MY_Template::Tree_Container::AVL_Tree<int,int> AVL_Tree_test_pair;
+        MY_Template::vector_Container::vector<MY_Template::Practicality::pair<int,int>> AVL_Tree_array_pair = 
+        {{22,0},{16,0},{13,0},{15,0},{11,0},{12,0},{14,0},{10,0},{2,0},{10,0}};
+
+        for(auto& i : AVL_Tree_array_pair)
+        {
+            AVL_Tree_test_pair.push(i);
+        }
+        std::cout << std::endl;
+        for (auto i : AVL_Tree_test_pair)
+        {
+            std::cout << i << " ";
+            //该行会被推断为pair<int,int>类型
+            //
+        }
+        std::cout << std::endl;
+        for (auto it = AVL_Tree_test_pair.begin(); it != AVL_Tree_test_pair.end(); ++it)
+        {
+            std::cout << *it << " ";
+        }
+        std::cout << std::endl;
+        for (auto const &p : AVL_Tree_test_pair) 
+        {
+            std::cout << p << " ";
+        }
+        
+    }
     // {
     //     //删除测试
     //     MY_Template::Tree_Container::AVL_Tree<int,int> AVL_Tree_test_pair;
@@ -5247,26 +5427,6 @@ int main()
     //     }
     //     time_t AVL_Tree_num4 = clock();
     //     std::cout << "插入个数:" << AVL_Tree_test.size()  << " " << " 插入时间:" << AVL_Tree_num4 - AVL_Tree_num3 << std::endl;
-    // }
-    // /*            RB_Tree 测试             */
-    // {
-    //     MY_Template::Base_Class_Container::RB_Tree<size_t,size_t,MY_Template::Test_class::Key_Val<size_t>> RB_Tree_Test;
-    //     size_t size = 10;
-    //     MY_Template::vector_Container::vector<size_t> arr;
-    //     for(size_t i = 0; i < size; i++ )
-    //     {
-    //         arr.push_back(i);
-    //     }
-    //     std::cout << arr << std::endl;
-    //     for(auto& j : arr)
-    //     {
-    //         RB_Tree_Test.push(j);
-    //         std::cout << "前序遍历" << " ";
-    //         RB_Tree_Test.Pre_order_traversal();
-    //         std::cout << "   " << "中序遍历" << " ";
-    //         RB_Tree_Test.Middle_order_traversal();
-    //         std::cout << std::endl;
-    //     }
     // }
     // /*            Map 测试             */
     // {
@@ -5339,7 +5499,7 @@ int main()
     //         std::cout << *j << " ";
     //     }
     // }
-    /*            unordered_Map 测试             */
+    // /*            unordered_Map 测试             */
     // {
     //     MY_Template::Map_Container::unordered_Map<size_t,size_t> unordered_Map_test;
     //     size_t size = 23;
@@ -5380,26 +5540,26 @@ int main()
     //     // }
     //     std::cout << std::endl;
     // }
-    /*            BloomFilter 测试             */
-    {
-        MY_Template::BloomFilter_Container::BloomFilter<size_t> BloomFilter_test(3000000000);
-        size_t size = 20;
-        MY_Template::vector_Container::vector<size_t> arr;
-        for(size_t i = 0; i < size; i++ )
-        {
-            arr.push_back(i);
-        }
-        std::cout << arr << std::endl;
-        for(auto& j : arr)
-        {
-            BloomFilter_test.set(j);
-        }
-        for(auto& j : arr)
-        {
-            std::cout << BloomFilter_test.test(j) << " ";
-        }
-        std::cout << BloomFilter_test.test(100) << " ";
-        std::cout << std::endl;
-    }
+    // /*            BloomFilter 测试             */
+    // {
+    //     MY_Template::BloomFilter_Container::BloomFilter<size_t> BloomFilter_test(3000000000);
+    //     size_t size = 20;
+    //     MY_Template::vector_Container::vector<size_t> arr;
+    //     for(size_t i = 0; i < size; i++ )
+    //     {
+    //         arr.push_back(i);
+    //     }
+    //     std::cout << arr << std::endl;
+    //     for(auto& j : arr)
+    //     {
+    //         BloomFilter_test.set(j);
+    //     }
+    //     for(auto& j : arr)
+    //     {
+    //         std::cout << BloomFilter_test.test(j) << " ";
+    //     }
+    //     std::cout << BloomFilter_test.test(100) << " ";
+    //     std::cout << std::endl;
+    // }
     return 0;
 }
