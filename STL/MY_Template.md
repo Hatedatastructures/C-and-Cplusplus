@@ -1,8 +1,8 @@
 ``` cpp
+//本文件都是自己造的轮子
+#define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
 #include <cstring>
-#include <random>
-#include <algorithm>
 namespace MY_Template
 {
     namespace Imitation_functions
@@ -25,6 +25,33 @@ namespace MY_Template
             {
                 return _test1 > _test2;
             }
+        };
+        class Hash_Imitation_functions
+        {
+        public:
+            size_t operator()(const int data_str)                               {       return data_str;                }
+            size_t operator()(const size_t data_num)                            {       return data_num;                }
+            size_t operator()(const char data_char)                             {       return data_char;               }
+            size_t operator()(const double data_double)                         {       return data_double;             }
+            size_t operator()(const float data_float)                           {       return data_float;              }
+            size_t operator()(const long data_long)                             {       return data_long;               }
+            size_t operator()(const short data_short)                           {       return data_short;              }
+            size_t operator()(const long long data_long_long)                   {       return data_long_long;          }
+            size_t operator()(const unsigned int data_unsigned)                 {       return data_unsigned;           }
+            size_t operator()(const unsigned long data_unsigned_long)           {       return data_unsigned_long;      }
+            size_t operator()(const unsigned short data_unsigned_short)         {       return data_unsigned_short;     }
+            
+  
+            // size_t operator()(const MY_Template::string_Container::string& data_string)
+            // {
+            //     size_t hash_value = 0;
+            //     for(size_t i = 0; i < data_string._size; ++i)
+            //     {
+            //         hash_value = hash_value * 31 + data_string._data[i];
+            //     }
+            //     return hash_value;
+            // }
+            //有需要可以重载本文件的string容器和vector容器.list容器等计算哈希的函数
         };
     }
     namespace Practicality
@@ -82,6 +109,8 @@ namespace MY_Template
             {
                 return this;
             }
+            // pair& operator*() { return *this; }
+            // const pair& operator*() const { return *this; }
             template<typename pair_ostream_T,typename pair_ostream_K>
             friend std::ostream& operator<<(std::ostream& os,const pair<pair_ostream_T,pair_ostream_K>& p);
         };
@@ -131,6 +160,45 @@ namespace MY_Template
             data_type_swap temp = a;
             a = b;
             b = temp;
+        }
+        namespace Hash_algorithm
+        {
+            template <typename Hash_algorithm_Type ,typename Hash_IF = MY_Template::Imitation_functions::Hash_Imitation_functions>
+            class Hash_function
+            {
+            public:
+                Hash_IF Hash_Imitation_functions_object;
+                size_t Hash_SDBMHash(const Hash_algorithm_Type& data_Hahs)
+                {
+                    size_t return_value = Hash_Imitation_functions_object(data_Hahs);
+                    return_value = 65599 * return_value;
+                    return return_value;
+                }
+                size_t Hash_BKDRHash(const Hash_algorithm_Type& data_Hahs)
+                {
+                    size_t return_value = Hash_Imitation_functions_object(data_Hahs);
+                    return_value = 131 * return_value;
+                    return return_value;
+                }
+                size_t Hash_DJBHash(const Hash_algorithm_Type& data_Hahs)
+                {
+                    size_t return_value = Hash_Imitation_functions_object(data_Hahs);
+                    return_value = 33 * return_value;
+                    return return_value;
+                }
+                size_t Hash_APHash(const Hash_algorithm_Type& data_Hahs)
+                {
+                    size_t return_value = Hash_Imitation_functions_object(data_Hahs);
+                    return_value = return_value * 1031;
+                    return return_value;
+                }
+                size_t Hash_PJWHash(const Hash_algorithm_Type& data_Hahs)
+                {
+                    size_t return_value = Hash_Imitation_functions_object(data_Hahs);
+                    return_value = (return_value << 2) + return_value;
+                    return return_value;
+                }
+            };
         }
     }
     /*############################     string容器     ############################*/
@@ -187,16 +255,6 @@ namespace MY_Template
             bool empty()
             {
                 return _size == 0;
-            }
-            size_t size()
-            {
-                //返回有效字符串长度
-                return _size;
-            }
-            size_t capacity()
-            {
-                //返回容量
-                return _capacity;
             }
             size_t size()const
             {
@@ -965,7 +1023,7 @@ namespace MY_Template
                 return temp;
                 //返回下一个位置地址
             }
-            vector<vector_Type>& resize(const size_t& new_capacity)
+            vector<vector_Type>& resize(const size_t& new_capacity, const vector_Type& data = vector_Type())
             {
                 size_t old_size = size();  // 先保存原来的元素数量
                 if ((size_t)(_capacity_pointer - _data_pointer) < new_capacity) 
@@ -977,9 +1035,21 @@ namespace MY_Template
                     {
                         new_data[i] = _data_pointer[i];
                     }
+                    for(size_t i = old_size; i < new_capacity; i++)
+                    {
+                        new_data[i] = data;
+                    }
                     delete [] _data_pointer;
                     _data_pointer = new_data;
                     //对于自定义类型delete会释放资源，而new_data是新new出来的因该不会导致资源泄露
+                    // if(old_size == 0)
+                    // {
+                    //     _size_pointer = _data_pointer + new_capacity;  // 使用 old_size 来重建 _size_pointer
+                    // }
+                    // else
+                    // {
+                    //     _size_pointer = _data_pointer + old_size;  // 使用 old_size 来重建 _size_pointer
+                    // }
                     _size_pointer = _data_pointer + old_size;  // 使用 old_size 来重建 _size_pointer
                     _capacity_pointer = _data_pointer + new_capacity;
                 }
@@ -2167,13 +2237,137 @@ namespace MY_Template
             public:
                 using iterator_Node = AVL_Tree_Type_Node;
                 using Self = AVL_Tree_iterator<T,Ref,Ptr>;
+                using pointer = Ptr;
+                using reference = Ref;
                 iterator_Node* _Node;
                 AVL_Tree_iterator(iterator_Node* _Node_Temp)
                 :_Node(_Node_Temp)
                 {
                     ;
                 }
-                /////////未完成
+                Ptr operator->()
+                {
+                    return &(_Node->_data);
+                }
+                Ref& operator*()
+                {
+                    return _Node->_data;
+                }
+                bool operator!=(const Self& Self_temp)
+                {
+                    return _Node != Self_temp._Node;
+                }
+                bool operator==(const Self& Self_temp) 
+                {
+                    return _Node == Self_temp._Node;
+                }
+                Self& operator++()
+                {
+                    if(_Node->_right != nullptr)
+                    {
+                        _Node = _Node->_right;
+                        while(_Node->_left != nullptr)
+                        {
+                            _Node = _Node->_left;
+                        }
+                    }
+                    else
+                    {
+                        Node* _Node_temp = _Node;
+                        while(_Node_temp->_parent != nullptr && _Node_temp == _Node_temp->_parent->_right)
+                        {
+                            _Node_temp = _Node_temp->_parent;
+                        }
+                        _Node = _Node_temp->_parent;
+                    }
+                    return *this;
+                }
+                Self operator++(int)
+                {
+                    Self temp = *this;
+                    ++(*this);
+                    return temp;
+                }
+                Self& operator--()
+                {
+                    if(_Node->_left != nullptr)
+                    {
+                        _Node = _Node->_left;
+                        while(_Node->_right != nullptr)
+                        {
+                            _Node = _Node->_right;
+                        }
+                    }
+                    else
+                    {
+                        Node* _Node_temp = _Node;
+                        while(_Node_temp->_parent != nullptr && _Node_temp == _Node_temp->_parent->_left)
+                        {
+                            _Node_temp = _Node_temp->_parent;
+                        }
+                        _Node = _Node_temp->_parent;
+                    }
+                    return *this;
+                }
+                Self operator--(int)
+                {
+                    Self temp = *this;
+                    --(*this);
+                    return temp;
+                }
+            };
+            template<typename iterator>
+            class AVL_Tree_reverse_iterator
+            {
+            public:
+                using Self = AVL_Tree_reverse_iterator<iterator>;
+                iterator _it;
+                using Ptr = typename iterator::pointer;
+                using Ref = typename iterator::reference;
+                AVL_Tree_reverse_iterator(iterator _it_Temp)
+                :_it(_it_Temp)
+                {
+                    ;
+                }
+                Ptr operator->()
+                {
+                    return &(*this);
+                }
+                Ref& operator*()
+                {
+                    return *_it;
+                }
+                bool operator!=(const Self& Self_temp)
+                {
+                    return _it != Self_temp._it;
+                }
+                bool operator==(const Self& Self_temp)
+                {
+                    return _it == Self_temp._it;
+                }
+                Self& operator++()
+                {
+                    --_it;
+                    return *this;
+                }
+                Self operator++(int)
+                {
+                    Self temp = *this;
+                    --(*this);
+                    return temp;
+                }
+                Self& operator--()
+                {
+                    ++_it;
+                    return *this;
+                }
+                Self operator--(int)
+                {
+                    Self temp = *this;
+                    ++(*this);
+                    return temp;
+                }
+                
             };
             using Node = AVL_Tree_Type_Node;
             Node* _ROOT;
@@ -2458,6 +2652,68 @@ namespace MY_Template
                 return temp;
             }
         public:
+            using iterator = AVL_Tree_iterator<AVL_Tree_Synthetic_class,AVL_Tree_Synthetic_class&,AVL_Tree_Synthetic_class*>;
+            using const_iterator = AVL_Tree_iterator<AVL_Tree_Synthetic_class,const AVL_Tree_Synthetic_class&,const AVL_Tree_Synthetic_class*>;
+
+            using reverse_iterator = AVL_Tree_reverse_iterator<iterator>;
+            using const_reverse_iterator = AVL_Tree_reverse_iterator<const_iterator>;
+
+            iterator begin()                    
+            {
+                Node* _begin_temp = _ROOT;
+                while(_begin_temp != nullptr && _begin_temp->_left!= nullptr)
+                {
+                    _begin_temp = _begin_temp->_left;
+                }
+                return iterator(_begin_temp);
+            }
+            iterator end()
+            {
+                return iterator(nullptr);
+            }
+            const_iterator cbegin() const
+            {
+                Node* _begin_temp = _ROOT;
+                while(_begin_temp != nullptr && _begin_temp->_left!= nullptr)
+                {
+                    _begin_temp = _begin_temp->_left;
+                }
+                return const_iterator(_begin_temp);
+            }
+            const_iterator cend() const
+            {
+                return const_iterator(nullptr);
+            }
+            reverse_iterator rbegin()
+            {
+                Node* _rbegin_temp = _ROOT;
+                while(_rbegin_temp!= nullptr && _rbegin_temp->_right!= nullptr)
+                {
+                    _rbegin_temp = _rbegin_temp->_right;
+                }
+                return reverse_iterator(iterator(_rbegin_temp));
+            }
+            reverse_iterator rend()
+            {
+                return reverse_iterator(iterator(nullptr));
+            }
+            const_reverse_iterator crbegin() const
+            {
+                Node* _rbegin_temp = _ROOT;
+                while(_rbegin_temp!= nullptr && _rbegin_temp->_right!= nullptr)
+                {
+                    _rbegin_temp = _rbegin_temp->_right;
+                }
+                return const_reverse_iterator(const_iterator(_rbegin_temp));
+            }
+            const_reverse_iterator crend() const
+            {
+                return const_reverse_iterator(const_iterator(nullptr));
+            }
+            bool empty()
+            {
+                return _ROOT == nullptr;
+            }
             AVL_Tree()
             {
                 _ROOT = nullptr;
@@ -2481,44 +2737,83 @@ namespace MY_Template
                 {
                     return;
                 }
-            
-                MY_Template::stack_Adapter::stack<MY_Template::Practicality::pair<Node*, Node**>> _stack_temp;
-                _stack_temp.push(MY_Template::Practicality::pair<Node*, Node**>(AVL_Tree_temp_._ROOT, &_ROOT));
-            
-                while (!_stack_temp.empty())
+
+                // 使用单栈，存储源节点和目标父节点（均为一级指针）
+                MY_Template::stack_Adapter::stack<MY_Template::Practicality::pair<Node*, Node*>> stack;
+                
+                // 创建根节点
+                _ROOT = new Node(AVL_Tree_temp_._ROOT->_data);
+                _ROOT->_Balance_factor = AVL_Tree_temp_._ROOT->_Balance_factor;
+                _ROOT->_parent = nullptr; // 根节点的父节点为nullptr
+                
+                // 初始化栈，将根节点的子节点压入（注意：这里父节点是 _ROOT，一级指针）
+                if (AVL_Tree_temp_._ROOT->_right != nullptr)
                 {
-                    auto AVL_pair_temp = _stack_temp.top();
-                    _stack_temp.pop();
-            
+                    stack.push(MY_Template::Practicality::pair<Node*, Node*>(AVL_Tree_temp_._ROOT->_right, _ROOT));
+                }
+                if (AVL_Tree_temp_._ROOT->_left != nullptr)
+                {
+                    stack.push(MY_Template::Practicality::pair<Node*, Node*>(AVL_Tree_temp_._ROOT->_left, _ROOT));
+                }
+
+                // 遍历并复制剩余节点
+                while (!stack.empty())
+                {
+                    auto [source_node, parent_node] = stack.top();
+                    stack.pop();
+                    
                     // 创建新节点并复制数据
-                    Node* new_node = new Node(AVL_pair_temp.first->_data);
-                    new_node->_Balance_factor = AVL_pair_temp.first->_Balance_factor;
-                    *AVL_pair_temp.second = new_node; // 将新节点赋值给目标位置
-            
-                    // 处理右子节点
-                    if (AVL_pair_temp.first->_right != nullptr)
+                    Node* new_node = new Node(source_node->_data);
+                    new_node->_Balance_factor = source_node->_Balance_factor;
+                    
+                    // 设置父节点关系（注意：parent_node 是一级指针）
+                    new_node->_parent = parent_node;
+                    
+                    // 判断源节点在原树中是左子还是右子
+                    bool is_left_child = false;
+                    if (source_node->_parent != nullptr) 
                     {
-                        _stack_temp.push(MY_Template::Practicality::pair<Node*, Node**>(
-                            AVL_pair_temp.first->_right, &new_node->_right));
+                        is_left_child = (source_node->_parent->_left == source_node);
                     }
-            
-                    // 处理左子节点
-                    if (AVL_pair_temp.first->_left != nullptr)
+                    
+                    // 将新节点链接到父节点的正确位置（注意：直接使用 parent_node）
+                    if (is_left_child) 
                     {
-                        _stack_temp.push(MY_Template::Practicality::pair<Node*, Node**>(
-                            AVL_pair_temp.first->_left, &new_node->_left));
+                        parent_node->_left = new_node;
+                    } 
+                    else 
+                    {
+                        parent_node->_right = new_node;
                     }
-            
-                    // 设置子节点的父指针
-                    if (new_node->_left != nullptr)
+
+                    // 处理子节点（注意：压栈时父节点是 new_node，一级指针）
+                    if (source_node->_right != nullptr)
                     {
-                        new_node->_left->_parent = new_node;
+                        stack.push(MY_Template::Practicality::pair<Node*, Node*>(source_node->_right, new_node));
                     }
-                    if (new_node->_right != nullptr)
+                    if (source_node->_left != nullptr)
                     {
-                        new_node->_right->_parent = new_node;
+                        stack.push(MY_Template::Practicality::pair<Node*, Node*>(source_node->_left, new_node));
                     }
                 }
+            }
+            AVL_Tree& operator=(const AVL_Tree AVL_Tree_temp_)
+            {
+                if(_ROOT != nullptr)
+                {
+                    clear();
+                }
+                if(&AVL_Tree_temp_ == this)
+                {
+                    return *this;
+                }
+                if (AVL_Tree_temp_._ROOT == nullptr)
+                {
+                    return *this;
+                }
+                MY_Template::algorithm::swap(com,AVL_Tree_temp_.com);
+                MY_Template::algorithm::swap(_ROOT,AVL_Tree_temp_._ROOT);
+                return *this;
             }
             ~AVL_Tree()
             {
@@ -2922,9 +3217,10 @@ namespace MY_Template
             }
         };
     }
-    /*############################     RB_Tree 基类容器     ############################*/
+    /*############################     基类容器命名空间     ############################*/
     namespace Base_Class_Container
     {
+        /*############################     RB_Tree 容器     ############################*/
         template <typename RB_Tree_Type_Key, typename RB_Tree_Type_Val, typename Type_imitation_function,
         typename Imitation_function_parameter_function_RB_Tree = MY_Template::Imitation_functions::less<RB_Tree_Type_Key> >
         class RB_Tree
@@ -2956,13 +3252,14 @@ namespace MY_Template
                 using Node_iterator = RB_Tree_Node;
                 Node_iterator* _Node;
             public:
-
+                using reference = Ref;
+                using pointer = Ptr;
                 RBTree_iterator(Node_iterator* Node_temp_)
                 :_Node(Node_temp_)
                 {
                     ;
                 }
-                Ref operator* ()
+                Ref& operator*()
                 {
                     return _Node->_data;
                 }
@@ -2970,21 +3267,135 @@ namespace MY_Template
                 {
                     return &(_Node->_data);
                 }
-                Self operator++()
+                Self& operator++()
                 {
-
+                    if(_Node == nullptr)
+                    {
+                        return *this;
+                    }
+                    if(_Node->_right != nullptr)
+                    {
+                        Node* Sub = _Node->_right;
+                        while(Sub->_left != nullptr)
+                        {
+                            Sub = Sub->_left;
+                        }
+                        _Node = Sub;
+                    }
+                    else
+                    {
+                        //代表右子树已经走完，需要向上遍历，继续向上找右子树，如果停下来，说明走完整棵树或者是走到根节点
+                        Node_iterator* parent_temp = _Node->_parent;
+                        Node_iterator* Sub_temp = _Node;
+                        while(parent_temp != nullptr && Sub_temp == parent_temp->_right)
+                        {
+                            Sub_temp = parent_temp;
+                            parent_temp = parent_temp->_parent;
+                        }
+                        _Node = parent_temp;
+                        //如果跳出循环，说明走到了根节点，或者找到了右子树
+                    }
+                    return *this;
                 }
                 Self operator++(int)
                 {
-
+                    Self Temp = *this;
+                    ++(*this);
+                    return Temp;
                 }
-                Self operator--()
+                Self& operator--()
                 {
-
+                    if(_Node->_left != nullptr)
+                    {
+                        Node_iterator* Sub = _Node->_left;
+                        while(Sub->_right != nullptr)
+                        {
+                            Sub = Sub->_right;
+                        }
+                        _Node = Sub;
+                    }
+                    else
+                    {
+                        Node_iterator* parent_temp = _Node->_parent;
+                        Node_iterator* Sub_temp = _Node;
+                        while(parent_temp != nullptr && Sub_temp == parent_temp->_left)
+                        {
+                            Sub_temp = parent_temp;
+                            parent_temp = parent_temp->_parent;
+                        }
+                        _Node = parent_temp;
+                    }
+                    return *this;
                 }
                 Self operator--(int)
                 {
+                    Self Temp = *this;
+                    --(*this);
+                    return Temp;
+                }
+                bool operator==(const Self& it_temp) const
+                {
+                    return _Node == it_temp._Node;
+                }
+                bool operator!=(const Self& it_temp) const
+                {
+                    return _Node != it_temp._Node;
+                }
+            };
+            template <typename iterator>
+            class RBTree_reverse_iterator
+            {
+                using Self = RBTree_reverse_iterator<iterator>;
+                using Ref  = typename iterator::reference;
+                using Ptr  = typename iterator::pointer;
+                iterator _it;
+            public:
+                RBTree_reverse_iterator(iterator it_temp)
+                :_it(it_temp)
+                {
+                    ;
+                }
+                Ref& operator*()
+                {
+                    return *_it;
+                }
+                Ptr operator->()
+                {
+                    return &(*this);
+                }
+                // 前置自增：对应正向迭代器的自减
+                RBTree_reverse_iterator& operator++() 
+                { 
+                    --_it; 
+                    return *this; 
+                }
+                RBTree_reverse_iterator operator++(int) 
+                { 
+                    auto tmp = *this; 
+                    --_it; 
+                    return tmp; 
+                }
 
+                // 前置自减：对应正向迭代器的自增
+                RBTree_reverse_iterator& operator--() 
+                { 
+                    ++_it; 
+                    return *this; 
+                }
+                RBTree_reverse_iterator operator--(int) 
+                { 
+                    auto tmp = *this; 
+                    ++_it; return tmp; 
+                }
+
+                // 比较运算符
+                bool operator==(const RBTree_reverse_iterator& other) const 
+                { 
+                    return _it == other._it; 
+                }
+                bool operator!=(const RBTree_reverse_iterator& other) const 
+                { 
+                    return _it != other._it; 
                 }
             };
             using Node = RB_Tree_Node;
@@ -3157,24 +3568,165 @@ namespace MY_Template
                     }
                 }
             }
+            static inline RB_Tree_Color Get_color(Node* cur)
+            {
+                return cur == nullptr ? BLACK : cur->_color;
+            }
+            static inline bool RED_Get(Node* cur)
+            {
+                return Get_color(cur) == RED;
+            }
+            static inline bool BLACK_Get(Node* cur)
+            {
+                return Get_color(cur) == BLACK;
+            }
+            size_t _size() const 
+            {
+                size_t size = 0;
+                Node* _ROOT_Temp = _ROOT;
+                if(_ROOT_Temp == nullptr)
+                {
+                    return size;
+                }
+                Node* _Pre_order_traversal_test = _ROOT_Temp;
+                MY_Template::stack_Adapter::stack<Node*> stack_Temp;
+                stack_Temp.push(_Pre_order_traversal_test);
+                while( !stack_Temp.empty() )
+                {
+                    _Pre_order_traversal_test = stack_Temp.top();
+                    stack_Temp.pop();
+
+                    size++;
+                    if(_Pre_order_traversal_test->_right != nullptr)
+                    {
+                        stack_Temp.push(_Pre_order_traversal_test->_right);
+                    }
+                    if(_Pre_order_traversal_test->_left != nullptr)
+                    {
+                        stack_Temp.push(_Pre_order_traversal_test->_left);
+                    }
+                }
+                return size;
+            }
         public:
             using iterator = RBTree_iterator<RB_Tree_Type_Val,RB_Tree_Type_Val&,RB_Tree_Type_Val*>; 
-            using RB_Tree_iterator = MY_Template::Practicality::pair<iterator,bool>;
+            using const_iterator =  RBTree_iterator<RB_Tree_Type_Val const,RB_Tree_Type_Val const&,RB_Tree_Type_Val const*>;
+
+            using reverse_iterator = RBTree_reverse_iterator<iterator>;
+            using const_reverse_iterator = RBTree_reverse_iterator<const_iterator>;
+
+            using insert_result = MY_Template::Practicality::pair<iterator,bool>;
             RB_Tree()
             {
                 _ROOT = nullptr;
+            }
+            RB_Tree(const RB_Tree_Type_Val& RB_Tree_Temp)
+            {
+                _ROOT = new Node(RB_Tree_Temp);
+                _ROOT->_color = BLACK;
+            }
+            RB_Tree(const RB_Tree& RB_Tree_Temp)
+            {
+                if(_ROOT != nullptr)
+                {
+                    clear(_ROOT);
+                }
+                else
+                {
+                    _ROOT = nullptr;
+                    if(RB_Tree_Temp._ROOT == nullptr)
+                    {
+                        _ROOT = nullptr;
+                    }
+                    else
+                    {
+                        // 使用单栈，存储源节点和目标父节点（均为一级指针）
+                        MY_Template::stack_Adapter::stack<MY_Template::Practicality::pair<Node*, Node*>> stack;
+                        
+                        // 创建根节点
+                        _ROOT = new Node(RB_Tree_Temp._ROOT->_data);
+                        _ROOT->_color = RB_Tree_Temp._ROOT->_color;
+                        _ROOT->_parent = nullptr; // 根节点的父节点为nullptr
+                        
+                        // 初始化栈，将根节点的子节点压入（注意：这里父节点是 _ROOT，一级指针）
+                        if (RB_Tree_Temp._ROOT->_right != nullptr)
+                        {
+                            stack.push(MY_Template::Practicality::pair<Node*, Node*>(RB_Tree_Temp._ROOT->_right, _ROOT));
+                        }
+                        if (RB_Tree_Temp._ROOT->_left != nullptr)
+                        {
+                            stack.push(MY_Template::Practicality::pair<Node*, Node*>(RB_Tree_Temp._ROOT->_left, _ROOT));
+                        }
+
+                        // 遍历并复制剩余节点
+                        while (!stack.empty())
+                        {
+                            auto [source_node, parent_node] = stack.top();
+                            stack.pop();
+                            
+                            // 创建新节点并复制数据
+                            Node* new_node = new Node(source_node->_data);
+                            new_node->_color = source_node-> _color;
+                            
+                            // 设置父节点关系（注意：parent_node 是一级指针）
+                            new_node->_parent = parent_node;
+                            
+                            // 判断源节点在原树中是左子还是右子
+                            bool is_left_child = false;
+                            if (source_node->_parent != nullptr) 
+                            {
+                                is_left_child = (source_node->_parent->_left == source_node);
+                            }
+                            
+                            // 将新节点链接到父节点的正确位置（注意：直接使用 parent_node）
+                            if (is_left_child) 
+                            {
+                                parent_node->_left = new_node;
+                            } 
+                            else 
+                            {
+                                parent_node->_right = new_node;
+                            }
+
+                            // 处理子节点（注意：压栈时父节点是 new_node，一级指针）
+                            if (source_node->_right != nullptr)
+                            {
+                                stack.push(MY_Template::Practicality::pair<Node*, Node*>(source_node->_right, new_node));
+                            }
+                            if (source_node->_left != nullptr)
+                            {
+                                stack.push(MY_Template::Practicality::pair<Node*, Node*>(source_node->_left, new_node));
+                            }
+                        }
+                    }
+                }
+            }
+            RB_Tree& operator=(const RB_Tree RB_Tree_Temp)
+            {
+                if(this == &RB_Tree_Temp)
+                {
+                    return *this;
+                }
+                else
+                {
+                    clear(_ROOT);
+                    MY_Template::algorithm::swap(RB_Tree_Temp._ROOT,_ROOT);
+                    MY_Template::algorithm::swap(RB_Tree_Temp.Element,Element);
+                    MY_Template::algorithm::swap(RB_Tree_Temp.com,com);
+                    return *this;
+                }
             }
             ~RB_Tree()
             {
                 clear(_ROOT);
             }
-            RB_Tree_iterator push(const RB_Tree_Type_Val& Val_Temp_)
+            insert_result push(const RB_Tree_Type_Val& Val_Temp_)
             {
                 if(_ROOT == nullptr)
                 {
                     _ROOT = new Node(Val_Temp_);
                     _ROOT->_color = BLACK;
-                    return RB_Tree_iterator(iterator(_ROOT),true);
+                    return insert_result(iterator(_ROOT),true);
                 }
                 else
                 {
@@ -3186,7 +3738,7 @@ namespace MY_Template
                         if(!com(Element(_ROOT_Temp->_data),Element(Val_Temp_)) && !com(Element(Val_Temp_),Element(_ROOT_Temp->_data)))
                         {
                             //插入失败，找到相同的值，开始返回
-                            return RB_Tree_iterator(iterator(_ROOT_Temp),false);
+                            return insert_result(iterator(_ROOT_Temp),false);
                         }
                         else if(com(Element(_ROOT_Temp->_data),Element(Val_Temp_)))
                         {
@@ -3280,19 +3832,153 @@ namespace MY_Template
                         }
                     }
                     _ROOT->_color = BLACK;
-                    return RB_Tree_iterator(iterator(Return_Node_Push),true);
+                    return insert_result(iterator(Return_Node_Push),true);
                 }
             }
+            /*
+            删除节点后，调整红黑树颜色，分左右子树来调整，每颗子树分为4种情况
+            情况 1：兄弟节点为红色
+                    将兄弟节点设为黑色。
+                    将父节点设为红色。
+                    对父节点进行旋转（左子树删除则左旋，右子树删除则右旋）。
+                    更新兄弟节点为新的兄弟（旋转后父节点的新子节点）。
+
+            情况 2：兄弟节点为黑色，且兄弟的两个子节点都是黑色
+                    将兄弟节点设为红色。
+                    当前节点（cur）上移至父节点（parent）。
+                    若上移后的节点是红色，将其设为黑色并结束调整；否则继续循环。
+            情况 3：兄弟节点为黑色，兄弟的内侧子节点为红色，外侧子节点为黑色
+                    将兄弟节点的内侧子节点设为黑色。
+                    将兄弟节点设为红色。
+                    对兄弟节点进行反向旋转（左子树删除则右旋，右子树删除则左旋）。
+                    更新兄弟节点为新的兄弟（旋转后父节点的子节点）。
+            情况 4：兄弟节点为黑色，且兄弟的外侧子节点为红色，内侧子节点为任意颜色
+                    将兄弟节点的颜色设为父节点的颜色。
+                    将父节点设为黑色。
+                    将兄弟的外侧子节点设为黑色。
+                    对父节点进行旋转（左子树删除则右旋，右子树删除则左旋）。
+                    结束调整。
+            */
             void Delete_Adjust(Node* cur ,Node* parent)
             {
-               
+                //cur为被删节点的替代节点
+                if(cur == nullptr && parent == nullptr)
+                {
+                    return;
+                }
+                while(cur != _ROOT && (cur == nullptr || BLACK_Get(cur)))
+                {
+                    if(cur == _ROOT)
+                    {
+                        break;
+                    }
+                    if(parent->_left == cur)
+                    {
+                        Node* brother = parent->_right;
+                        if(RED_Get(brother))
+                        {
+                            //情况1：兄弟节点为红
+                            brother->_color = BLACK;
+                            parent->_color = RED;
+                            _left_revolve(parent);
+                            //调整后，兄弟节点为黑
+                            //继续向下调整
+                            brother = parent->_right;
+                        }
+                        if( (brother != nullptr && BLACK_Get(brother))  && ( brother->_left == nullptr || (brother->_left)) && 
+                        (brother->_right == nullptr || BLACK_Get(brother->_right)))
+                        {
+                            //情况2：兄弟节点为黑，且兄弟节点两个子节点都为黑
+                            brother->_color = RED;
+                            cur = parent;
+                            parent = cur->_parent;
+                            if(cur->_color == RED)
+                            {
+                                cur->_color = BLACK;
+                                break;
+                            }
+                        }
+                        else if( (brother != nullptr && BLACK_Get(brother)) &&  (brother->_right == nullptr || BLACK_Get(brother->_right)) && 
+                        (brother->_left != nullptr && RED_Get(brother->_left)) )
+                        {
+                            //情况3：兄弟节点为黑，兄弟节点左节点为红，右节点为黑
+                            brother->_left->_color = BLACK;
+                            brother->_color = RED;
+                            _right_revolve(brother);
+                            //调整后，兄弟节点为黑，兄弟节点右节点为红
+                            //继续向下调整
+                            brother = parent->_right;
+                        }
+                        else if( (brother != nullptr ||BLACK_Get(brother))  && (brother->_right != nullptr && RED_Get(brother->_right)) )
+                        {
+                            //情况4：兄弟节点为黑，兄弟节点右节点为红
+                            brother->_color = parent->_color;
+                            parent->_color = BLACK;
+                            brother->_right->_color = BLACK;
+                            _left_revolve(parent);
+                            cur = _ROOT;
+                            parent = cur->_parent;
+                        }
+                    }
+                    else
+                    {
+                        Node* brother = parent->_left;
+                        if(RED_Get(brother))
+                        {
+                            //情况1：兄弟节点为红
+                            brother->_color = BLACK;
+                            parent->_color = RED;
+                            _right_revolve(parent);
+                            //调整后，兄弟节点为黑
+                            brother = parent->_left;
+                        }
+                        if( brother != nullptr && BLACK_Get(brother) && (brother->_left == nullptr || BLACK_Get(brother->_left)) &&
+                        (brother->_right == nullptr || BLACK_Get(brother->_right)) )
+                        {
+                            //情况2：兄弟节点为黑，且兄弟节点两个子节点都为黑
+                            brother->_color = RED;
+                            cur = parent;
+                            parent = cur->_parent;
+                            if(cur->_color == RED)
+                            {
+                                cur->_color = BLACK;
+                                break;
+                            }
+                        }
+                        else if (brother != nullptr && BLACK_Get(brother) && (brother->_right != nullptr && RED_Get(brother->_right)) &&
+                        (brother->_left == nullptr || BLACK_Get(brother->_left)) )
+                        {
+                            //情况3：兄弟节点为黑，兄弟节点左节点为红，右节点为黑
+                            brother->_right->_color = BLACK;
+                            brother->_color = RED;
+                            _left_revolve(brother);
+                            //调整后，兄弟节点为黑，兄弟节点右节点为红
+                            //继续向下调整
+                            brother = parent->_left;
+                        }
+                        else if(brother != nullptr && BLACK_Get(brother) && brother->_left != nullptr && RED_Get(brother->_left))
+                        {
+                            //情况4：兄弟节点为黑，兄弟节点右节点为红
+                            brother->_color = parent->_color;
+                            parent->_color = BLACK;
+                            brother->_left->_color = BLACK;
+                            _right_revolve(parent);
+                            cur = _ROOT;
+                            parent = cur->_parent;
+                        }
+                    }
+                }
+                if(cur != nullptr)
+                {
+                    cur->_color = BLACK;
+                }
             }
-            RB_Tree_iterator pop(const RB_Tree_Type_Val& RB_Tree_Temp)
+            insert_result pop(const RB_Tree_Type_Val& RB_Tree_Temp)
             {
                 RB_Tree_Color Delete_color;
                 if(_ROOT == nullptr)
                 {
-                    return RB_Tree_iterator(iterator(nullptr),false);
+                    return insert_result(iterator(nullptr),false);
                 }
                 else
                 {
@@ -3302,103 +3988,12 @@ namespace MY_Template
                     Node* _Adjust_Node_parent = nullptr;
                     while(_ROOT_Temp != nullptr)
                     {
-                        _ROOT_Temp_parent = _ROOT_Temp;
-                        if(!com(Element(_ROOT_Temp->_data),Element(RB_Tree_Temp)) && !com(Element(_ROOT_Temp->_data),Element(RB_Tree_Temp)))
+                        if(!com(Element(_ROOT_Temp->_data),Element(RB_Tree_Temp)) && !com(Element(RB_Tree_Temp),Element(_ROOT_Temp->_data)))
                         {
-                            //找到位置开始删除
-                            if(_ROOT_Temp->_left == nullptr)
-                            {
-                                if(_ROOT_Temp->_right != nullptr)
-                                {
-                                    //右节点有值
-                                    _ROOT_Temp->_right->_parent = _ROOT_Temp_parent;
-                                }
-                                if(_ROOT_Temp_parent == nullptr)
-                                {
-                                    //根节点
-                                    _ROOT = _ROOT_Temp->_right;
-                                }
-                                else
-                                {
-                                    //不为空，代表要删除的数不是在根节点上
-                                    if(_ROOT_Temp_parent->_left == _ROOT_Temp)
-                                    {
-                                        _ROOT_Temp_parent->_left = _ROOT_Temp->_right;
-                                    }
-                                    else
-                                    {
-                                        _ROOT_Temp_parent->_right = _ROOT_Temp->_right;
-                                    }
-                                }
-                                _Adjust_Node = _ROOT_Temp->_right;
-                                _Adjust_Node_parent = _ROOT_Temp_parent;
-                                Delete_color = _ROOT_Temp->_color;
-                                delete _ROOT_Temp;
-                                _ROOT_Temp = nullptr;
-                            }
-                            else if (_ROOT_Temp->_right == nullptr)
-                            {
-                                if(_ROOT_Temp->_left != nullptr)
-                                {
-                                    _ROOT_Temp->_left->_parent = _ROOT_Temp_parent;
-                                    //链接父节点
-                                }
-                                if(_ROOT_Temp_parent == nullptr)
-                                {
-                                    //与上同理
-                                    _ROOT = _ROOT_Temp->_left;
-                                }
-                                else
-                                {
-                                    if(_ROOT_Temp_parent->_left == _ROOT_Temp)
-                                    {
-                                        _ROOT_Temp_parent->_left = _ROOT_Temp->_left;
-                                    }
-                                    else
-                                    {
-                                        _ROOT_Temp_parent->_right = _ROOT_Temp->_left;
-                                    }
-                                }
-                                _Adjust_Node = _ROOT_Temp->_left;
-                                _Adjust_Node_parent = _ROOT_Temp_parent;
-                                Delete_color = _ROOT_Temp->_color;
-                                delete _ROOT_Temp;
-                                _ROOT_Temp = nullptr;
-                            }
-                            else if(_ROOT_Temp->_right != nullptr && _ROOT_Temp->_left != nullptr)
-                            {
-                                Node* _right_min = _ROOT_Temp->_right;
-                                Node* _right_parent = _ROOT_Temp;
-                                while(_right_min->_left != nullptr)
-                                {
-                                    _right_parent = _right_min;
-                                    _right_min = _right_min->_left;
-                                }
-                                MY_Template::algorithm::swap(_right_min->_data,_ROOT_Temp->_data);
-                                if(_right_parent->_left == _ROOT_Temp)
-                                {
-                                    _right_parent->_right = _right_min->_right;
-                                }
-                                else
-                                {
-                                    _right_parent->_left  = _right_min->_right;
-                                }
-                                if(_right_min->_right != nullptr)
-                                {
-                                    _right_min->_right->_parent = _right_parent;
-                                }
-                                _Adjust_Node = _right_min->_right;
-                                _Adjust_Node_parent = _right_parent;
-                                Delete_color = _ROOT_Temp->_color;
-                                delete _right_min;
-                                _right_min = nullptr;
-                            }
-                            //更新颜色
-                            if( Delete_color == BLACK )
-                            {
-                               Delete_Adjust(_Adjust_Node,_Adjust_Node_parent);
-                            }
+                            break;
                         }
+                        //防止父亲自赋值
+                        _ROOT_Temp_parent = _ROOT_Temp;
                         if(com(Element(_ROOT_Temp->_data),Element(RB_Tree_Temp)))
                         {
                             _ROOT_Temp = _ROOT_Temp->_right;
@@ -3408,11 +4003,115 @@ namespace MY_Template
                             _ROOT_Temp = _ROOT_Temp->_left;
                         }
                     }
+                    if(_ROOT_Temp == nullptr )
+                    {
+                        return insert_result(iterator(nullptr),false);
+                    }
+                    //找到位置开始删除
+                    Delete_color = _ROOT_Temp->_color;
+                    if(_ROOT_Temp->_left == nullptr)
+                    {
+                        if(_ROOT_Temp->_right != nullptr)
+                        {
+                            //右节点有值
+                            _ROOT_Temp->_right->_parent = _ROOT_Temp_parent;
+                        }
+                        if(_ROOT_Temp_parent == nullptr)
+                        {
+                            //根节点
+                            _ROOT = _ROOT_Temp->_right;
+                        }
+                        else
+                        {
+                            //不为空，代表要删除的数不是在根节点上
+                            if(_ROOT_Temp_parent->_left == _ROOT_Temp)
+                            {
+                                _ROOT_Temp_parent->_left = _ROOT_Temp->_right;
+                            }
+                            else
+                            {
+                                _ROOT_Temp_parent->_right = _ROOT_Temp->_right;
+                            }
+                        }
+                        _Adjust_Node = _ROOT_Temp->_right;
+                        _Adjust_Node_parent = _ROOT_Temp_parent;
+                        delete _ROOT_Temp;
+                        _ROOT_Temp = nullptr;
+                    }
+                    else if (_ROOT_Temp->_right == nullptr)
+                    {
+                        if(_ROOT_Temp->_left != nullptr)
+                        {
+                            _ROOT_Temp->_left->_parent = _ROOT_Temp_parent;
+                            //链接父节点
+                        }
+                        if(_ROOT_Temp_parent == nullptr)
+                        {
+                            //与上同理
+                            _ROOT = _ROOT_Temp->_left;
+                        }
+                        else
+                        {
+                            if(_ROOT_Temp_parent->_left == _ROOT_Temp)
+                            {
+                                _ROOT_Temp_parent->_left = _ROOT_Temp->_left;
+                            }
+                            else
+                            {
+                                _ROOT_Temp_parent->_right = _ROOT_Temp->_left;
+                            }
+                        }
+                        _Adjust_Node = _ROOT_Temp->_left;
+                        _Adjust_Node_parent = _ROOT_Temp_parent;
+                        delete _ROOT_Temp;
+                        _ROOT_Temp = nullptr;
+                    }
+                    else if(_ROOT_Temp->_right != nullptr && _ROOT_Temp->_left != nullptr)
+                    {
+                        Node* _right_min = _ROOT_Temp->_right;
+                        Node* _right_parent = _ROOT_Temp;
+                        while(_right_min->_left != nullptr)
+                        {
+                            _right_parent = _right_min;
+                            _right_min = _right_min->_left;
+                        }
+                        Delete_color = _right_min->_color;
+
+                        // 交换数据 AND 交换颜色
+                        MY_Template::algorithm::swap(_right_min->_data,  _ROOT_Temp->_data);
+                        MY_Template::algorithm::swap(_right_min->_color, _ROOT_Temp->_color);
+
+                        // 然后正确地把后继节点的位置接到它父节点上：
+                        if (_right_parent->_left == _right_min) 
+                        {
+                            _right_parent->_left  = _right_min->_right;
+                        }
+                        else 
+                        {
+                            _right_parent->_right = _right_min->_right;
+                        }
+                        if (_right_min->_right) 
+                        {
+                            _right_min->_right->_parent = _right_parent;
+                        }
+                        _Adjust_Node        = _right_min->_right;
+                        _Adjust_Node_parent = _right_parent;
+
+                        // 最后再 delete 那个后继节点
+                        delete _right_min;
+                        _right_min = nullptr;
+                    }
+                    //更新颜色
+                    if( Delete_color == BLACK )
+                    {
+                        //删除红色节点不影响性质
+                        Delete_Adjust(_Adjust_Node,_Adjust_Node_parent);
+                    }
                     if(_ROOT != nullptr)
                     {
                         _ROOT->_color = BLACK;
                     }
-                    return RB_Tree_iterator(iterator(nullptr),false);
+                    return insert_result(iterator(nullptr),false);
                 }
             }
             iterator find(const RB_Tree_Type_Val& RB_Tree_Temp_)
@@ -3421,6 +4120,46 @@ namespace MY_Template
                 {
                     return iterator(nullptr);
                 }
+                else
+                {
+                    Node* _iterator_ROOT = _ROOT;
+                    while(_iterator_ROOT != nullptr)
+                    {
+                       if(!com(Element(_iterator_ROOT->_data),Element(RB_Tree_Temp_)))
+                       {
+                           return iterator(_iterator_ROOT);
+                       }
+                       else if(com(Element(_iterator_ROOT->_data),Element(RB_Tree_Temp_)))
+                       {
+                           _iterator_ROOT = _iterator_ROOT->_right;
+                       }
+                       else
+                       {
+                           _iterator_ROOT = _iterator_ROOT->_left;
+                       }
+                    }
+                    return iterator(nullptr);
+                }
+            }
+            size_t size()
+            {
+                return _size();
+            }
+            size_t size() const
+            {
+                return _size();
+            }
+            bool empty()
+            {
+                return _ROOT == nullptr;
+            }
+            void Middle_order_traversal()
+            {
+                _Middle_order_traversal(_ROOT);
+            }
+            void Pre_order_traversal()
+            {
+                _Pre_order_traversal(_ROOT);
             }
             iterator begin()
             {
@@ -3431,19 +4170,501 @@ namespace MY_Template
                 }
                 return iterator(_iterator_ROOT);
             }
-            // iterator end()
-            // {
-            //     return ;
-            // }
-            void Middle_order_traversal()
+            iterator end()
             {
-                _Middle_order_traversal(_ROOT);
+                return iterator(nullptr);
             }
-            void Pre_order_traversal()
+            const_iterator cbegin() const
             {
-                _Pre_order_traversal(_ROOT);
+                Node* _iterator_ROOT = _ROOT;
+                while(_iterator_ROOT != nullptr &&  _iterator_ROOT->_left != nullptr)
+                {
+                    _iterator_ROOT = _iterator_ROOT->_left;
+                }
+                return const_iterator(_iterator_ROOT);
             }
-            //拷贝，析构，反向迭代器,查找函数，未完成
+            const_iterator cend() const
+            {
+                return const_iterator(nullptr);
+            }
+            reverse_iterator rbegin()
+            {
+                Node* _iterator_Node = _ROOT;
+                while(_iterator_Node != nullptr && _iterator_Node->_right != nullptr)
+                {
+                    _iterator_Node = _iterator_Node->_right;
+                }
+                return reverse_iterator(_iterator_Node);
+            }
+            reverse_iterator rend()
+            {
+                return reverse_iterator(nullptr);
+            }
+            const_reverse_iterator crbegin() const
+            {
+                Node* _iterator_Node = _ROOT;
+                while(_iterator_Node!= nullptr && _iterator_Node->_right!= nullptr)
+                {
+                    _iterator_Node = _iterator_Node->_right;
+                }
+                return const_reverse_iterator(_iterator_Node);
+            }
+            const_reverse_iterator crend() const
+            {
+                return const_reverse_iterator(nullptr);
+            }
+            iterator operator[](const RB_Tree_Type_Val& RB_Tree_Temp)
+            {
+                return find(RB_Tree_Temp);
+            }
+        };
+        /*############################     hash 容器     ############################*/
+        template <typename Hash_Table_Type_Key, typename Hash_Table_Type_Val,typename Hash_Table_Functor,typename Type_imitation_function = std::hash<Hash_Table_Type_Val> >
+        class Hash_Table
+        {
+            class Hash_Table_Node
+            {
+            public:
+                Hash_Table_Type_Val _data;
+                Hash_Table_Node* _next;
+                Hash_Table_Node* Link_prev;
+                //全局链表指针，方便按照插入的顺序有序遍历哈希表
+                Hash_Table_Node* Link_next;
+                Hash_Table_Node(const Hash_Table_Type_Val& Temp_Val)
+                {
+                    _data = Temp_Val;
+                    _next = nullptr;
+                    Link_prev = nullptr;
+                    Link_next = nullptr;
+                }
+            };
+            using Node = Hash_Table_Node;
+            Hash_Table_Functor _Hash_Functor;                           //仿函数
+            size_t _size;                                               //哈希表大小
+            size_t Load_factor;                                         //负载因子   
+            size_t Capacity;                                            //哈希表容量
+            MY_Template::vector_Container::vector<Node*> _Hash_Table;   //哈希表
+            Type_imitation_function _Type_imitation_function;           //哈希函数
+            Node* _previous_data = nullptr;                             //上一个数据
+            Node* _Head_data = nullptr;                                 //插入头数据
+            template <typename Hash_Table_iterator_Key, typename Hash_Table_iterator_Val>
+            class Hash_iterator
+            {
+                using iterator_Node = Node;
+                using Ref  = Hash_Table_iterator_Val&;
+                using Ptr  = Hash_Table_iterator_Val*;
+                using Self = Hash_iterator<Hash_Table_iterator_Key,Hash_Table_iterator_Val>;
+                iterator_Node* _Hash_Table_iterator_Node;
+            public:
+                Hash_iterator(iterator_Node* Temp_Node)      {      _Hash_Table_iterator_Node = Temp_Node;        }
+                Ref operator*()                              {      return _Hash_Table_iterator_Node->_data;      }
+                Ptr operator->()                             {      return &_Hash_Table_iterator_Node->_data;     }
+                Self operator++()                            {       _Hash_Table_iterator_Node = _Hash_Table_iterator_Node->Link_next;     return *this;     }
+                bool operator!=(const Self& Temp_Self)       {   return _Hash_Table_iterator_Node != Temp_Self._Hash_Table_iterator_Node;     }
+                bool operator==(const Self& Temp_Self)       {   return _Hash_Table_iterator_Node == Temp_Self._Hash_Table_iterator_Node;     }
+                Self operator++(int)                         
+                {       
+                    Self Temp_Self = *this;
+                    _Hash_Table_iterator_Node = _Hash_Table_iterator_Node->Link_next;
+                    return Temp_Self;
+                }
+            };
+            void parent_Judgment(Node*& _Temp_Node_parent,Node*& _Temp_Node,size_t& Hash_Location_data)
+            {
+                if(_Temp_Node_parent!= nullptr)
+                {
+                    //父亲节点不为空，防止空指针错误
+                    _Temp_Node_parent->_next = _Temp_Node->_next;
+                }
+                else
+                {
+                    //父亲节点为空，直接将映射位置置空
+                    _Hash_Table[Hash_Location_data] = nullptr;
+                }
+            } 
+        public:  
+            using iterator = Hash_iterator<Hash_Table_Type_Key,Hash_Table_Type_Val>;
+            using const_iterator = Hash_iterator<const Hash_Table_Type_Key,const Hash_Table_Type_Val>;
+            Hash_Table()
+            {
+                _size = 0;
+                Load_factor = 7;
+                Capacity = 10;
+                _Hash_Table.resize(Capacity);
+            }
+            Hash_Table(size_t Temp_capacity)
+            {
+                _size = 0;
+                Load_factor = 7;
+                Capacity = Temp_capacity;
+                _Hash_Table.resize(Capacity);
+            }
+            Hash_Table(const Hash_Table& Temp_Hash_Table)
+            : _Hash_Functor(Temp_Hash_Table._Hash_Functor),_size(Temp_Hash_Table._size),Load_factor(Temp_Hash_Table.Load_factor),Capacity(Temp_Hash_Table.Capacity),
+            _Type_imitation_function(Temp_Hash_Table._Type_imitation_function),_previous_data(nullptr),   _Head_data(nullptr)
+            {
+                if (Capacity == 0) 
+                {
+                    return;
+                }
+                // 1. 分配同样大小的桶数组，所有桶初始为空
+                _Hash_Table.resize(Capacity, nullptr);
+        
+                // 2. 遍历原表的每一个桶
+                for (size_t i = 0; i < Capacity; ++i) 
+                {
+                    Node* src_bucket_node = Temp_Hash_Table._Hash_Table[i];
+                    // 桶内新表的尾节点（用于串联 _next）
+                    Node* last_in_bucket = nullptr;
+        
+                    // 逐节点深拷贝
+                    while (src_bucket_node) 
+                    {
+                        // 2.1 创建新节点并拷贝数据
+                        Node* new_node = new Node(src_bucket_node->_data);
+                        // 2.2 插入到“桶内部”链表
+                        if (last_in_bucket != nullptr) 
+                        {
+                            last_in_bucket->_next = new_node;
+                        } 
+                        else 
+                        {
+                            _Hash_Table[i] = new_node;
+                        }
+                        last_in_bucket = new_node;
+        
+                        // 2.3 插入到“全局插入
+                        if(_previous_data != nullptr)
+                        {
+                            _previous_data->Link_next = new_node;
+                            new_node->Link_prev = _previous_data;
+                        } 
+                        else 
+                        {
+                            // 第一个节点就是全局链表的头
+                            _Head_data = new_node;
+                        }
+                        _previous_data = new_node;
+        
+                        // 继续下一个源节点
+                        src_bucket_node = src_bucket_node->_next;
+                    }
+                }
+                if(_previous_data != nullptr)
+                {
+                    _previous_data->Link_next = nullptr;
+                }
+            }
+            ~Hash_Table()
+            {
+                for(size_t i = 0;i < _Hash_Table.size();++i)
+                {
+                    Node* _Temp_Node = _Hash_Table[i];
+                    while(_Temp_Node != nullptr)
+                    {
+                        Node* _Temp_Node_prev = _Temp_Node;
+                        _Temp_Node = _Temp_Node->_next;
+                        delete _Temp_Node_prev;
+                        _Temp_Node_prev = nullptr;
+                    }
+                }
+            }
+            bool Change_Load_factor(const size_t& Temp_Load_factor)
+            {
+                if(Temp_Load_factor < 1)
+                {
+                    return false;
+                }
+                Load_factor = Temp_Load_factor;
+                return true;
+            }
+            iterator operator[](const Hash_Table_Type_Key& Temp_Key)
+            {
+                if( _size == 0)
+                {
+                    return iterator(nullptr);
+                }
+                else
+                {
+                    size_t Temp_Hash = _Type_imitation_function(Temp_Key);
+                    size_t Hash_Location_data = Temp_Hash % Capacity;
+                    //找到映射位置
+                    Node* _Temp_Node = _Hash_Table[Hash_Location_data];
+                    while(_Temp_Node!= nullptr)
+                    {
+                        if(_Hash_Functor(_Temp_Node->_data) == _Hash_Functor(Temp_Key))
+                        {
+                            return iterator(_Temp_Node);
+                        }
+                        _Temp_Node = _Temp_Node->_next;
+                    }
+                    return iterator(nullptr);
+                }
+            }
+            iterator begin()                    {   return iterator(_Head_data);        }
+            const_iterator cbegin() const       {   return const_iterator(_Head_data);  }
+            iterator end()                      {   return iterator(nullptr);           }
+            const_iterator cend() const         {   return const_iterator(nullptr);     }
+            size_t size()                       {   return _size;                       }
+            size_t size() const                 {   return _size;                       }
+            bool   empty()                      {   return _size == 0;                  }
+            size_t capacity()                   {   return Capacity;                    }
+            size_t capacity() const             {   return Capacity;                    }
+
+            bool push (const Hash_Table_Type_Val& Temp_Val)
+            {
+                if( find(Temp_Val) != nullptr)
+                {
+                    return false;
+                }
+                //判断扩容
+                if( _size * 10 >= Capacity * Load_factor)
+                {
+                    //扩容
+                    size_t NewCapacity = (Capacity == 0 && _Hash_Table.size() == 0) ? 10 : Capacity * 2;
+                    //新容量
+                    MY_Template::vector_Container::vector<Node*> _New_Hash_Table;
+                    _New_Hash_Table.resize(NewCapacity,nullptr);
+                    size_t _New_size = 0;
+                    //重新映射,按照插入链表顺序
+                    Node* _Temp_Head_Node = nullptr;
+                    Node* _Temp_previous_data = nullptr;
+                    Node* _Temp_Node = _Head_data;
+                    while( _Temp_Node != nullptr)
+                    {
+                        size_t Temp_Hash = _Type_imitation_function(_Temp_Node->_data) % NewCapacity;
+                        //重新计算映射值
+                        Node* New_Mapping_location = _New_Hash_Table[Temp_Hash];
+                        if(New_Mapping_location == nullptr)
+                        {
+                            Node* _push_Node = new Node(_Temp_Node->_data);
+                            if(_Temp_Head_Node == nullptr)
+                            {
+                                _push_Node->Link_prev = nullptr;
+                                _push_Node->Link_next = nullptr;
+                                _Temp_Head_Node = _Temp_previous_data =_push_Node;
+                            }
+                            else
+                            {
+                                _push_Node->Link_prev = _Temp_previous_data;
+                                _Temp_previous_data->Link_next = _push_Node;
+                                _Temp_previous_data = _push_Node;
+                            }
+                            _New_Hash_Table[Temp_Hash] = _push_Node;
+                            //保存之前的遍历链表信息
+                        }
+                        else
+                        {
+                            Node* _push_Node = new Node(_Temp_Node->_data);
+                            if(_Temp_Head_Node == nullptr)
+                            {
+                                _push_Node->Link_prev = nullptr;
+                                _Temp_Head_Node = _Temp_previous_data =_push_Node;
+                            }
+                            else
+                            {
+                                _push_Node->Link_prev = _Temp_previous_data;
+                                _Temp_previous_data->Link_next = _push_Node;
+                                _Temp_previous_data = _push_Node;
+                            }
+                            _push_Node->_next = New_Mapping_location;
+                            _New_Hash_Table[Temp_Hash] = _push_Node;
+                            //头插节点
+                        }
+                        ++_New_size;
+                        _Temp_Node = _Temp_Node->Link_next;
+                    }
+                    //释放旧哈希表
+                    for(size_t i = 0;i < _Hash_Table.size(); ++i)
+                    {
+                        Node* _Temp_Node = _Hash_Table[i];
+                        while(_Temp_Node!= nullptr)
+                        {
+                            Node* _Temp_Node_prev = _Temp_Node;
+                            _Temp_Node = _Temp_Node->_next;
+                            delete _Temp_Node_prev;
+                            _Temp_Node_prev = nullptr;
+                        }
+                    }
+                    _size = _New_size;
+                    _Hash_Table.swap(_New_Hash_Table);
+                    Capacity = NewCapacity;
+                    _Head_data = _Temp_Head_Node;
+                    _previous_data = _Temp_previous_data;
+                    //重新映射,按照插入链表顺序
+                }
+                size_t Temp_Hash = _Type_imitation_function(Temp_Val);
+                size_t Hash_Location_data = Temp_Hash % Capacity;
+                //找到映射位置
+                Node* _Temp_Node = _Hash_Table[Hash_Location_data];
+
+                Node* _push_Node = new Node(Temp_Val);
+                _push_Node->_next = _Temp_Node;
+                _Hash_Table[Hash_Location_data] = _push_Node;
+                if(_size == 0 && _Head_data == nullptr)
+                {
+                    _push_Node->Link_prev = nullptr;
+                    _Head_data = _previous_data = _push_Node;
+                }
+                else
+                {
+                    _push_Node->Link_prev = _previous_data;
+                    _previous_data->Link_next = _push_Node;
+                    _previous_data = _push_Node;
+                }
+                _size++;
+                return true;
+            }
+            bool pop(const Hash_Table_Type_Val& Temp_Val)
+            {
+                //空表判断
+                if( find(Temp_Val) == nullptr)
+                {
+                    return false;
+                }
+                size_t Temp_Hash = _Type_imitation_function(Temp_Val);
+                size_t Hash_Location_data = Temp_Hash % Capacity;
+                //找到映射位置
+                Node* _Temp_Node = _Hash_Table[Hash_Location_data];
+                Node* _Temp_Node_parent = nullptr;
+                while(_Temp_Node!= nullptr)
+                {
+                    //找到位置
+                    if(_Hash_Functor(_Temp_Node->_data) == _Hash_Functor(Temp_Val))
+                    {
+                        if(_Head_data == _Temp_Node)
+                        {
+                            //头节点删除情况
+                            if(_Temp_Node == _previous_data)
+                            {
+                                //只有一个节点
+                                _Head_data = _previous_data = nullptr;
+                                parent_Judgment(_Temp_Node_parent,_Temp_Node,Hash_Location_data);
+                            }
+                            else
+                            {
+                                //是头节点，不是尾节点
+                                parent_Judgment(_Temp_Node_parent,_Temp_Node,Hash_Location_data);
+                                _Head_data = _Head_data->Link_next;
+                                _Head_data->Link_prev = nullptr;
+                            }
+                        }
+                        else if(_Temp_Node == _previous_data)
+                        {
+                            //尾节点删除情况
+                            parent_Judgment(_Temp_Node_parent,_Temp_Node,Hash_Location_data);
+                            _previous_data = _previous_data->Link_prev;
+                            _previous_data->Link_next = nullptr;
+                        }
+                        else
+                        {
+                            //中间节点删除情况
+                            parent_Judgment(_Temp_Node_parent,_Temp_Node,Hash_Location_data);
+                            _Temp_Node->Link_prev->Link_next = _Temp_Node->Link_next;
+                            _Temp_Node->Link_next->Link_prev = _Temp_Node->Link_prev;
+                        }
+                        delete _Temp_Node;
+                        _Temp_Node = nullptr;
+                        --_size;
+                        return true;
+                    }
+                    _Temp_Node_parent = _Temp_Node;
+                    _Temp_Node = _Temp_Node->_next;
+                    //向下遍历
+                }
+                return false;
+            }
+            iterator find(const Hash_Table_Type_Val& Temp_Val)
+            {
+                if( _size == 0)
+                {
+                    return iterator(nullptr);
+                }
+                else
+                {
+                    size_t Temp_Hash = _Type_imitation_function(Temp_Val);
+                    size_t Hash_Location_data = Temp_Hash % Capacity;
+                    //找到映射位置
+                    Node* _Temp_Node = _Hash_Table[Hash_Location_data];
+                    while(_Temp_Node!= nullptr)
+                    {
+                        if(_Hash_Functor(_Temp_Node->_data) == _Hash_Functor(Temp_Val))
+                        {
+                            return iterator(_Temp_Node);
+                        }
+                        _Temp_Node = _Temp_Node->_next;
+                    }
+                    return iterator(nullptr);
+                }
+            }                             
+        };
+        /*############################     BitSet 容器     ############################*/
+        class BitSet
+        {
+            MY_Template::vector_Container::vector<int> _BitSet;
+            size_t _size;
+        public:
+            BitSet() {  ;  }
+            BitSet(const size_t& Temp_size)
+            {
+                _size = 0;
+                _BitSet.resize((Temp_size / 32) + 1,0);
+                //多开一个int的空间，防止不够
+            }
+            void resize(const size_t& Temp_size)
+            {
+                _size = 0;
+                _BitSet.resize((Temp_size / 32) + 1,0);
+            }
+            BitSet(const BitSet& BitMap_Temp)
+            {
+                _BitSet = BitMap_Temp._BitSet;
+                _size = BitMap_Temp._size;
+            }
+            BitSet& operator=(const BitSet& BitMap_Temp)
+            {
+                if(this != &BitMap_Temp)
+                {
+                    _BitSet = BitMap_Temp._BitSet;
+                    _size = BitMap_Temp._size;
+                }
+                return *this;
+            }
+            void set(const size_t& Temp_Val)
+            {
+                //把数映射到BitSet上的函数
+                size_t BitSet_Location = Temp_Val / 32; //定位到BitSet的位置在哪个int上
+                size_t BitSet_Location_Val = Temp_Val % 32; //定位到BitSet的位置在哪个int上的第几位
+                _BitSet[BitSet_Location] = _BitSet[BitSet_Location] | (1 << BitSet_Location_Val);
+                //比较当前位置是否为1，若为1则不需要改变，若为0则需要改变，注意|只改变当前位不会改变其他位
+                //|是两个条件满足一个条件就行，&是两个条件都满足才行
+                //其他位如果是1那么就还是1，如果是0那么就还是0，因为|是两个条件满足一个条件就行
+                _size++;
+            }
+            void reset(const size_t& Temp_Val)
+            {
+                //删除映射的位置的函数
+                size_t BitSet_Location = Temp_Val / 32;
+                size_t BitSet_Location_Val = Temp_Val % 32;
+                _BitSet[BitSet_Location] = _BitSet[BitSet_Location] & (~(1 << BitSet_Location_Val));
+                //&是两个条件都满足，~是取反，^是两个条件不同时满足
+                //1取反关键位是0其他位是1，这样就成功与掉，&要求是两个条件都需要满足
+                //其他位如果是1那么就不会改变原来的，如果是0那么还是为0，因为与是两个条件都需要满足
+                _size--;
+            }
+            size_t size()       { return _size; }
+            bool test(const size_t& Temp_Val)
+            {
+                if(_size == 0)
+                {
+                    return false;
+                }
+                size_t BitSet_Location = Temp_Val / 32;
+                size_t BitSet_Location_Val = Temp_Val % 32;
+                bool return_BitSet = _BitSet[BitSet_Location] & (1 << BitSet_Location_Val);
+                //如果_BitSet[BitSet_Location]里对应的位是1那么就返回true，否则返回false
+                return return_BitSet;
+            }
         };
     }
     /*############################     Map 容器     ############################*/
@@ -3464,36 +4685,86 @@ namespace MY_Template
             RB_TREE _ROOT_Map;
         public:
             using iterator = typename RB_TREE::iterator;
+            using const_iterator = typename RB_TREE::const_iterator;
+            using reverse_iterator = typename RB_TREE::reverse_iterator;
+            using const_reverse_iterator = typename RB_TREE::const_reverse_iterator;
+            
             using Map_iterator = MY_Template::Practicality::pair<iterator,bool>;
             ~Map()
             {
                 _ROOT_Map.~RB_Tree();
             }
-            Map_iterator push(const Key_Val_Type& Map_Temp)
+            Map& operator=(const Map& Map_Temp)
             {
-                return _ROOT_Map.push(Map_Temp);
+                if(this != &Map_Temp)
+                {
+                    _ROOT_Map = Map_Temp._ROOT_Map;
+                }
+                return *this;
             }
-            Map_iterator pop(const Key_Val_Type& Map_Temp)
-            {
-                return _ROOT_Map.pop(Map_Temp);
-            }
-            iterator find(const Key_Val_Type& Map_Temp)
-            {
-                return _ROOT_Map.find(Map_Temp);
-            }
-            void Middle_order_traversal()
-            {
-                _ROOT_Map.Middle_order_traversal();
-            }
-            void Pre_order_traversal()
-            {
-                _ROOT_Map.Pre_order_traversal();
-            }
+            Map()                                                   {  ;                                     }
+            Map(const Map& Map_Temp)                                {  _ROOT_Map = Map_Temp._ROOT_Map;       }
+            Map(const Key_Val_Type& Map_Temp)                       {  _ROOT_Map.push(Map_Temp);             }
+            Map_iterator push(const Key_Val_Type& Map_Temp)         {  return _ROOT_Map.push(Map_Temp);      }
+            Map_iterator pop(const Key_Val_Type& Map_Temp)          {  return _ROOT_Map.pop(Map_Temp);       }
+            iterator find(const Key_Val_Type& Map_Temp)             {  return _ROOT_Map.find(Map_Temp);      }
+            void Middle_order_traversal()                           {  _ROOT_Map.Middle_order_traversal();   }
+            void Pre_order_traversal()                              {  _ROOT_Map.Pre_order_traversal();      }
+            size_t size() const                                     {  return _ROOT_Map.size();              }
+            bool empty()                                            {  return _ROOT_Map.empty();             }
+            iterator begin()                                        {  return _ROOT_Map.begin();             }
+            iterator end()                                          {  return _ROOT_Map.end();               }
+            const_iterator cbegin()                                 {  return _ROOT_Map.cbegin();            }
+            const_iterator cend()                                   {  return _ROOT_Map.cend();              }
+            reverse_iterator rbegin()                               {  return _ROOT_Map.rbegin();            }
+            reverse_iterator rend()                                 {  return _ROOT_Map.rend();              }
+            const_reverse_iterator crbegin()                        {  return _ROOT_Map.crbegin();           }
+            const_reverse_iterator crend()                          {  return _ROOT_Map.crend();             }
+            iterator operator[](const Key_Val_Type& Map_Temp)       {  return _ROOT_Map[Map_Temp];           }
         };
-        template <typename unordered_Map_Type_K>
+        template <typename unordered_Map_Type_K,typename unordered_Map_Type_V>
         class unordered_Map
         {
-
+            using Key_Val_Type = MY_Template::Practicality::pair<unordered_Map_Type_K,unordered_Map_Type_V>;
+            struct Key_Val
+            {
+                const unordered_Map_Type_K& operator()(const Key_Val_Type& Temp_Key_)
+                {
+                    return Temp_Key_.first;
+                }
+            };
+            class Hash_Functor
+            {
+            public:
+                size_t operator()(const Key_Val_Type& Temp_Key_)
+                {
+                    size_t num_One =  MY_Template::Imitation_functions::Hash_Imitation_functions()(Temp_Key_.first);
+                    num_One = num_One * 31;
+                    size_t num_Two =  MY_Template::Imitation_functions::Hash_Imitation_functions()(Temp_Key_.second);
+                    num_Two = num_Two * 31;
+                    return (num_One + num_Two);
+                }
+            };
+            using Hash_Table = Base_Class_Container::Hash_Table<unordered_Map_Type_K,Key_Val_Type,Key_Val,Hash_Functor>;
+            Hash_Table _Hash_Map;
+        public:
+            using iterator = typename Hash_Table::iterator;
+            using const_iterator = typename Hash_Table::const_iterator;
+            unordered_Map()                                     {   ;                                 }  
+            ~unordered_Map()                                    {  _Hash_Map.~Hash_Table();           }
+            unordered_Map(const Key_Val_Type& Temp_Key_)        {  _Hash_Map.push(Temp_Key_);         }
+            bool push(const Key_Val_Type& Temp_Key_)            {  return _Hash_Map.push(Temp_Key_);  }
+            bool pop(const Key_Val_Type& Temp_Key_)             {  return _Hash_Map.pop(Temp_Key_);   }
+            iterator find(const Key_Val_Type& Temp_Key_)        {  return _Hash_Map.find(Temp_Key_);  }
+            size_t size()                                       {  return _Hash_Map.size();           }
+            size_t size() const                                 {  return _Hash_Map.size();           }
+            size_t capacity() const                             {  return _Hash_Map.capacity();       } 
+            bool empty()                                        {  return _Hash_Map.empty();          }
+            iterator begin()                                    {  return _Hash_Map.begin();          }
+            iterator end()                                      {  return _Hash_Map.end();            }
+            const_iterator cbegin()                             {  return _Hash_Map.cbegin();         }
+            const_iterator cend()                               {  return _Hash_Map.cend();           }
+            iterator operator[](const Key_Val_Type& Temp_Key_)  {  return _Hash_Map[Temp_Key_];       }
         };
     }
     /*############################     Set 容器     ############################*/
@@ -3515,638 +4786,134 @@ namespace MY_Template
             RB_TREE _ROOT_Set;
         public:
             using iterator = typename RB_TREE::iterator;
+            using const_iterator = typename RB_TREE::const_iterator;
+            using reverse_iterator = typename RB_TREE::reverse_iterator;
+            using const_reverse_iterator = typename RB_TREE::const_reverse_iterator;
+            
             using Set_iterator = MY_Template::Practicality::pair<iterator,bool>;
-            Set_iterator push(const Key_Val_Type& Set_Temp)
-            {
-                return _ROOT_Set.push(Set_Temp);
+            Set& operator=(const Set& Set_Temp)             
+            {  
+                if(this!= &Set_Temp)                     
+                {  
+                    _ROOT_Set = Set_Temp._ROOT_Set;      
+                }  
+                return *this; 
             }
-            Set_iterator pop(const Key_Val_Type& Set_Temp)
-            {
-                return _ROOT_Set.pop(Set_Temp);
-            }
-            iterator find(const Key_Val_Type& Set_Temp)
-            {
-                return _ROOT_Set.find(Set_Temp);
-            }
-            void Middle_order_traversal()
-            {
-                _ROOT_Set.Middle_order_traversal();
-            }
-            void Pre_order_traversal()
-            {
-                _ROOT_Set.Pre_order_traversal();
-            }
-            //函数实现未完成
+            Set()                                               {  ;                                        }
+            ~Set()                                              {  _ROOT_Set.~RB_Tree();                    }
+            Set(const Set& Set_Temp)                            {  _ROOT_Set = Set_Temp._ROOT_Set;          }
+            Set(const Key_Val_Type& Set_Temp)                   {  _ROOT_Set.push(Set_Temp);                }
+            Set_iterator push(const Key_Val_Type& Set_Temp)     {  return _ROOT_Set.push(Set_Temp);         }
+            Set_iterator pop(const Key_Val_Type& Set_Temp)      {  return _ROOT_Set.pop(Set_Temp);          }
+            iterator find(const Key_Val_Type& Set_Temp)         {  return _ROOT_Set.find(Set_Temp);         }
+            void Middle_order_traversal()                       {  _ROOT_Set.Middle_order_traversal();      }    
+            void Pre_order_traversal()                          {  _ROOT_Set.Pre_order_traversal();         }  
+            size_t size() const                                 {  return _ROOT_Set.size();                 }
+            bool empty()                                        {  return _ROOT_Set.empty();                }  
+            iterator begin()                                    {  return _ROOT_Set.begin();                }
+            iterator end()                                      {  return _ROOT_Set.end();                  }
+            const_iterator cbegin()                             {  return _ROOT_Set.cbegin();               }
+            const_iterator cend()                               {  return _ROOT_Set.cend();                 }
+            reverse_iterator rbegin()                           {  return _ROOT_Set.rbegin();               }
+            reverse_iterator rend()                             {  return _ROOT_Set.rend();                 }
+            const_reverse_iterator crbegin()                    {  return _ROOT_Set.crbegin();              }
+            const_reverse_iterator crend()                      {  return _ROOT_Set.crend();                }
+            iterator operator[](const Key_Val_Type& Set_Temp)   {  return _ROOT_Set[Set_Temp];              }
         };
         template <typename unordered_Set_Type_K>
         class unordered_Set
         {
-
+            using Key_Val_Type = unordered_Set_Type_K;
+            class Hash_Functor
+            {
+            public:
+                size_t operator()(const Key_Val_Type& Temp_Key_)
+                {
+                    return MY_Template::Imitation_functions::Hash_Imitation_functions()(Temp_Key_)* 131;
+                }
+            };
+            class Key_Val
+            {
+            public:
+                const Key_Val_Type& operator()(const Key_Val_Type& Temp_Key_)
+                {
+                    return Temp_Key_;
+                }
+            };
+            using Hash_Table = MY_Template::Base_Class_Container::Hash_Table<unordered_Set_Type_K,Key_Val_Type,Key_Val,Hash_Functor>;
+            Hash_Table _Hash_Set;
+        public:
+            using iterator = typename Hash_Table::iterator;
+            using const_iterator = typename Hash_Table::const_iterator;
+            unordered_Set()                                     {  ;                                        }
+            ~unordered_Set()                                    {   _Hash_Set.~Hash_Table();                }
+            bool push(const Key_Val_Type& Set_Temp)             {  return _Hash_Set.push(Set_Temp);         }
+            bool pop(const Key_Val_Type& Set_Temp)              {  return _Hash_Set.pop(Set_Temp);          }            
+            iterator find(const Key_Val_Type& Set_Temp)         {  return _Hash_Set.find(Set_Temp);         }
+            size_t size()                                       {  return _Hash_Set.size();                 }
+            bool empty()                                        {  return _Hash_Set.empty();                }
+            size_t capacity()                                   {  return _Hash_Set.capacity();             }
+            size_t size() const                                 {  return _Hash_Set.size();                 }
+            size_t capacity() const                             {  return _Hash_Set.capacity();             }
+            iterator begin()                                    {  return _Hash_Set.begin();                }
+            iterator end()                                      {  return _Hash_Set.end();                  }
+            const_iterator cbegin()                             {  return _Hash_Set.cbegin();               }
+            const_iterator cend()                               {  return _Hash_Set.cend();                 }
+            iterator operator[](const Key_Val_Type& Set_Temp)   {  return _Hash_Set[Set_Temp];              }
         };
     }
-    namespace Test_class
+    /*############################     BloomFilter 容器     ############################*/
+    namespace BloomFilter_Container
     {
-        /* 测试红黑树所需函数 */
-        template <typename Set_Type_K>
-        struct Key_Val
+        template <typename BloomFilter_Type_Val,typename Hash_Functor_BloomFilter = MY_Template::algorithm::Hash_algorithm::Hash_function<BloomFilter_Type_Val> >
+        class BloomFilter
         {
-            const Set_Type_K& operator()(const Set_Type_K& Temp_Key_)
+            Hash_Functor_BloomFilter   _Hash;
+            using BitSet = MY_Template::Base_Class_Container::BitSet;
+            BitSet _vector_BitSet;
+            size_t _Capacity;
+        public:
+            BloomFilter()
             {
-                return Temp_Key_;
+                _Capacity = 1000;
+                _vector_BitSet.resize(_Capacity);
             }
+            BloomFilter(const size_t& Temp_Capacity)
+            {
+                _Capacity = Temp_Capacity;
+                _vector_BitSet.resize(_Capacity);
+            }
+            size_t size()
+            {
+                return _vector_BitSet.size();
+            }
+            size_t capacity()
+            {
+                return _Capacity;
+            }
+            bool test(const BloomFilter_Type_Val& Temp_Val)
+            {
+                size_t num_One   = _Hash.Hash_SDBMHash(Temp_Val) % _Capacity;
+                size_t num_Two   = _Hash.Hash_DJBHash (Temp_Val) % _Capacity;
+                size_t num_Three = _Hash.Hash_PJWHash (Temp_Val) % _Capacity;
+                if(_vector_BitSet.test(num_One) == true && _vector_BitSet.test(num_Two) == true && _vector_BitSet.test(num_Three) && true)
+                {
+                    return true;
+                    /* 有一个为0就返回false */
+                }
+                return false;
+            }
+            void set(const BloomFilter_Type_Val& Temp_Val)
+            {
+                size_t num_One   = _Hash.Hash_SDBMHash(Temp_Val) % _Capacity;
+                size_t num_Two   = _Hash.Hash_DJBHash (Temp_Val) % _Capacity;
+                size_t num_Three = _Hash.Hash_PJWHash (Temp_Val) % _Capacity;
+                _vector_BitSet.set(num_One);
+                _vector_BitSet.set(num_Two);
+                _vector_BitSet.set(num_Three);
+            }
+            //布隆过滤器只支持插入和查找，不支持删除
         };
     }
-}
-int main()
-{  
-    /*            string测试             */
-    {
-        std::cout << " string 测试 " << std::endl << std::endl;
-        MY_Template::string_Container::string string_test1("hello");
-        MY_Template::string_Container::string string_test2("world");
-        
-        MY_Template::string_Container::string string_test3 = string_test1 + string_test2;
-        std::cout << "string_test3: " << string_test3 << std::endl;
-        string_test3.push_back('!');
-        const char* insert_str = "inserted";
-        string_test3.nose_Insertion_substrings(insert_str);
-        std::cout << "str3 after insertion: " << string_test3 << std::endl;
-
-        size_t old_pos = strlen(insert_str);
-        MY_Template::string_Container::string string_test4 = string_test3.str_withdraw(old_pos);
-        std::cout << "string_test4: " << string_test4 << std::endl;
-
-        std::cout << string_test3.conversions_oldest() << std::endl;
-        std::cout << string_test3.conversions_few() << std::endl;
-
-        MY_Template::string_Container::string string_test5 = string_test3.str_withdraw_extremity(5);
-        std::cout << "string_test5: " << string_test5 << std::endl;
-
-        MY_Template::string_Container::string string_test6 = string_test3.str_withdraw_detail(5, 10);
-        std::cout << "string_test6: " << string_test6 << std::endl;
-
-        std::cout << "str3 size: " << string_test3.size() << std::endl;
-        std::cout << "str3 capacity: " << string_test3.capacity() << std::endl;
-        std::cout << "string_test3 after resize: " << string_test3.resize(21, '*') << std::endl;
-
-        std::cout << "string_test3 after rollback: " << string_test3.rollback() << std::endl;
-
-        std::cout << "string_test3 after rollback_limit: " << string_test3.rollback_limit(5, 10) << std::endl;
-
-        string_test3.string_print();
-        string_test3.string_print_reverse();
-
-        for(auto i :string_test3)
-        {
-            std::cout << i << " ";
-        }
-        std::cout << std::endl;
-
-        for(MY_Template::string_Container::string::const_iterator i = string_test3.begin();i != string_test3.end();i++)
-        {
-            std::cout << *i << " ";
-        }
-        std::cout << std::endl;
-    }
-
-    /*            vector测试             */
-    {
-        std::cout << " vector 测试 " << std::endl << std::endl;
-        MY_Template::vector_Container::vector<int> vector_test(5,1);
-        for(auto i: vector_test)
-        {
-            std::cout << i << " ";
-        }
-        std::cout << std::endl;
-        MY_Template::vector_Container::vector<int> vector_test1(vector_test);
-        for(const  auto& i  : vector_test1 )
-        {
-            std::cout << i << " ";
-        }
-        std::cout << std::endl;
-        MY_Template::vector_Container::vector<int> test2 = vector_test1;
-        for(const auto i : test2)
-        {
-            std::cout << i << " ";
-        }
-        MY_Template::string_Container::string s2 = "name";
-        std::cout << std::endl;
-        MY_Template::vector_Container::vector<MY_Template::string_Container::string> name_test(10,s2);
-        for(const auto& i : name_test )
-        {
-            std::cout << i << " ";
-        }
-        std::cout << std::endl;
-        MY_Template::vector_Container::vector<MY_Template::string_Container::string> name_test1 =name_test ;
-        for(const auto& i : name_test1 )
-        {
-            std::cout << i << " ";
-        }
-        std::cout << std::endl;
-        MY_Template::string_Container::string s3 = "hello word!";
-        name_test1.push_back(s3);
-        for(const auto& i : name_test1 )
-        {
-            std::cout << i << " ";
-        }
-        std::cout << std::endl;
-
-        name_test1.push_front(s3);
-        for(const auto& i : name_test1 )
-        {
-            std::cout << i << " ";
-        }
-        std::cout << std::endl;
-
-        name_test1+=name_test;
-        for(const auto& i : name_test1 )
-        {
-            std::cout << i << " ";
-        }
-        std::cout << std::endl;
-
-        std::cout << name_test1 << std::endl;
-        std::cout << name_test1.pop_back() << std::endl;
-    }
-
-
-    /*            list测试             */
-    {
-        std::cout << " list 测试 " << std::endl << std::endl;
-        MY_Template::list_Container::list<int> list_test1;
-        for(size_t i = 1; i < 10; i++)
-        {
-            list_test1.push_back(i);
-        }
-        MY_Template::list_Container::list<int>::const_iterator it =list_test1.cbegin();
-        while(it != list_test1.cend())
-        {
-            std::cout << *it  << " ";
-            it++;
-        }
-        std::cout << std::endl;
-        MY_Template::list_Container::list<int>::reverse_const_iterator i = list_test1.rcbegin();
-        while(i != list_test1.rcend())
-        {
-            std::cout << *i << " ";
-            i++;
-        }
-        std::cout <<std::endl;
-
-        list_test1.pop_back(); 
-        MY_Template::list_Container::list<int>::const_iterator j =list_test1.cbegin();
-        while(j != list_test1.cend())
-        {
-            std::cout << *j  << " ";
-            j++;
-        }
-        std::cout << std::endl;
-        std::cout << list_test1.size() << std::endl;
-
-        MY_Template::list_Container::list<int> list_test2 = list_test1;
-        MY_Template::list_Container::list<int>::const_iterator p =list_test2.cbegin();
-        while(p != list_test2.cend())
-        {
-            std::cout << *p  << " ";
-            p++;
-        }
-        std::cout << std::endl;
-        std::cout << list_test2.size() << std::endl;
-
-        MY_Template::list_Container::list<int> list_test3 = list_test2 + list_test1;
-        MY_Template::list_Container::list<int>::const_iterator k =list_test3.cbegin();
-        while(k != list_test3.cend())
-        {
-            std::cout << *k  << " ";
-            k++;
-        }
-        std::cout << std::endl;
-        std::cout << list_test3.size() << std::endl;
-
-        MY_Template::list_Container::list<int> list_test4 = list_test3 + list_test1;
-        MY_Template::list_Container::list<int>::const_iterator kp =list_test4.cbegin();
-        while(kp != list_test4.cend())
-        {
-            std::cout << *kp  << " ";
-            kp++;
-        }
-        std::cout << std::endl;
-        std::cout << list_test4.size() << std::endl;
-        std::cout << list_test4 << std::endl;
-    }
-
-    /*            staic测试             */
-    {
-        std::cout << " staic 测试 " << std::endl << std::endl;
-        MY_Template::string_Container::string staic_test_str1 = "hello";
-        MY_Template::string_Container::string staic_test_str2 = "word";
-        MY_Template::string_Container::string staic_test_str3 = "  ";
-        MY_Template::stack_Adapter::stack< MY_Template::string_Container::string> staic_test1;
-
-        staic_test1.push(staic_test_str1);
-        staic_test1.push(staic_test_str3);
-        staic_test1.push(staic_test_str2);
-
-        std::cout << staic_test1.top() << std::endl;
-        staic_test1.pop();
-        std::cout << staic_test1.top() << std::endl;
-        staic_test1.pop();
-        std::cout << staic_test1.top() << std::endl;
-        staic_test1.pop();
-    }
-
-    /*            queue测试             */
-    {
-        std::cout << " queue 测试 " << std::endl << std::endl;
-        MY_Template::string_Container::string queue_test_str1 = "hello";
-        MY_Template::string_Container::string queue_test_str2 = "word";
-        MY_Template::string_Container::string queue_test_str3 = "  ";
-        MY_Template::queue_Adapter::queue< MY_Template::string_Container::string,MY_Template::list_Container::list< MY_Template::string_Container::string>> queue_test1;
-
-        queue_test1.push(queue_test_str1);
-        queue_test1.push(queue_test_str3);
-        queue_test1.push(queue_test_str2);
-
-        std::cout << queue_test1.front() << std::endl;
-        std::cout << queue_test1.back()  << std::endl;
-
-        std::cout << queue_test1.front() << " ";
-        queue_test1.pop();
-        std::cout << queue_test1.front() << " ";
-        queue_test1.pop();
-        std::cout << queue_test1.front() << " ";
-        queue_test1.pop();
-    }
-
-    /*            priority_queue测试             */
-    {
-        time_t num1 = clock();
-        std::cout << " priority_queue 测试 " << std::endl << std::endl;
-        MY_Template::queue_Adapter::priority_queue<int> priority_queue_test;
-        for(int i = 0; i < 10000 ; i++)
-        {
-            priority_queue_test.push(i);
-        }
-
-        std::cout << priority_queue_test.size() << std::endl;
-
-        for(size_t i = 0; i < 10000; i++)
-        {
-            std::cout << priority_queue_test.top() << " ";
-            priority_queue_test.pop();
-        }
-        std::cout << std::endl;
-        time_t num2 = clock();
-        std::cout << num2-num1 << std::endl;
-    }
-
-    /*            BS_Tree 测试             */
-    {
-        time_t Binary_search_tree_num1 = clock();
-        MY_Template::Tree_Container::BS_Tree<int,MY_Template::Imitation_functions::greater<int>> Binary_search_tree_test;
-        for(size_t i = 100; i > 0; i--)
-        {
-            //相对来说这算是有序插入导致二叉树相乘时间复杂度为O(N)的链表
-            Binary_search_tree_test.push(i);
-        }
-        time_t Binary_search_tree_num2 = clock();
-
-        time_t Binary_search_tree_num3 = clock();
-        std::cout << Binary_search_tree_test.find(58) << std::endl;
-        time_t Binary_search_tree_num4 = clock();
-        // Binary_search_tree_test.Middle_order_traversal();
-        std::cout << "退化链表插入时间" << Binary_search_tree_num2-Binary_search_tree_num1 << std::endl;
-        std::cout << "退化链表查找时间" << Binary_search_tree_num4-Binary_search_tree_num3 << std::endl;
-        std::cout << std::endl << std::endl;
-    }
-
-    {
-        MY_Template::Tree_Container::BS_Tree<int, MY_Template::Imitation_functions::greater<int>> bst;
-        bst.push(5);
-        bst.push(4);
-        bst.push(3);
-        bst.push(2);
-        bst.push(1);
-        bst.Middle_order_traversal(); 
-        std::cout << std::endl << std::endl;
-    }
-
-    {
-        const size_t Binary_search_tree_arraySize = 10;
-        MY_Template::vector_Container::vector<int> Binary_search_tree_array(Binary_search_tree_arraySize);
-        for (size_t i = 0; i < Binary_search_tree_arraySize; ++i) 
-        {
-            Binary_search_tree_array[i] = i;
-        }
-
-        // 创建随机数引擎和分布
-        std::random_device rd;
-        std::mt19937 g(rd());
-        std::shuffle(Binary_search_tree_array.begin(), Binary_search_tree_array.end(), g);
-        //输出打乱后的数组
-        // for(auto& i : Binary_search_tree_array)
-        // {
-        //     std::cout << i << " ";
-        // }
-
-        //打乱数组元素顺序
-        size_t size = 0;
-        time_t Binary_search_tree_num1 = clock();
-        MY_Template::Tree_Container::BS_Tree<int,MY_Template::Imitation_functions::greater<int>> Binary_search_tree_test;
-        for(const auto& Binary_search_tree_for_test: Binary_search_tree_array)
-        {
-            if(Binary_search_tree_test.push(Binary_search_tree_for_test))
-            {
-                size++;
-            }
-        }
-        time_t Binary_search_tree_num2 = clock();
-
-        const int Binary_search_tree_find = Binary_search_tree_array[Binary_search_tree_arraySize/2];
-
-        time_t Binary_search_tree_num3 = clock();
-        Binary_search_tree_test.find(Binary_search_tree_find);
-        time_t Binary_search_tree_num4 = clock();
-        // Binary_search_tree_test.Middle_order_traversal();
-        std::cout << "插入个数" << size << std::endl;
-        std::cout << "插入时间" << Binary_search_tree_num2-Binary_search_tree_num1 << std::endl;
-        std::cout << "查找时间" << Binary_search_tree_num4-Binary_search_tree_num3 << std::endl;
-        /*              查找数据时间不稳定时间复杂度是O(logN)        */
-        std::cout << std::endl << std::endl;
-    }
-
-    {
-        const size_t Binary_search_tree_arraySize = 20;
-        MY_Template::vector_Container::vector<int> Binary_search_tree_array(Binary_search_tree_arraySize);
-        for (size_t i = 0; i < Binary_search_tree_arraySize; ++i) 
-        {
-            Binary_search_tree_array[i] = i;
-        }
-
-        // 创建随机数引擎和分布
-        std::random_device rd;
-        std::mt19937 g(rd());
-        std::shuffle(Binary_search_tree_array.begin(), Binary_search_tree_array.end(), g);
-        //输出打乱后的数组
-        // for(auto& i : Binary_search_tree_array)
-        // {
-        //     std::cout << i << " ";
-        // }
-
-        //打乱数组元素顺序
-        size_t size = 0;
-        time_t Binary_search_tree_num1 = clock();
-        MY_Template::Tree_Container::BS_Tree<int,MY_Template::Imitation_functions::greater<int>> Binary_search_tree_test;
-        for(const auto& Binary_search_tree_for_test: Binary_search_tree_array)
-        {
-            if(Binary_search_tree_test.push(Binary_search_tree_for_test))
-            {
-                size++;
-                std::cout << size << " ";
-            }
-        }
-        std::cout << std::endl;
-        time_t Binary_search_tree_num2 = clock();
-        MY_Template::Tree_Container::BS_Tree<int,MY_Template::Imitation_functions::greater<int>> Binary_search_tree_test1 = Binary_search_tree_test;
-        time_t Binary_search_tree_num3 = clock();
-        std::cout << "拷贝构造没问题 " << std::endl;
-
-        Binary_search_tree_test.pop(Binary_search_tree_array[2]);
-        std::cout << "pop(1)函数没问题 " << std::endl;
-        Binary_search_tree_test.pop(Binary_search_tree_array[0]);
-        std::cout << "pop(2)函数没问题 " << std::endl;
-        Binary_search_tree_test.pop(Binary_search_tree_array[1]);
-        std::cout << "pop(3)函数没问题 " << std::endl;
-        Binary_search_tree_test.pop(Binary_search_tree_array[3]);
-        std::cout << "pop(4)函数没问题 " << std::endl;
-
-
-        Binary_search_tree_test.Middle_order_traversal();
-        std::cout << std::endl;
-        Binary_search_tree_test1.Middle_order_traversal();
-
-        std::cout << "前序遍历 "<< std::endl;
-        Binary_search_tree_test.Pre_order_traversal();
-        std::cout << std::endl;
-        Binary_search_tree_test1.Pre_order_traversal();
-        std::cout << std::endl;
-        std::cout << "插入个数" << size << std::endl;
-        std::cout << "插入时间" << Binary_search_tree_num2-Binary_search_tree_num1 << std::endl;
-        std::cout << "拷贝时间" << Binary_search_tree_num3-Binary_search_tree_num2 << std::endl;
-    }
-
-    {
-        MY_Template::string_Container::string str1 = {'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'};
-        std::cout << str1 << std::endl;
-        MY_Template::vector_Container::vector< MY_Template::string_Container::string> vector_str = 
-        {"西瓜","樱桃","苹果","西瓜","樱桃","苹果","樱桃","西瓜","樱桃","西瓜","樱桃","苹果","樱桃","苹果","樱桃"};
-
-        MY_Template::Tree_Container::BS_Tree< MY_Template::string_Container::string> BST_temp;
-        size_t _BST_size = vector_str.size();
-        for(size_t i = 0 ; i < _BST_size;i++)
-        {
-            if(BST_temp.push(vector_str[i]))
-            {
-                std::cout << "插入成功" << std::endl;
-            }
-            else
-            {
-                //当前未实现累加功能
-                std::cout << "插入失败" << std::endl;
-            }
-        }
-        BST_temp.Middle_order_traversal();
-        std::cout << BST_temp.size() << std::endl;
-    }
-    /*            pair类 测试             */
-    {
-        const int i = 31; const int j = 28;
-        MY_Template::Practicality::pair<int,int> pair_test =MY_Template::Practicality::make_pair(i,j);
-        std::cout << pair_test << std::endl;
-    }
-    /*            AVL_Tree 测试             */
-    {
-        MY_Template::Tree_Container::AVL_Tree <MY_Template::Practicality::pair<int,int>,int> AVL_Tree_test_pair(MY_Template::Practicality::pair(9,0), 10);
-        MY_Template::Practicality::pair<MY_Template::Practicality::pair<int,int>,int> pair_test_ (MY_Template::Practicality::pair(9,0), 10);
-        MY_Template::Tree_Container::AVL_Tree <MY_Template::Practicality::pair<int,int>,int> AVL_Tree_test(pair_test_);
-        //两个构造函数，根据传值调用来查看调用情况
-        MY_Template::Tree_Container::AVL_Tree<MY_Template::string_Container::string,int> AVL_Tree_test2;
-        AVL_Tree_test2.~AVL_Tree();
-    }
-    {
-        MY_Template::Tree_Container::AVL_Tree<int,int> AVL_Tree_test_pair;
-        MY_Template::vector_Container::vector<MY_Template::Practicality::pair<int,int>> AVL_Tree_array_pair = 
-        {{22,0},{16,0},{13,0},{15,0},{11,0},{12,0},{14,0},{10,0},{2,0},{10,0}};
-        for(auto& i : AVL_Tree_array_pair)
-        {
-            AVL_Tree_test_pair.push(i);
-        }
-        std::cout << "前序遍历 "<< std::endl;
-        AVL_Tree_test_pair.Pre_order_traversal();
-        std::cout << std::endl;
-        std::cout << "中序遍历 "<< std::endl;
-        AVL_Tree_test_pair.Middle_order_traversal();
-        std::cout << std::endl;
-    }
-    {
-        MY_Template::Tree_Container::AVL_Tree<int,int> AVL_Tree_test_pair;
-        MY_Template::vector_Container::vector<MY_Template::Practicality::pair<int,int>> AVL_Tree_array_pair = 
-        {{22,0},{16,0},{13,0},{15,0},{11,0},{12,0},{14,0},{10,0},{2,0},{10,0}};
-
-        for(auto& i : AVL_Tree_array_pair)
-        {
-            AVL_Tree_test_pair.push(i);
-        }
-        std::cout << "前序遍历 "<< std::endl;
-        AVL_Tree_test_pair.Pre_order_traversal();
-        std::cout << std::endl;
-        std::cout << "中序遍历 "<< std::endl;
-        AVL_Tree_test_pair.Middle_order_traversal();
-        std::cout << std::endl; 
-        MY_Template::Tree_Container::AVL_Tree<int,int>AVL_Tree_test_pair1(AVL_Tree_test_pair);
-        std::cout << "前序遍历 "<< std::endl;
-        AVL_Tree_test_pair1.Pre_order_traversal();
-        std::cout << std::endl;
-        std::cout << "中序遍历 "<< std::endl;
-        AVL_Tree_test_pair1.Middle_order_traversal();
-        std::cout << std::endl; 
-
-        MY_Template::Tree_Container::BS_Tree<char> BS_Tr;
-        MY_Template::string_Container::string str1 = {'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'};
-        for(auto& i :str1)
-        {
-            BS_Tr.push(i);
-        }
-        BS_Tr.Middle_order_traversal();
-        std::cout << std::endl;
-        MY_Template::Tree_Container::BS_Tree<char> BS_TREE(BS_Tr);
-        BS_TREE.Middle_order_traversal();
-        std::cout << std::endl;
-    }
-    {
-        //删除测试
-        MY_Template::Tree_Container::AVL_Tree<int,int> AVL_Tree_test_pair;
-        MY_Template::vector_Container::vector<MY_Template::Practicality::pair<int,int>> AVL_Tree_array_pair = 
-        {{22,0},{16,0},{13,0},{15,0},{11,0},{12,0},{14,0},{10,0},{2,0},{10,0}};
-        for(auto& i : AVL_Tree_array_pair)
-        {
-            AVL_Tree_test_pair.push(i);
-        }
-        std::cout << "前序遍历 "<< std::endl;
-        AVL_Tree_test_pair.Pre_order_traversal();
-        std::cout << std::endl;
-        std::cout << "开始删除 "<< std::endl;
-        for(auto& i : AVL_Tree_array_pair)
-        {
-            AVL_Tree_test_pair.pop(i.first);
-            AVL_Tree_test_pair.Pre_order_traversal();
-            std::cout << std::endl;
-        }
-        std::cout << std::endl;
-    }
-    {
-        //性能测试
-        /*                   pair 类型                */
-        MY_Template::Tree_Container::AVL_Tree<size_t,int> AVL_Tree_test_pair;
-        MY_Template::vector_Container::vector<MY_Template::Practicality::pair<size_t,int>> AVL_Tree_array_pair;
-        size_t size = 100000;
-        for(size_t i = 0; i < size; i++)
-        {
-            AVL_Tree_array_pair.push_back(MY_Template::Practicality::pair<size_t,int>(i,0));
-        }
-        time_t AVL_Tree_num1 = clock();
-        for(auto& i : AVL_Tree_array_pair)
-        {
-            AVL_Tree_test_pair.push(i);
-        }
-        time_t AVL_Tree_num2 = clock();
-        std::cout << "插入个数:" << AVL_Tree_test_pair.size()  << " " << " 插入时间:" << AVL_Tree_num2 - AVL_Tree_num1 << std::endl;
-
-        /*                  非pair 类型               */
-        MY_Template::Tree_Container::AVL_Tree<size_t,int> AVL_Tree_test;
-        MY_Template::vector_Container::vector<size_t> AVL_Tree_array;
-        for(size_t j = 0; j < size ; j++)
-        {
-            AVL_Tree_array.push_back(j);
-        }
-        time_t AVL_Tree_num3 = clock();
-        for(auto& j : AVL_Tree_array)
-        {
-            AVL_Tree_test.push(j);
-        }
-        time_t AVL_Tree_num4 = clock();
-        std::cout << "插入个数:" << AVL_Tree_test.size()  << " " << " 插入时间:" << AVL_Tree_num4 - AVL_Tree_num3 << std::endl;
-    }
-    /*            RB_Tree 测试             */
-    {
-        MY_Template::Base_Class_Container::RB_Tree<size_t,size_t,MY_Template::Test_class::Key_Val<size_t>> RB_Tree_Test;
-        size_t size = 10;
-        MY_Template::vector_Container::vector<size_t> arr;
-        for(size_t i = 0; i < size; i++ )
-        {
-            arr.push_back(i);
-        }
-        std::cout << arr << std::endl;
-        for(auto& j : arr)
-        {
-            RB_Tree_Test.push(j);
-            std::cout << "前序遍历" << " ";
-            RB_Tree_Test.Pre_order_traversal();
-            std::cout << "   " << "中序遍历" << " ";
-            RB_Tree_Test.Middle_order_traversal();
-            std::cout << std::endl;
-        }
-    }
-    /*            Map 测试             */
-    {
-        MY_Template::Map_Container::Map<size_t,size_t> Map_Test;
-        size_t size = 30;
-        MY_Template::vector_Container::vector<MY_Template::Practicality::pair<size_t,size_t>> arr;
-        for(size_t i = 0; i < size; i++ )
-        {
-            arr.push_back(MY_Template::Practicality::pair<size_t,size_t>(i,i++));
-        }
-        std::cout << arr << std::endl;
-        for(auto& j : arr)
-        {
-            Map_Test.push(j);
-            std::cout << "前序" << " ";
-            Map_Test.Pre_order_traversal();
-            std::cout << "   " << "中序" << " ";
-            Map_Test.Middle_order_traversal();
-            std::cout << std::endl;
-        }
-        for(auto& j : arr)
-        {
-            Map_Test.pop(j);
-            std::cout << "前序" << " ";
-            Map_Test.Pre_order_traversal();
-            std::cout << "   " << "中序" << " ";
-            Map_Test.Middle_order_traversal();
-            std::cout << std::endl;
-        }
-        std::cout << std::endl;
-    }
-    /*            Set 测试             */
-    {
-        MY_Template::Set_Container::Set<size_t> Set_test;
-        size_t size = 20;
-        MY_Template::vector_Container::vector<size_t> arr;
-        for(size_t i = 0; i < size; i++ )
-        {
-            arr.push_back(i);
-        }
-         std::cout << arr << std::endl;
-        for(auto& j : arr)
-        {
-            Set_test.push(j);
-            std::cout << "前序" << " ";
-            Set_test.Pre_order_traversal();
-            std::cout << "   " << "中序" << " ";
-            Set_test.Middle_order_traversal();
-            std::cout << std::endl;
-        }
-    }
-    return 0;
 }
 ```

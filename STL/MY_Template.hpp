@@ -1,4 +1,5 @@
 //本文件都是自己造的轮子
+#define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
 #include <cstring>
 namespace MY_Template
