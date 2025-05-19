@@ -280,66 +280,99 @@ namespace Tree_Container {
 ## 🗄️ 哈希表 `Hash_table<Key,Value,HF>`
 
 ```cpp
-template<typename Key,typename Value,typename HF>
-class Hash_table {
-private:
-    using Bucket=std::list<Practicality::pair<Key,Value>>;
-    std::vector<Bucket> _buckets;
-    size_t _size; float _max_load;
-    HF _hash;
-    void check_and_rehash();
-public:
-    Hash_table(size_t bc=16,float ml=0.75f);
-    bool insert(const Key&,const Value&);
-    bool erase(const Key&);
-    Value* find(const Key&);
-    void rehash(size_t);
-    size_t size()const;
-    float load_factor()const;
-};
-```
-
-| 方法                           | 说明                | 返回值      | 示例                        |
-| ---------------------------- | ----------------- | -------- | ------------------------- |
-| 构造(bucket\_count, max\_load) | 初始化桶与负载阈值         | —        | `Hash_table<int,int> ht;` |
-| `insert(key,value)`          | 链式插入并重哈希          | `bool`   | `ht.insert(1,100)`        |
-| `erase(key)`                 | 删除键对应元素           | `bool`   | `ht.erase(1)`             |
-| `Value* find(key)`           | 返回元素指针或 `nullptr` | `Value*` | `auto v=ht.find(2)`       |
-| `rehash(new_bucket_count)`   | 重构桶并重分布元素         | `void`   | `ht.rehash(32)`           |
-| `size() const`               | 返回元素数             | `size_t` | `ht.size()`               |
-| `load_factor() const`        | 计算当前负载            | `float`  | `ht.load_factor()`        |
-
----
-
-## 🧮 基类容器：BitSet `bitset_Container::BitSet<N>`
-
-```cpp
-namespace bitset_Container {
-    template<size_t N>
-    class BitSet {
-    private:
-        std::array<bool,N> _bits;
+namespace bitset_Container 
+{
+    template <typename Hash_Table_Type_Key, typename Hash_Table_Type_Val,typename Hash_Table_Functor,typename Type_imitation_function = std::hash<Hash_Table_Type_Val> >
+    class Hash_Table
+    {
+        class Hash_Table_Node
+        {
+        public:
+            Hash_Table_Type_Val _data;
+            Hash_Table_Node* _next;
+            Hash_Table_Node* Link_prev;
+            //全局链表指针，方便按照插入的顺序有序遍历哈希表
+            Hash_Table_Node* Link_next;
+            Hash_Table_Node(const Hash_Table_Type_Val& Temp_Val)
+            {
+                _data = Temp_Val;
+                _next = nullptr;
+                Link_prev = nullptr;
+                Link_next = nullptr;
+            }
+        };
+        using Node = Hash_Table_Node;
+        Hash_Table_Functor _Hash_Functor;                           //仿函数
+        size_t _size;                                               //哈希表大小
+        size_t Load_factor;                                         //负载因子   
+        size_t Capacity;                                            //哈希表容量
+        MY_Template::vector_Container::vector<Node*> _Hash_Table;   //哈希表
+        Type_imitation_function _Type_imitation_function;           //哈希函数
+        Node* _previous_data = nullptr;                             //上一个数据
+        Node* _Head_data = nullptr;                                 //插入头数据
     public:
-        void set(size_t i);
-        void reset(size_t i);
-        void flip(size_t i);
-        bool test(size_t i)const;
-        size_t count()const;
-        size_t size()const;
-        std::string to_string()const;
+        using iterator = Hash_iterator<Hash_Table_Type_Key,Hash_Table_Type_Val>;
+        using const_iterator = Hash_iterator<const Hash_Table_Type_Key,const Hash_Table_Type_Val>;
+        bool Change_Load_factor(const size_t& Temp_Load_factor);
+        iterator operator[](const Hash_Table_Type_Key& Temp_Key);
+        iterator begin()；                   
+        const_iterator cbegin()；      
+        iterator end()；                      
+        const_iterator cend()；        
+        size_t size()；                                       
+        bool   empty()；                      
+        size_t capacity()；
+        bool push (const Hash_Table_Type_Val& Temp_Val)；
+        bool pop(const Hash_Table_Type_Val& Temp_Val)；
+        iterator find(const Hash_Table_Type_Val& Temp_Val)；                              
     };
 }
 ```
 
-| 方法            | 说明     | 返回值      | 示例               |
-| ------------- | ------ | -------- | ---------------- |
-| `set(i)`      | 置位     | `void`   | `bs.set(3)`      |
-| `reset(i)`    | 清位     | `void`   | `bs.reset(3)`    |
-| `flip(i)`     | 翻转位    | `void`   | `bs.flip(3)`     |
-| `test(i)`     | 读取位    | `bool`   | `bs.test(3)`     |
-| `count()`     | 统计为1位数 | `size_t` | `bs.count()`     |
-| `size()`      | 返回 N   | `size_t` | `bs.size()`      |
-| `to_string()` | 二进制字符串 | `string` | `bs.to_string()` |
+| 方法                           | 说明                | 返回值      | 示例                        |
+| ---------------------------- | ----------------- | -------- | ------------------------- |
+| `push(Hash_Table_Type_Val)`          | 插入并重哈希          | `bool`   | `ht.insert(1,100)`        |
+| `pop(Hash_Table_Type_Val)`                 | 删除键对应元素           | `bool`   | `ht.erase(1)`             |
+| `Value* find(Hash_Table_Type_Val)`           | 返回元素指针或 `nullptr` | `Value*` | `auto v=ht.find(2)`       |
+| `rehash(new_bucket_count)`   | 重构桶并重分布元素         | `void`   | `ht.rehash(32)`           |
+| `size()`               | 返回元素数             | `size_t` | `ht.size()`               |
+| `load_factor() const`        | 计算当前负载            | `float`  | `ht.load_factor()`        |
+
+---
+## 🧮 基类容器：BitSet `bitset_Container::BitSet`
+
+```cpp
+namespace bitset_Container 
+{
+    class BitSet 
+    {
+        MY_Template::vector_Container::vector<int> _BitSet;
+        size_t _size;
+    public:
+        BitSet();
+        BitSet(const size_t& Temp_size);
+        BitSet(const BitSet& BitMap_Temp);
+        BitSet& operator=(const BitSet& BitMap_Temp);
+        void resize(const size_t& Temp_size);
+        void set(const size_t& Temp_Val);
+        void reset(const size_t& Temp_Val);
+        bool test(const size_t& Temp_Val);
+        size_t size();
+    };
+}
+```
+
+| 方法                | 说明                   | 返回值      | 示例                   |
+| ----------------- | --------------------  | -------- | -------------------- |
+| `BitSet()`        | 默认构造函数              | —        | `BitSet bs;`         |
+| `BitSet(size_t)`  | 指定大小构造              | —        | `BitSet bs(100);`    |
+| `BitSet(const BitSet&)` | 拷贝构造函数           | —        | `BitSet bs2(bs1);`   |
+| `operator=(const BitSet&)` | 赋值操作符         | `BitSet&` | `bs2 = bs1;`         |
+| `resize(size_t)`  | 重新设置大小              | `void`    | `bs.resize(200);`    |
+| `set(size_t)`     | 置位                    | `void`    | `bs.set(3);`         |
+| `reset(size_t)`   | 清位                    | `void`    | `bs.reset(3);`       |
+| `test(size_t)`    | 测试某一位是否为真          | `bool`    | `bs.test(3);`        |
+| `size()`          | 返回元素个数              | `size_t`  | `bs.size();`         |
 
 ---
 
@@ -347,123 +380,270 @@ namespace bitset_Container {
 
 ```cpp
 namespace unordered_map_Container {
-    template<typename Key,typename Value,typename Hash,typename Eq>
-    class unordered_map {
-    private:
-        Hash_table<Key,Value,Hash> _ht;
+    template <typename unordered_Map_Type_K,typename unordered_Map_Type_V>
+    class unordered_map 
+    {
+        using Key_Val_Type = MY_Template::Practicality::pair<unordered_Map_Type_K,unordered_Map_Type_V>;
+        struct Key_Val
+        {
+            const unordered_Map_Type_K& operator()(const Key_Val_Type& Temp_Key_)
+            {
+                return Temp_Key_.first;
+            }
+        };
+        class Hash_Functor
+        {
+        public:
+            size_t operator()(const Key_Val_Type& Temp_Key_)
+            {
+                size_t num_One =  MY_Template::Imitation_functions::Hash_Imitation_functions()(Temp_Key_.first);
+                num_One = num_One * 31;
+                size_t num_Two =  MY_Template::Imitation_functions::Hash_Imitation_functions()(Temp_Key_.second);
+                num_Two = num_Two * 31;
+                return (num_One + num_Two);
+            }
+        };
+        using Hash_Table = Base_Class_Container::Hash_Table<unordered_Map_Type_K,Key_Val_Type,Key_Val,Hash_Functor>;
+        Hash_Table _Hash_Map;
     public:
-        std::pair<typename Hash_table<Key,Value,Hash>::Bucket::iterator,bool> insert(const std::pair<Key,Value>&);
-        size_t erase(const Key&);
-        typename Hash_table<Key,Value,Hash>::Bucket::iterator find(const Key&);
-        Value& operator[](const Key&);
-        void rehash(size_t);
-        size_t size()const;
-        float load_factor()const;
+        using iterator = typename Hash_Table::iterator;
+        using const_iterator = typename Hash_Table::const_iterator;
+        bool push(const Key_Val_Type& Temp_Key_)；
+        bool pop(const Key_Val_Type& Temp_Key_)；
+        iterator find(const Key_Val_Type& Temp_Key_);
+        size_t size();
+        size_t capacity();
+        bool empty()；                                        
+        iterator begin()；                                    
+        iterator end()；                                      
+        const_iterator cbegin()；                             
+        const_iterator cend()；                               
+        iterator operator[](const Key_Val_Type& Temp_Key_) 
     };
 }
-namespace unordered_set_Container {
-    template<typename Key,typename Hash,typename Eq>
-    class unordered_set {
-    private:
-        Hash_table<Key,bool,Hash> _ht;
+namespace unordered_set_Container 
+{
+    template <typename unordered_Set_Type_K>
+    class unordered_Set
+    {
+        using Key_Val_Type = unordered_Set_Type_K;
+        class Hash_Functor
+        {
+        public:
+            size_t operator()(const Key_Val_Type& Temp_Key_)
+            {
+                return MY_Template::Imitation_functions::Hash_Imitation_functions()(Temp_Key_)* 131;
+            }
+        };
+        class Key_Val
+        {
+        public:
+            const Key_Val_Type& operator()(const Key_Val_Type& Temp_Key_)
+            {
+                return Temp_Key_;
+            }
+        };
+        using Hash_Table = MY_Template::Base_Class_Container::Hash_Table<unordered_Set_Type_K,Key_Val_Type,Key_Val,Hash_Functor>;
+        Hash_Table _Hash_Set;
     public:
-        std::pair<typename Hash_table<Key,bool,Hash>::Bucket::iterator,bool> insert(const Key&);
-        size_t erase(const Key&);
-        typename Hash_table<Key,bool,Hash>::Bucket::iterator find(const Key&);
-        void rehash(size_t);
-        size_t size()const;
-        float load_factor()const;
+        bool push(const Key_Val_Type& Set_Temp)；            
+        bool pop(const Key_Val_Type& Set_Temp)；           
+        iterator find(const Key_Val_Type& Set_Temp);        
+        size_t size();                                       
+        bool empty();                                                                                                     
+        size_t capacity();                     
+        iterator begin();                                    
+        iterator end();                                      
+        const_iterator cbegin();                             
+        const_iterator cend();                               
+        iterator operator[](const Key_Val_Type& Set_Temp);     
     };
 }
 ```
 
 | 方法                | 说明                   | 返回值             | 示例                   |
-| ----------------- | -------------------- | --------------- | -------------------- |
-| `insert`          | 调用 `_ht.insert`      | `pair<it,bool>` | `um.insert({1,"a"})` |
-| `erase(key)`      | 调用 `_ht.erase`       | `size_t`        | `um.erase(1)`        |
-| `find(key)`       | 调用 `_ht.find`返回桶迭代器  | `iterator`      | `um.find(2)`         |
-| `operator[](key)` | 不存在则插入默认构造`Value()`  | `Value&`        | `um[3]="c"`          |
-| `rehash(n)`       | 调用 `_ht.rehash`      | `void`          | `um.rehash(32)`      |
-| `size()`          | 调用 `_ht.size`        | `size_t`        | `um.size()`          |
-| `load_factor()`   | 调用 `_ht.load_factor` | `float`         | `um.load_factor()`   |
-
----
+| ----------------- | --------------------    | --------------- | -------------------- |
+| `push(key)`            | 调用 `_Hash_.push()`      | `bool`          | `Set_test.push(1)` |
+| `pop(key)`        | 调用 `_Hash_.pop()`       | `bool`          | `Set_test.pop(1)`        |
+| `find(key)`       | 调用 `_Hash_.find()`  | `iterator`       | `Set_test.find(2)`         |
+| `operator[](key)` | 不存在则返回默认构造`iterator(nullptr)`  | `iterator`        | `Set_test[3]="c"`          |
+| `capacity())`     | 调用 `_Hash_.capacity()`      | `size_t`          | `Set_test.capacity()`      |
+| `size()`          | 调用 `_Hahs_.size()`        | `size_t`        | `Set_test.size()`          |
+| `empty()`   | 调用 `_Hash_.empty()` | `bool`         | `Set_test.emptyr()`   |
+| `begin()`  | 调用 `_Hash_.begin()` | `iterator` | `Set_test.begin()` |
+| `end()`  | 调用 `_Hash_.end()` | `iterator` | `Set_test.end()` |
+| `cbegin()`  | 调用 `_Hash_.cbegin()` | `const_iterator` | `Set_test.cbegin()` |
+| `cend()`  | 调用 `_Hash_.cend()` | `const_iterator` | `Set_test.cend()` |
 
 ## 🗺️ 关联容器：map 与 set
 
 ```cpp
 namespace map_Container {
-    template<typename Key,typename Value,typename Compare,typename HF>
-    class map {
-    private:
-        RB_Tree<Practicality::pair<const Key,Value>,Compare> _tree;
+    template <typename Map_Type_K, typename Map_Type_V>
+    class Map
+    {
+        using Key_Val_Type = MY_Template::Practicality::pair<Map_Type_K, Map_Type_V>;
+        struct Key_Val
+        {
+            /* 仿函数，返回比较的值 */
+            const Map_Type_K& operator()(const Key_Val_Type& Temp_Key_)
+            {
+                return Temp_Key_.first;
+            }
+        };
+        using RB_TREE = Base_Class_Container::RB_Tree<Map_Type_K, Key_Val_Type, Key_Val>;
+        RB_TREE _ROOT_Map;
     public:
-        std::pair<typename RB_Tree<Practicality::pair<const Key,Value>,Compare>::Node*,bool> insert(const Practicality::pair<const Key,Value>&);
-        size_t erase(const Key&);
-        typename RB_Tree<Practicality::pair<const Key,Value>,Compare>::Node* find(const Key&);
-        Value& operator[](const Key&);
-        void clear();
-        size_t size()const;
+        using iterator = typename RB_TREE::iterator;
+        using const_iterator = typename RB_TREE::const_iterator;
+        using reverse_iterator = typename RB_TREE::reverse_iterator;
+        using const_reverse_iterator = typename RB_TREE::const_reverse_iterator;
+        
+        using Map_iterator = MY_Template::Practicality::pair<iterator, bool>;
+        
+        Map();
+        Map(const Map& Map_Temp);
+        Map(const Key_Val_Type& Map_Temp);
+        Map& operator=(const Map& Map_Temp);
+        Map_iterator push(const Key_Val_Type& Map_Temp);
+        Map_iterator pop(const Key_Val_Type& Map_Temp);
+        iterator find(const Key_Val_Type& Map_Temp);
+        void Middle_order_traversal();
+        void Pre_order_traversal();
+        size_t size() const;
+        bool empty();
+        iterator begin();
+        iterator end();
+        const_iterator cbegin();
+        const_iterator cend();
+        reverse_iterator rbegin();
+        reverse_iterator rend();
+        const_reverse_iterator crbegin();
+        const_reverse_iterator crend();
+        iterator operator[](const Key_Val_Type& Map_Temp);
     };
 }
+
 namespace set_Container {
-    template<typename Key,typename Compare,typename HF>
-    class set {
-    private:
-        RB_Tree<Key,Compare> _tree;
+    template <typename Set_Type_K>
+    class Set
+    {
+        using Key_Val_Type = Set_Type_K;
+        struct Key_Val
+        {
+            /* 仿函数，返回比较的值 */
+            const Set_Type_K& operator()(const Key_Val_Type& Temp_Key_)
+            {
+                return Temp_Key_;
+            }
+        };
+        using RB_TREE = Base_Class_Container::RB_Tree<Set_Type_K, Key_Val_Type, Key_Val>;
+        RB_TREE _ROOT_Set;
     public:
-        std::pair<typename RB_Tree<Key,Compare>::Node*,bool> insert(const Key&);
-        size_t erase(const Key&);
-        typename RB_Tree<Key,Compare>::Node* find(const Key&);
-        void clear();
-        size_t size()const;
+        using iterator = typename RB_TREE::iterator;
+        using const_iterator = typename RB_TREE::const_iterator;
+        using reverse_iterator = typename RB_TREE::reverse_iterator;
+        using const_reverse_iterator = typename RB_TREE::const_reverse_iterator;
+        
+        using Set_iterator = MY_Template::Practicality::pair<iterator, bool>;
+        
+        Set();
+        ~Set();
+        Set(const Set& Set_Temp);
+        Set(const Key_Val_Type& Set_Temp);
+        Set& operator=(const Set& Set_Temp);
+        Set_iterator push(const Key_Val_Type& Set_Temp);
+        Set_iterator pop(const Key_Val_Type& Set_Temp);
+        iterator find(const Key_Val_Type& Set_Temp);
+        void Middle_order_traversal();
+        void Pre_order_traversal();
+        size_t size() const;
+        bool empty();
+        iterator begin();
+        iterator end();
+        const_iterator cbegin();
+        const_iterator cend();
+        reverse_iterator rbegin();
+        reverse_iterator rend();
+        const_reverse_iterator crbegin();
+        const_reverse_iterator crend();
+        iterator operator[](const Key_Val_Type& Set_Temp);
     };
 }
 ```
 
-| 方法                | 说明      | 返回值                | 示例                  |
-| ----------------- | ------- | ------------------ | ------------------- |
-| `insert(pair)`    | 红黑树插入   | `pair<Node*,bool>` | `m.insert({1,"a"})` |
-| `erase(key)`      | 红黑树删除   | `size_t`           | `m.erase(1)`        |
-| `find(key)`       | 红黑树查找   | `Node*`            | `m.find(2)`         |
-| `operator[](key)` | 插入并返回引用 | `Value&`           | `m[3]="c"`          |
-| `clear()`         | 清空所有节点  | `void`             | `m.clear()`         |
-| `size() const`    | 返回元素数   | `size_t`           | `m.size()`          |
+| 方法                | 说明                   | 返回值             | 示例                   |
+| ----------------- | --------------------    | --------------- | -------------------- |
+| `Map()`            | 默认构造函数      | -          | `Map<int, string> m` |
+| `Map(const Map&)`        | 拷贝构造函数       | -          | `Map<int, string> m2(m)`        |
+| `Map(const Key_Val_Type&)`       | 使用键值对构造  | -       | `Map<int, string> m({1, "a"})`         |
+| `operator=(const Map&)` | 赋值运算符  | `Map&`        | `m2 = m`          |
+| `push(Key_Val_Type)`     | 插入键值对      | `Map_iterator`          | `m.push({1, "a"})`      |
+| `pop(Key_Val_Type)`          | 删除键值对        | `Map_iterator`        | `m.pop({1, "a"})`          |
+| `find(Key_Val_Type)`   | 查找键值对 | `iterator`         | `m.find({1, "a"})`   |
+| `Middle_order_traversal()`  | 中序遍历 | `void` | `m.Middle_order_traversal()` |
+| `Pre_order_traversal()`  | 前序遍历 | `void` | `m.Pre_order_traversal()` |
+| `size()`  | 返回元素个数 | `size_t` | `m.size()` |
+| `empty()`  | 判断是否为空 | `bool` | `m.empty()` |
+| `begin()`  | 返回首元素迭代器 | `iterator` | `m.begin()` |
+| `end()`  | 返回尾后迭代器 | `iterator` | `m.end()` |
+| `cbegin()`  | 返回常量首元素迭代器 | `const_iterator` | `m.cbegin()` |
+| `cend()`  | 返回常量尾后迭代器 | `const_iterator` | `m.cend()` |
+| `rbegin()`  | 返回反向首元素迭代器 | `reverse_iterator` | `m.rbegin()` |
+| `rend()`  | 返回反向尾后迭代器 | `reverse_iterator` | `m.rend()` |
+| `crbegin()`  | 返回常量反向首元素迭代器 | `const_reverse_iterator` | `m.crbegin()` |
+| `crend()`  | 返回常量反向尾后迭代器 | `const_reverse_iterator` | `m.crend()` |
+| `operator[](Key_Val_Type)`  | 访问或插入元素 | `iterator` | `m[{1, "a"}]` |
+
+对于Set容器，方法与Map基本相同，只是操作的是单一键类型而非键值对。
 
 ---
 
-## 🔍 布隆过滤器 `Bloom_filter<Key,HF>`
+## 🔍 布隆过滤器 `BloomFilter<Key,HF>`
 
 ```cpp
-template<typename Key,typename HF>
-class Bloom_filter {
-private:
-    std::vector<bool> _bits;
-    size_t _k_hashes;
-    HF _hash;
-public:
-    Bloom_filter(size_t size,size_t k);
-    void add(const Key&);
-    bool contains(const Key&)const;
-    void clear();
-};
+namespace BloomFilter_Container
+{
+    template <typename BloomFilter_Type_Val, typename Hash_Functor_BloomFilter = MY_Template::algorithm::Hash_algorithm::Hash_function<BloomFilter_Type_Val>>
+    class BloomFilter
+    {
+        Hash_Functor_BloomFilter _Hash;
+        using BitSet = MY_Template::Base_Class_Container::BitSet;
+        BitSet _vector_BitSet;
+        size_t _Capacity;
+    public:
+        BloomFilter();
+        BloomFilter(const size_t& Temp_Capacity);
+        size_t size();
+        size_t capacity();
+        bool test(const BloomFilter_Type_Val& Temp_Val);
+        void set(const BloomFilter_Type_Val& Temp_Val);
+        //布隆过滤器只支持插入和查找，不支持删除
+    };
+}
 ```
 
-| 方法                    | 说明            | 返回值    | 示例                                |
-| --------------------- | ------------- | ------ | --------------------------------- |
-| 构造(size,k)            | 初始化位数组与哈希函数数量 | —      | `Bloom_filter<string> b(1024,3);` |
-| `add(key)`            | k 次哈希并置位      | `void` | `b.add("x")`                      |
-| `contains(key) const` | 检查所有位         | `bool` | `b.contains("y")`                 |
-| `clear()`             | 重置所有位         | `void` | `b.clear()`                       |
+| 方法                    | 说明                  | 返回值    | 示例                                |
+| --------------------- | --------------------- | ------ | --------------------------------- |
+| `BloomFilter()`            | 默认构造函数，容量为1000 | -      | `BloomFilter<string> b;` |
+| `BloomFilter(const size_t&)`| 指定容量的构造函数      | -      | `BloomFilter<string> b(1024);` |
+| `size()`             | 返回位数组大小         | `size_t` | `b.size()` |
+| `capacity()`         | 返回容量              | `size_t` | `b.capacity()` |
+| `test(const BloomFilter_Type_Val&)` | 测试元素是否可能存在 | `bool` | `b.test("x")` |
+| `set(const BloomFilter_Type_Val&)`  | 添加元素到过滤器     | `void` | `b.set("y")` |
+
+> 注意：布隆过滤器只支持插入和查找，不支持删除操作。
 
 ---
 
 ## 🗂️ 适配器模块
 
 ```cpp
-namespace stack_Adapter {
+namespace stack_Adapter 
+{
     template<typename T>
-    class stack {
+    class stack 
+    {
     private: vector_Container::vector<T> _con;
     public:
         void push(const T&);
@@ -473,9 +653,11 @@ namespace stack_Adapter {
         size_t size()const;
     };
 }
-namespace queue_Adapter {
+namespace queue_Adapter 
+{
     template<typename T>
-    class queue {
+    class queue 
+    {
     private: list_Container::list<T> _con;
     public:
         void push(const T&);
@@ -486,9 +668,11 @@ namespace queue_Adapter {
         size_t size()const;
     };
 }
-namespace priority_queue_Adapter {
+namespace priority_queue_Adapter 
+{
     template<typename T,typename Compare>
-    class priority_queue {
+    class priority_queue 
+    {
     private: vector_Container::vector<T> _con; Compare _comp;
     public:
         void push(const T&);
