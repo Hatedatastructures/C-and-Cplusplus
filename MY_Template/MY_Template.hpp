@@ -53,79 +53,6 @@ namespace MY_Template
             //有需要可以重载本文件的string容器和vector容器.list容器等计算哈希的函数
         };
     }
-    namespace Practicality
-    {
-        template<typename Data_Type_example_pair_T,typename Data_Type_example_pair_K>
-        class pair
-        {
-            using T = Data_Type_example_pair_T;
-            using K = Data_Type_example_pair_K;
-            //处理指针类型
-        public:
-            //链接两个相同或不同的类型为一个类型，方便使用
-            T first;
-            K second;
-            pair() : first(T()), second(K()) 
-            {
-                ;
-            }
-            pair(const T& _first,const K& _second) 
-            : first(_first), second(_second)
-            {
-                ;
-            }
-            pair(const pair& other) 
-            : first(other.first), second(other.second)
-            {
-                ;
-            }
-            pair& operator=(const pair& other)
-            {
-                if(this != &other)
-                {
-                    first = other.first;
-                    second = other.second;
-                }
-                return *this;
-            }
-            bool operator==(const pair& other) const
-            {
-                return (this == &other) ? true : (first == other.first && second == other.second);
-            }
-            bool operator==(const pair& other)
-            {
-                return this == &other ? true : (first == other.first && second == other.second);
-            }
-            bool operator!=(const pair& other)
-            {
-                return !(*this == other);
-            }
-            pair* operator->()
-            {
-                return this;
-            }
-            const pair* operator->()const
-            {
-                return this;
-            }
-            // pair& operator*() { return *this; }
-            // const pair& operator*() const { return *this; }
-            template<typename pair_ostream_T,typename pair_ostream_K>
-            friend std::ostream& operator<<(std::ostream& os,const pair<pair_ostream_T,pair_ostream_K>& p);
-        };
-        template<typename pair_ostream_T,typename pair_ostream_K>
-        std::ostream& operator<<(std::ostream& os,const pair<pair_ostream_T,pair_ostream_K>& p)
-        {
-            os << "(" << p.first << ":" << p.second << ")";
-            return os;
-        }
-        /*                               类分隔                                   */
-        template<typename make_pair_T,typename make_pair_K>
-        pair<make_pair_T,make_pair_K> make_pair (const make_pair_T& _first,const make_pair_K& _second)
-        {
-            return pair<make_pair_T,make_pair_K>(_first,_second);
-        }
-    }
     namespace algorithm
     {
         template <typename Source_sequence_copy,typename Target_sequence_copy>
@@ -200,6 +127,72 @@ namespace MY_Template
             };
         }
     }
+    namespace Practicality
+    {
+        template<typename Data_Type_example_pair_T,typename Data_Type_example_pair_K>
+        class pair
+        {
+            using T = Data_Type_example_pair_T;
+            using K = Data_Type_example_pair_K;
+            //处理指针类型
+        public:
+            //链接两个相同或不同的类型为一个类型，方便使用
+            T first;
+            K second;
+            pair() : first(T()), second(K())                    {       ;           }
+            pair(const T& _first,const K& _second) 
+            : first(_first), second(_second)                    {       ;           }
+            pair(const pair& other) 
+            : first(other.first), second(other.second)          {       ;           }
+            pair(const T&& _first,const K&& _second) 
+            : first(std::move(_first)), second(std::move(_second))                    {       ;           }
+            pair(pair&& other)
+            {
+                MY_Template::algorithm::swap(first,other.first);
+                MY_Template::algorithm::swap(second,other.second);
+            }
+            pair& operator=(const pair& other)
+            {
+                if(this != &other)
+                {
+                    first = other.first;
+                    second = other.second;
+                }
+                return *this;
+            }
+            pair& operator=(pair&& other)
+            {
+                if(this != &other)
+                {
+                    first = std::move(other.first);
+                    second = std::move(other.second);
+                }
+                return *this;
+            }
+            bool operator==(const pair& other) const    {       return (this == &other) ? true : (first == other.first && second == other.second);  }
+            bool operator==(const pair& other)          {       return this == &other ? true : (first == other.first && second == other.second);    }
+            bool operator!=(const pair& other)          {       return !(*this == other);   }
+            pair* operator->()                          {       return this;        }
+            const pair* operator->()const               {       return this;        }
+            // pair& operator*() { return *this; }
+            // const pair& operator*() const { return *this; }
+            template<typename pair_ostream_T,typename pair_ostream_K>
+            friend std::ostream& operator<<(std::ostream& os,const pair<pair_ostream_T,pair_ostream_K>& p);
+        };
+        template<typename pair_ostream_T,typename pair_ostream_K>
+        std::ostream& operator<<(std::ostream& os,const pair<pair_ostream_T,pair_ostream_K>& p)
+        {
+            os << "(" << p.first << ":" << p.second << ")";
+            return os;
+        }
+        /*                               类分隔                                   */
+        template<typename make_pair_T,typename make_pair_K>
+        pair<make_pair_T,make_pair_K> make_pair (const make_pair_T& _first,const make_pair_K& _second)
+        {
+            return pair<make_pair_T,make_pair_K>(_first,_second);
+        }
+    }
+
     /*############################     string容器     ############################*/
     namespace string_Container
     {
@@ -219,67 +212,35 @@ namespace MY_Template
             //反向迭代器
             //限定字符串最大值
             static const size_t nops = -1;
-            iterator begin() 
-            {  
-                return _data; 
-            }
-            iterator end()
-            {  
-                return _data + _size; 
-            }
-            const_iterator cbegin()const
-            { 
-                return const_iterator(_data);
-            }
-            const_iterator cend()const
-            { 
-                return const_iterator(_data + _size); 
-            }
-            reverse_iterator rbegin()
-            {
-                return empty() ? reverse_iterator(end()) : reverse_iterator(end() - 1);
-            }
-            reverse_iterator rend()
-            {
-                return empty() ? reverse_iterator(begin()) : reverse_iterator(begin() - 1);
-            }
-            const_reverse_iterator crbegin()const
-            {
-                return const_reverse_iterator(cend()- 1);
-            }
-            const_reverse_iterator crend()const
-            {
-                return const_reverse_iterator(cbegin()- 1);
-            }
-            bool empty()
-            {
-                return _size == 0;
-            }
-            size_t size()const
-            {
-                //返回有效字符串长度
-                return _size;
-            }
-            size_t capacity()const
-            {
-                //返回容量
-                return _capacity;
-            }
-            char* c_str()const
-            {
-                //返回C风格字符串
-                return _data;
-            }
-            char back()
-            {
-                //返回尾字符
-                return _size > 0 ? _data[_size - 1] : '\0'; // 添加越界检查（可选）
-            }
-            char front()
-            {
-                return _data[0];
-            }
-            string(const char* data_str = "")
+            iterator begin()                        {   return _data;   }
+
+            iterator end()                          {   return _data + _size;   }
+
+            const_iterator cbegin()const            {   return const_iterator(_data);   }
+
+            const_iterator cend()const              {   return const_iterator(_data + _size);   }
+
+            reverse_iterator rbegin()               {   return empty() ? reverse_iterator(end()) : reverse_iterator(end() - 1);  }
+
+            reverse_iterator rend()                 {   return empty() ? reverse_iterator(begin()) : reverse_iterator(begin() - 1);  }
+
+            const_reverse_iterator crbegin()const   {   return const_reverse_iterator(cend()- 1);   }
+
+            const_reverse_iterator crend()const     {   return const_reverse_iterator(cbegin()- 1); }
+
+            bool empty()                            {   return _size == 0;  }
+
+            size_t size()const                      {   return _size;       }
+
+            size_t capacity()const                  {   return _capacity;   }
+
+            char* c_str()const                      {   return _data;       } //返回C风格字符串
+
+            char back()                             {   return _size > 0 ? _data[_size - 1] : '\0';    }
+
+            char front()                            {   return _data[0];    }//返回尾字符
+
+            string(const char* data_str = " ")
             :_size(data_str == nullptr ? 0 : strlen(data_str)),_capacity(_size)
             {
                 //传进来的字符串是常量字符串，不能直接修改，需要拷贝一份，并且常量字符串在数据段(常量区)浅拷贝会导致程序崩溃
@@ -296,7 +257,22 @@ namespace MY_Template
                     _data[0] = '\0';
                 }
             }
-            string(const string &data_str)
+            string(char*&& data_str)
+            :_data(nullptr),_size(data_str == nullptr ? 0 : strlen(data_str)),_capacity(_size)
+            {
+                //移动构造函数，拿传入对象的变量初始化本地变量，对于涉及开辟内存的都要深拷贝
+                if(data_str != nullptr)
+                {
+                    _data = data_str;
+                    data_str = nullptr;
+                }
+                else
+                {
+                    _data = new char[1];
+                    _data[0] = '\0';
+                }
+            }
+            string(const string& data_str)
             :_data(nullptr),_size(data_str._size),_capacity(data_str._capacity)
             {
                 //拷贝构造函数，拿传入对象的变量初始化本地变量，对于涉及开辟内存的都要深拷贝
@@ -304,6 +280,12 @@ namespace MY_Template
                 _data = new char[capacity + 1];
                 // algorithm::copy(_data,_data+capacity,data_str._data); const对象出错
                 std::strcpy(_data, data_str._data);
+            }
+            string(string&& data_str)
+            :_data(nullptr),_size(data_str._size),_capacity(data_str._capacity)
+            {
+                //移动构造函数，拿传入对象的变量初始化本地变量，对于涉及开辟内存的都要深拷贝
+                MY_Template::algorithm::swap(data_str._data,_data);
             }
             string(std::initializer_list<char> data_str)
             {
@@ -630,7 +612,7 @@ namespace MY_Template
             friend std::ostream& operator<<(std::ostream& string_ostream,const string &data_str);
             friend std::ostream& operator<<(std::ostream& string_ostream,string &data_str);
             friend std::istream& operator>>(std::istream& string_istream,string &data_str);
-            string& operator=(const string &data_str)
+            string& operator=(const string& data_str)
             {
                 //防止无意义拷贝
                 if(this != &data_str)
@@ -642,6 +624,17 @@ namespace MY_Template
                     _capacity = data_str._capacity;
                     _size = data_str._size;
                     _data[_size] = '\0';
+                }
+                return *this;
+            }
+            string& operator=(string&& data_str)
+            {
+                if(this != &data_str)
+                {
+                    delete [] _data;
+                    _size = std::move(data_str._size);
+                    _capacity = std::move(data_str._capacity);
+                    _data = std::move(data_str._data);
                 }
                 return *this;
             }
@@ -674,36 +667,6 @@ namespace MY_Template
                 return true;
             }
             bool operator==(const string& data_str)const
-            {
-                if(_size != data_str._size)
-                {
-                    return false;
-                }
-                for(size_t i = 0;i < _size;i++)
-                {
-                    if(_data[i]!= data_str._data[i])
-                    {
-                        return false;
-                    }
-                }
-                return true;
-            }
-            bool operator==(string& data_str) const
-            {
-                if(_size != data_str._size)
-                {
-                    return false;
-                }
-                for(size_t i = 0;i < _size;i++)
-                {
-                    if(_data[i]!= data_str._data[i])
-                    {
-                        return false;
-                    }
-                }
-                return true;
-            }
-            bool operator==(string& data_str)
             {
                 if(_size != data_str._size)
                 {
@@ -879,38 +842,28 @@ namespace MY_Template
             iterator _size_pointer;     //指向数据的尾
             iterator _capacity_pointer; //指向容量的尾
         public:
-            iterator begin()
-            {
-                return _data_pointer;
-            }
-            iterator end()
-            {
-                return _size_pointer;
-            }
-            size_t size()
-            {
-                return _data_pointer ? (_size_pointer - _data_pointer) : 0;
-            }
-            size_t capacity()
-            {
-                return _data_pointer ? (_capacity_pointer - _data_pointer) : 0;
-            }
-            size_t size() const
-            {
-                return _data_pointer ? (_size_pointer - _data_pointer) : 0;
-            }
-            size_t capacity() const 
-            {
-                return _data_pointer ? (_capacity_pointer - _data_pointer) : 0;
-            }
-            vector_Type& front()
-            {
-                return head();
-            }
-            vector_Type& back()
-            {
-                return tail();
-            }
+            iterator begin()        {   return _data_pointer;   }
+
+            iterator end()          {   return _size_pointer;   }
+
+            size_t size()           {   return _data_pointer ? (_size_pointer - _data_pointer) : 0;  }
+
+            size_t capacity()       {   return _data_pointer ? (_capacity_pointer - _data_pointer) : 0; }
+
+            size_t size() const     {   return _data_pointer ? (_size_pointer - _data_pointer) : 0; }
+
+            size_t capacity() const {   return _data_pointer ? (_capacity_pointer - _data_pointer) : 0; }
+
+            vector_Type& front()    {   return head();      }
+
+            vector_Type& back()     {   return tail();      }
+
+            bool empty()            {   return size() == 0; }
+
+            vector_Type& head()     {   return *_data_pointer;  }
+
+            vector_Type& tail()     {   return *(_size_pointer-1);  }
+
             vector()
             {
                 _data_pointer = nullptr;
@@ -937,18 +890,6 @@ namespace MY_Template
                     _data_pointer[i] = e;
                     i++;
                 }
-            }
-            bool empty()
-            {
-                return size() == 0; // 直接通过 size() 判断
-            }
-            vector_Type& head()
-            {
-                return *_data_pointer;
-            }
-            vector_Type& tail()
-            {
-                return *(_size_pointer-1);
             }
             vector_Type& find(const size_t& find_size_)
             {
@@ -992,10 +933,16 @@ namespace MY_Template
             :_data_pointer(temp_data.capacity() ? new vector_Type[temp_data.capacity()] : nullptr),
             _size_pointer(_data_pointer + temp_data.size()),_capacity_pointer(_data_pointer + temp_data.capacity())
             {
-            for(size_t i = 0; i < temp_data.size();i++)
-            {
+                for(size_t i = 0; i < temp_data.size();i++)
+                {
                     _data_pointer[i] = temp_data._data_pointer[i];
+                }
             }
+            vector(vector<vector_Type>&& temp_data)
+            {
+                MY_Template::algorithm::swap(_data_pointer, temp_data._data_pointer);
+                MY_Template::algorithm::swap(_size_pointer, temp_data._size_pointer);
+                MY_Template::algorithm::swap(_capacity_pointer, temp_data._capacity_pointer);
             }
             ~vector()
             {
@@ -1066,6 +1013,18 @@ namespace MY_Template
                 _size_pointer++;
                 return *this;
             }
+            vector<vector_Type>& push_back(vector_Type&& push_back_temp_)
+            {
+                if(_size_pointer == _capacity_pointer)
+                {
+                    size_t push_banck_size_ = _data_pointer == nullptr ? 10 : (size_t)(_capacity_pointer-_data_pointer)*2;
+                    resize(push_banck_size_);
+                }
+                //注意—_size_pointer是原生迭代器指针，需要解引用才能赋值
+                *_size_pointer = std::move(push_back_temp_);//转换移动语义
+                _size_pointer++;
+                return *this;
+            }
             vector<vector_Type>& pop_back() 
             {
                 if (_size_pointer > _data_pointer) 
@@ -1116,6 +1075,16 @@ namespace MY_Template
                 {
                     vector<vector_Type> temp(vector_temp_); // 拷贝构造
                     swap(temp); // 交换资源，temp析构时会释放原资源
+                }
+                return *this;
+            }
+            vector<vector_Type>& operator=(const vector<vector_Type>&& _temp_)
+            {
+                if( this != &_temp_)
+                {
+                    MY_Template::algorithm::swap(_data_pointer, _temp_._data_pointer);
+                    MY_Template::algorithm::swap(_size_pointer, _temp_._size_pointer);
+                    MY_Template::algorithm::swap(_capacity_pointer, _temp_._capacity_pointer);
                 }
                 return *this;
             }
@@ -1189,7 +1158,7 @@ namespace MY_Template
                 _list_iterator_(Node* node)
                 :_node(node)
                 {
-                    //拿一个指针来构造迭代器
+                    ;//拿一个指针来构造迭代器
                 }
                 Ref operator*()
                 {
@@ -1350,6 +1319,13 @@ namespace MY_Template
                 CreateHead();
                 list<list_Type> _temp_ (_list_data.cbegin(),_list_data.cend());
                 swap(_temp_);
+            }
+            list(list<list_Type>&& _list_data)
+            {
+                //移动构造
+                CreateHead();
+                _head = std::move(_list_data._head);
+                _list_data._head = nullptr;
             }
             void swap(MY_Template::list_Container::list<list_Type>& _swap_temp)
             {
@@ -1612,6 +1588,10 @@ namespace MY_Template
             {
                 Container_stack_temp_ = _stack_temp.Container_stack_temp_;
             }
+            stack( stack<staic_Type>&& _stack_temp)
+            {
+                Container_stack_temp_ = std::move(_stack_temp.Container_stack_temp_);//std::move将对象转换为右值引用
+            }
             stack(std::initializer_list<staic_Type> _stack_temp)
             {
                 for(auto& e:_stack_temp)
@@ -1623,10 +1603,23 @@ namespace MY_Template
             {
                 Container_stack_temp_.push_back(_stack_temp);
             }
-            stack()
+            stack& operator= (const stack<staic_Type>& _stack_temp)
             {
-                ;
+                if(this != &_stack_temp)
+                {
+                    Container_stack_temp_ = _stack_temp.Container_stack_temp_;
+                }
+                return *this;
             }
+            stack& operator=(stack<staic_Type>&& _stack_temp)
+            {
+                if(this != &_stack_temp)
+                {
+                    Container_stack_temp_ = std::move(_stack_temp.Container_stack_temp_);
+                }
+                return *this;
+            }
+            stack() = default;
         };
     }
     /*############################     queue适配器     ############################*/
@@ -1677,9 +1670,14 @@ namespace MY_Template
                 //拷贝构造
                 Container_queue_temp_ = _queue_temp.Container_queue_temp_;
             }
+            queue(queue<queue_Type>&& _queue_temp)
+            {
+                //移动构造
+                Container_queue_temp_ = std::move(_queue_temp.Container_queue_temp_);
+            }
             queue(std::initializer_list<queue_Type> _queue_temp)
             {
-                //初始化列表
+                //链式构造
                 for(auto& e:_queue_temp)
                 {
                     Container_queue_temp_.push_back(e);
@@ -1687,12 +1685,24 @@ namespace MY_Template
             }
             queue(const queue_Type& _queue_temp)
             {
-                //拷贝构造
                 Container_queue_temp_.push_back(_queue_temp);
             }
-            queue()
+            queue() = default;
+            queue& operator= (const queue<queue_Type>& _queue_temp)
             {
-                ;
+                if(this != &_queue_temp)
+                {
+                    Container_queue_temp_ = _queue_temp.Container_queue_temp_;
+                }
+                return *this;
+            }
+            queue& operator=(queue<queue_Type>&& _queue_temp)
+            {
+                if(this != &_queue_temp)
+                {
+                    Container_queue_temp_ = std::move(_queue_temp.Container_queue_temp_);
+                }
+                return *this;
             }
         };
         /*############################     priority_queue 适配器     ############################*/
@@ -1752,11 +1762,8 @@ namespace MY_Template
                 }
             }
         public:
-            ~priority_queue()
-            {
-                ;
-            }
-            void push(const priority_queue_Type Function_templates_priority_queue_push_back)
+            ~priority_queue()  = default;
+            void push(const priority_queue_Type& Function_templates_priority_queue_push_back)
             {
                 Container_priority_queue_temp.push_back(Function_templates_priority_queue_push_back);
                 priority_queue_Adjust_upwards((int)Container_priority_queue_temp.size()-1);
@@ -1795,13 +1802,37 @@ namespace MY_Template
             {
                 //拷贝构造
                 Container_priority_queue_temp = _priority_queue_temp.Container_priority_queue_temp;
-                priority_queue_Adjust_upwards((int)Container_priority_queue_temp.size()-1);
+            }
+            priority_queue(priority_queue&& _priority_queue_temp)
+            :com(_priority_queue_temp.com)
+            {
+                //移动构造
+                Container_priority_queue_temp = std::move(_priority_queue_temp.Container_priority_queue_temp);
             }
             priority_queue(const priority_queue_Type& _priority_queue_temp)
             {
-                //拷贝构造
                 Container_priority_queue_temp.push_back(_priority_queue_temp);
                 priority_queue_Adjust_upwards((int)Container_priority_queue_temp.size()-1);
+            }
+            priority_queue& operator=(priority_queue&& _priority_queue_temp)
+            {
+                //移动赋值
+                if(this != &_priority_queue_temp)
+                {
+                    Container_priority_queue_temp = std::move(_priority_queue_temp.Container_priority_queue_temp);
+                    com = _priority_queue_temp.com;
+                }
+                return *this;
+            }
+            priority_queue& operator=(const priority_queue& _priority_queue_temp)
+            {
+                //拷贝赋值
+                if(this != &_priority_queue_temp)
+                {
+                    Container_priority_queue_temp = _priority_queue_temp.Container_priority_queue_temp;
+                    com = _priority_queue_temp.com;
+                }
+                return *this;
             }
         };
     }
@@ -1950,6 +1981,12 @@ namespace MY_Template
             :_ROOT(nullptr),com(com_temp)
             {   
                 _ROOT = new Node(BST_Temp);
+            }
+            BS_Tree(BS_Tree&& _Binary_search_tree_temp)
+            :com(_Binary_search_tree_temp.com),_ROOT(nullptr)
+            {
+                _ROOT = std::move(_Binary_search_tree_temp._ROOT);
+                _Binary_search_tree_temp._ROOT = nullptr;
             }
             BS_Tree(const BS_Tree& _Binary_search_tree_temp)
             :_ROOT(nullptr),com(_Binary_search_tree_temp.com)
@@ -2201,6 +2238,19 @@ namespace MY_Template
                 }
                 return *this;
             }
+            BS_Tree& operator=(BS_Tree && _Binary_search_tree_temp)
+            {
+                //移动赋值运算符重载
+                if(this != &_Binary_search_tree_temp)
+                {
+                    clear();
+                    com = _Binary_search_tree_temp.com;
+                    _ROOT = std::move(_Binary_search_tree_temp._ROOT);
+                    _Binary_search_tree_temp._ROOT = nullptr;
+                }
+                return *this;
+            }
+
         };
         /*############################     AVL_Tree 容器     ############################*/
         template <typename AVL_Tree_Type_K,     typename AVL_Tree_Type_V,
@@ -2796,12 +2846,25 @@ namespace MY_Template
                     }
                 }
             }
-            AVL_Tree& operator=(const AVL_Tree AVL_Tree_temp_)
+            AVL_Tree(AVL_Tree&& _AVL_Tree_temp_)
+            : _ROOT(nullptr),com(_AVL_Tree_temp_.com)
             {
-                if(_ROOT != nullptr)
+                _ROOT = std::move(_AVL_Tree_temp_._ROOT);
+                _AVL_Tree_temp_._ROOT = nullptr;
+            }
+            AVL_Tree& operator=(AVL_Tree&& _AVL_Tree_temp_)
+            {
+                if(this != &_AVL_Tree_temp_)
                 {
                     clear();
+                    _ROOT = std::move(_AVL_Tree_temp_._ROOT);
+                    com  = std::move(_AVL_Tree_temp_.com);
+                    _AVL_Tree_temp_._ROOT = nullptr;
                 }
+            }
+            AVL_Tree& operator=(const AVL_Tree AVL_Tree_temp_)
+            {
+                clear();
                 if(&AVL_Tree_temp_ == this)
                 {
                     return *this;
@@ -3624,7 +3687,14 @@ namespace MY_Template
                 _ROOT = new Node(RB_Tree_Temp);
                 _ROOT->_color = BLACK;
             }
+            RB_Tree(RB_Tree&& RB_Tree_Temp)
+            :com(RB_Tree_Temp.com),Element(RB_Tree_Temp.Element)
+            {
+                _ROOT = std::move(RB_Tree_Temp._ROOT);
+                RB_Tree_Temp._ROOT = nullptr;
+            }
             RB_Tree(const RB_Tree& RB_Tree_Temp)
+            :com(RB_Tree_Temp.com),Element(RB_Tree_Temp.Element)
             {
                 if(_ROOT != nullptr)
                 {
@@ -3714,6 +3784,18 @@ namespace MY_Template
                     MY_Template::algorithm::swap(RB_Tree_Temp.com,com);
                     return *this;
                 }
+            }
+            RB_Tree& operator=(RB_Tree&& RB_Tree_Temp)
+            {
+                if(this != &RB_Tree_Temp)
+                {
+                    clear();
+                    com = std::move(RB_Tree_Temp.com);
+                    Element = std::move(RB_Tree_Temp.Element);
+                    _ROOT = std::move(RB_Tree_Temp._ROOT);
+                    RB_Tree_Temp._ROOT = nullptr;
+                }
+                return *this;
             }
             ~RB_Tree()
             {
@@ -4354,6 +4436,17 @@ namespace MY_Template
                     _previous_data->Link_next = nullptr;
                 }
             }
+            Hash_Table(Hash_Table&& Temp_Hash_Table)
+            {
+                _Hash_Table = std::move(Temp_Hash_Table._Hash_Table);
+                _size = std::move(Temp_Hash_Table._size);
+                Load_factor = std::move(Temp_Hash_Table.Load_factor);
+                Capacity = std::move(Temp_Hash_Table.Capacity);
+                _Type_imitation_function = std::move(Temp_Hash_Table._Type_imitation_function);
+                _previous_data = std::move(Temp_Hash_Table._previous_data);
+                _Head_data = std::move(Temp_Hash_Table._Head_data);
+                _Hash_Functor = std::move(Temp_Hash_Table._Hash_Functor);
+            }
             ~Hash_Table()
             {
                 for(size_t i = 0;i < _Hash_Table.size();++i)
@@ -4701,8 +4794,17 @@ namespace MY_Template
                 }
                 return *this;
             }
+            Map& operator=(Map&& Map_Temp)
+            {
+                if(this != &Map_Temp)
+                {
+                    _ROOT_Map = std::move(Map_Temp._ROOT_Map);
+                }
+                return *this;
+            }
             Map()                                                   {  ;                                     }
             Map(const Map& Map_Temp)                                {  _ROOT_Map = Map_Temp._ROOT_Map;       }
+            Map(Map&& Map_Temp)                                     {  _ROOT_Map=std::move(Map_Temp._ROOT_Map);}
             Map(const Key_Val_Type& Map_Temp)                       {  _ROOT_Map.push(Map_Temp);             }
             Map_iterator push(const Key_Val_Type& Map_Temp)         {  return _ROOT_Map.push(Map_Temp);      }
             Map_iterator pop(const Key_Val_Type& Map_Temp)          {  return _ROOT_Map.pop(Map_Temp);       }
@@ -4798,9 +4900,18 @@ namespace MY_Template
                 }  
                 return *this; 
             }
+            Set& operator=(Set&& Set_temp)
+            {
+                if(this!= &Set_temp)                     
+                {  
+                    _ROOT_Set = std::move(Set_temp._ROOT_Set);
+                }
+                return *this;
+            }
             Set()                                               {  ;                                        }
             ~Set()                                              {  _ROOT_Set.~RB_Tree();                    }
             Set(const Set& Set_Temp)                            {  _ROOT_Set = Set_Temp._ROOT_Set;          }
+            Set(Set&& Set_Temp)                                 {  _ROOT_Set=std::move(Set_Temp._ROOT_Set); }
             Set(const Key_Val_Type& Set_Temp)                   {  _ROOT_Set.push(Set_Temp);                }
             Set_iterator push(const Key_Val_Type& Set_Temp)     {  return _ROOT_Set.push(Set_Temp);         }
             Set_iterator pop(const Key_Val_Type& Set_Temp)      {  return _ROOT_Set.pop(Set_Temp);          }

@@ -69,5 +69,6 @@
         "default": true,
         "hexEditor.hexedit": true,
         "imagePreview.previewEditor": true
-    }
+    },
+    "Codegeex.RepoIndex": true
 }
