@@ -37,7 +37,7 @@ namespace MY_Template
             size_t operator()(const short data_short)                           {       return data_short;              }
             size_t operator()(const long long data_long_long)                   {       return data_long_long;          }
             size_t operator()(const unsigned int data_unsigned)                 {       return data_unsigned;           }
-            size_t operator()(const unsigned long data_unsigned_long)           {       return data_unsigned_long;      }
+            // size_t operator()(const unsigned long data_unsigned_long)           {       return data_unsigned_long;      }
             size_t operator()(const unsigned short data_unsigned_short)         {       return data_unsigned_short;     }
             
   
