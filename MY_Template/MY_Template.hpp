@@ -2,6 +2,8 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
 #include <cstring>
+//优化每个容器插入函数右值引用，调整每个容器扩容逻辑，减少深拷贝，尽量用移动拷贝，对于开辟空间和错误处理，使用异常处理，对于简单函数使用lambda表达式
+//添加每个容器完美转发，减少开销,整理每个容器
 namespace MY_Template
 {
     namespace Imitation_functions
@@ -199,7 +201,7 @@ namespace MY_Template
         class string
         {
         private:
-            char *_data;
+            char* _data;
             size_t _size;
             size_t _capacity;
         public:
@@ -207,8 +209,8 @@ namespace MY_Template
             using iterator = char*;
             using const_iterator = const char*;
     
-            using reverse_iterator = char*;
-            using const_reverse_iterator = const char*;
+            using reverse_iterator = iterator;
+            using const_reverse_iterator = const_iterator;
             //反向迭代器
             //限定字符串最大值
             static const size_t nops = -1;
