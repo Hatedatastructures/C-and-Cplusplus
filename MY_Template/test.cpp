@@ -1,7 +1,9 @@
 #include "MY_Template.hpp"
+#include <thread>
 // import MY_Template;
 #include <random>
 #include <algorithm>
+#include <atomic>
 int main()
 {   
     /*            string测试             */
@@ -64,7 +66,7 @@ int main()
         }
         std::cout << std::endl;
         MY_Template::vector_Container::vector<int> vector_test1(vector_test);
-        for(const  auto& i  : vector_test1 )
+        for(const auto& i  : vector_test1 )
         {
             std::cout << i << " ";
         }
@@ -728,4 +730,42 @@ int main()
         AVL_Tree_test_pair.Middle_order_traversal();
         std::cout << std::endl;
     }
+    {
+        //链式输出轻量化容器
+        std::initializer_list<int> init_list = {1,2,3,4,5,6,7,8,9,10};
+        std::initializer_list<int>::iterator it = init_list.begin();
+        for(;it != init_list.end();it++)
+        {
+            std::cout << *it << " ";
+        }
+        std::cout << std::endl;
+        for(auto& i : init_list)
+        {
+            std::cout << i << " ";
+        }
+        std::cout << std::endl;
+    }
+    {
+        // std::forward<int>(1);
+        //完美转发，不会丢失左右值属性
+        
+    }
+    // {
+    //     std::atomic<size_t> sum(0);
+    //     auto func = [&sum](){sum += 6;};
+    //     MY_Template::vector_Container::vector<std::thread> array_thread;
+    //     array_thread.resize(30);//30个空线程
+    //     for(auto& size_thread :array_thread)
+    //     {
+    //         size_thread = std::thread(func);
+    //     }
+    //     for(auto& size_join :array_thread)
+    //     {
+    //         std::cout << "线程：" << size_join.get_id() << " " << std::endl;
+    //         size_join.join();
+    //     }
+    //     std::cout << sum << std::endl;
+    // }
+    //问题vector容器resize函数问题
+    return 0;
 }
