@@ -4,6 +4,13 @@
 #include <cstring>
 //优化每个容器插入函数右值引用，调整每个容器扩容逻辑，减少深拷贝，尽量用移动拷贝，对于开辟空间和错误处理，使用异常处理，对于简单函数使用lambda表达式
 //添加每个容器完美转发，减少开销,整理每个容器
+namespace MY_Exception
+{
+    class Exception
+    {
+
+    };
+}
 namespace MY_Template
 {
     namespace Imitation_functions
@@ -13,7 +20,7 @@ namespace MY_Template
         class less
         {
         public:
-            bool operator()(const Imitation_functions_less& _test1 ,const Imitation_functions_less& _test2)
+            bool operator()(const Imitation_functions_less& _test1 ,const Imitation_functions_less& _test2) noexcept
             {
                 return _test1 < _test2;
             }
@@ -22,7 +29,7 @@ namespace MY_Template
         class greater
         {
         public:
-            bool operator()(const Imitation_functions_greater& _test1 ,const Imitation_functions_greater& _test2)
+            bool operator()(const Imitation_functions_greater& _test1 ,const Imitation_functions_greater& _test2) noexcept
             {
                 return _test1 > _test2;
             }
@@ -30,17 +37,17 @@ namespace MY_Template
         class Hash_Imitation_functions
         {
         public:
-            size_t operator()(const int data_str)                               {       return data_str;                }
-            size_t operator()(const size_t data_num)                            {       return data_num;                }
-            size_t operator()(const char data_char)                             {       return data_char;               }
-            size_t operator()(const double data_double)                         {       return data_double;             }
-            size_t operator()(const float data_float)                           {       return data_float;              }
-            size_t operator()(const long data_long)                             {       return data_long;               }
-            size_t operator()(const short data_short)                           {       return data_short;              }
-            size_t operator()(const long long data_long_long)                   {       return data_long_long;          }
-            size_t operator()(const unsigned int data_unsigned)                 {       return data_unsigned;           }
-            size_t operator()(const unsigned long data_unsigned_long)           {       return data_unsigned_long;      }
-            size_t operator()(const unsigned short data_unsigned_short)         {       return data_unsigned_short;     }
+            size_t operator()(const int data_str) noexcept                               {       return data_str;                }
+            size_t operator()(const size_t data_num) noexcept                            {       return data_num;                }
+            size_t operator()(const char data_char) noexcept                             {       return data_char;               }
+            size_t operator()(const double data_double) noexcept                         {       return data_double;             }
+            size_t operator()(const float data_float) noexcept                           {       return data_float;              }
+            size_t operator()(const long data_long) noexcept                             {       return data_long;               }
+            size_t operator()(const short data_short) noexcept                           {       return data_short;              }
+            size_t operator()(const long long data_long_long) noexcept                   {       return data_long_long;          }
+            size_t operator()(const unsigned int data_unsigned) noexcept                 {       return data_unsigned;           }
+            size_t operator()(const unsigned long data_unsigned_long) noexcept           {       return data_unsigned_long;      }
+            size_t operator()(const unsigned short data_unsigned_short) noexcept         {       return data_unsigned_short;     }
             
   
             // size_t operator()(const MY_Template::string_Container::string& data_string)
@@ -58,7 +65,7 @@ namespace MY_Template
     namespace algorithm
     {
         template <typename Source_sequence_copy,typename Target_sequence_copy>
-        Target_sequence_copy copy(Source_sequence_copy begin,Source_sequence_copy end,Target_sequence_copy first)
+        Target_sequence_copy copy(Source_sequence_copy begin,Source_sequence_copy end,Target_sequence_copy first) noexcept
         {
             while(begin != end)
             {
@@ -70,7 +77,7 @@ namespace MY_Template
         }
         //返回下一个位置的迭代器，是否深浅拷贝取决于自定义类型重载和拷贝构造
         template<typename Source_sequence_find,typename Target_sequence_find>
-        Source_sequence_find find(Source_sequence_find begin,Source_sequence_find end,const Target_sequence_find& value)
+        Source_sequence_find find(Source_sequence_find begin,Source_sequence_find end,const Target_sequence_find& value) noexcept
         {
             while(begin!= end)
             {
@@ -83,7 +90,7 @@ namespace MY_Template
             return end;
         } 
         template<typename data_type_swap>
-        void swap(data_type_swap& a,data_type_swap& b)
+        void swap(data_type_swap& a,data_type_swap& b) noexcept
         {
             data_type_swap temp = a;
             a = b;
@@ -96,31 +103,31 @@ namespace MY_Template
             {
             public:
                 Hash_IF Hash_Imitation_functions_object;
-                size_t Hash_SDBMHash(const Hash_algorithm_Type& data_Hahs)
+                size_t Hash_SDBMHash(const Hash_algorithm_Type& data_Hahs) noexcept
                 {
                     size_t return_value = Hash_Imitation_functions_object(data_Hahs);
                     return_value = 65599 * return_value;
                     return return_value;
                 }
-                size_t Hash_BKDRHash(const Hash_algorithm_Type& data_Hahs)
+                size_t Hash_BKDRHash(const Hash_algorithm_Type& data_Hahs) noexcept
                 {
                     size_t return_value = Hash_Imitation_functions_object(data_Hahs);
                     return_value = 131 * return_value;
                     return return_value;
                 }
-                size_t Hash_DJBHash(const Hash_algorithm_Type& data_Hahs)
+                size_t Hash_DJBHash(const Hash_algorithm_Type& data_Hahs) noexcept
                 {
                     size_t return_value = Hash_Imitation_functions_object(data_Hahs);
                     return_value = 33 * return_value;
                     return return_value;
                 }
-                size_t Hash_APHash(const Hash_algorithm_Type& data_Hahs)
+                size_t Hash_APHash(const Hash_algorithm_Type& data_Hahs) noexcept
                 {
                     size_t return_value = Hash_Imitation_functions_object(data_Hahs);
                     return_value = return_value * 1031;
                     return return_value;
                 }
-                size_t Hash_PJWHash(const Hash_algorithm_Type& data_Hahs)
+                size_t Hash_PJWHash(const Hash_algorithm_Type& data_Hahs) noexcept
                 {
                     size_t return_value = Hash_Imitation_functions_object(data_Hahs);
                     return_value = (return_value << 2) + return_value;
@@ -141,19 +148,34 @@ namespace MY_Template
             //链接两个相同或不同的类型为一个类型，方便使用
             T first;
             K second;
-            pair() : first(T()), second(K())                    {       ;           }
-            pair(const T& _first,const K& _second) 
-            : first(_first), second(_second)                    {       ;           }
-            pair(const pair& other) 
-            : first(other.first), second(other.second)          {       ;           }
-            pair(const T&& _first,const K&& _second) 
-            : first(std::move(_first)), second(std::move(_second))                    {       ;           }
-            pair(pair&& other)
+            pair() noexcept 
             {
-                MY_Template::algorithm::swap(first,other.first);
-                MY_Template::algorithm::swap(second,other.second);
+                first  = T();
+                second = K();
+            } 
+
+            pair(const T& _first,const K& _second) noexcept
+            {
+                first  = _first;
+                second = _second;
             }
-            pair& operator=(const pair& other)
+            pair(const pair& other) noexcept
+            {
+                first  = other.first;
+                second = other.second;
+            }
+
+            pair(T&& _first,K&& _second) noexcept
+            {
+                first  = std::move(_first);
+                second = std::move(_second);
+            }
+            pair(pair&& other) noexcept
+            {
+                first  = std::move(other.first);
+                second = std::move(other.second);
+            }
+            pair& operator=(const pair& other) noexcept
             {
                 if(this != &other)
                 {
@@ -162,7 +184,7 @@ namespace MY_Template
                 }
                 return *this;
             }
-            pair& operator=(pair&& other)
+            pair& operator=(pair&& other) noexcept
             {
                 if(this != &other)
                 {
@@ -171,13 +193,20 @@ namespace MY_Template
                 }
                 return *this;
             }
-            bool operator==(const pair& other) const    {       return (this == &other) ? true : (first == other.first && second == other.second);  }
-            bool operator==(const pair& other)          {       return this == &other ? true : (first == other.first && second == other.second);    }
-            bool operator!=(const pair& other)          {       return !(*this == other);   }
-            pair* operator->()                          {       return this;        }
-            const pair* operator->()const               {       return this;        }
-            // pair& operator*() { return *this; }
-            // const pair& operator*() const { return *this; }
+            bool operator==(const pair& other) const  noexcept  
+            {       
+                return (this == &other) ? true : (first == other.first && second == other.second);  
+            }
+            bool operator==(const pair& other) noexcept         
+            {       
+                return this == &other ? true : (first == other.first && second == other.second);    
+            }
+            bool operator!=(const pair& other) noexcept         
+            {       
+                return !(*this == other);   
+            }
+            pair* operator->() noexcept                         {       return this;        }
+            const pair* operator->()const  noexcept             {       return this;        }
             template<typename pair_ostream_T,typename pair_ostream_K>
             friend std::ostream& operator<<(std::ostream& os,const pair<pair_ostream_T,pair_ostream_K>& p);
         };
@@ -246,7 +275,7 @@ namespace MY_Template
             :_size(data_str == nullptr ? 0 : strlen(data_str)),_capacity(_size)
             {
                 //传进来的字符串是常量字符串，不能直接修改，需要拷贝一份，并且常量字符串在数据段(常量区)浅拷贝会导致程序崩溃
-                if(data_str != nullptr)
+                if(data_str != nullptr) 
                 {
                     _data = new char[_capacity + 1];
                     std::strncpy(_data,data_str,std::strlen(data_str));
@@ -259,7 +288,7 @@ namespace MY_Template
                     _data[0] = '\0';
                 }
             }
-            string(char*&& data_str)
+            string(char*&& data_str) noexcept
             :_data(nullptr),_size(data_str == nullptr ? 0 : strlen(data_str)),_capacity(_size)
             {
                 //移动构造函数，拿传入对象的变量初始化本地变量，对于涉及开辟内存的都要深拷贝
@@ -283,7 +312,7 @@ namespace MY_Template
                 // algorithm::copy(_data,_data+capacity,data_str._data); const对象出错
                 std::strcpy(_data, data_str._data);
             }
-            string(string&& data_str)
+            string(string&& data_str) noexcept
             :_data(nullptr),_size(data_str._size),_capacity(data_str._capacity)
             {
                 //移动构造函数，拿传入对象的变量初始化本地变量，对于涉及开辟内存的都要深拷贝
@@ -298,7 +327,7 @@ namespace MY_Template
                 MY_Template::algorithm::copy(data_str.begin(), data_str.end(), _data);
                 _data[_size] = '\0';
             }
-            ~string()
+            ~string() noexcept
             {
                 delete [] _data;
                 _data = nullptr;
@@ -337,11 +366,7 @@ namespace MY_Template
                 //前部插入子串
                 size_t len = strlen(c_str_substring);
                 size_t new_nose_insert_substrings = _size + len;
-                if(Automatic_scaling(new_nose_insert_substrings) != true)
-                {
-                    std::cout << "开辟内存失败！" << std::endl;
-                    return *this;
-                }
+                Automatic_scaling(new_nose_insert_substrings);
                 char* _c_nose_insert_substrings_temp = new char[_capacity + 1];
                 //临时变量
                 memmove(_c_nose_insert_substrings_temp , _data , _size + 1);
@@ -355,45 +380,50 @@ namespace MY_Template
             }
             string& interlocutory_Insertion_substrings(const char*& c_str_substring,const size_t& oid_pos)
             {
-                //中间位置插入子串
-                if(oid_pos > _size)
+                try
                 {
-                    std::cout << "插入位置越界！" << std::endl;
+                    //中间位置插入子串
+                    if(oid_pos > _size)
+                    {
+                    throw std::out_of_range("提取位置越界！");
+                    }
+                    size_t len = strlen(c_str_substring);
+                    size_t new_interlocutory_insert_substrings = _size + len;
+                    Automatic_scaling(new_interlocutory_insert_substrings);
+                    char* _c_interlocutory_insert_substrings_temp = new char[new_interlocutory_insert_substrings + 1];
+                    //临时变量
+                    memmove(_c_interlocutory_insert_substrings_temp, _data, _size + 1);
+                    //从oid_pos开始插入
+                    memmove(_data + oid_pos + len, _c_interlocutory_insert_substrings_temp + oid_pos, _size - oid_pos + 1);
+                    memmove(_data + oid_pos, c_str_substring, len);
+                    _size = new_interlocutory_insert_substrings;
+                    _data[_size] = '\0';
+                    delete [] _c_interlocutory_insert_substrings_temp;
                     return *this;
                 }
-                size_t len = strlen(c_str_substring);
-                size_t new_interlocutory_insert_substrings = _size + len;
-                if(Automatic_scaling(new_interlocutory_insert_substrings) != true)
+                catch(const std::out_of_range& e)
                 {
-                    std::cout << "开辟内存失败！" << std::endl;
-                    return *this;
+                    std::cerr << e.what() << '\n';
                 }
-                char* _c_interlocutory_insert_substrings_temp = new char[new_interlocutory_insert_substrings + 1];
-                //临时变量
-                memmove(_c_interlocutory_insert_substrings_temp, _data, _size + 1);
-                //从oid_pos开始插入
-                memmove(_data + oid_pos + len, _c_interlocutory_insert_substrings_temp + oid_pos, _size - oid_pos + 1);
-                memmove(_data + oid_pos, c_str_substring, len);
-                _size = new_interlocutory_insert_substrings;
-                _data[_size] = '\0';
-                delete [] _c_interlocutory_insert_substrings_temp;
-                return *this;
+                
             }
             string str_withdraw(const size_t& old_pos)
             {
                 //提取字串到'\0'
-                if(old_pos > _size)
+                try
                 {
-                    std::cout << "提取位置越界！" << std::endl;
-                    return string();
+                    if(old_pos > _size)
+                    {
+                        throw std::out_of_range("提取位置越界！");
+                    }
+                }
+                catch(const std::out_of_range& e)
+                {
+                    std::cerr << e.what() << '\n';
                 }
                 string _str_withdraw_temp;
                 size_t _str_withdraw_temp_len = _size - old_pos;
-                if(_str_withdraw_temp.Automatic_scaling(_str_withdraw_temp_len) != true)
-                {
-                    std::cout << "开辟内存失败！" << std::endl;
-                    return string();
-                }
+                _str_withdraw_temp.Automatic_scaling(_str_withdraw_temp_len);
                 strncpy(_str_withdraw_temp._data , _data + old_pos,_str_withdraw_temp_len);
                 _str_withdraw_temp._size = _str_withdraw_temp_len;
                 _str_withdraw_temp._data[_str_withdraw_temp._size] = '\0';
@@ -402,18 +432,20 @@ namespace MY_Template
             string str_withdraw_extremity(const size_t& old_begin)
             {
                 //提取字串到末尾
-                if(old_begin > _size)
+                try
                 {
-                    std::cout << "提取位置越界！" << std::endl;
-                    return string();
+                    if(old_begin > _size)
+                    {
+                        throw std::out_of_range("提取位置越界！");
+                    }
+                }
+                catch(const std::out_of_range& e)
+                {
+                    std::cerr << e.what() << '\n';
                 }
                 string _str_withdraw_extremity_temp;
                 size_t _str_withdraw_extremity_temp_len = _size - old_begin;
-                if(_str_withdraw_extremity_temp.Automatic_scaling(_str_withdraw_extremity_temp_len) != true)
-                {
-                    std::cout << "开辟内存失败！" << std::endl;
-                    return string();
-                }
+                _str_withdraw_extremity_temp.Automatic_scaling(_str_withdraw_extremity_temp_len);
                 strncpy(_str_withdraw_extremity_temp._data , _data + old_begin,_str_withdraw_extremity_temp_len);
                 _str_withdraw_extremity_temp._size = _str_withdraw_extremity_temp_len;
                 _str_withdraw_extremity_temp._data[_str_withdraw_extremity_temp._size] = '\0';
@@ -422,54 +454,61 @@ namespace MY_Template
             string str_withdraw_detail(const size_t& old_begin ,const size_t& old_end)
             {
                 //提取字串到指定位置
-                if(old_begin > _size || old_end > _size || old_begin > old_end)
+                try
                 {
-                    std::cout << "提取位置越界！" << std::endl;
-                    return string();
+                    if(old_begin > _size || old_end > _size || old_begin > old_end)
+                    {
+                        throw std::out_of_range("提取位置越界！");
+                    }
                 }
-                string _str_withdraw_detail_temp;
+                catch(const std::out_of_range& e)
+                {
+                    std::cerr << e.what() << '\n';
+                }
+                 string _str_withdraw_detail_temp;
                 size_t _str_withdraw_detail_temp_len = old_end - old_begin;
-                if(_str_withdraw_detail_temp.Automatic_scaling(_str_withdraw_detail_temp_len) != true)
-                {
-                    std::cout << "开辟内存失败！" << std::endl;
-                    return string();
-                }
+                _str_withdraw_detail_temp.Automatic_scaling(_str_withdraw_detail_temp_len);
                 //strncpy更安全
                 strncpy(_str_withdraw_detail_temp._data , _data + old_begin,_str_withdraw_detail_temp_len);
                 _str_withdraw_detail_temp._size = _str_withdraw_detail_temp_len;
                 _str_withdraw_detail_temp._data[_str_withdraw_detail_temp._size] = '\0';
                 return _str_withdraw_detail_temp;
             }
-            bool Automatic_scaling(const size_t& temporary_variable)
+            void Automatic_scaling(const size_t& temporary_variable)
             {
-                //检查string空间大小，来分配内存
-                if(temporary_variable <= _capacity)
+                try
                 {
-                    //防止无意义频繁拷贝
-                    return true;
+                    //检查string空间大小，来分配内存
+                    if(temporary_variable <= _capacity)
+                    {
+                        //防止无意义频繁拷贝
+                        return;
+                    }
+                    char* temporary_ = new char[temporary_variable+1];
+                    if(temporary_ != nullptr) 
+                    {
+                        std::memcpy(temporary_,_data,_size+1);
+                        temporary_[_size] = '\0';
+                        delete[] _data;
+                        _data = temporary_;
+                        _capacity = temporary_variable;
+                    }
+                    else
+                    {
+                        throw std::bad_alloc();
+                    }
                 }
-                char* temporary_ = new char[temporary_variable+1];
-                if(temporary_)
+                catch(const std::bad_alloc& e)
                 {
-                    std::strncpy(temporary_,_data,size());
-                    temporary_[_size] = '\0';
-                    delete[] _data;
-                    _data = temporary_;
-                    _capacity = temporary_variable;
-                    return true;
+                    std::cout << "开辟内存失败！" << e.what()<< std::endl;
                 }
-                return false;
             }
             string& push_back(const char& c_temp_str)
             {
                 if(_size == _capacity)
                 {
                     size_t newcapacity = _capacity == 0 ? 2 :_capacity*2;
-                    if(Automatic_scaling(newcapacity) != true)
-                    {
-                        std::cout << "开辟内存失败！" << std::endl;
-                        return *this;
-                    }
+                    Automatic_scaling(newcapacity);
                 }
                 _data[_size] = c_temp_str;
                 ++_size;
@@ -482,11 +521,7 @@ namespace MY_Template
                 if(len > _capacity)
                 {
                     size_t new_capacity = len;
-                    if(Automatic_scaling(new_capacity) != true)
-                    {
-                        std::cout << "开辟内存失败！" << std::endl;
-                        return *this;
-                    }
+                    Automatic_scaling(new_capacity);
                 }
                 std::strncpy(_data+_size,cpp_temp_str._data,cpp_temp_str.size());
                 _size =_size + cpp_temp_str._size;
@@ -503,11 +538,7 @@ namespace MY_Template
                 size_t new_capacity = len + _size ;
                 if(new_capacity >_capacity)
                 {
-                    if(Automatic_scaling( new_capacity) != true)
-                    {
-                        std::cout << "开辟内存失败！" << std::endl;
-                        return *this;
-                    }
+                   Automatic_scaling(new_capacity);
                 }
                 std::strncpy(_data+_size , c_temp_str,len);
                 _size = _size + len;
@@ -520,11 +551,7 @@ namespace MY_Template
                 if(new_size >_capacity)
                 {
                     //长度大于容量，重新开辟内存
-                    if(Automatic_scaling(new_size) != true)
-                    {
-                        std::cout << "开辟内存失败！" << std::endl;
-                        return *this;
-                    }
+                   Automatic_scaling(new_size);
                     for(string::iterator originate = _data + _size;originate != _data + new_size;originate++)
                     {
                         *originate = c_temp_str;
@@ -542,10 +569,7 @@ namespace MY_Template
             }
             iterator reserve(const size_t& new_capacity)
             {
-                if(Automatic_scaling(new_capacity) != true)
-                {
-                    std::cout << "开辟内存失败！" << std::endl;
-                }
+                Automatic_scaling(new_capacity);
                 return _data;
                 //返回首地址迭代器
             }
@@ -558,17 +582,18 @@ namespace MY_Template
             }
             string rollback()
             {
-                if(_size == 0)
+                try
                 {
-                    std::cout << "回滚失败，字符串为空！" << std::endl;
-                    return string();
+                    if(_size == 0)
+                    {
+                        throw std::out_of_range("回滚位置错误！");
+                    }
+                }
+                catch(const std::out_of_range& e)
+                {
+                    std::cerr << e.what() << '\n';
                 }
                 string _rollback_temp;
-    
-                // for(size_t i = _size - 1; i != nops; i--)
-                // {
-                //     _rollback_temp.push_back(_data[i]);
-                // }
                 for(string::const_reverse_iterator rollback = rbegin();rollback != rend();rollback--)
                 {
                     _rollback_temp.push_back(*rollback);
@@ -577,18 +602,18 @@ namespace MY_Template
             }
             string rollback_limit(const size_t& limit_begin , const size_t& limit_end)
             {
-                string _rollback_linit_temp;
-                if(limit_begin > _size || limit_end > _size || limit_begin > limit_end ||_size == 0)
+                try
                 {
-                    std::cout << "回滚位置越界！" << std::endl;
-                    return string();
+                    if(limit_begin > _size || limit_end > _size || limit_begin > limit_end ||_size == 0)
+                    {
+                        throw std::out_of_range("回滚位置错误！");
+                    }
                 }
-                // for(size_t i = limit_end - 1; i != limit_begin - 1; i--)
-                // {
-                //     //[]遍历
-                //     _rollback_linit_temp.push_back(_data[i]);
-                // } 
-    
+                catch(const std::out_of_range& e)
+                {
+                    std::cerr << e.what() << '\n';
+                } 
+                string _rollback_linit_temp;
                 for(string::const_reverse_iterator rollback = _data + limit_end - 1;rollback != _data + limit_begin - 1;rollback--)
                 {
                     _rollback_linit_temp.push_back(*rollback);
@@ -617,19 +642,27 @@ namespace MY_Template
             string& operator=(const string& data_str)
             {
                 //防止无意义拷贝
-                if(this != &data_str)
+                try
                 {
-                    delete [] _data;
-                    size_t capacity = data_str._capacity;
-                    _data = new char[capacity + 1];
-                    std::strncpy(_data,data_str._data,data_str.size());
-                    _capacity = data_str._capacity;
-                    _size = data_str._size;
-                    _data[_size] = '\0';
+                    if(this != &data_str)
+                    {
+                        delete [] _data;
+                        size_t capacity = data_str._capacity;
+                        _data = new char[capacity + 1];
+                        std::strncpy(_data,data_str._data,data_str.size());
+                        _capacity = data_str._capacity;
+                        _size = data_str._size;
+                        _data[_size] = '\0';
+                    }
+                }
+                catch(const std::bad_alloc& e)
+                {
+                    std::cout << "开辟内存失败！" << e.what()<< std::endl;
+                    return *this;
                 }
                 return *this;
             }
-            string& operator=(string&& data_str)
+            string& operator=(string&& data_str) noexcept
             {
                 if(this != &data_str)
                 {
@@ -643,11 +676,7 @@ namespace MY_Template
             string& operator+=(const string& data_str)
             {
                 size_t len = _size + data_str._size;
-                if(Automatic_scaling(len) != true)
-                {
-                    std::cout << "开辟内存失败！" << std::endl;
-                    return *this;
-                }
+                Automatic_scaling(len);
                 std::strncpy(_data + _size,data_str._data,data_str.size());
                 _size = _size + data_str._size;
                 _data[_size] = '\0';
@@ -757,35 +786,48 @@ namespace MY_Template
             }
             char& operator[](const size_t& ergodic_value)
             {
-                //引用就是出了函数作用域还能用其他的变量名访问，不需要拷贝就能访问，所以可以直接返回引用减少内存开销
-                //在函数创建的变量出了函数作用域就不能访问了，这下才要返回拷贝值，如果返回引用就会未定义
-                // if(ergodic_value >= _size)
-                // {
-                //     //如果越界了就返回第一个元素的引用
-                //     return _data[0];
-                // }
-                //暴力返回
-                return _data[ergodic_value]; //返回第ergodic_value个元素的引用
+                try
+                {
+                    if(ergodic_value <= _size)
+                    {
+                        return _data[ergodic_value]; //返回第ergodic_value个元素的引用
+                    }
+                    else
+                    {
+                        throw std::out_of_range("越界访问");
+                    }
+                }
+                catch(const std::out_of_range& exception_str)
+                {
+                    std::cerr << exception_str.what() << std::endl;
+                    return _data[0];
+                }
                 //就像_data在外面就能访问它以及它的成员，所以这种就可以理解成出了函数作用域还在，进函数之前也能访问的就是引用
             }
             const char& operator[](const size_t& ergodic_value)const
             {
-                // if(ergodic_value >= _size)
-                // {
-                //     //如果越界了就返回第一个元素的引用
-                //     return _data[0];
-                // }
-                return _data[ergodic_value]; 
+                try
+                {
+                    if(ergodic_value <= _size)
+                    {
+                        return _data[ergodic_value]; //返回第ergodic_value个元素的引用
+                    }
+                    else
+                    {
+                        throw std::out_of_range("越界访问");
+                    }
+                }
+                catch(const std::out_of_range& exception_str)
+                {
+                    std::cerr << exception_str.what() << std::endl;
+                    return _data[0];
+                }
             }
             string operator+(const string& cpp_str_)
             {
                 string _str_temp;
                 size_t _str_temp_len = _size + cpp_str_._size;
-                if(_str_temp.Automatic_scaling(_str_temp_len) != true)
-                {
-                    std::cout << "开辟内存失败！" << std::endl;
-                    return string();
-                }
+                _str_temp.Automatic_scaling(_str_temp_len);
                 std::strncpy(_str_temp._data , _data,size());
                 std::strncpy(_str_temp._data + _size , cpp_str_._data,cpp_str_.size());
                 _str_temp._size = _size + cpp_str_._size;
@@ -820,7 +862,6 @@ namespace MY_Template
         }
         std::ostream& operator<<(std::ostream& string_ostream,string &data_str) 
         {
-            //当前没实现【】访问.可以用迭代器
             for(MY_Template::string_Container::string::const_iterator originate = data_str.begin();originate != data_str.end();originate++)
             {
                 string_ostream << *originate;
@@ -3322,6 +3363,10 @@ namespace MY_Template
                 :_Node(Node_temp_)
                 {
                     ;
+                }
+                RBTree_iterator()
+                {
+                    _Node = nullptr;
                 }
                 Ref& operator*()
                 {
