@@ -4,7 +4,35 @@
 #include <cstring>
 //优化每个容器插入函数右值引用，调整每个容器扩容逻辑，减少深拷贝，尽量用移动拷贝，对于开辟空间和错误处理，使用异常处理，对于简单函数使用lambda表达式
 //添加每个容器完美转发，减少开销,整理每个容器
-namespace MyException  {  }
+namespace MyException  
+{
+    class CustomizeException :public std::exception
+    {
+    private:
+        const char* message;
+        const char* function_name;
+        size_t line_number;
+    public:
+        CustomizeException(const char* _Message,const char* _FunctionName,const size_t& _LineNumber) noexcept
+        {
+            message = _Message;
+            function_name = _FunctionName;
+            line_number = _LineNumber;
+        }
+        const char* what() const noexcept override
+        {
+            return message;
+        }
+        const char* function_name_get() const noexcept
+        {
+            return function_name;
+        }
+        size_t line_number_get() const noexcept
+        {
+            return line_number;
+        }
+    };
+}
 namespace MyTemplate
 {
     namespace ImitationFunctions
@@ -31,7 +59,7 @@ namespace MyTemplate
         class HashImitationFunctions
         {
         public:
-            size_t operator()(const int DataStr) noexcept                               {       return DataStr;                }
+            size_t operator()(const int StrData) noexcept                               {       return StrData;                }
             size_t operator()(const size_t DataNum) noexcept                            {       return DataNum;                }
             size_t operator()(const char DataChar) noexcept                             {       return DataChar;               }
             size_t operator()(const double DataDouble) noexcept                         {       return DataDouble;             }
@@ -83,10 +111,10 @@ namespace MyTemplate
             }
             return end;
         } 
-        template<typename DataTypeSwap>
-        void Swap(DataTypeSwap& a,DataTypeSwap& b) noexcept
+        template<typename SwapDataType>
+        void Swap(SwapDataType& a,SwapDataType& b) noexcept
         {
-            DataTypeSwap temp = a;
+            SwapDataType temp = a;
             a = b;
             b = temp;
         }
@@ -132,11 +160,11 @@ namespace MyTemplate
     }
     namespace Practicality
     {
-        template<typename DataTypeExamplePairT,typename DataTypeExamplePairK>
+        template<typename PairDataTypeExampleT,typename PairDataTypeExampleK>
         class Pair
         {
-            using T = DataTypeExamplePairT;
-            using K = DataTypeExamplePairK;
+            using T = PairDataTypeExampleT;
+            using K = PairDataTypeExampleK;
             //处理指针类型
         public:
             //链接两个相同或不同的类型为一个类型，方便使用
@@ -201,11 +229,11 @@ namespace MyTemplate
             }
             Pair* operator->() noexcept                         {       return this;        }
             const Pair* operator->()const  noexcept             {       return this;        }
-            template<typename PairOstreamT,typename PairOstreamK>
-            friend std::ostream& operator<<(std::ostream& os,const Pair<PairOstreamT,PairOstreamK>& p);
+            template<typename PairostreamT,typename PairostreamK>
+            friend std::ostream& operator<<(std::ostream& os,const Pair<PairostreamT,PairostreamK>& p);
         };
-        template<typename PairOstreamT,typename PairOstreamK>
-        std::ostream& operator<<(std::ostream& os,const Pair<PairOstreamT,PairOstreamK>& p)
+        template<typename PairostreamT,typename PairostreamK>
+        std::ostream& operator<<(std::ostream& os,const Pair<PairostreamT,PairostreamK>& p)
         {
             os << "(" << p.first << ":" << p.second << ")";
             return os;
@@ -259,21 +287,21 @@ namespace MyTemplate
 
             size_t capacity()const                  {   return _capacity;   }
 
-            char* c_str()const                      {   return _data;       } //返回C风格字符串
+            char* C_Str()const                      {   return _data;       } //返回C风格字符串
 
             char Back()                             {   return _size > 0 ? _data[_size - 1] : '\0';    }
 
             char Front()                            {   return _data[0];    }//返回尾字符
 
-            String(const char* DataStr = " ")
-            :_size(DataStr == nullptr ? 0 : strlen(DataStr)),_capacity(_size)
+            String(const char* StrData = " ")
+            :_size(StrData == nullptr ? 0 : strlen(StrData)),_capacity(_size)
             {
                 //传进来的字符串是常量字符串，不能直接修改，需要拷贝一份，并且常量字符串在数据段(常量区)浅拷贝会导致程序崩溃
-                if(DataStr != nullptr) 
+                if(StrData != nullptr) 
                 {
                     _data = new char[_capacity + 1];
-                    std::strncpy(_data,DataStr,std::strlen(DataStr));
-                    // strcpy(_data,DataStr);
+                    std::strncpy(_data,StrData,std::strlen(StrData));
+                    // strcpy(_data,StrData);
                     _data[_size] = '\0';
                 }
                 else
@@ -282,14 +310,14 @@ namespace MyTemplate
                     _data[0] = '\0';
                 }
             }
-            String(char*&& DataStr) noexcept
-            :_data(nullptr),_size(DataStr == nullptr ? 0 : strlen(DataStr)),_capacity(_size)
+            String(char*&& StrData) noexcept
+            :_data(nullptr),_size(StrData == nullptr ? 0 : strlen(StrData)),_capacity(_size)
             {
                 //移动构造函数，拿传入对象的变量初始化本地变量，对于涉及开辟内存的都要深拷贝
-                if(DataStr != nullptr)
+                if(StrData != nullptr)
                 {
-                    _data = DataStr;
-                    DataStr = nullptr;
+                    _data = StrData;
+                    StrData = nullptr;
                 }
                 else
                 {
@@ -297,29 +325,29 @@ namespace MyTemplate
                     _data[0] = '\0';
                 }
             }
-            String(const String& DataStr)
-            :_data(nullptr),_size(DataStr._size),_capacity(DataStr._capacity)
+            String(const String& StrData)
+            :_data(nullptr),_size(StrData._size),_capacity(StrData._capacity)
             {
                 //拷贝构造函数，拿传入对象的变量初始化本地变量，对于涉及开辟内存的都要深拷贝
-                size_t capacity = DataStr._capacity;
+                size_t capacity = StrData._capacity;
                 _data = new char[capacity + 1];
-                // algorithm::copy(_data,_data+capacity,DataStr._data); const对象出错
-                std::strcpy(_data, DataStr._data);
+                // algorithm::copy(_data,_data+capacity,StrData._data); const对象出错
+                std::strcpy(_data, StrData._data);
             }
-            String(String&& DataStr) noexcept
-            :_data(nullptr),_size(DataStr._size),_capacity(DataStr._capacity)
+            String(String&& StrData) noexcept
+            :_data(nullptr),_size(StrData._size),_capacity(StrData._capacity)
             {
                 //移动构造函数，拿传入对象的变量初始化本地变量，对于涉及开辟内存的都要深拷贝
-                MyTemplate::Algorithm::Swap(DataStr._data,_data);
+                MyTemplate::Algorithm::Swap(StrData._data,_data);
                 ////////////////////////////////////////////////////////////////////////////////////////////问题：为什么move函数不行？
             }
-            String(std::initializer_list<char> DataStr)
+            String(std::initializer_list<char> StrData)
             {
                 //初始化列表构造函数
-                _size = DataStr.size();
+                _size = StrData.size();
                 _capacity = _size;
                 _data = new char[_capacity + 1];
-                MyTemplate::Algorithm::copy(DataStr.begin(), DataStr.end(), _data);
+                MyTemplate::Algorithm::copy(StrData.begin(), StrData.end(), _data);
                 _data[_size] = '\0';
             }
             ~String() noexcept
@@ -328,72 +356,72 @@ namespace MyTemplate
                 _data = nullptr;
                 _capacity = _size = 0;
             }
-            String& ConversionsOldest() noexcept
+            String& Uppercase() noexcept
             {
                 //字符串转大写
-                for(String::iterator Originate = _data; Originate != _data + _size; Originate++)
+                for(String::iterator StartPosition = _data; StartPosition != _data + _size; StartPosition++)
                 {
-                    if(*Originate >= 'a' && *Originate <= 'z')
+                    if(*StartPosition >= 'a' && *StartPosition <= 'z')
                     {
-                        *Originate -= 32;
+                        *StartPosition -= 32;
                     }
                 }
                 return *this;
             }
-            String& ConversionsFew() noexcept
+            String& Lowercase() noexcept
             {
                 //字符串转小写
-                for(String::iterator Originate = _data; Originate != _data + _size; Originate++)
+                for(String::iterator StartPosition = _data; StartPosition != _data + _size; StartPosition++)
                 {
-                    if(*Originate >= 'A' && *Originate <= 'Z')
+                    if(*StartPosition >= 'A' && *StartPosition <= 'Z')
                     {
-                        *Originate += 32;
+                        *StartPosition += 32;
                     }
                 }
                 return *this;
             }
-            // size_t str_substring_kmp(const char*& CStrSubstring)
+            // size_t str_substring_kmp(const char*& Substring)
             // {
             //     //查找子串
             // }
-            String& NoseInsertionSubstrings(const char*& CStrSubstring)
+            String& Prepend(const char*& Substring)
             {
                 //前部插入子串
-                size_t Len = strlen(CStrSubstring);
-                size_t NewNoseInsertSubstrings = _size + Len;
-                AutomaticScaling(NewNoseInsertSubstrings);
-                char* CNoseInsertSubstringsTemp = new char[_capacity + 1];
+                size_t Len = strlen(Substring);
+                size_t NewSize = _size + Len;
+                AllocateResources(NewSize);
+                char* TemporaryBuffers = new char[_capacity + 1];
                 //临时变量
-                memmove(CNoseInsertSubstringsTemp , _data , _size + 1);
-                memmove(_data , CStrSubstring , Len);
-                memmove(_data + Len , CNoseInsertSubstringsTemp , _size + 1);
+                memmove(TemporaryBuffers , _data , _size + 1);
+                memmove(_data , Substring , Len);
+                memmove(_data + Len , TemporaryBuffers , _size + 1);
                 //比memcpy更安全，memcpy会覆盖原有数据，memmove会先拷贝到临时变量再拷贝到目标地址
-                _size = NewNoseInsertSubstrings;
+                _size = NewSize;
                 _data[_size] = '\0';
-                delete [] CNoseInsertSubstringsTemp;
+                delete [] TemporaryBuffers;
                 return *this;
             }
-            String& InterlocutoryInsertionSubstrings(const char*& CStrSubstring,const size_t& OidPos)
+            String& InsertSubstring(const char*& Substring,const size_t& StartPosition)
             {
                 try
                 {
                     //中间位置插入子串
-                    if(OidPos > _size)
+                    if(StartPosition > _size)
                     {
-                        throw MyException::CustomizeException("传入参数位置越界","InterlocutoryInsertionSubstrings",__LINE__);
+                        throw MyException::CustomizeException("传入参数位置越界","InsertSubstring",__LINE__);
                     }
-                    size_t Len = strlen(CStrSubstring);
-                    size_t NewInterlocutoryInsertSubstrings = _size + Len;
-                    AutomaticScaling(NewInterlocutoryInsertSubstrings);
-                    char* CInterlocutoryInsertSubstringsTemp = new char[NewInterlocutoryInsertSubstrings + 1];
+                    size_t Len = strlen(Substring);
+                    size_t NewSize = _size + Len;
+                    AllocateResources(NewSize);
+                    char* TemporaryBuffers = new char[NewSize + 1];
                     //临时变量
-                    memmove(CInterlocutoryInsertSubstringsTemp, _data, _size + 1);
+                    memmove(TemporaryBuffers, _data, _size + 1);
                     //从oid_pos开始插入
-                    memmove(_data + OidPos + Len, CInterlocutoryInsertSubstringsTemp + OidPos, _size - OidPos + 1);
-                    memmove(_data + OidPos, CStrSubstring, Len);
-                    _size = NewInterlocutoryInsertSubstrings;
+                    memmove(_data + StartPosition + Len, TemporaryBuffers + StartPosition, _size - StartPosition + 1);
+                    memmove(_data + StartPosition, Substring, Len);
+                    _size = NewSize;
                     _data[_size] = '\0';
-                    delete [] CInterlocutoryInsertSubstringsTemp;
+                    delete [] TemporaryBuffers;
                     return *this;
                 }
                 catch(const std::out_of_range& e)
@@ -401,34 +429,34 @@ namespace MyTemplate
                     std::cerr << e.what() << std::endl;;
                 }
             }
-            String StrWithdraw(const size_t& OldPos)
+            String SubString(const size_t& StartPosition)
             {
                 //提取字串到'\0'
                 try
                 {
-                    if(OldPos > _size)
+                    if(StartPosition > _size)
                     {
                         throw std::out_of_range("提取位置越界！");
                     }
                 }
                 catch(const std::out_of_range& e)
                 {
-                    std::cerr << e.what() << '\n';
+                    std::cerr << e.what() << std::endl;
                 }
-                String StrWithdrawTemp;
-                size_t StrWithdrawTempLen = _size - OldPos;
-                StrWithdrawTemp.AutomaticScaling(StrWithdrawTempLen);
-                strncpy(StrWithdrawTemp._data , _data + OldPos,StrWithdrawTempLen);
-                StrWithdrawTemp._size = StrWithdrawTempLen;
-                StrWithdrawTemp._data[StrWithdrawTemp._size] = '\0';
-                return StrWithdrawTemp;
+                String result;
+                size_t SubLen = _size - StartPosition;
+                result.AllocateResources(SubLen);
+                std::strncpy(result._data , _data + StartPosition,SubLen);
+                result._size = SubLen;
+                result._data[result._size] = '\0';
+                return result;
             }
-            String StrWithdrawExtremity(const size_t& OldBegin)
+            String SubStringFrom(const size_t& StartPosition)
             {
                 //提取字串到末尾
                 try
                 {
-                    if(OldBegin > _size)
+                    if(StartPosition > _size)
                     {
                         throw std::out_of_range("提取位置越界！");
                     }
@@ -437,20 +465,20 @@ namespace MyTemplate
                 {
                     std::cerr << e.what() << '\n';
                 }
-                String StrWithdrawExtremityTemp;
-                size_t StrWithdrawExtremityTempLen = _size - OldBegin;
-                StrWithdrawExtremityTemp.AutomaticScaling(StrWithdrawExtremityTempLen);
-                strncpy(StrWithdrawExtremityTemp._data , _data + OldBegin,StrWithdrawExtremityTempLen);
-                StrWithdrawExtremityTemp._size = StrWithdrawExtremityTempLen;
-                StrWithdrawExtremityTemp._data[StrWithdrawExtremityTemp._size] = '\0';
-                return StrWithdrawExtremityTemp;
+                String result;
+                size_t SubLen = _size - StartPosition;
+                result.AllocateResources(SubLen);
+                std::strncpy(result._data , _data + StartPosition,SubLen);
+                result._size = SubLen;
+                result._data[result._size] = '\0';
+                return result;
             }
-            String StrWithdrawDetail(const size_t& OldBegin ,const size_t& OldEnd)
+            String SubString(const size_t& StartPosition ,const size_t& EndPosition)
             {
                 //提取字串到指定位置
                 try
                 {
-                    if(OldBegin > _size || OldEnd > _size || OldBegin > OldEnd)
+                    if(StartPosition > _size || EndPosition > _size || StartPosition > EndPosition)
                     {
                         throw std::out_of_range("提取位置越界！");
                     }
@@ -459,116 +487,116 @@ namespace MyTemplate
                 {
                     std::cerr << e.what() << '\n';
                 }
-                 String StrWithdrawDetailTemp;
-                size_t StrWithdrawDetailTempLen = OldEnd - OldBegin;
-                StrWithdrawDetailTemp.AutomaticScaling(StrWithdrawDetailTempLen);
+                String result;
+                size_t SubLen = EndPosition - StartPosition;
+                result.AllocateResources(SubLen);
                 //strncpy更安全
-                strncpy(StrWithdrawDetailTemp._data , _data + OldBegin,StrWithdrawDetailTempLen);
-                StrWithdrawDetailTemp._size = StrWithdrawDetailTempLen;
-                StrWithdrawDetailTemp._data[StrWithdrawDetailTemp._size] = '\0';
-                return StrWithdrawDetailTemp;
+                std::strncpy(result._data , _data + StartPosition,SubLen);
+                result._size = SubLen;
+                result._data[result._size] = '\0';
+                return result;
             }
-            void AutomaticScaling(const size_t& TemporaryVariable)
+            void AllocateResources(const size_t& NewInaugurateCapacity)
             {
                 //检查string空间大小，来分配内存
-                if(TemporaryVariable <= _capacity)
+                if(NewInaugurateCapacity <= _capacity)
                 {
                     //防止无意义频繁拷贝
                     return;
                 }
-                char* temporary_ = new char[TemporaryVariable+1];
+                char* temporary_ = new char[NewInaugurateCapacity+1];
                 std::memcpy(temporary_,_data,_size+1);
                 
                 temporary_[_size] = '\0';
                 delete[] _data;
                 _data = temporary_;
-                _capacity = TemporaryVariable;
+                _capacity = NewInaugurateCapacity;
             }
-            String& PushBack(const char& CTempStr)
+            String& PushBack(const char& TemporaryData)
             {
                 if(_size == _capacity)
                 {
                     size_t newcapacity = _capacity == 0 ? 2 :_capacity*2;
-                    AutomaticScaling(newcapacity);
+                    AllocateResources(newcapacity);
                 }
-                _data[_size] = CTempStr;
+                _data[_size] = TemporaryData;
                 ++_size;
                 _data[_size] = '\0';
                 return *this;
             }
-            String& PushBack(const String& CppTempStr)
+            String& PushBack(const String& TemporaryData)
             {
-                size_t Len = _size + CppTempStr._size;
+                size_t Len = _size + TemporaryData._size;
                 if(Len > _capacity)
                 {
                     size_t NewCapacity = Len;
-                    AutomaticScaling(NewCapacity);
+                    AllocateResources(NewCapacity);
                 }
-                std::strncpy(_data+_size,CppTempStr._data,CppTempStr.size());
-                _size =_size + CppTempStr._size;
+                std::strncpy(_data+_size,TemporaryData._data,TemporaryData.size());
+                _size =_size + TemporaryData._size;
                 _data[_size] = '\0';
                 return *this;
             }
-            String& PushBack(const char* CTempStr)
+            String& PushBack(const char* TemporaryData)
             {
-                if(CTempStr == nullptr)
+                if(TemporaryData == nullptr)
                 {
                     return *this;
                 }
-                size_t Len = strlen( CTempStr );
+                size_t Len = strlen( TemporaryData );
                 size_t NewCapacity = Len + _size ;
                 if(NewCapacity >_capacity)
                 {
-                   AutomaticScaling(NewCapacity);
+                   AllocateResources(NewCapacity);
                 }
-                std::strncpy(_data+_size , CTempStr,Len);
+                std::strncpy(_data+_size , TemporaryData,Len);
                 _size = _size + Len;
                 _data[_size] = '\0';
                 return *this;
             }
-            String& Resize(const size_t& NewSize ,const char& CTempStr = '\0')
+            String& Resize(const size_t& InaugurateSize ,const char& DefaultData = '\0')
             {
                 //扩展字符串长度
-                if(NewSize >_capacity)
+                if(InaugurateSize >_capacity)
                 {
                     //长度大于容量，重新开辟内存
                     try
                     {
-                        AutomaticScaling(NewSize);
+                        AllocateResources(InaugurateSize);
                     }
                     catch(const std::bad_alloc& New_char)
                     {
                         std::cerr << New_char.what() << " ";
                     }
-                    for(String::iterator Originate = _data + _size;Originate != _data + NewSize;Originate++)
+                    for(String::iterator StartPosition = _data + _size;StartPosition != _data + InaugurateSize;StartPosition++)
                     {
-                        *Originate = CTempStr;
+                        *StartPosition = DefaultData;
                     }
-                    _size = NewSize;
+                    _size = InaugurateSize;
                     _data[_size] = '\0';
                 }
                 else
                 {
                     //如果新长度小于当前字符串长度，直接截断放'\0'
-                    _size = NewSize;
+                    _size = InaugurateSize;
                     _data[_size] = '\0';
                 }
                 return *this;
             }
             iterator Reserve(const size_t& NewCapacity)
             {
-                AutomaticScaling(NewCapacity);
+                AllocateResources(NewCapacity);
                 return _data;
                 //返回首地址迭代器
             }
-            String& Swap(String& DataStr)
+            String& Swap(String& StrData)
             {
-                MyTemplate::Algorithm::Swap(_data,DataStr._data);
-                MyTemplate::Algorithm::Swap(_size,DataStr._size);
-                MyTemplate::Algorithm::Swap(_capacity,DataStr._capacity);
+                MyTemplate::Algorithm::Swap(_data,StrData._data);
+                MyTemplate::Algorithm::Swap(_size,StrData._size);
+                MyTemplate::Algorithm::Swap(_capacity,StrData._capacity);
                 return *this;
             }
-            String Rollback()
+            String Reverse()
             {
                 try
                 {
@@ -581,65 +609,65 @@ namespace MyTemplate
                 {
                     std::cerr << e.what() << '\n';
                 }
-                String RollbackTemp;
-                for(String::const_reverse_iterator Rollback = rbegin();Rollback != rend();Rollback--)
+                String ReversedString;
+                for(String::const_reverse_iterator Reverse = rbegin();Reverse != rend();Reverse--)
                 {
-                    RollbackTemp.PushBack(*Rollback);
+                    ReversedString.PushBack(*Reverse);
                 }
-                return RollbackTemp;
+                return ReversedString;
             }
-            String Rollbacklimit(const size_t& limitBegin , const size_t& limitEnd)
+            String ReverseSubstring(const size_t& StartPosition , const size_t& EndPosition)
             {
                 try
                 {
-                    if(limitBegin > _size || limitEnd > _size || limitBegin > limitEnd ||_size == 0)
+                    if(StartPosition > _size || EndPosition > _size || StartPosition > EndPosition ||_size == 0)
                     {
                         throw std::out_of_range("回滚位置错误！");
                     }
                 }
                 catch(const std::out_of_range& e)
                 {
-                    std::cerr << e.what() << '\n';
+                    std::cerr << e.what() << std::endl;
                 } 
-                String RollbacklimitTemp;
-                for(String::const_reverse_iterator Rollback = _data + limitEnd - 1;Rollback != _data + limitBegin - 1;Rollback--)
+                String reversedResult;
+                for(String::const_reverse_iterator Reverse = _data + EndPosition - 1;Reverse != _data + StartPosition - 1;Reverse--)
                 {
-                    RollbacklimitTemp.PushBack(*Rollback);
+                    reversedResult.PushBack(*Reverse);
                 }
-                return RollbacklimitTemp;
+                return reversedResult;
             }
             void StringPrint()
             {
-                for(String::const_iterator Originate = begin();Originate != end();Originate++)
+                for(String::const_iterator StartPosition = begin();StartPosition != end();StartPosition++)
                 {
-                    std::cout << *Originate;
+                    std::cout << *StartPosition;
                 }
                 std::cout << std::endl;
             }
             void StringPrintReverse()
             {
-                for(String::const_reverse_iterator Originate = rbegin();Originate != rend();Originate--)
+                for(String::const_reverse_iterator StartPosition = rbegin();StartPosition != rend();StartPosition--)
                 {
-                    std::cout << *Originate;
+                    std::cout << *StartPosition;
                 }
                 std::cout << std::endl;
             }
-            friend std::ostream& operator<<(std::ostream& StringOstream,const String &DataStr);
-            friend std::ostream& operator<<(std::ostream& StringOstream,String &DataStr);
-            friend std::istream& operator>>(std::istream& StringIstream,String &DataStr);
-            String& operator=(const String& DataStr)
+            friend std::ostream& operator<<(std::ostream& Stringostream,const String &StrData);
+            friend std::ostream& operator<<(std::ostream& Stringostream,String &StrData);
+            friend std::istream& operator>>(std::istream& Stringistream,String &StrData);
+            String& operator=(const String& StrData)
             {
                 //防止无意义拷贝
                 try
                 {
-                    if(this != &DataStr)
+                    if(this != &StrData)
                     {
                         delete [] _data;
-                        size_t capacity = DataStr._capacity;
+                        size_t capacity = StrData._capacity;
                         _data = new char[capacity + 1];
-                        std::strncpy(_data,DataStr._data,DataStr.size());
-                        _capacity = DataStr._capacity;
-                        _size = DataStr._size;
+                        std::strncpy(_data,StrData._data,StrData.size());
+                        _capacity = StrData._capacity;
+                        _size = StrData._size;
                         _data[_size] = '\0';
                     }
                 }
@@ -650,135 +678,135 @@ namespace MyTemplate
                 }
                 return *this;
             }
-            String& operator=(String&& DataStr) noexcept
+            String& operator=(String&& StrData) noexcept
             {
-                if(this != &DataStr)
+                if(this != &StrData)
                 {
                     delete [] _data;
-                    _size = std::move(DataStr._size);
-                    _capacity = std::move(DataStr._capacity);
-                    _data = std::move(DataStr._data);
+                    _size = std::move(StrData._size);
+                    _capacity = std::move(StrData._capacity);
+                    _data = std::move(StrData._data);
                 }
                 return *this;
             }
-            String& operator+=(const String& DataStr)
+            String& operator+=(const String& StrData)
             {
-                size_t Len = _size + DataStr._size;
-                AutomaticScaling(Len);
-                std::strncpy(_data + _size,DataStr._data,DataStr.size());
-                _size = _size + DataStr._size;
+                size_t Len = _size + StrData._size;
+                AllocateResources(Len);
+                std::strncpy(_data + _size,StrData._data,StrData.size());
+                _size = _size + StrData._size;
                 _data[_size] = '\0';
                 return *this;
             }
-            bool operator==(const String& DataStr)
+            bool operator==(const String& StrData)
             {
-                if(_size != DataStr._size)
+                if(_size != StrData._size)
                 {
                     return false;
                 }
                 for(size_t i = 0;i < _size;i++)
                 {
-                    if(_data[i]!= DataStr._data[i])
+                    if(_data[i]!= StrData._data[i])
                     {
                         return false;
                     }
                 }
                 return true;
             }
-            bool operator==(const String& DataStr)const
+            bool operator==(const String& StrData)const
             {
-                if(_size != DataStr._size)
+                if(_size != StrData._size)
                 {
                     return false;
                 }
                 for(size_t i = 0;i < _size;i++)
                 {
-                    if(_data[i]!= DataStr._data[i])
+                    if(_data[i]!= StrData._data[i])
                     {
                         return false;
                     }
                 }
                 return true;
             }
-            bool operator<(const String& DataStr)
+            bool operator<(const String& StrData)
             {
-                size_t MinLen = _size < DataStr._size? _size : DataStr._size;
+                size_t MinLen = _size < StrData._size ? _size : StrData._size;
                 for(size_t i = 0;i < MinLen;i++)
                 {
-                    if(_data[i]!= DataStr._data[i])
+                    if(_data[i]!= StrData._data[i])
                     {
-                        return _data[i] < DataStr._data[i];
+                        return _data[i] < StrData._data[i];
                     }
                 }
-                return _size < DataStr._size;
+                return _size < StrData._size;
             }
-            bool operator<(const String& DataStr) const
+            bool operator<(const String& StrData) const
             {
-                size_t MinLen = _size < DataStr._size? _size : DataStr._size;
+                size_t MinLen = _size < StrData._size ? _size : StrData._size;
                 for(size_t i = 0;i < MinLen;i++)
                 {
-                    if(_data[i]!= DataStr._data[i])
+                    if(_data[i]!= StrData._data[i])
                     {
-                        return _data[i] < DataStr._data[i];
+                        return _data[i] < StrData._data[i];
                     }
                 }
-                return _size < DataStr._size;
+                return _size < StrData._size;
             }
-            bool operator<(String& DataStr) const
+            bool operator<(String& StrData) const
             {
-                size_t MinLen = _size < DataStr._size? _size : DataStr._size;
+                size_t MinLen = _size < StrData._size ? _size : StrData._size;
                 for(size_t i = 0;i < MinLen;i++)
                 {
-                    if(_data[i]!= DataStr._data[i])
+                    if(_data[i]!= StrData._data[i])
                     {
-                        return _data[i] < DataStr._data[i];
+                        return _data[i] < StrData._data[i];
                     }
                 }
-                return _size < DataStr._size;
+                return _size < StrData._size;
             }
-            bool operator<(String& DataStr)
+            bool operator<(String& StrData)
             {
-                size_t MinLen = _size < DataStr._size? _size : DataStr._size;
+                size_t MinLen = _size < StrData._size ? _size : StrData._size;
                 for(size_t i = 0;i < MinLen;i++)
                 {
-                    if(_data[i]!= DataStr._data[i])
+                    if(_data[i]!= StrData._data[i])
                     {
-                        return _data[i] < DataStr._data[i];
+                        return _data[i] < StrData._data[i];
                     }
                 }
-                return _size < DataStr._size;
+                return _size < StrData._size;
             }
-            bool operator>(const String& DataStr)
+            bool operator>(const String& StrData)
             {
-                size_t MinLen = _size < DataStr._size? _size : DataStr._size;
+                size_t MinLen = _size < StrData._size? _size : StrData._size;
                 for(size_t i = 0;i < MinLen;i++)
                 {
-                    if(_data[i]!= DataStr._data[i])
+                    if(_data[i]!= StrData._data[i])
                     {
-                        return _data[i] > DataStr._data[i];
+                        return _data[i] > StrData._data[i];
                     }
                 }
-                return _size > DataStr._size;
+                return _size > StrData._size;
             }
-            bool operator>(const String& DataStr) const
+            bool operator>(const String& StrData) const
             {
-                size_t MinLen = _size < DataStr._size? _size : DataStr._size;
+                size_t MinLen = _size < StrData._size? _size : StrData._size;
                 for(size_t i = 0;i < MinLen;i++)
                 {
-                    if(_data[i]!= DataStr._data[i])
+                    if(_data[i]!= StrData._data[i])
                     {
-                        return _data[i] > DataStr._data[i];
+                        return _data[i] > StrData._data[i];
                     }
                 }
-                return _size > DataStr._size;
+                return _size > StrData._size;
             }
-            char& operator[](const size_t& ErgodicValue)
+            char& operator[](const size_t& AccessLocation)
             {
                 try
                 {
-                    if(ErgodicValue <= _size)
+                    if(AccessLocation <= _size)
                     {
-                        return _data[ErgodicValue]; //返回第ergodic_value个元素的引用
+                        return _data[AccessLocation]; //返回第ergodic_value个元素的引用
                     }
                     else
                     {
@@ -792,13 +820,13 @@ namespace MyTemplate
                 }
                 //就像_data在外面就能访问它以及它的成员，所以这种就可以理解成出了函数作用域还在，进函数之前也能访问的就是引用
             }
-            const char& operator[](const size_t& ErgodicValue)const
+            const char& operator[](const size_t& AccessLocation)const
             {
                 try
                 {
-                    if(ErgodicValue <= _size)
+                    if(AccessLocation <= _size)
                     {
-                        return _data[ErgodicValue]; //返回第ergodic_value个元素的引用
+                        return _data[AccessLocation]; //返回第ergodic_value个元素的引用
                     }
                     else
                     {
@@ -815,7 +843,7 @@ namespace MyTemplate
             {
                 String StrTemp;
                 size_t StrTempLen = _size + CppStr._size;
-                StrTemp.AutomaticScaling(StrTempLen);
+                StrTemp.AllocateResources(StrTempLen);
                 std::strncpy(StrTemp._data , _data,size());
                 std::strncpy(StrTemp._data + _size , CppStr._data,CppStr.size());
                 StrTemp._size = _size + CppStr._size;
@@ -823,19 +851,19 @@ namespace MyTemplate
                 return StrTemp;
             }
         };
-        std::ostream& operator<<(std::ostream& StringOstream,const String &DataStr) 
+        std::ostream& operator<<(std::ostream& Stringostream,const String& StrData) 
         {
-            for(size_t i = 0;i < DataStr._size;i++)
+            for(size_t i = 0;i < StrData._size;i++)
             {
-                StringOstream << DataStr._data[i];
+                Stringostream << StrData._data[i];
             }
-            return StringOstream;
+            return Stringostream;
         }
-        std::istream& operator>>(std::istream& StringIstream, String &DataStr)
+        std::istream& operator>>(std::istream& Stringistream, String& StrData)
         {
             while(true)
             {
-                char CIstreamStr = StringIstream.get();
+                char CIstreamStr = Stringistream.get();
                 //gat函数只读取一个字符
                 if(CIstreamStr == '\n' || CIstreamStr == EOF)
                 {
@@ -843,18 +871,18 @@ namespace MyTemplate
                 }
                 else
                 {
-                    DataStr.PushBack(CIstreamStr);
+                    StrData.PushBack(CIstreamStr);
                 }
             }
-            return StringIstream;
+            return Stringistream;
         }
-        std::ostream& operator<<(std::ostream& StringOstream,String &DataStr) 
+        std::ostream& operator<<(std::ostream& Stringostream,String &StrData) 
         {
-            for(MyTemplate::StringContainer::String::const_iterator Originate = DataStr.begin();Originate != DataStr.end();Originate++)
+            for(MyTemplate::StringContainer::String::const_iterator StartPosition = StrData.begin();StartPosition != StrData.end();StartPosition++)
             {
-                StringOstream << *Originate;
+                Stringostream << *StartPosition;
             }
-            return StringOstream;
+            return Stringostream;
         }
     }
     /*############################     vector容器     ############################*/
@@ -5059,34 +5087,4 @@ namespace MyTemplate
             //布隆过滤器只支持插入和查找，不支持删除
         };
     }
-}
-namespace MyException  
-{
-    class CustomizeException :public std::exception
-    {
-    private:
-        MyTemplate::StringContainer::String message;
-        MyTemplate::StringContainer::String function_name;
-        size_t line_number;
-    public:
-        CustomizeException(const MyTemplate::StringContainer::String& _Message,
-        const MyTemplate::StringContainer::String& _FunctionName,const size_t& _LineNumber) noexcept
-        {
-            message = _Message;
-            function_name = _FunctionName;
-            line_number = _LineNumber;
-        }
-        const char* what() const noexcept override
-        {
-            return message.c_str();
-        }
-        const char* function_name_get() const noexcept
-        {
-            return function_name.c_str();
-        }
-        size_t line_number_get() const noexcept
-        {
-            return line_number;
-        }
-    };
 }

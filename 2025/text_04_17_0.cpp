@@ -82,10 +82,10 @@ namespace MyTemplate
             }
             return end;
         } 
-        template<typename DataTypeSwap>
-        void swap(DataTypeSwap& a,DataTypeSwap& b)
+        template<typename SwapDataType>
+        void swap(SwapDataType& a,SwapDataType& b)
         {
-            DataTypeSwap temp = a;
+            SwapDataType temp = a;
             a = b;
             b = temp;
         }
@@ -131,11 +131,11 @@ namespace MyTemplate
     }
     namespace Practicality
     {
-        template<typename DataTypeExamplePairT,typename DataTypeExamplePairK>
+        template<typename PairDataTypeExampleT,typename PairDataTypeExampleK>
         class Pair
         {
-            using T = DataTypeExamplePairT;
-            using K = DataTypeExamplePairK;
+            using T = PairDataTypeExampleT;
+            using K = PairDataTypeExampleK;
             //处理指针类型
         public:
             //链接两个相同或不同的类型为一个类型，方便使用
@@ -178,11 +178,11 @@ namespace MyTemplate
             const Pair* operator->()const               {       return this;        }
             // Pair& operator*() { return *this; }
             // const Pair& operator*() const { return *this; }
-            template<typename PairOstreamT,typename PairOstreamK>
-            friend std::ostream& operator<<(std::ostream& os,const Pair<PairOstreamT,PairOstreamK>& p);
+            template<typename PairostreamT,typename PairostreamK>
+            friend std::ostream& operator<<(std::ostream& os,const Pair<PairostreamT,PairostreamK>& p);
         };
-        template<typename PairOstreamT,typename PairOstreamK>
-        std::ostream& operator<<(std::ostream& os,const Pair<PairOstreamT,PairOstreamK>& p)
+        template<typename PairostreamT,typename PairostreamK>
+        std::ostream& operator<<(std::ostream& os,const Pair<PairostreamT,PairostreamK>& p)
         {
             os << "(" << p.first << ":" << p.second << ")";
             return os;
@@ -353,7 +353,7 @@ namespace MyTemplate
                 delete [] _c_nose_insert_substrings_temp;
                 return *this;
             }
-            string& InterlocutoryInsertionSubstrings(const char*& c_str_substring,const size_t& oid_pos)
+            string& InsertSubstring(const char*& c_str_substring,const size_t& oid_pos)
             {
                 //中间位置插入子串
                 if(oid_pos > _size)
@@ -556,7 +556,7 @@ namespace MyTemplate
                 MyTemplate::Algorithm::swap(_capacity,data_str._capacity);
                 return *this;
             }
-            string Rollback()
+            string Reverse()
             {
                 if(_size == 0)
                 {
@@ -569,9 +569,9 @@ namespace MyTemplate
                 // {
                 //     _rollback_temp.push_back(_data[i]);
                 // }
-                for(string::const_reverse_iterator Rollback = rbegin();Rollback != rend();Rollback--)
+                for(string::const_reverse_iterator Reverse = rbegin();Reverse != rend();Reverse--)
                 {
-                    _rollback_temp.push_back(*Rollback);
+                    _rollback_temp.push_back(*Reverse);
                 }
                 return _rollback_temp;
             }
@@ -589,9 +589,9 @@ namespace MyTemplate
                 //     _rollback_linit_temp.push_back(_data[i]);
                 // } 
     
-                for(string::const_reverse_iterator Rollback = _data + limit_end - 1;Rollback != _data + limit_begin - 1;Rollback--)
+                for(string::const_reverse_iterator Reverse = _data + limit_end - 1;Reverse != _data + limit_begin - 1;Reverse--)
                 {
-                    _rollback_linit_temp.push_back(*Rollback);
+                    _rollback_linit_temp.push_back(*Reverse);
                 }
                 return _rollback_linit_temp;
             }
@@ -5060,7 +5060,7 @@ int main()
         std::cout << "str3 capacity: " << string_test3.capacity() << std::endl;
         std::cout << "string_test3 after resize: " << string_test3.resize(21, '*') << std::endl;
 
-        std::cout << "string_test3 after Rollback: " << string_test3.Rollback() << std::endl;
+        std::cout << "string_test3 after Reverse: " << string_test3.Reverse() << std::endl;
 
         std::cout << "string_test3 after rollback_limit: " << string_test3.rollback_limit(5, 10) << std::endl;
 

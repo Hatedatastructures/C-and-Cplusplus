@@ -16,29 +16,29 @@ int main()
         std::cout << "string_test3: " << string_test3 << std::endl;
         string_test3.PushBack('!');
         const char* insert_str = "inserted";
-        string_test3.NoseInsertionSubstrings(insert_str);
+        string_test3.Prepend(insert_str);
         std::cout << "str3 after insertion: " << string_test3 << std::endl;
 
         size_t old_pos = strlen(insert_str);
-        MyTemplate::StringContainer::String string_test4 = string_test3.StrWithdraw(old_pos);
+        MyTemplate::StringContainer::String string_test4 = string_test3.SubString(old_pos);
         std::cout << "string_test4: " << string_test4 << std::endl;
 
-        std::cout << string_test3.ConversionsOldest() << std::endl;
-        std::cout << string_test3.ConversionsFew() << std::endl;
+        std::cout << string_test3.Lowercase() << std::endl;
+        std::cout << string_test3.Lowercase() << std::endl;
 
-        MyTemplate::StringContainer::String string_test5 = string_test3.StrWithdrawExtremity(5);
+        MyTemplate::StringContainer::String string_test5 = string_test3.SubStringFrom(5);
         std::cout << "string_test5: " << string_test5 << std::endl;
 
-        MyTemplate::StringContainer::String string_test6 = string_test3.StrWithdrawDetail(5, 10);
+        MyTemplate::StringContainer::String string_test6 = string_test3.SubString(5, 10);
         std::cout << "string_test6: " << string_test6 << std::endl;
 
         std::cout << "str3 size: " << string_test3.size() << std::endl;
         std::cout << "str3 capacity: " << string_test3.capacity() << std::endl;
         std::cout << "string_test3 after Resize: " << string_test3.Resize(21, '*') << std::endl;
 
-        std::cout << "string_test3 after Rollback: " << string_test3.Rollback() << std::endl;
+        std::cout << "string_test3 after Reverse: " << string_test3.Reverse() << std::endl;
 
-        std::cout << "string_test3 after Rollbacklimit: " << string_test3.Rollbacklimit(5, 10) << std::endl;
+        std::cout << "string_test3 after ReverseSubstring: " << string_test3.ReverseSubstring(5, 10) << std::endl;
 
         string_test3.StringPrint();
         string_test3.StringPrintReverse();
@@ -774,5 +774,8 @@ int main()
     //     std::cout << sum << std::endl;
     // }
     //问题vector容器resize函数问题
+    {
+
+    }
     return 0;
 }

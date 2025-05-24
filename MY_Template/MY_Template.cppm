@@ -80,10 +80,10 @@ namespace MyTemplate
             }
             return end;
         } 
-        template<typename DataTypeSwap>
-        void Swap(DataTypeSwap& a,DataTypeSwap& b)
+        template<typename SwapDataType>
+        void Swap(SwapDataType& a,SwapDataType& b)
         {
-            DataTypeSwap temp = a;
+            SwapDataType temp = a;
             a = b;
             b = temp;
         }
@@ -129,11 +129,11 @@ namespace MyTemplate
     }
     namespace Practicality
     {
-        template<typename DataTypeExamplePairT,typename DataTypeExamplePairK>
+        template<typename PairDataTypeExampleT,typename PairDataTypeExampleK>
         class Pair
         {
-            using T = DataTypeExamplePairT;
-            using K = DataTypeExamplePairK;
+            using T = PairDataTypeExampleT;
+            using K = PairDataTypeExampleK;
             //处理指针类型
         public:
             //链接两个相同或不同的类型为一个类型，方便使用
@@ -176,11 +176,11 @@ namespace MyTemplate
             const Pair* operator->()const               {       return this;        }
             // pair& operator*() { return *this; }
             // const pair& operator*() const { return *this; }
-            template<typename PairOstreamT,typename PairOstreamK>
-            friend std::ostream& operator<<(std::ostream& os,const Pair<PairOstreamT,PairOstreamK>& p);
+            template<typename PairostreamT,typename PairostreamK>
+            friend std::ostream& operator<<(std::ostream& os,const Pair<PairostreamT,PairostreamK>& p);
         };
-        template<typename PairOstreamT,typename PairOstreamK>
-        std::ostream& operator<<(std::ostream& os,const Pair<PairOstreamT,PairOstreamK>& p)
+        template<typename PairostreamT,typename PairostreamK>
+        std::ostream& operator<<(std::ostream& os,const Pair<PairostreamT,PairostreamK>& p)
         {
             os << "(" << p.first << ":" << p.second << ")";
             return os;
@@ -234,7 +234,7 @@ namespace MyTemplate
 
             size_t capacity()const                  {   return _capacity;   }
 
-            char* c_str()const                      {   return _data;       } //返回C风格字符串
+            char* C_Str()const                      {   return _data;       } //返回C风格字符串
 
             char Back()                             {   return _size > 0 ? _data[_size - 1] : '\0';    }
 
@@ -302,7 +302,7 @@ namespace MyTemplate
                 _data = nullptr;
                 _capacity = _size = 0;
             }
-            String& ConversionsOldest()
+            String& Lowercase()
             {
                 //字符串转大写
                 for(String::iterator originate = _data; originate != _data + _size; originate++)
@@ -330,12 +330,12 @@ namespace MyTemplate
             // {
             //     //查找子串
             // }
-            String& NoseInsertionSubstrings(const char*& c_str_substring)
+            String& Prepend(const char*& c_str_substring)
             {
                 //前部插入子串
                 size_t len = strlen(c_str_substring);
                 size_t new_nose_insert_substrings = _size + len;
-                if(AutomaticScaling(new_nose_insert_substrings) != true)
+                if(AllocateResources(new_nose_insert_substrings) != true)
                 {
                     std::cout << "开辟内存失败！" << std::endl;
                     return *this;
@@ -351,7 +351,7 @@ namespace MyTemplate
                 delete [] _c_nose_insert_substrings_temp;
                 return *this;
             }
-            String& InterlocutoryInsertionSubstrings(const char*& c_str_substring,const size_t& oid_pos)
+            String& InsertSubstring(const char*& c_str_substring,const size_t& oid_pos)
             {
                 //中间位置插入子串
                 if(oid_pos > _size)
@@ -361,7 +361,7 @@ namespace MyTemplate
                 }
                 size_t len = strlen(c_str_substring);
                 size_t new_interlocutory_insert_substrings = _size + len;
-                if(AutomaticScaling(new_interlocutory_insert_substrings) != true)
+                if(AllocateResources(new_interlocutory_insert_substrings) != true)
                 {
                     std::cout << "开辟内存失败！" << std::endl;
                     return *this;
@@ -377,7 +377,7 @@ namespace MyTemplate
                 delete [] _c_interlocutory_insert_substrings_temp;
                 return *this;
             }
-            String StrWithdraw(const size_t& old_pos)
+            String SubString(const size_t& old_pos)
             {
                 //提取字串到'\0'
                 if(old_pos > _size)
@@ -387,7 +387,7 @@ namespace MyTemplate
                 }
                 String _str_withdraw_temp;
                 size_t _str_withdraw_temp_len = _size - old_pos;
-                if(_str_withdraw_temp.AutomaticScaling(_str_withdraw_temp_len) != true)
+                if(_str_withdraw_temp.AllocateResources(_str_withdraw_temp_len) != true)
                 {
                     std::cout << "开辟内存失败！" << std::endl;
                     return String();
@@ -397,7 +397,7 @@ namespace MyTemplate
                 _str_withdraw_temp._data[_str_withdraw_temp._size] = '\0';
                 return _str_withdraw_temp;
             }
-            String StrWithdrawExtremity(const size_t& old_begin)
+            String SubStringFrom(const size_t& old_begin)
             {
                 //提取字串到末尾
                 if(old_begin > _size)
@@ -407,7 +407,7 @@ namespace MyTemplate
                 }
                 String _str_withdraw_extremity_temp;
                 size_t _str_withdraw_extremity_temp_len = _size - old_begin;
-                if(_str_withdraw_extremity_temp.AutomaticScaling(_str_withdraw_extremity_temp_len) != true)
+                if(_str_withdraw_extremity_temp.AllocateResources(_str_withdraw_extremity_temp_len) != true)
                 {
                     std::cout << "开辟内存失败！" << std::endl;
                     return String();
@@ -417,7 +417,7 @@ namespace MyTemplate
                 _str_withdraw_extremity_temp._data[_str_withdraw_extremity_temp._size] = '\0';
                 return _str_withdraw_extremity_temp;
             }
-            String StrWithdrawDetail(const size_t& old_begin ,const size_t& old_end)
+            String SubString(const size_t& old_begin ,const size_t& old_end)
             {
                 //提取字串到指定位置
                 if(old_begin > _size || old_end > _size || old_begin > old_end)
@@ -427,7 +427,7 @@ namespace MyTemplate
                 }
                 String _str_withdraw_detail_temp;
                 size_t _str_withdraw_detail_temp_len = old_end - old_begin;
-                if(_str_withdraw_detail_temp.AutomaticScaling(_str_withdraw_detail_temp_len) != true)
+                if(_str_withdraw_detail_temp.AllocateResources(_str_withdraw_detail_temp_len) != true)
                 {
                     std::cout << "开辟内存失败！" << std::endl;
                     return String();
@@ -438,7 +438,7 @@ namespace MyTemplate
                 _str_withdraw_detail_temp._data[_str_withdraw_detail_temp._size] = '\0';
                 return _str_withdraw_detail_temp;
             }
-            bool AutomaticScaling(const size_t& temporary_variable)
+            bool AllocateResources(const size_t& temporary_variable)
             {
                 //检查string空间大小，来分配内存
                 if(temporary_variable <= _capacity)
@@ -463,7 +463,7 @@ namespace MyTemplate
                 if(_size == _capacity)
                 {
                     size_t newcapacity = _capacity == 0 ? 2 :_capacity*2;
-                    if(AutomaticScaling(newcapacity) != true)
+                    if(AllocateResources(newcapacity) != true)
                     {
                         std::cout << "开辟内存失败！" << std::endl;
                         return *this;
@@ -480,7 +480,7 @@ namespace MyTemplate
                 if(len > _capacity)
                 {
                     size_t new_capacity = len;
-                    if(AutomaticScaling(new_capacity) != true)
+                    if(AllocateResources(new_capacity) != true)
                     {
                         std::cout << "开辟内存失败！" << std::endl;
                         return *this;
@@ -501,7 +501,7 @@ namespace MyTemplate
                 size_t new_capacity = len + _size ;
                 if(new_capacity >_capacity)
                 {
-                    if(AutomaticScaling( new_capacity) != true)
+                    if(AllocateResources( new_capacity) != true)
                     {
                         std::cout << "开辟内存失败！" << std::endl;
                         return *this;
@@ -518,7 +518,7 @@ namespace MyTemplate
                 if(new_size >_capacity)
                 {
                     //长度大于容量，重新开辟内存
-                    if(AutomaticScaling(new_size) != true)
+                    if(AllocateResources(new_size) != true)
                     {
                         std::cout << "开辟内存失败！" << std::endl;
                         return *this;
@@ -540,7 +540,7 @@ namespace MyTemplate
             }
             iterator Reserve(const size_t& new_capacity)
             {
-                if(AutomaticScaling(new_capacity) != true)
+                if(AllocateResources(new_capacity) != true)
                 {
                     std::cout << "开辟内存失败！" << std::endl;
                 }
@@ -554,7 +554,7 @@ namespace MyTemplate
                 MyTemplate::Algorithm::Swap(_capacity,data_str._capacity);
                 return *this;
             }
-            String Rollback()
+            String Reverse()
             {
                 if(_size == 0)
                 {
@@ -567,13 +567,13 @@ namespace MyTemplate
                 // {
                 //     _rollback_temp.PushBack(_data[i]);
                 // }
-                for(String::const_reverse_iterator Rollback = rbegin();Rollback != rend();Rollback--)
+                for(String::const_reverse_iterator Reverse = rbegin();Reverse != rend();Reverse--)
                 {
-                    _rollback_temp.PushBack(*Rollback);
+                    _rollback_temp.PushBack(*Reverse);
                 }
                 return _rollback_temp;
             }
-            String Rollbacklimit(const size_t& limit_begin , const size_t& limit_end)
+            String ReverseSubstring(const size_t& limit_begin , const size_t& limit_end)
             {
                 String _rollback_linit_temp;
                 if(limit_begin > _size || limit_end > _size || limit_begin > limit_end ||_size == 0)
@@ -587,9 +587,9 @@ namespace MyTemplate
                 //     _rollback_linit_temp.PushBack(_data[i]);
                 // } 
     
-                for(String::const_reverse_iterator Rollback = _data + limit_end - 1;Rollback != _data + limit_begin - 1;Rollback--)
+                for(String::const_reverse_iterator Reverse = _data + limit_end - 1;Reverse != _data + limit_begin - 1;Reverse--)
                 {
-                    _rollback_linit_temp.PushBack(*Rollback);
+                    _rollback_linit_temp.PushBack(*Reverse);
                 }
                 return _rollback_linit_temp;
             }
@@ -641,7 +641,7 @@ namespace MyTemplate
             String& operator+=(const String& data_str)
             {
                 size_t len = _size + data_str._size;
-                if(AutomaticScaling(len) != true)
+                if(AllocateResources(len) != true)
                 {
                     std::cout << "开辟内存失败！" << std::endl;
                     return *this;
@@ -779,7 +779,7 @@ namespace MyTemplate
             {
                 String _str_temp;
                 size_t _str_temp_len = _size + cpp_str_._size;
-                if(_str_temp.AutomaticScaling(_str_temp_len) != true)
+                if(_str_temp.AllocateResources(_str_temp_len) != true)
                 {
                     std::cout << "开辟内存失败！" << std::endl;
                     return String();
