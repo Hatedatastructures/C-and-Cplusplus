@@ -7,51 +7,51 @@ namespace wa
     template <typename list_Node_Type>
     class list
     {
-        template<typename list_Type_Function_Node>
+        template<typename listTypeFunctionNode>
         struct listNode
         {
-            listNode<list_Type_Function_Node>* _prev;
-            listNode<list_Type_Function_Node>* _next;
-            list_Type_Function_Node _data;
+            listNode<listTypeFunctionNode>* _prev;
+            listNode<listTypeFunctionNode>* _next;
+            listTypeFunctionNode _data;
 
-            listNode(const list_Type_Function_Node& data = list_Type_Function_Node())
+            listNode(const listTypeFunctionNode& data = listTypeFunctionNode())
             :_prev(nullptr), _next(nullptr), _data(data)
             {
                 //列表初始化
             }
             
         };
-        template <typename list_Type>
+        template <typename ListType>
         class _list_iterator_
         {
         public:
             //迭代器类
-            typedef listNode<list_Type> Node;
+            typedef listNode<ListType> Node;
             Node* _node;
             _list_iterator_(Node* node)
             :_node(node)
             {
                 //拿一个指针来构造迭代器
             }
-            list_Type& operator*()
+            ListType& operator*()
             {
                 //返回该节点的自定义类型的数据
                 return _node->_data;
             }
-            _list_iterator_<list_Type>& operator++()
+            _list_iterator_<ListType>& operator++()
             {
                 //先用再加，返回加之后的位置
                 _node = _node -> _next;
                 return *this;
             }
-            _list_iterator_<list_Type> operator++(int)
+            _list_iterator_<ListType> operator++(int)
             {
                 //先加再用返回加之前的位置
-                _list_iterator_<list_Type> temp = *this;
+                _list_iterator_<ListType> temp = *this;
                 ++(*this);
                 return temp;
             }
-            bool operator!= (const _list_iterator_<list_Type>& _iterator_temp_)
+            bool operator!= (const _list_iterator_<ListType>& _iterator_temp_)
             {
                 //比较两个指针及其上一个和下一个指针地址
                 return _node != _iterator_temp_._node;

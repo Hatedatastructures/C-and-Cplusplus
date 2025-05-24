@@ -2,28 +2,28 @@
 //模拟实现list
 namespace wa
 { 
-    template<typename list_Type_Function_Node>
+    template<typename listTypeFunctionNode>
     struct listNode
     {
         //节点类
-        listNode<list_Type_Function_Node>* _prev;
-        listNode<list_Type_Function_Node>* _next;
-        list_Type_Function_Node _data;
+        listNode<listTypeFunctionNode>* _prev;
+        listNode<listTypeFunctionNode>* _next;
+        listTypeFunctionNode _data;
 
-        listNode(const list_Type_Function_Node& data = list_Type_Function_Node())
+        listNode(const listTypeFunctionNode& data = listTypeFunctionNode())
         :_prev(nullptr), _next(nullptr), _data(data)
         {
             //列表初始化
         }
         
     };
-    template <typename list_Type ,typename Ref ,typename Ptr >
+    template <typename ListType ,typename Ref ,typename Ptr >
     class _list_iterator_
     {
     public:
         //迭代器类
-        typedef listNode<list_Type> Node;
-        typedef _list_iterator_<list_Type ,list_Type& ,list_Type*> iterator;
+        typedef listNode<ListType> Node;
+        typedef _list_iterator_<ListType ,ListType& ,ListType*> iterator;
         typedef Ref reference;
         typedef Ptr pointer;
         Node* _node;
@@ -127,10 +127,10 @@ namespace wa
             return _it != _temp_._it;
         }
     };
-    template <typename list_Type>
+    template <typename ListType>
     class list
     {
-        typedef listNode<list_Type> Node;
+        typedef listNode<ListType> Node;
 
         Node* _head;
         //_head为哨兵位
@@ -141,8 +141,8 @@ namespace wa
             _head -> _next = _head;
         }
     public:
-        typedef _list_iterator_<list_Type,list_Type& ,list_Type*> iterator;
-        typedef _list_iterator_<list_Type,const list_Type&,const list_Type*> const_iterator;
+        typedef _list_iterator_<ListType,ListType& ,ListType*> iterator;
+        typedef _list_iterator_<ListType,const ListType&,const ListType*> const_iterator;
 
         //拿正向迭代器构造反向迭代器，可以直接调用 iterator 已经重载的运算符和函数，相当于在封装一层类
         typedef _Reverse_list_iterator_<iterator> reverse_iterator;
@@ -179,14 +179,14 @@ namespace wa
                 ++first;
             }
         }
-        list(const list<list_Type>& _list_data)
+        list(const list<ListType>& _list_data)
         {
             //拷贝构造
             CreateHead();
-            list<list_Type> _temp_ (_list_data.cbegin(),_list_data.cend());
+            list<ListType> _temp_ (_list_data.cbegin(),_list_data.cend());
             swap(_temp_);
         }
-        void swap(wa::list<list_Type>& _swap_temp)
+        void swap(wa::list<ListType>& _swap_temp)
         {
             std::swap(_head,_swap_temp._head);
         }
@@ -242,33 +242,33 @@ namespace wa
         /*
         元素访问操作
         */
-        list_Type& front()
+        ListType& front()
 		{
 			return _head->_next->_data;
 		}
 
-		const list_Type& front()const
+		const ListType& front()const
 		{
 			return _head->_next->_data;
 		}
 
-		list_Type& back()
+		ListType& back()
 		{
 			return _head->_prev->_data;
 		}
 
-		const list_Type& back()const
+		const ListType& back()const
 		{
 			return _head->_prev->_data;
 		}
         /*
         插入删除操作
         */
-        void push_back(const list_Type& push_back_data)
+        void push_back(const ListType& push_back_data)
         {
             insert(end(),push_back_data);
         }
-        void push_front(const list_Type& push_front_data)
+        void push_front(const ListType& push_front_data)
         {
             //插入到头
             insert(begin(),push_front_data);
@@ -283,7 +283,7 @@ namespace wa
             //删除头
 			erase(begin()); 
 		}
-        iterator insert(iterator pos ,const list_Type& val)
+        iterator insert(iterator pos ,const ListType& val)
         {
             Node* Pnew_node = new Node(val);
             //开辟新节点
@@ -308,7 +308,7 @@ namespace wa
 
 			return iterator(pRet);
 		}
-        void resize(size_t newsize, const list_Type& data = list_Type())
+        void resize(size_t newsize, const ListType& data = ListType())
 		{
             //将data插入到链表中
 			size_t oldsize = size();
@@ -344,7 +344,7 @@ namespace wa
 
 			_head->_next = _head->_prev = _head;
 		}
-        list& operator=(list<list_Type> _lsit_temp)
+        list& operator=(list<ListType> _lsit_temp)
         {
             //运算符重载
             if( this != &_lsit_temp)
@@ -353,9 +353,9 @@ namespace wa
             }
             return *this;
         }
-        list operator+(const list<list_Type>& _list_temp_)
+        list operator+(const list<ListType>& _list_temp_)
         {
-            list<list_Type> _return_temp_ (cbegin(),cend());
+            list<ListType> _return_temp_ (cbegin(),cend());
             const_iterator _begin = _list_temp_.cbegin();
             const_iterator _end  = _list_temp_.cend();
             while(_begin != _end)
@@ -365,7 +365,7 @@ namespace wa
             }
             return _return_temp_;
         }
-        list& operator+=(const list<list_Type>& _lsit_temp_)
+        list& operator+=(const list<ListType>& _lsit_temp_)
         {
             const_iterator _begin = _lsit_temp_.cbegin();
             const_iterator _end  = _lsit_temp_.cend();
@@ -376,17 +376,17 @@ namespace wa
             }
             return *this;
         }
-        template <typename const_list_Output_templates>
-        friend std::ostream& operator<< (std::ostream& list_ostream, const list<const_list_Output_templates>& Dynamic_arrays_data);
+        template <typename ConstListOutputTemplates>
+        friend std::ostream& operator<< (std::ostream& list_ostream, const list<ConstListOutputTemplates>& Dynamic_arrays_data);
         
-        template <typename list_Output_templates>
-        friend std::ostream& operator<< (std::ostream& list_ostream, list<list_Output_templates>& Dynamic_arrays_data);
+        template <typename ListOutputTemplates>
+        friend std::ostream& operator<< (std::ostream& list_ostream, list<ListOutputTemplates>& Dynamic_arrays_data);
     };
-    template <typename const_list_Output_templates>
-    std::ostream& operator<< (std::ostream& list_ostream, const list<const_list_Output_templates>& Dynamic_arrays_data)
+    template <typename ConstListOutputTemplates>
+    std::ostream& operator<< (std::ostream& list_ostream, const list<ConstListOutputTemplates>& Dynamic_arrays_data)
     {
         //typename声明这是一个类型而不是表达式
-        typename list<const_list_Output_templates>::const_iterator it = Dynamic_arrays_data.cbegin();
+        typename list<ConstListOutputTemplates>::const_iterator it = Dynamic_arrays_data.cbegin();
         while (it != Dynamic_arrays_data.cend()) 
         {
             list_ostream << *it << " ";
@@ -395,11 +395,11 @@ namespace wa
         return list_ostream;
     }
 
-    template <typename list_Output_templates>
-    std::ostream& operator<< (std::ostream& list_ostream, list<list_Output_templates>& Dynamic_arrays_data)
+    template <typename ListOutputTemplates>
+    std::ostream& operator<< (std::ostream& list_ostream, list<ListOutputTemplates>& Dynamic_arrays_data)
     {
         //typename声明这是一个类型而不是表达式
-        typename list<list_Output_templates>::iterator it = Dynamic_arrays_data.begin();
+        typename list<ListOutputTemplates>::iterator it = Dynamic_arrays_data.begin();
         while (it != Dynamic_arrays_data.end()) 
         {
             list_ostream << *it << " ";
