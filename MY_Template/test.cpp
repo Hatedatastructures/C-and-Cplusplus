@@ -7,11 +7,11 @@
 int main()
 {   
     // /*            string测试             */
-    {
-        MyTemplate::StringContainer::String string_test1;
-        MyTemplate::StringContainer::String string_test2 = string_test1.ReverseSubstring(10,20);
-        std::cout << string_test1 << std::endl << string_test2 << std::endl;
-    }
+    // {
+    //     MyTemplate::StringContainer::String string_test1;
+    //     MyTemplate::StringContainer::String string_test2 = string_test1.ReverseSubstring(10,20);
+    //     std::cout << string_test1 << std::endl << string_test2 << std::endl;
+    // }
     // {
     //     std::cout << " string 测试 " << std::endl << std::endl;
     //     MyTemplate::StringContainer::String string_test1("hello");
@@ -779,8 +779,22 @@ int main()
     // //     std::cout << sum << std::endl;
     // // }
     // //问题vector容器resize函数问题
-    // {
-
-    // }
+    {
+        using Vector_pair =  MyTemplate::VectorContainer::Vector<MyTemplate::Practicality::Pair<size_t,size_t>>;
+        MyTemplate::VectorContainer::Vector<Vector_pair> array_vector;
+        size_t size = 20000;
+        size_t sum = clock();
+        for(size_t i = 0; i < size; i++)
+        {
+            Vector_pair temp;
+            for(size_t j = 0; j < size; j++)
+            {
+                temp.PushBack(MyTemplate::Practicality::Pair<size_t,size_t>(j,j));
+            }
+            array_vector.PushBack(std::move(temp));
+        }
+        size_t num2 = clock();
+        std::cout << "pushback时间：" << num2 - sum << std::endl;
+    }
     return 0;
 }
