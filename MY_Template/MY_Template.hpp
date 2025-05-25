@@ -13,13 +13,13 @@ namespace MyException
         const char* function_name;
         size_t line_number;
     public:
-        CustomizeException(const char* _Message,const char* _FunctionName,const size_t& _LineNumber) noexcept
+        CustomizeException(const char* _Message,const char* _FunctionName,const size_t& _LineNumber) noexcept 
         {
             message = _Message;
             function_name = _FunctionName;
             line_number = _LineNumber;
         }
-        const char* what() const noexcept override
+        virtual const char* what() const noexcept override
         {
             return message;
         }
@@ -424,9 +424,10 @@ namespace MyTemplate
                     delete [] TemporaryBuffers;
                     return *this;
                 }
-                catch(const std::out_of_range& e)
+                catch(const MyException::CustomizeException& Process)
                 {
-                    std::cerr << e.what() << std::endl;;
+                    std::cerr << Process.what() << " " << Process.function_name_get() << " " << Process.line_number_get() << std::endl;
+                    return *this; 
                 }
             }
             String SubString(const size_t& StartPosition)
@@ -436,12 +437,13 @@ namespace MyTemplate
                 {
                     if(StartPosition > _size)
                     {
-                        throw std::out_of_range("提取位置越界！");
+                        throw MyException::CustomizeException("传入参数位置越界","SubString",__LINE__);
                     }
                 }
-                catch(const std::out_of_range& e)
+                catch(const MyException::CustomizeException& Process)
                 {
-                    std::cerr << e.what() << std::endl;
+                    std::cerr << Process.what() << " " << Process.function_name_get() << " " << Process.line_number_get() << std::endl;
+                    return *this;                
                 }
                 String result;
                 size_t SubLen = _size - StartPosition;
@@ -458,12 +460,13 @@ namespace MyTemplate
                 {
                     if(StartPosition > _size)
                     {
-                        throw std::out_of_range("提取位置越界！");
+                        throw MyException::CustomizeException("传入参数位置越界","SubStringFrom",__LINE__);
                     }
                 }
-                catch(const std::out_of_range& e)
+                catch(const MyException::CustomizeException& Process)
                 {
-                    std::cerr << e.what() << '\n';
+                    std::cerr << Process.what() << " " << Process.function_name_get() << " " << Process.line_number_get() << std::endl;
+                    return *this;
                 }
                 String result;
                 size_t SubLen = _size - StartPosition;
@@ -480,12 +483,13 @@ namespace MyTemplate
                 {
                     if(StartPosition > _size || EndPosition > _size || StartPosition > EndPosition)
                     {
-                        throw std::out_of_range("提取位置越界！");
+                        throw MyException::CustomizeException("传入参数位置越界","SubString",__LINE__);
                     }
                 }
-                catch(const std::out_of_range& e)
+                catch(const MyException::CustomizeException& Process)
                 {
-                    std::cerr << e.what() << '\n';
+                    std::cerr << Process.what() << " " << Process.function_name_get() << " " << Process.line_number_get() << std::endl;
+                    return *this;
                 }
                 String result;
                 size_t SubLen = EndPosition - StartPosition;
@@ -602,12 +606,13 @@ namespace MyTemplate
                 {
                     if(_size == 0)
                     {
-                        throw std::out_of_range("回滚位置错误！");
+                        throw MyException::CustomizeException("字符串为空","Reserve",__LINE__);
                     }
                 }
-                catch(const std::out_of_range& e)
+                catch(const MyException::CustomizeException& Process)
                 {
-                    std::cerr << e.what() << '\n';
+                    std::cerr << Process.what() << " " << Process.function_name_get() << " " << Process.line_number_get() << std::endl;
+                    return *this;
                 }
                 String ReversedString;
                 for(String::const_reverse_iterator Reverse = rbegin();Reverse != rend();Reverse--)
@@ -620,14 +625,15 @@ namespace MyTemplate
             {
                 try
                 {
-                    if(StartPosition > _size || EndPosition > _size || StartPosition > EndPosition ||_size == 0)
+                    if(StartPosition > _size || EndPosition > _size || StartPosition > EndPosition || _size == 0)
                     {
-                        throw std::out_of_range("回滚位置错误！");
+                        throw MyException::CustomizeException("回滚位置异常","ReverseSubstring",__LINE__);
                     }
                 }
-                catch(const std::out_of_range& e)
+                catch(const MyException::CustomizeException& Process)
                 {
-                    std::cerr << e.what() << std::endl;
+                    std::cerr << Process.what() << " " << Process.function_name_get() << " " << Process.line_number_get() << std::endl;
+                    return *this;
                 } 
                 String reversedResult;
                 for(String::const_reverse_iterator Reverse = _data + EndPosition - 1;Reverse != _data + StartPosition - 1;Reverse--)
@@ -652,7 +658,6 @@ namespace MyTemplate
                 }
                 std::cout << std::endl;
             }
-            friend std::ostream& operator<<(std::ostream& Stringostream,const String &StrData);
             friend std::ostream& operator<<(std::ostream& Stringostream,String &StrData);
             friend std::istream& operator>>(std::istream& Stringistream,String &StrData);
             String& operator=(const String& StrData)
@@ -671,9 +676,9 @@ namespace MyTemplate
                         _data[_size] = '\0';
                     }
                 }
-                catch(const std::bad_alloc& e)
+                catch(const std::bad_alloc& Process)
                 {
-                    std::cout << "开辟内存失败！" << e.what()<< std::endl;
+                    std::cout << "开辟内存失败！" << Process.what()<< std::endl;
                     return *this;
                 }
                 return *this;
@@ -698,21 +703,6 @@ namespace MyTemplate
                 _data[_size] = '\0';
                 return *this;
             }
-            bool operator==(const String& StrData)
-            {
-                if(_size != StrData._size)
-                {
-                    return false;
-                }
-                for(size_t i = 0;i < _size;i++)
-                {
-                    if(_data[i]!= StrData._data[i])
-                    {
-                        return false;
-                    }
-                }
-                return true;
-            }
             bool operator==(const String& StrData)const
             {
                 if(_size != StrData._size)
@@ -728,18 +718,6 @@ namespace MyTemplate
                 }
                 return true;
             }
-            bool operator<(const String& StrData)
-            {
-                size_t MinLen = _size < StrData._size ? _size : StrData._size;
-                for(size_t i = 0;i < MinLen;i++)
-                {
-                    if(_data[i]!= StrData._data[i])
-                    {
-                        return _data[i] < StrData._data[i];
-                    }
-                }
-                return _size < StrData._size;
-            }
             bool operator<(const String& StrData) const
             {
                 size_t MinLen = _size < StrData._size ? _size : StrData._size;
@@ -751,42 +729,6 @@ namespace MyTemplate
                     }
                 }
                 return _size < StrData._size;
-            }
-            bool operator<(String& StrData) const
-            {
-                size_t MinLen = _size < StrData._size ? _size : StrData._size;
-                for(size_t i = 0;i < MinLen;i++)
-                {
-                    if(_data[i]!= StrData._data[i])
-                    {
-                        return _data[i] < StrData._data[i];
-                    }
-                }
-                return _size < StrData._size;
-            }
-            bool operator<(String& StrData)
-            {
-                size_t MinLen = _size < StrData._size ? _size : StrData._size;
-                for(size_t i = 0;i < MinLen;i++)
-                {
-                    if(_data[i]!= StrData._data[i])
-                    {
-                        return _data[i] < StrData._data[i];
-                    }
-                }
-                return _size < StrData._size;
-            }
-            bool operator>(const String& StrData)
-            {
-                size_t MinLen = _size < StrData._size? _size : StrData._size;
-                for(size_t i = 0;i < MinLen;i++)
-                {
-                    if(_data[i]!= StrData._data[i])
-                    {
-                        return _data[i] > StrData._data[i];
-                    }
-                }
-                return _size > StrData._size;
             }
             bool operator>(const String& StrData) const
             {
@@ -810,12 +752,12 @@ namespace MyTemplate
                     }
                     else
                     {
-                        throw std::out_of_range("越界访问");
+                        throw MyException::CustomizeException("越界访问","String::operator[]",__LINE__);
                     }
                 }
-                catch(const std::out_of_range& ExceptionStr)
+                catch(const MyException::CustomizeException& ExceptionStr)
                 {
-                    std::cerr << ExceptionStr.what() << std::endl;
+                    std::cerr << ExceptionStr.what() << " " << ExceptionStr.function_name_get() << " " << ExceptionStr.line_get() << std::endl;
                     return _data[0];
                 }
                 //就像_data在外面就能访问它以及它的成员，所以这种就可以理解成出了函数作用域还在，进函数之前也能访问的就是引用
@@ -830,12 +772,12 @@ namespace MyTemplate
                     }
                     else
                     {
-                        throw std::out_of_range("越界访问");
+                        throw MyException::CustomizeException("越界访问","String::operator[]const",__LINE__);
                     }
                 }
-                catch(const std::out_of_range& ExceptionStr)
+                catch(const MyException::CustomizeException& ExceptionStr)
                 {
-                    std::cerr << ExceptionStr.what() << std::endl;
+                    std::cerr << ExceptionStr.what() << " " << ExceptionStr.function_name_get() << " " << ExceptionStr.line_get() << std::endl;
                     return _data[0];
                 }
             }
@@ -851,14 +793,6 @@ namespace MyTemplate
                 return StrTemp;
             }
         };
-        std::ostream& operator<<(std::ostream& Stringostream,const String& StrData) 
-        {
-            for(size_t i = 0;i < StrData._size;i++)
-            {
-                Stringostream << StrData._data[i];
-            }
-            return Stringostream;
-        }
         std::istream& operator>>(std::istream& Stringistream, String& StrData)
         {
             while(true)
@@ -905,23 +839,19 @@ namespace MyTemplate
 
             iterator end()          {   return _SizePointer;   }
 
-            size_t size()           {   return _DataPointer ? (_SizePointer - _DataPointer) : 0;  }
-
-            size_t capacity()       {   return _DataPointer ? (_CapacityPointer - _DataPointer) : 0; }
-
             size_t size() const     {   return _DataPointer ? (_SizePointer - _DataPointer) : 0; }
 
             size_t capacity() const {   return _DataPointer ? (_CapacityPointer - _DataPointer) : 0; }
 
-            VectorType& Front()    {   return Head();      }
+            VectorType& Front()     {   return Head();      }
 
-            VectorType& Back()     {   return Tail();      }
+            VectorType& Back()      {   return Tail();      }
 
             bool Empty()            {   return size() == 0; }
 
-            VectorType& Head()     {   return *_DataPointer;  }
+            VectorType& Head()      {   return *_DataPointer;  }
 
-            VectorType& Tail()     {   return *(_SizePointer-1);  }
+            VectorType& Tail()      {   return *(_SizePointer-1);  }
 
             Vector()
             {
