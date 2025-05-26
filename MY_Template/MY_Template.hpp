@@ -2,11 +2,12 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
 #include <cstring>
+#include <mutex>
 //优化每个容器插入函数右值引用，调整每个容器扩容逻辑，减少深拷贝，尽量用移动拷贝，对于开辟空间和错误处理，使用异常处理，对于简单函数使用lambda表达式
 //添加每个容器完美转发，减少开销,整理每个容器,哈希表扩容导致size指针问题
 namespace MyException  
 {
-    class CustomizeException :public std::exception
+    class CustomizeException : public std::exception
     {
     private:
         const char* message;
@@ -30,7 +31,7 @@ namespace MyException
         size_t line_number_get() const noexcept
         {
             return line_number;
-        }
+        }           
     };
 }
 namespace MySmartPtrClass
@@ -57,6 +58,7 @@ namespace MySmartPtrClass
         }
         SmartPtr(const SmartPtr& _SmartPtr) noexcept
         {
+            //管理权转移到另一个
             _Ptr = _SmartPtr._Ptr;
             _SmartPtr._Ptr = nullptr;
         }
@@ -68,7 +70,7 @@ namespace MySmartPtrClass
         {
             return _Ptr;
         }
-        SmartPtr& operator=(const SmartPtr& _SmartPtr) noexcept
+        SmartPtr<SmartPtrType>& operator=(const SmartPtr& _SmartPtr) noexcept
         {
             if( _Ptr != nullptr)
             {
@@ -79,6 +81,64 @@ namespace MySmartPtrClass
             _SmartPtr._Ptr = nullptr;
             return *this;
         }
+    };
+    template <typename UniquePtrType>
+    class UniquePtr
+    {
+    private:
+        UniquePtrType* _Ptr;
+        using Ref = UniquePtrType&;
+        using Ptr = UniquePtrType*;
+    public:
+        UniquePtr(UniquePtrType* Ptr) noexcept
+        {
+            _Ptr = Ptr;
+        }
+        ~UniquePtr() noexcept
+        {
+            if( _Ptr != nullptr)
+            {
+                delete _Ptr;
+                _Ptr = nullptr;
+            }
+        }
+        Ref operator*() noexcept
+        {
+            return *(_Ptr);
+        }
+        Ptr operator->() noexcept
+        {
+            return _Ptr;
+        }
+        UniquePtr(const UniquePtr& _UniquePtr) noexcept = delete;
+        UniquePtr<UniquePtrType>& operator= (const UniquePtr& _UniquePtr) noexcept = delete;
+        //禁止拷贝
+    };
+    template <typename SharedPtrType>
+    class SharedPtr
+    {
+    private:
+        SharedPtrType* _Ptr;
+        int* _SharedPCount;
+        std::mutex* _PMutex;
+        using Ref = SharedPtrType&;
+        using Ptr = SharedPtrType*;
+    public:
+        SharedPtr(SharedPtrType* Ptr)
+        {
+            _Ptr = Ptr;
+            _SharedPCount = new int(1);
+            _PMutex = new std::mutex();
+        }
+        Ref operator*() noexcept
+        {
+            return *(_Ptr);
+        }
+        Ptr operator->() noexcept
+        {
+            return _Ptr;
+        }
+        
     };
 }
 namespace MyTemplate
