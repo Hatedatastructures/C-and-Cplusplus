@@ -5,6 +5,7 @@
 #include <mutex>
 //优化每个容器插入函数右值引用，调整每个容器扩容逻辑，减少深拷贝，尽量用移动拷贝，对于开辟空间和错误处理，使用异常处理，对于简单函数使用lambda表达式
 //添加每个容器完美转发，减少开销,整理每个容器,哈希表扩容导致size指针问题
+//为重要函数添加std::terminate()异常防止程序崩溃，对于轻微的则会抛MyException::CustomizeException异常，该异常继承基类std::exception
 namespace MyException  
 {
     class CustomizeException : public std::exception
@@ -447,7 +448,7 @@ namespace MyTemplate
             {
                 //移动构造函数，拿传入对象的变量初始化本地变量，对于涉及开辟内存的都要深拷贝
                 _data = std::move(StrData._data);
-                // StrData._data = nullptr;
+                StrData._data = nullptr;
                 //问题：为什么move函数不行？因为转移之后让StrData._data"有效但可销毁" 的状态
             }
             String(std::initializer_list<char> StrData)
@@ -1050,6 +1051,7 @@ namespace MyTemplate
                 _DataPointer = std::move(TempData._DataPointer);
                 _SizePointer = std::move(TempData._SizePointer);
                 _CapacityPointer = std::move(TempData._CapacityPointer);
+                TempData._DataPointer = TempData._SizePointer = TempData._CapacityPointer = nullptr;
             }
             ~Vector()
             {
@@ -1127,9 +1129,8 @@ namespace MyTemplate
                     size_t PushBackSize = _DataPointer == nullptr ? 10 : (size_t)(_CapacityPointer-_DataPointer)*2;
                     Resize(PushBackSize);
                 }
-                //注意—_size_pointer是原生迭代器指针，需要解引用才能赋值
-                MyTemplate::Algorithm::Swap(*_SizePointer, PushBackTemp);
-                //////////////////为什么要换指针？为什么窃取资源不行？
+                new (_DataPointer) VectorType(std::forward<VectorType>(PushBackTemp));
+                //为什么窃取资源不行？问题以解决：当移动构造没有把空指针置换的时候就没法移动，采用移动效率提高50%
                 _SizePointer++;
                 return *this;
             }
