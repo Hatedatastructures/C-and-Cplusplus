@@ -3,7 +3,7 @@
 #include <iostream>
 #include <cstring>
 //优化每个容器插入函数右值引用，调整每个容器扩容逻辑，减少深拷贝，尽量用移动拷贝，对于开辟空间和错误处理，使用异常处理，对于简单函数使用lambda表达式
-//添加每个容器完美转发，减少开销,整理每个容器
+//添加每个容器完美转发，减少开销,整理每个容器,哈希表扩容导致size指针问题
 namespace MyException  
 {
     class CustomizeException :public std::exception
@@ -30,6 +30,54 @@ namespace MyException
         size_t line_number_get() const noexcept
         {
             return line_number;
+        }
+    };
+}
+namespace MySmartPtrClass
+{
+    template<typename SmartPtrType>
+    class SmartPtr
+    {
+    private:
+        SmartPtrType* _Ptr;
+        using Ref = SmartPtrType&;
+        using Ptr = SmartPtrType*;
+    public:
+        SmartPtr(SmartPtrType* Ptr) noexcept
+        {
+            _Ptr = Ptr;
+        }
+        ~SmartPtr() noexcept
+        {
+            if( _Ptr != nullptr)
+            {
+                delete _Ptr;
+                _Ptr = nullptr;
+            }
+        }
+        SmartPtr(const SmartPtr& _SmartPtr) noexcept
+        {
+            _Ptr = _SmartPtr._Ptr;
+            _SmartPtr._Ptr = nullptr;
+        }
+        Ref operator*() noexcept
+        {
+            return *(_Ptr);
+        }
+        Ptr operator->() noexcept
+        {
+            return _Ptr;
+        }
+        SmartPtr& operator=(const SmartPtr& _SmartPtr) noexcept
+        {
+            if( _Ptr != nullptr)
+            {
+                delete _Ptr;
+                _Ptr = nullptr;
+            }
+            _Ptr = _SmartPtr._Ptr;
+            _SmartPtr._Ptr = nullptr;
+            return *this;
         }
     };
 }
@@ -633,6 +681,7 @@ namespace MyTemplate
                 catch(const MyException::CustomizeException& Process)
                 {
                     std::cerr << Process.what() << " " << Process.function_name_get() << " " << Process.line_number_get() << std::endl;
+                    std::terminate();
                     return *this;
                 } 
                 String reversedResult;
@@ -1061,9 +1110,10 @@ namespace MyTemplate
             }
             VectorType& operator[](const size_t& SizeOperator)
             {
+                // return _DataPointer[SizeOperator];
                 try 
                 {
-                    if( SizeOperator >= size())
+                    if( SizeOperator >= capacity())
                     {
                         throw MyException::CustomizeException("传入参数越界","Vector::operatot[]",__LINE__);
                     }
@@ -1080,9 +1130,10 @@ namespace MyTemplate
             }
             const VectorType& operator[](const size_t& SizeOperator)const 
             {
+                // return _DataPointer[SizeOperator];
                 try 
                 {
-                    if( SizeOperator >= size())
+                    if( SizeOperator >= capacity())
                     {
                         throw MyException::CustomizeException("传入参数越界","Vector::operatot[]",__LINE__);
                     }
