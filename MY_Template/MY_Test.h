@@ -2,11 +2,13 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
 #include <cstring>
+#include <mutex>
 //优化每个容器插入函数右值引用，调整每个容器扩容逻辑，减少深拷贝，尽量用移动拷贝，对于开辟空间和错误处理，使用异常处理，对于简单函数使用lambda表达式
 //添加每个容器完美转发，减少开销,整理每个容器,哈希表扩容导致size指针问题
+//为重要函数添加std::terminate()异常防止程序崩溃，对于轻微的则会抛MyException::CustomizeException异常，该异常继承基类std::exception
 namespace MyException  
 {
-    class CustomizeException :public std::exception
+    class CustomizeException : public std::exception
     {
     private:
         const char* message;
@@ -30,7 +32,114 @@ namespace MyException
         size_t line_number_get() const noexcept
         {
             return line_number;
+        }           
+    };
+}
+namespace MySmartPtrClass
+{
+    template<typename SmartPtrType>
+    class SmartPtr
+    {
+    private:
+        SmartPtrType* _Ptr;
+        using Ref = SmartPtrType&;
+        using Ptr = SmartPtrType*;
+    public:
+        SmartPtr(SmartPtrType* Ptr) noexcept
+        {
+            _Ptr = Ptr;
         }
+        ~SmartPtr() noexcept
+        {
+            if( _Ptr != nullptr)
+            {
+                delete _Ptr;
+                _Ptr = nullptr;
+            }
+        }
+        SmartPtr(const SmartPtr& _SmartPtr) noexcept
+        {
+            //管理权转移到另一个
+            _Ptr = _SmartPtr._Ptr;
+            _SmartPtr._Ptr = nullptr;
+        }
+        Ref operator*() noexcept
+        {
+            return *(_Ptr);
+        }
+        Ptr operator->() noexcept
+        {
+            return _Ptr;
+        }
+        SmartPtr<SmartPtrType>& operator=(const SmartPtr& _SmartPtr) noexcept
+        {
+            if( _Ptr != nullptr)
+            {
+                delete _Ptr;
+                _Ptr = nullptr;
+            }
+            _Ptr = _SmartPtr._Ptr;
+            _SmartPtr._Ptr = nullptr;
+            return *this;
+        }
+    };
+    template <typename UniquePtrType>
+    class UniquePtr
+    {
+    private:
+        UniquePtrType* _Ptr;
+        using Ref = UniquePtrType&;
+        using Ptr = UniquePtrType*;
+    public:
+        UniquePtr(UniquePtrType* Ptr) noexcept
+        {
+            _Ptr = Ptr;
+        }
+        ~UniquePtr() noexcept
+        {
+            if( _Ptr != nullptr)
+            {
+                delete _Ptr;
+                _Ptr = nullptr;
+            }
+        }
+        Ref operator*() noexcept
+        {
+            return *(_Ptr);
+        }
+        Ptr operator->() noexcept
+        {
+            return _Ptr;
+        }
+        UniquePtr(const UniquePtr& _UniquePtr) noexcept = delete;
+        UniquePtr<UniquePtrType>& operator= (const UniquePtr& _UniquePtr) noexcept = delete;
+        //禁止拷贝
+    };
+    template <typename SharedPtrType>
+    class SharedPtr
+    {
+    private:
+        SharedPtrType* _Ptr;
+        int* _SharedPCount;
+        std::mutex* _PMutex;
+        using Ref = SharedPtrType&;
+        using Ptr = SharedPtrType*;
+    public:
+        SharedPtr(SharedPtrType* Ptr)
+        {
+            _Ptr = Ptr;
+            _SharedPCount = new int(1);
+            _PMutex = new std::mutex();
+        }
+        Ref operator*() noexcept
+        {
+            return *(_Ptr);
+        }
+        Ptr operator->() noexcept
+        {
+            return _Ptr;
+        }
+        
     };
 }
 namespace MyTemplate
@@ -42,18 +151,18 @@ namespace MyTemplate
         class Less
         {
         public:
-            bool operator()(const ImitationFunctionsLess& _test1 ,const ImitationFunctionsLess& _test2) noexcept
+            bool operator()(const ImitationFunctionsLess& ParameterA ,const ImitationFunctionsLess& ParameterB) noexcept
             {
-                return _test1 < _test2;
+                return ParameterA < ParameterB;
             }
         };
         template<typename ImitationFunctionsGreater>
         class Greater
         {
         public:
-            bool operator()(const ImitationFunctionsGreater& _test1 ,const ImitationFunctionsGreater& _test2) noexcept
+            bool operator()(const ImitationFunctionsGreater& ParameterA ,const ImitationFunctionsGreater& ParameterB) noexcept
             {
-                return _test1 > _test2;
+                return ParameterA > ParameterB;
             }
         };
         class HashImitationFunctions
@@ -87,36 +196,36 @@ namespace MyTemplate
     namespace Algorithm
     {
         template <typename SourceSequenceCopy,typename TargetSequenceCopy>
-        TargetSequenceCopy copy(SourceSequenceCopy begin,SourceSequenceCopy end,TargetSequenceCopy first) noexcept
+        TargetSequenceCopy copy(SourceSequenceCopy Begin,SourceSequenceCopy End,TargetSequenceCopy First) noexcept
         {
-            while(begin != end)
+            while(Begin != End)
             {
-                *first = *begin;
-                ++begin;
-                ++first;
+                *First = *Begin;
+                ++Begin;
+                ++First;
             }
-            return first;
+            return First;
         }
         //返回下一个位置的迭代器，是否深浅拷贝取决于自定义类型重载和拷贝构造
         template<typename SourceSequenceFind,typename TargetSequenceFind>
-        SourceSequenceFind Find(SourceSequenceFind begin,SourceSequenceFind end,const TargetSequenceFind& value) noexcept
+        SourceSequenceFind Find(SourceSequenceFind Begin,SourceSequenceFind End,const TargetSequenceFind& Value) noexcept
         {
-            while(begin!= end)
+            while(Begin!= End)
             {
-                if(*begin == value)
+                if(*Begin == Value)
                 {
-                    return begin;
+                    return Begin;
                 }
-                ++begin;
+                ++Begin;
             }
-            return end;
+            return End;
         } 
         template<typename SwapDataType>
-        void Swap(SwapDataType& a,SwapDataType& b) noexcept
+        void Swap(SwapDataType& A,SwapDataType& B) noexcept
         {
-            SwapDataType temp = a;
-            a = b;
-            b = temp;
+            SwapDataType TemporaryCopies = A;
+            A = B;
+            B = TemporaryCopies;
         }
         namespace HashAlgorithm
         {
@@ -338,8 +447,9 @@ namespace MyTemplate
             :_data(nullptr),_size(StrData._size),_capacity(StrData._capacity)
             {
                 //移动构造函数，拿传入对象的变量初始化本地变量，对于涉及开辟内存的都要深拷贝
-                MyTemplate::Algorithm::Swap(StrData._data,_data);
-                ////////////////////////////////////////////////////////////////////////////////////////////问题：为什么move函数不行？
+                _data = std::move(StrData._data);
+                StrData._data = nullptr;
+                //问题：为什么move函数不行？因为转移之后让StrData._data"有效但可销毁" 的状态
             }
             String(std::initializer_list<char> StrData)
             {
@@ -691,7 +801,6 @@ namespace MyTemplate
                     _size = std::move(StrData._size);
                     _capacity = std::move(StrData._capacity);
                     _data = std::move(StrData._data);
-                    StrData._data = nullptr;
                 }
                 return *this;
             }
@@ -981,7 +1090,7 @@ namespace MyTemplate
                         // 复制原先的数据
                         for (size_t i = 0; i < OldSize; i++) 
                         {
-                            NewData[i] = std::move(_DataPointer[i]);
+                            NewData[i] = _DataPointer[i];
                         }
                         for(size_t i = OldSize; i < NewCapacity; i++)
                         {
@@ -1020,9 +1129,8 @@ namespace MyTemplate
                     size_t PushBackSize = _DataPointer == nullptr ? 10 : (size_t)(_CapacityPointer-_DataPointer)*2;
                     Resize(PushBackSize);
                 }
-                //注意_size_pointer是原生迭代器指针，需要解引用才能赋值
-                *_SizePointer = std::move(PushBackTemp);
-                // new (_DataPointer) VectorType(std::forward<VectorType>(PushBackTemp));
+                new (_DataPointer) VectorType(std::forward<VectorType>(PushBackTemp));
+                //为什么窃取资源不行？问题以解决：当移动构造没有把空指针置换的时候就没法移动，采用移动效率提高50%
                 _SizePointer++;
                 return *this;
             }
@@ -1111,24 +1219,23 @@ namespace MyTemplate
                 }
                 return *this;
             }
-            Vector<VectorType>& operator=(Vector<VectorType>&& Temp) noexcept
+            Vector<VectorType>& operator=(const Vector<VectorType>&& TemporaryCopies) noexcept
             {
-                if( this != &Temp)
+                if( this != &TemporaryCopies)
                 {
-                   _DataPointer = std::move(Temp._DataPointer);
-                   _SizePointer = std::move(Temp._SizePointer);
-                   _CapacityPointer = std::move(Temp._CapacityPointer);
-                   Temp._DataPointer = Temp._SizePointer = Temp._CapacityPointer = nullptr;
+                   _DataPointer = std::move(TemporaryCopies._DataPointer);
+                   _SizePointer = std::move(TemporaryCopies._SizePointer);
+                   _CapacityPointer = std::move(TemporaryCopies._CapacityPointer);
                 }
                 return *this;
             }
-            Vector<VectorType>& operator+=(const Vector<VectorType>& Temp)
+            Vector<VectorType>& operator+=(const Vector<VectorType>& TemporaryCopies)
             {
-                if(Temp.size() == 0|| Temp._DataPointer == nullptr)
+                if(TemporaryCopies.size() == 0|| TemporaryCopies._DataPointer == nullptr)
                 {
                     return *this;
                 }
-                size_t TempSize = Temp.size();
+                size_t TempSize = TemporaryCopies.size();
                 size_t Size = size();
                 size_t _capacity_ = capacity();
                 if(TempSize + Size > _capacity_)
@@ -1138,7 +1245,7 @@ namespace MyTemplate
                 size_t sum = 0;
                 for(size_t i = Size ; i < (TempSize + Size); i++)
                 {
-                    _DataPointer[i] = Temp._DataPointer[sum++];
+                    _DataPointer[i] = TemporaryCopies._DataPointer[sum++];
                 }
                 _SizePointer = _DataPointer + (TempSize + Size);
                 return *this;
@@ -1287,9 +1394,9 @@ namespace MyTemplate
                     ++_it;
                     return _temp;
                 }
-                bool operator!=(const _const_reverse_list_iterator& Temp) noexcept
+                bool operator!=(const _const_reverse_list_iterator& TemporaryCopies) noexcept
                 {
-                    return _it != Temp._it;
+                    return _it != TemporaryCopies._it;
                 }
             };
             using Node = ListNode<ListType>;
@@ -1351,8 +1458,8 @@ namespace MyTemplate
             {
                 //拷贝构造
                 CreateHead();
-                List<ListType> Temp (ListData.cbegin(),ListData.cend());
-                Swap(Temp);
+                List<ListType> TemporaryCopies (ListData.cbegin(),ListData.cend());
+                Swap(TemporaryCopies);
             }
             List(List<ListType>&& ListData)
             {
@@ -1763,10 +1870,7 @@ namespace MyTemplate
                 }
             }
         public:
-            ~PriorityQueue()  
-            {
-                ContainerPriorityQueueTemp.~Vector();
-            }
+            ~PriorityQueue()  = default;
             void Push(const PriorityQueueType& FunctionTemplatesPriorityQueuePushBack)
             {
                 ContainerPriorityQueueTemp.PushBack(FunctionTemplatesPriorityQueuePushBack);
@@ -2377,26 +2481,11 @@ namespace MyTemplate
                 using Ptr = typename iterator::pointer;
                 using Ref = typename iterator::reference;
                 AVLTreeReverseIterator(iterator ItTemp)
-                :_it(ItTemp)
-                {
-                    ;
-                }
-                Ptr operator->()
-                {
-                    return &(*this);
-                }
-                Ref& operator*()
-                {
-                    return *_it;
-                }
-                bool operator!=(const Self& SelfTemp)
-                {
-                    return _it != SelfTemp._it;
-                }
-                bool operator==(const Self& SelfTemp)
-                {
-                    return _it == SelfTemp._it;
-                }
+                :_it(ItTemp)                                {       ;               }
+                Ptr operator->()                            {   return &(*this);    }
+                Ref& operator*()                            {   return *_it;        }
+                bool operator!=(const Self& SelfTemp)       {   return _it != SelfTemp._it; }
+                bool operator==(const Self& SelfTemp)       {   return _it == SelfTemp._it; }
                 Self& operator++()
                 {
                     --_it;
@@ -2419,13 +2508,12 @@ namespace MyTemplate
                     ++(*this);
                     return temp;
                 }
-                
             };
             using Node = AVLTreeTypeNode;
             Node* _ROOT;
 
             CompareImitationFunctionsAVL com;
-            void LeftRevolve(Node*& parentTempNode)
+            void LeftRevolve(Node*& ParentTempNode)
             {
                 //传进来的值是发现该树平衡性被破坏的节点地址
                 //大致思想：因为这是左单旋，所以找传进来的父亲节点的右根节点来当调整节点
@@ -2433,33 +2521,33 @@ namespace MyTemplate
                 //再把父亲节点赋值给调整节点的左根节点，！！注意：在旋转的过程中还要处理每个调整节点的父亲节点的指向和平衡因子
 
                 // {
-                //     Node* SubRightTemp = parentTempNode->_right;
-                //     parentTempNode->_right = SubRightTemp->_left;
-                //     SubRightTemp->_left = parentTempNode;
+                //     Node* SubRightTemp = ParentTempNode->_right;
+                //     ParentTempNode->_right = SubRightTemp->_left;
+                //     SubRightTemp->_left = ParentTempNode;
                 //     //错误写法：未同步调整父亲节点和判断调整节点的左根节点是否为空，以及全部需要调整节点的父亲指针的指针的指向
                 // }
-                if(parentTempNode == nullptr|| parentTempNode->_right == nullptr)
+                if(ParentTempNode == nullptr|| ParentTempNode->_right == nullptr)
                 {
                     std::cout <<"left "<< "空指针"  <<std::endl;
                     return ;
                 }
-                Node* SubRightTemp = parentTempNode->_right;
+                Node* SubRightTemp = ParentTempNode->_right;
                 // Node* SubRightLeftTemp = SubRightTemp->_left;
                 Node* SubRightLeftTemp = (SubRightTemp->_left)? SubRightTemp->_left : nullptr;
                 //防止空指针解引用
-                parentTempNode->_right = SubRightLeftTemp;
+                ParentTempNode->_right = SubRightLeftTemp;
                 if(SubRightLeftTemp)
                 {
-                    SubRightLeftTemp->_parent = parentTempNode;
+                    SubRightLeftTemp->_parent = ParentTempNode;
                     //如果Sub_right_left_temp(调整节点的左根节点)不等于空，还需要调整Sub_right_left_temp它的父亲节点
                 }
-                SubRightTemp->_left = parentTempNode;
+                SubRightTemp->_left = ParentTempNode;
                 //这里先保存一下parent_temp_Node的父亲地址，防止到下面else比较的时候丢失
-                Node* ParentParentTempNode = parentTempNode->_parent;
-                parentTempNode->_parent = SubRightTemp;
+                Node* ParentParentTempNode = ParentTempNode->_parent;
+                ParentTempNode->_parent = SubRightTemp;
                 //更新parent_temp_Node节点指向正确的地址
 
-                if(_ROOT == parentTempNode)
+                if(_ROOT == ParentTempNode)
                 {
                     //如果要调整的节点是根根节点，直接把调整节点赋值给根节点，然后把调整节点的父亲节点置空
                     _ROOT = SubRightTemp;
@@ -2468,7 +2556,7 @@ namespace MyTemplate
                 else
                 {
                     //调整前parent_temp_Node是这个树的根现在是Sub_right_temp是这个树的根
-                    if(ParentParentTempNode->_left == parentTempNode)
+                    if(ParentParentTempNode->_left == ParentTempNode)
                     {
                         ParentParentTempNode->_left = SubRightTemp;
                     }
@@ -2478,38 +2566,38 @@ namespace MyTemplate
                     }
                     SubRightTemp->_parent = ParentParentTempNode;
                 }
-                parentTempNode->_BalanceFactor = SubRightTemp->_BalanceFactor = 0;
+                ParentTempNode->_BalanceFactor = SubRightTemp->_BalanceFactor = 0;
             }
 
-            void RightRevolve(Node*& parentTempNode)
+            void RightRevolve(Node*& ParentTempNode)
             {
                 //思路同左单旋思路差不多
-                if(parentTempNode == nullptr|| parentTempNode->_left == nullptr)
+                if(ParentTempNode == nullptr|| ParentTempNode->_left == nullptr)
                 {
                     std::cout <<"right "<< "空指针"  <<std::endl; 
                     return ;
                 }
-                Node* SubLeftTemp = parentTempNode->_left;
+                Node* SubLeftTemp = ParentTempNode->_left;
                 Node* SubLeftRightTemp = (SubLeftTemp->_right) ? SubLeftTemp->_right : nullptr;
                 //防止空指针解引用
-                parentTempNode->_left = SubLeftRightTemp;
+                ParentTempNode->_left = SubLeftRightTemp;
                 if(SubLeftRightTemp)
                 {
-                    SubLeftRightTemp->_parent = parentTempNode;
+                    SubLeftRightTemp->_parent = ParentTempNode;
                 }
-                SubLeftTemp->_right = parentTempNode;
+                SubLeftTemp->_right = ParentTempNode;
                 //保存parent_temp_Node的父亲节点
-                Node* ParentParentTempNode = parentTempNode->_parent;
-                parentTempNode->_parent = SubLeftTemp;
+                Node* ParentParentTempNode = ParentTempNode->_parent;
+                ParentTempNode->_parent = SubLeftTemp;
 
-                if(_ROOT == parentTempNode)
+                if(_ROOT == ParentTempNode)
                 {
                     _ROOT = SubLeftTemp;
                     SubLeftTemp->_parent = nullptr;
                 }
                 else
                 {
-                    if(ParentParentTempNode->_left == parentTempNode)
+                    if(ParentParentTempNode->_left == ParentTempNode)
                     {
                         ParentParentTempNode->_left = SubLeftTemp;
                     }
@@ -2519,72 +2607,72 @@ namespace MyTemplate
                     }
                     SubLeftTemp->_parent = ParentParentTempNode;
                 }
-                parentTempNode->_BalanceFactor = SubLeftTemp->_BalanceFactor = 0;
+                ParentTempNode->_BalanceFactor = SubLeftTemp->_BalanceFactor = 0;
             }
-            void RightLeftRevolve(Node*& parentTempNode)
+            void RightLeftRevolve(Node*& ParentTempNode)
             {
-                if(parentTempNode==nullptr || parentTempNode->_right == nullptr)
+                if(ParentTempNode==nullptr || ParentTempNode->_right == nullptr)
                 {
                     std::cout <<"right_left "<< "空指针"  <<std::endl;
                     return;
                 }
-                Node* SubRightTemp = parentTempNode->_right;
+                Node* SubRightTemp = ParentTempNode->_right;
                 Node* SubRightLeftTemp = SubRightTemp->_left;
                 int BalanceFactorTemp = SubRightLeftTemp->_BalanceFactor;
 
-                RightRevolve(parentTempNode->_right);
+                RightRevolve(ParentTempNode->_right);
                 //右旋
-                LeftRevolve(parentTempNode);
+                LeftRevolve(ParentTempNode);
                 //左旋
                 if(BalanceFactorTemp == -1)
                 {
-                    parentTempNode->_BalanceFactor = 0;
+                    ParentTempNode->_BalanceFactor = 0;
                     SubRightTemp->_BalanceFactor = 1;
                     SubRightLeftTemp->_BalanceFactor = 0;
                 }
                 else if(BalanceFactorTemp == 1)
                 {
-                    parentTempNode->_BalanceFactor = -1;
+                    ParentTempNode->_BalanceFactor = -1;
                     SubRightTemp->_BalanceFactor = 0;
                     SubRightLeftTemp->_BalanceFactor = 0;
                 }
                 else
                 {
-                    parentTempNode->_BalanceFactor = 0;
+                    ParentTempNode->_BalanceFactor = 0;
                     SubRightTemp->_BalanceFactor = 0;
                     SubRightLeftTemp->_BalanceFactor = 0;
                 }
             }
-            void LeftRightRevolve(Node*& parentTempNode)
+            void LeftRightRevolve(Node*& ParentTempNode)
             {   
-                if(parentTempNode == nullptr || parentTempNode->_left == nullptr)
+                if(ParentTempNode == nullptr || ParentTempNode->_left == nullptr)
                 {
                     std::cout << "left_right " << "空指针" << std::endl;
                     return ;
                 }
-                Node* SubLeftTemp = parentTempNode->_left;
+                Node* SubLeftTemp = ParentTempNode->_left;
                 Node* SubLeftRightTemp = SubLeftTemp->_right;
                 int BalanceFactorTemp = SubLeftRightTemp->_BalanceFactor;
 
-                LeftRevolve(parentTempNode->_left);
+                LeftRevolve(ParentTempNode->_left);
                 //左旋
-                RightRevolve(parentTempNode);
+                RightRevolve(ParentTempNode);
                 //右旋
                 if(BalanceFactorTemp == -1)
                 {
-                    parentTempNode->_BalanceFactor = 0;
+                    ParentTempNode->_BalanceFactor = 0;
                     SubLeftTemp->_BalanceFactor = 1;
                     SubLeftRightTemp->_BalanceFactor = 0;
                 }
                 else if(BalanceFactorTemp == 1)
                 {
-                    parentTempNode->_BalanceFactor = -1;
+                    ParentTempNode->_BalanceFactor = -1;
                     SubLeftTemp->_BalanceFactor = 0;
                     SubLeftRightTemp->_BalanceFactor = 0;
                 }
                 else
                 {
-                    parentTempNode->_BalanceFactor = 0;
+                    ParentTempNode->_BalanceFactor = 0;
                     SubLeftTemp->_BalanceFactor = 0;
                     SubLeftRightTemp->_BalanceFactor = 0;
                 }
@@ -2599,8 +2687,7 @@ namespace MyTemplate
                 else
                 {
                     MyTemplate::StackAdapter::Stack<Node*> StackTemp;
-                    //前序释放
-                    StackTemp.Push(_ROOT);
+                    StackTemp.Push(_ROOT);  //前序释放
                     while(!StackTemp.Empty())
                     {
                         Node* temp = StackTemp.top();
@@ -2650,7 +2737,6 @@ namespace MyTemplate
             }
             void _MiddleOrderTraversal(Node* ROOT_Temp)
             {
-                //中序遍历函数
                 MyTemplate::StackAdapter::Stack<Node*> StackTemp;
                 while(ROOT_Temp != nullptr || !StackTemp.Empty())
                 {
@@ -2789,7 +2875,6 @@ namespace MyTemplate
                 {
                     return;
                 }
-
                 // 使用单栈，存储源节点和目标父节点（均为一级指针）
                 MyTemplate::StackAdapter::Stack<MyTemplate::Practicality::Pair<Node*, Node*>> Stack;
                 
@@ -2813,21 +2898,17 @@ namespace MyTemplate
                 {
                     auto [SourceNode, parent_node] = Stack.top();
                     Stack.Pop();
-                    
                     // 创建新节点并复制数据
                     Node* NewNode = new Node(SourceNode->_data);
                     NewNode->_BalanceFactor = SourceNode->_BalanceFactor;
-                    
                     // 设置父节点关系（注意：parent_node 是一级指针）
                     NewNode->_parent = parent_node;
-                    
                     // 判断源节点在原树中是左子还是右子
                     bool IsLeftChild = false;
                     if (SourceNode->_parent != nullptr) 
                     {
                         IsLeftChild = (SourceNode->_parent->_left == SourceNode);
                     }
-                    
                     // 将新节点链接到父节点的正确位置（注意：直接使用 parent_node）
                     if (IsLeftChild) 
                     {
@@ -2837,7 +2918,6 @@ namespace MyTemplate
                     {
                         parent_node->_right = NewNode;
                     }
-
                     // 处理子节点（注意：压栈时父节点是 new_node，一级指针）
                     if (SourceNode->_right != nullptr)
                     {
@@ -2880,30 +2960,13 @@ namespace MyTemplate
                 MyTemplate::Algorithm::Swap(_ROOT,AVLTreeTemp._ROOT);
                 return *this;
             }
-            ~AVLTree()
-            {
-                //析构函数
-                Clear();
-            }
-            size_t size() const
-            {
-                return _size();
-            }
-            size_t size()
-            {
-                return _size();
-            }
-            void PreOrderTraversal()
-            {
-                _PreOrderTraversal(_ROOT);
-            }
-            void MiddleOrderTraversal()
-            {
-                _MiddleOrderTraversal(_ROOT);
-            }
+            ~AVLTree()                  {           Clear();                }
+            size_t size() const         {           return _size();         }
+            size_t size()               {           return _size();         }
+            void PreOrderTraversal()    {           _PreOrderTraversal(_ROOT);         }
+            void MiddleOrderTraversal() {           _MiddleOrderTraversal(_ROOT);      }
             bool Push(const AVLTreeTypeK& KeyTemp,const AVLTreeTypeV& ValTemp = AVLTreeTypeV())
             {
-                //插入
                 if(_ROOT == nullptr)
                 {
                     _ROOT = new Node(KeyTemp,ValTemp);
@@ -2911,7 +2974,7 @@ namespace MyTemplate
                 }
                 else
                 {
-                    Node* _ROOT_temp = _ROOT;
+                    Node* _ROOT_temp = _ROOT;  //AVL树插入
                     Node* ROOT_Temp_Parent = nullptr;
                     while(_ROOT_temp)
                     {
@@ -3092,8 +3155,7 @@ namespace MyTemplate
                             }
                             //旋转后继续向上调整，因为旋转后父节点的平衡因子可能发生变化，每个旋转的节点都可以当作一个子树，子树旋转后，父节点平衡因子可能发生变化
                             ROOTTempTest = _ROOT_Temp_test_parent;
-                            _ROOT_Temp_test_parent = _ROOT_Temp_test_parent->_parent;
-                            //对于双旋的情况，相同方向先调整该节点，再调整整体
+                            _ROOT_Temp_test_parent = _ROOT_Temp_test_parent->_parent;  //对于双旋的情况，相同方向先调整该节点，再调整整体
                         }
                     }
                 }
@@ -3368,9 +3430,9 @@ namespace MyTemplate
                 }
                 Self operator++(int)
                 {
-                    Self Temp = *this;
+                    Self TemporaryCopies = *this;
                     ++(*this);
-                    return Temp;
+                    return TemporaryCopies;
                 }
                 Self& operator--()
                 {
@@ -3398,9 +3460,9 @@ namespace MyTemplate
                 }
                 Self operator--(int)
                 {
-                    Self Temp = *this;
+                    Self TemporaryCopies = *this;
                     --(*this);
-                    return Temp;
+                    return TemporaryCopies;
                 }
                 bool operator==(const Self& itTemp) const
                 {
@@ -3471,7 +3533,7 @@ namespace MyTemplate
             Node* _ROOT;
             DataExtractionFunction Element;
             CompareImitationFunctionsRB com;
-            void LeftRevolve(Node* parentTempNode)
+            void LeftRevolve(Node* ParentTempNode)
             {
                 //传进来的值是发现该树平衡性被破坏的节点地址
                 //大致思想：因为这是左单旋，所以找传进来的父亲节点的右根节点来当调整节点
@@ -3479,33 +3541,33 @@ namespace MyTemplate
                 //再把父亲节点赋值给调整节点的左根节点，！！注意：在旋转的过程中还要处理每个调整节点的父亲节点的指向和平衡因子
 
                 // {
-                //     Node* SubRightTemp = parentTempNode->_right;
-                //     parentTempNode->_right = SubRightTemp->_left;
-                //     SubRightTemp->_left = parentTempNode;
+                //     Node* SubRightTemp = ParentTempNode->_right;
+                //     ParentTempNode->_right = SubRightTemp->_left;
+                //     SubRightTemp->_left = ParentTempNode;
                 //     //错误写法：未同步调整父亲节点和判断调整节点的左根节点是否为空，以及全部需要调整节点的父亲指针的指针的指向
                 // }
-                if(parentTempNode == nullptr|| parentTempNode->_right == nullptr)
+                if(ParentTempNode == nullptr|| ParentTempNode->_right == nullptr)
                 {
                     std::cout <<"left "<< "空指针"  <<std::endl;
                     return ;
                 }
-                Node* SubRightTemp = parentTempNode->_right;
+                Node* SubRightTemp = ParentTempNode->_right;
                 // Node* SubRightLeftTemp = SubRightTemp->_left;
                 Node* SubRightLeftTemp = (SubRightTemp->_left)? SubRightTemp->_left : nullptr;
                 //防止空指针解引用
-                parentTempNode->_right = SubRightLeftTemp;
+                ParentTempNode->_right = SubRightLeftTemp;
                 if(SubRightLeftTemp)
                 {
-                    SubRightLeftTemp->_parent = parentTempNode;
+                    SubRightLeftTemp->_parent = ParentTempNode;
                     //如果Sub_right_left_temp(调整节点的左根节点)不等于空，还需要调整Sub_right_left_temp它的父亲节点
                 }
-                SubRightTemp->_left = parentTempNode;
+                SubRightTemp->_left = ParentTempNode;
                 //这里先保存一下parent_temp_Node的父亲地址，防止到下面else比较的时候丢失
-                Node* ParentParentTempNode = parentTempNode->_parent;
-                parentTempNode->_parent = SubRightTemp;
+                Node* ParentParentTempNode = ParentTempNode->_parent;
+                ParentTempNode->_parent = SubRightTemp;
                 //更新parent_temp_Node节点指向正确的地址
 
-                if(_ROOT == parentTempNode)
+                if(_ROOT == ParentTempNode)
                 {
                     //如果要调整的节点是根根节点，直接把调整节点赋值给根节点，然后把调整节点的父亲节点置空
                     _ROOT = SubRightTemp;
@@ -3514,7 +3576,7 @@ namespace MyTemplate
                 else
                 {
                     //调整前parent_temp_Node是这个树的根现在是Sub_right_temp是这个树的根
-                    if(ParentParentTempNode->_left == parentTempNode)
+                    if(ParentParentTempNode->_left == ParentTempNode)
                     {
                         ParentParentTempNode->_left = SubRightTemp;
                     }
@@ -3525,35 +3587,35 @@ namespace MyTemplate
                     SubRightTemp->_parent = ParentParentTempNode;
                 }
             }
-            void RightRevolve(Node*& parentTempNode)
+            void RightRevolve(Node*& ParentTempNode)
             {
                 //思路同左单旋思路差不多,但是相反
-                if(parentTempNode == nullptr|| parentTempNode->_left == nullptr)
+                if(ParentTempNode == nullptr|| ParentTempNode->_left == nullptr)
                 {
                     std::cout <<"right "<< "空指针"  <<std::endl; 
                     return ;
                 }
-                Node* SubLeftTemp = parentTempNode->_left;
+                Node* SubLeftTemp = ParentTempNode->_left;
                 Node* SubLeftRightTemp = (SubLeftTemp->_right) ? SubLeftTemp->_right : nullptr;
                 //防止空指针解引用
-                parentTempNode->_left = SubLeftRightTemp;
+                ParentTempNode->_left = SubLeftRightTemp;
                 if(SubLeftRightTemp)
                 {
-                    SubLeftRightTemp->_parent = parentTempNode;
+                    SubLeftRightTemp->_parent = ParentTempNode;
                 }
-                SubLeftTemp->_right = parentTempNode;
+                SubLeftTemp->_right = ParentTempNode;
                 //保存parent_temp_Node的父亲节点
-                Node* ParentParentTempNode = parentTempNode->_parent;
-                parentTempNode->_parent = SubLeftTemp;
+                Node* ParentParentTempNode = ParentTempNode->_parent;
+                ParentTempNode->_parent = SubLeftTemp;
 
-                if(_ROOT == parentTempNode)
+                if(_ROOT == ParentTempNode)
                 {
                     _ROOT = SubLeftTemp;
                     SubLeftTemp->_parent = nullptr;
                 }
                 else
                 {
-                    if(ParentParentTempNode->_left == parentTempNode)
+                    if(ParentParentTempNode->_left == ParentTempNode)
                     {
                         ParentParentTempNode->_left = SubLeftTemp;
                     }
@@ -4229,26 +4291,11 @@ namespace MyTemplate
                     return iterator(nullptr);
                 }
             }
-            size_t size()
-            {
-                return _size();
-            }
-            size_t size() const
-            {
-                return _size();
-            }
-            bool Empty()
-            {
-                return _ROOT == nullptr;
-            }
-            void MiddleOrderTraversal()
-            {
-                _MiddleOrderTraversal(_ROOT);
-            }
-            void PreOrderTraversal()
-            {
-                _PreOrderTraversal(_ROOT);
-            }
+            size_t size()           {       return _size();         }
+            size_t size() const     {       return _size();         }
+            bool Empty()            {       return _ROOT == nullptr;        }
+            void MiddleOrderTraversal()     {       _MiddleOrderTraversal(_ROOT);   }
+            void PreOrderTraversal()        {       _PreOrderTraversal(_ROOT);      }
             iterator begin()
             {
                 Node* iterator_ROOT = _ROOT;
