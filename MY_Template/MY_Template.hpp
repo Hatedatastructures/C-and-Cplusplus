@@ -125,11 +125,44 @@ namespace MySmartPtrClass
         using Ref = SharedPtrType&;
         using Ptr = SharedPtrType*;
     public:
-        SharedPtr(SharedPtrType* Ptr)
+        SharedPtr(SharedPtrType* Ptr = nullptr)
         {
             _Ptr = Ptr;
             _SharedPCount = new int(1);
-            _PMutex = new std::mutex();
+            _PMutex = new std::mutex;
+        }
+        SharedPtr(const SharedPtr& _SharedPtr) noexcept
+        {
+            _Ptr = _SharedPtr._Ptr;
+            _SharedPCount = _SharedPtr._SharedPCount;
+            _PMutex = _SharedPtr._PMutex;
+            //上锁
+            _PMutex->lock();
+            (*_SharedPCount)++;
+            _PMutex->unlock();
+        }
+        ~SharedPtr() noexcept
+        {
+           Release();
+        }
+        void Release() noexcept
+        {
+            _PMutex->lock();
+            bool flag = false;
+            if(--(*_SharedPCount) == 0 && _Ptr != nullptr)
+            {
+                delete _Ptr;
+                _Ptr = nullptr;
+                delete _SharedPCount;
+                _SharedPCount = nullptr;
+                flag = true;
+            }
+            _PMutex->unlock();
+            if(flag == true)
+            {
+                delete _PMutex;
+                _PMutex = nullptr;
+            }
         }
         Ref operator*() noexcept
         {
@@ -139,7 +172,60 @@ namespace MySmartPtrClass
         {
             return _Ptr;
         }
-        
+        Ptr GetPtr() const noexcept
+        {
+            return _Ptr;
+        }
+        SharedPtr<SharedPtrType>& operator=(const SharedPtr& _SharedPtr) noexcept
+        {
+            if(_Ptr != _SharedPtr._Ptr)
+            {
+                Release();
+                _Ptr = _SharedPtr._Ptr;
+                _SharedPCount = _SharedPtr._SharedPCount;
+                _PMutex = _SharedPtr._PMutex;
+                //上锁
+                _PMutex->lock();
+                (*_SharedPCount)++;
+                _PMutex->unlock();
+            }
+            return *this;
+        }
+        int GetSharedPCount() const noexcept
+        {
+            return *_SharedPCount;
+        }
+    };
+    template <typename WeakPtrType>
+    class WeakPtr
+    {
+    private:
+        WeakPtrType* _Ptr;
+        using Ref = WeakPtrType&;
+        using Ptr = WeakPtrType*;
+    public:
+        WeakPtr() = default;
+        WeakPtr(MySmartPtrClass::SharedPtr<WeakPtrType>& Ptr) noexcept
+        {
+            _Ptr = Ptr.GetPtr();
+        }
+        WeakPtr(const WeakPtr& _WeakPtr) noexcept
+        {
+            _Ptr = _WeakPtr._Ptr;
+        }
+        Ref operator*() noexcept
+        {
+            return *(_Ptr);
+        }
+        Ptr operator->() noexcept
+        {
+            return _Ptr;
+        }
+        WeakPtr<WeakPtrType>& operator=(MySmartPtrClass::SharedPtr<WeakPtrType>& Ptr) noexcept
+        {
+            _Ptr = Ptr.GetPtr();
+            return *this;
+        }
     };
 }
 namespace MyTemplate
@@ -854,41 +940,25 @@ namespace MyTemplate
             }
             char& operator[](const size_t& AccessLocation)
             {
-                try
+                if(AccessLocation <= _size)
                 {
-                    if(AccessLocation <= _size)
-                    {
-                        return _data[AccessLocation]; //返回第ergodic_value个元素的引用
-                    }
-                    else
-                    {
-                        throw MyException::CustomizeException("越界访问","String::operator[]",__LINE__);
-                    }
+                    return _data[AccessLocation]; //返回第ergodic_value个元素的引用
                 }
-                catch(const MyException::CustomizeException& ExceptionStr)
+                else
                 {
-                    std::cerr << ExceptionStr.what() << " " << ExceptionStr.function_name_get() << " " << ExceptionStr.line_number_get() << std::endl;
-                    return _data[0];
+                    std::terminate();
                 }
                 //就像_data在外面就能访问它以及它的成员，所以这种就可以理解成出了函数作用域还在，进函数之前也能访问的就是引用
             }
             const char& operator[](const size_t& AccessLocation)const
             {
-                try
+                if(AccessLocation <= _size)
                 {
-                    if(AccessLocation <= _size)
-                    {
-                        return _data[AccessLocation]; //返回第ergodic_value个元素的引用
-                    }
-                    else
-                    {
-                        throw MyException::CustomizeException("越界访问","String::operator[]const",__LINE__);
-                    }
+                    return _data[AccessLocation]; //返回第ergodic_value个元素的引用
                 }
-                catch(const MyException::CustomizeException& ExceptionStr)
+                else
                 {
-                    std::cerr << ExceptionStr.what() << " " << ExceptionStr.function_name_get() << " " << ExceptionStr.line_number_get() << std::endl;
-                    return _data[0];
+                    std::terminate();//直接抛出防止容器崩溃
                 }
             }
             String operator+(const String& CppStr)
@@ -1158,6 +1228,22 @@ namespace MyTemplate
                 ++_SizePointer;
                 return *this;
             }
+            Vector<VectorType>& PushFront(const VectorType&& PopBackTemp)
+            {
+                //头插
+                if(_SizePointer == _CapacityPointer)
+                {
+                    size_t PopBanckSize = _DataPointer == nullptr ? 10 : (size_t)(_CapacityPointer-_DataPointer)*2;
+                    Resize(PopBanckSize);
+                }
+                for(size_t PopBackForSize = size();PopBackForSize>0;--PopBackForSize)
+                {
+                    _DataPointer[PopBackForSize] = _DataPointer[PopBackForSize -1];
+                }
+                new (_DataPointer) VectorType(std::forward<VectorType>(PopBackTemp));
+                ++_SizePointer;
+                return *this;
+            }
             Vector<VectorType>& PopFront()
             {
                 if( size() > 0 )
@@ -1172,42 +1258,24 @@ namespace MyTemplate
             }
             VectorType& operator[](const size_t& SizeOperator)
             {
-                // return _DataPointer[SizeOperator];
-                try 
+                if( SizeOperator >= capacity())
                 {
-                    if( SizeOperator >= capacity())
-                    {
-                        throw MyException::CustomizeException("传入参数越界","Vector::operatot[]",__LINE__);
-                    }
-                    else
-                    {
-                        return _DataPointer[SizeOperator];
-                    }
+                    std::terminate(); //越界
                 }
-                catch(const MyException::CustomizeException& Process)
+                else
                 {
-                    std::cerr << Process.what() << " " << Process.function_name_get() << " " << Process.line_number_get() << std::endl;
-                    return _DataPointer[0];
+                    return _DataPointer[SizeOperator];
                 }
             }
             const VectorType& operator[](const size_t& SizeOperator)const 
             {
-                // return _DataPointer[SizeOperator];
-                try 
+               if( SizeOperator >= capacity())
                 {
-                    if( SizeOperator >= capacity())
-                    {
-                        throw MyException::CustomizeException("传入参数越界","Vector::operatot[]",__LINE__);
-                    }
-                    else
-                    {
-                        return _DataPointer[SizeOperator];
-                    }
+                    std::terminate(); //越界
                 }
-                catch(const MyException::CustomizeException& Process)
+                else
                 {
-                    std::cerr << Process.what() << " " << Process.function_name_get() << " " << Process.line_number_get() << std::endl;
-                    return _DataPointer[0];
+                    return _DataPointer[SizeOperator];
                 }
             }
             Vector<VectorType>& operator=(const Vector<VectorType>&VectorTemp)
@@ -1219,7 +1287,7 @@ namespace MyTemplate
                 }
                 return *this;
             }
-            Vector<VectorType>& operator=(const Vector<VectorType>&& TemporaryCopies) noexcept
+            Vector<VectorType>& operator=(Vector<VectorType>&& TemporaryCopies) noexcept
             {
                 if( this != &TemporaryCopies)
                 {
@@ -1286,7 +1354,7 @@ namespace MyTemplate
                 ListNode(const listTypeFunctionNode&& data) noexcept
                 :_prev(nullptr), _next(nullptr)
                 {
-                    _data = std::move(data);
+                    _data = data;
                 }
             };
             template <typename listNodeTypeIterator ,typename Ref ,typename Ptr >
@@ -1440,7 +1508,7 @@ namespace MyTemplate
                 CreateHead();
                 for(auto& e:ListTemp)
                 {
-                    PushBack(e);
+                    PushBack(std::move(e));
                 }
             }
             List(const_iterator first , const_iterator last)
@@ -1507,29 +1575,24 @@ namespace MyTemplate
             const ListType& Front()const noexcept       {       return _head->_next->_data;         }
 
             const ListType& Back()const noexcept        {       return _head->_prev->_data;         }
-            ListType& Front()noexcept
-            {
-                return _head->_next->_data;
-            }
 
-            ListType& Back()noexcept
-            {
-                return _head->_prev->_data;
-            }
+            ListType& Front() noexcept                  {       return _head->_next->_data;         }
+
+            ListType& Back() noexcept                   {       return _head->_prev->_data;         }
             /*
             插入删除操作
             */
-            void PushBack(const ListType& PushBackData)     {       Insert(end(),PushBackData);     }
+            void PushBack(const ListType& PushBackData)      {       Insert(end(),PushBackData);     }
 
-            void PushFront(const ListType& PushfrontData)   {       Insert(begin(),PushfrontData);  }
+            void PushFront(const ListType& PushfrontData)    {       Insert(begin(),PushfrontData);  }
 
-            void PushBack(ListType&& PushBackData)          {       Insert(end(),std::forward<ListType>(PushBackData)); }
+            void PushBack(ListType&& PushBackData) noexcept  {       Insert(end(),std::forward<ListType>(PushBackData)); }
 
-            void PushFront(ListType&& PushfrontData)        {       Insert(begin(),std::forward<ListType>(PushfrontData));  }
+            void PushFront(ListType&& PushfrontData) noexcept{       Insert(begin(),std::forward<ListType>(PushfrontData));  }
 
-            void PopBack()                                  {       Erase(--end());     }
+            void PopBack()                                   {       Erase(--end());     }
 
-            iterator PopFront()                             {       return Erase(begin());  }
+            iterator PopFront()                              {       return Erase(begin());  }
 
             iterator Insert(iterator Pos ,const ListType& Val)
             {
@@ -1616,6 +1679,7 @@ namespace MyTemplate
                 if( this != &ListTemp)
                 {
                     _head = std::move(ListTemp._head);
+                    ListTemp._head = nullptr;
                 }
                 return *this;
             }
@@ -1676,6 +1740,10 @@ namespace MyTemplate
                 //插入尾
                 ContainerStackTemp.PushBack(StackTemp);
             }
+            void Push(StaicType&& StackTemp) noexcept
+            {
+                ContainerStackTemp.PushBack(std::forward<StaicType>(StackTemp));
+            }
             void Pop()
             {
                 //删除尾
@@ -1699,18 +1767,22 @@ namespace MyTemplate
             }
             Stack( Stack<StaicType>&& StackTemp) noexcept
             {
-                ContainerStackTemp = std::move(StackTemp.ContainerStackTemp);//std::move将对象转换为右值引用
+                ContainerStackTemp = std::forward<ContainerStaic>(StackTemp.ContainerStackTemp);//std::move将对象转换为右值引用
             }
-            Stack(std::initializer_list<StaicType> StackTemp)
+            Stack(std::initializer_list<StaicType> StackTemp) noexcept
             {
                 for(auto& e:StackTemp)
                 {
-                    ContainerStackTemp.PushBack(e);
+                    ContainerStackTemp.PushBack(std::move(e));
                 }
             }
             Stack(const StaicType& StackTemp)
             {
                 ContainerStackTemp.PushBack(StackTemp);
+            }
+            Stack(StaicType&& StackTemp) noexcept
+            {
+                ContainerStackTemp.PushBack(std::forward<StaicType>(StackTemp));
             }
             Stack& operator= (const Stack<StaicType>& StackTemp)
             {
@@ -1724,7 +1796,7 @@ namespace MyTemplate
             {
                 if(this != &StackTemp)
                 {
-                    ContainerStackTemp = std::move(StackTemp.ContainerStackTemp);
+                    ContainerStackTemp = std::forward<ContainerStaic>(StackTemp.ContainerStackTemp);
                 }
                 return *this;
             }
@@ -1876,6 +1948,11 @@ namespace MyTemplate
                 ContainerPriorityQueueTemp.PushBack(FunctionTemplatesPriorityQueuePushBack);
                 PriorityQueueAdjustUpwards((int)ContainerPriorityQueueTemp.size()-1);
             }
+            void Push(PriorityQueueType&& FunctionTemplatesPriorityQueuePushBack)
+            {
+                ContainerPriorityQueueTemp.PushBack(std::forward<PriorityQueueType>(FunctionTemplatesPriorityQueuePushBack));
+                PriorityQueueAdjustUpwards((int)ContainerPriorityQueueTemp.size()-1);
+            }
             PriorityQueueType& top() noexcept
             {
                 return ContainerPriorityQueueTemp.Front();
@@ -1894,7 +1971,7 @@ namespace MyTemplate
                 ContainerPriorityQueueTemp.PopBack();
                 PriorityQueueAdjustDownwards();
             }
-            PriorityQueue() 
+            PriorityQueue() noexcept
             {
                 ;
             }
@@ -1903,7 +1980,7 @@ namespace MyTemplate
                 //通过初始化列表构建一个list
                 for(auto& e:ListTemp)
                 {
-                    Push(e);
+                    Push(std::move(e));
                 }
             }
             PriorityQueue(const PriorityQueue& PriorityQueueTemp)
@@ -1915,19 +1992,24 @@ namespace MyTemplate
             :com(PriorityQueueTemp.com)
             {
                 //移动构造
-                ContainerPriorityQueueTemp = std::move(PriorityQueueTemp.ContainerPriorityQueueTemp);
+                ContainerPriorityQueueTemp = std::forward<ContainerPriorityQueue>(PriorityQueueTemp.ContainerPriorityQueueTemp);
             }
             PriorityQueue(const PriorityQueueType& PriorityQueueTemp)
             {
                 ContainerPriorityQueueTemp.PushBack(PriorityQueueTemp);
                 PriorityQueueAdjustUpwards((int)ContainerPriorityQueueTemp.size()-1);
             }
-            PriorityQueue& operator=(PriorityQueue&& PriorityQueueTemp) noexcept
+            PriorityQueue(PriorityQueueType&& PriorityQueueTemp) noexcept
+            {
+                ContainerPriorityQueueTemp.PushBack(std::forward(PriorityQueueTemp));
+                PriorityQueueAdjustUpwards((int)ContainerPriorityQueueTemp.size()-1);
+            }
+            PriorityQueue& operator= (PriorityQueue&& PriorityQueueTemp) noexcept
             {
                 //移动赋值
                 if(this != &PriorityQueueTemp)
                 {
-                    ContainerPriorityQueueTemp = std::move(PriorityQueueTemp.ContainerPriorityQueueTemp);
+                    ContainerPriorityQueueTemp = std::forward<PriorityQueue>(PriorityQueueTemp.ContainerPriorityQueueTemp);
                     com = PriorityQueueTemp.com;
                 }
                 return *this;

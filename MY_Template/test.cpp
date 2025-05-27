@@ -59,7 +59,7 @@ int main()
         {
             std::cout << *i << " ";
         }
-        std::cout << string_test3[30000000] << std::endl;
+        // std::cout << string_test3[30000000] << std::endl;
         std::cout << std::endl;
         {
             //异常测试
@@ -130,300 +130,301 @@ int main()
     }
 
 
-    // /*            list测试             */
-    // {
-    //     std::cout << " List 测试 " << std::endl << std::endl;
-    //     MyTemplate::ListContainer::List<int> list_test1;
-    //     for(size_t i = 1; i < 10; i++)
-    //     {
-    //         list_test1.PushBack(i);
-    //     }
-    //     MyTemplate::ListContainer::List<int>::const_iterator it =list_test1.cbegin();
-    //     while(it != list_test1.cend())
-    //     {
-    //         std::cout << *it  << " ";
-    //         it++;
-    //     }
-    //     std::cout << std::endl;
-    //     MyTemplate::ListContainer::List<int>::reverse_const_iterator i = list_test1.rcbegin();
-    //     while(i != list_test1.rcend())
-    //     {
-    //         std::cout << *i << " ";
-    //         i++;
-    //     }
-    //     std::cout <<std::endl;
+    /*            list测试             */
+    {
+        std::cout << " List 测试 " << std::endl << std::endl;
+        MyTemplate::ListContainer::List<int> list_test1;
+        for(size_t i = 1; i < 10; i++)
+        {
+            list_test1.PushBack(i);
+        }
+        MyTemplate::ListContainer::List<int>::const_iterator it =list_test1.cbegin();
+        while(it != list_test1.cend())
+        {
+            std::cout << *it  << " ";
+            it++;
+        }
+        std::cout << std::endl;
+        MyTemplate::ListContainer::List<int>::reverse_const_iterator i = list_test1.rcbegin();
+        while(i != list_test1.rcend())
+        {
+            std::cout << *i << " ";
+            i++;
+        }
+        std::cout <<std::endl;
 
-    //     list_test1.PopBack(); 
-    //     MyTemplate::ListContainer::List<int>::const_iterator j =list_test1.cbegin();
-    //     while(j != list_test1.cend())
-    //     {
-    //         std::cout << *j  << " ";
-    //         j++;
-    //     }
-    //     std::cout << std::endl;
-    //     std::cout << list_test1.size() << std::endl;
+        list_test1.PopBack(); 
+        MyTemplate::ListContainer::List<int>::const_iterator j =list_test1.cbegin();
+        while(j != list_test1.cend())
+        {
+            std::cout << *j  << " ";
+            j++;
+        }
+        std::cout << std::endl;
+        std::cout << list_test1.size() << std::endl;
 
-    //     MyTemplate::ListContainer::List<int> list_test2 = list_test1;
-    //     MyTemplate::ListContainer::List<int>::const_iterator p =list_test2.cbegin();
-    //     while(p != list_test2.cend())
-    //     {
-    //         std::cout << *p  << " ";
-    //         p++;
-    //     }
-    //     std::cout << std::endl;
-    //     std::cout << list_test2.size() << std::endl;
+        MyTemplate::ListContainer::List<int> list_test2 = list_test1;
+        MyTemplate::ListContainer::List<int>::const_iterator p =list_test2.cbegin();
+        while(p != list_test2.cend())
+        {
+            std::cout << *p  << " ";
+            p++;
+        }
+        std::cout << std::endl;
+        std::cout << list_test2.size() << std::endl;
 
-    //     MyTemplate::ListContainer::List<int> list_test3 = list_test2 + list_test1;
-    //     MyTemplate::ListContainer::List<int>::const_iterator k =list_test3.cbegin();
-    //     while(k != list_test3.cend())
-    //     {
-    //         std::cout << *k  << " ";
-    //         k++;
-    //     }
-    //     std::cout << std::endl;
-    //     std::cout << list_test3.size() << std::endl;
+        MyTemplate::ListContainer::List<int> list_test3 = list_test2 + list_test1;
+        MyTemplate::ListContainer::List<int>::const_iterator k =list_test3.cbegin();
+        while(k != list_test3.cend())
+        {
+            std::cout << *k  << " ";
+            k++;
+        }
+        std::cout << std::endl;
+        std::cout << list_test3.size() << std::endl;
 
-    //     MyTemplate::ListContainer::List<int> list_test4 = list_test3 + list_test1;
-    //     MyTemplate::ListContainer::List<int>::const_iterator kp =list_test4.cbegin();
-    //     while(kp != list_test4.cend())
-    //     {
-    //         std::cout << *kp  << " ";
-    //         kp++;
-    //     }
-    //     std::cout << std::endl;
-    //     std::cout << list_test4.size() << std::endl;
-    //     std::cout << list_test4 << std::endl;
-    // }
+        MyTemplate::ListContainer::List<int> list_test4 = list_test3 + list_test1;
+        MyTemplate::ListContainer::List<int>::const_iterator kp =list_test4.cbegin();
+        while(kp != list_test4.cend())
+        {
+            std::cout << *kp  << " ";
+            kp++;
+        }
+        std::cout << std::endl;
+        std::cout << list_test4.size() << std::endl;
+        std::cout << list_test4 << std::endl;
+    }
 
-    // /*            staic测试             */
-    // {
-    //     std::cout << " staic 测试 " << std::endl << std::endl;
-    //     MyTemplate::StringContainer::String staic_test_str1 = "hello";
-    //     MyTemplate::StringContainer::String staic_test_str2 = "word";
-    //     MyTemplate::StringContainer::String staic_test_str3 = "  ";
-    //     MyTemplate::StackAdapter::Stack< MyTemplate::StringContainer::String> staic_test1;
+    /*            staic测试             */
+    {
+        std::cout << " staic 测试 " << std::endl << std::endl;
+        MyTemplate::StringContainer::String staic_test_str1 = "hello";
+        MyTemplate::StringContainer::String staic_test_str2 = "word";
+        MyTemplate::StringContainer::String staic_test_str3 = "  ";
+        MyTemplate::StackAdapter::Stack< MyTemplate::StringContainer::String> staic_test1;
 
-    //     staic_test1.Push(staic_test_str1);
-    //     staic_test1.Push(staic_test_str3);
-    //     staic_test1.Push(staic_test_str2);
+        staic_test1.Push(staic_test_str1);
+        staic_test1.Push(staic_test_str3);
+        staic_test1.Push(staic_test_str2);
 
-    //     std::cout << staic_test1.top() << std::endl;
-    //     staic_test1.Pop();
-    //     std::cout << staic_test1.top() << std::endl;
-    //     staic_test1.Pop();
-    //     std::cout << staic_test1.top() << std::endl;
-    //     staic_test1.Pop();
-    // }
+        std::cout << staic_test1.top() << std::endl;
+        staic_test1.Pop();
+        std::cout << staic_test1.top() << std::endl;
+        staic_test1.Pop();
+        std::cout << staic_test1.top() << std::endl;
+        staic_test1.Pop();
+    }
 
-    // /*            queue测试             */
-    // {
-    //     std::cout << " Queue 测试 " << std::endl << std::endl;
-    //     MyTemplate::StringContainer::String queue_test_str1 = "hello";
-    //     MyTemplate::StringContainer::String queue_test_str2 = "word";
-    //     MyTemplate::StringContainer::String queue_test_str3 = "  ";
-    //     MyTemplate::QueueAdapter::Queue< MyTemplate::StringContainer::String,MyTemplate::ListContainer::List< MyTemplate::StringContainer::String>> queue_test1;
+    /*            queue测试             */
+    {
+        std::cout << " Queue 测试 " << std::endl << std::endl;
+        MyTemplate::StringContainer::String queue_test_str1 = "hello";
+        MyTemplate::StringContainer::String queue_test_str2 = "word";
+        MyTemplate::StringContainer::String queue_test_str3 = "  ";
+        MyTemplate::QueueAdapter::Queue< MyTemplate::StringContainer::String,MyTemplate::ListContainer::List< MyTemplate::StringContainer::String>> queue_test1;
 
-    //     queue_test1.Push(queue_test_str1);
-    //     queue_test1.Push(queue_test_str3);
-    //     queue_test1.Push(queue_test_str2);
+        queue_test1.Push(queue_test_str1);
+        queue_test1.Push(queue_test_str3);
+        queue_test1.Push(queue_test_str2);
 
-    //     std::cout << queue_test1.Front() << std::endl;
-    //     std::cout << queue_test1.Back()  << std::endl;
+        std::cout << queue_test1.Front() << std::endl;
+        std::cout << queue_test1.Back()  << std::endl;
 
-    //     std::cout << queue_test1.Front() << " ";
-    //     queue_test1.Pop();
-    //     std::cout << queue_test1.Front() << " ";
-    //     queue_test1.Pop();
-    //     std::cout << queue_test1.Front() << " ";
-    //     queue_test1.Pop();
-    // }
+        std::cout << queue_test1.Front() << " ";
+        queue_test1.Pop();
+        std::cout << queue_test1.Front() << " ";
+        queue_test1.Pop();
+        std::cout << queue_test1.Front() << " ";
+        queue_test1.Pop();
+    }
 
-    // /*            priority_queue测试             */
-    // {
-    //     time_t num1 = clock();
-    //     std::cout << " PriorityQueue 测试 " << std::endl << std::endl;
-    //     MyTemplate::QueueAdapter::PriorityQueue<int> priority_queue_test;
-    //     for(int i = 0; i < 10000 ; i++)
-    //     {
-    //         priority_queue_test.Push(i);
-    //     }
+    /*            priority_queue测试             */
+    {
+        time_t num1 = clock();
+        std::cout << " PriorityQueue 测试 " << std::endl << std::endl;
+        MyTemplate::QueueAdapter::PriorityQueue<int> priority_queue_test;
+        int size = 10000000;
+        for(int i = 0; i < size ; i++)
+        {
+            priority_queue_test.Push(std::move(i));
+        }
 
-    //     std::cout << priority_queue_test.size() << std::endl;
+        std::cout << priority_queue_test.size() << std::endl;
 
-    //     for(size_t i = 0; i < 10000; i++)
-    //     {
-    //         std::cout << priority_queue_test.top() << " ";
-    //         priority_queue_test.Pop();
-    //     }
-    //     std::cout << std::endl;
-    //     time_t num2 = clock();
-    //     std::cout << num2-num1 << std::endl;
-    // }
+        for(int i = 0; i < size; i++)
+        {
+            // std::cout << priority_queue_test.top() << " ";
+            priority_queue_test.Pop();
+        }
+        std::cout << std::endl;
+        time_t num2 = clock();
+        std::cout << "PriorityQueue 测试插入 " << size << " 个数时间： " << num2-num1 << std::endl;
+    }
 
-    // /*            BSTree 测试             */
-    // {
-    //     time_t Binary_search_tree_num1 = clock();
-    //     MyTemplate::TreeContainer::BSTree<int,MyTemplate::ImitationFunctions::Greater<int>> Binary_search_tree_test;
-    //     for(size_t i = 100; i > 0; i--)
-    //     {
-    //         //相对来说这算是有序插入导致二叉树相乘时间复杂度为O(N)的链表
-    //         Binary_search_tree_test.Push(i);
-    //     }
-    //     time_t Binary_search_tree_num2 = clock();
+    /*            BSTree 测试             */
+    {
+        time_t Binary_search_tree_num1 = clock();
+        MyTemplate::TreeContainer::BSTree<int,MyTemplate::ImitationFunctions::Greater<int>> Binary_search_tree_test;
+        for(size_t i = 100; i > 0; i--)
+        {
+            //相对来说这算是有序插入导致二叉树相乘时间复杂度为O(N)的链表
+            Binary_search_tree_test.Push(i);
+        }
+        time_t Binary_search_tree_num2 = clock();
 
-    //     time_t Binary_search_tree_num3 = clock();
-    //     std::cout << Binary_search_tree_test.Find(58) << std::endl;
-    //     time_t Binary_search_tree_num4 = clock();
-    //     // Binary_search_tree_test.MiddleOrderTraversal();
-    //     std::cout << "退化链表插入时间" << Binary_search_tree_num2-Binary_search_tree_num1 << std::endl;
-    //     std::cout << "退化链表查找时间" << Binary_search_tree_num4-Binary_search_tree_num3 << std::endl;
-    //     std::cout << std::endl << std::endl;
-    // }
+        time_t Binary_search_tree_num3 = clock();
+        std::cout << Binary_search_tree_test.Find(58) << std::endl;
+        time_t Binary_search_tree_num4 = clock();
+        // Binary_search_tree_test.MiddleOrderTraversal();
+        std::cout << "退化链表插入时间" << Binary_search_tree_num2-Binary_search_tree_num1 << std::endl;
+        std::cout << "退化链表查找时间" << Binary_search_tree_num4-Binary_search_tree_num3 << std::endl;
+        std::cout << std::endl << std::endl;
+    }
 
-    // {
-    //     MyTemplate::TreeContainer::BSTree<int, MyTemplate::ImitationFunctions::Greater<int>> bst;
-    //     bst.Push(5);
-    //     bst.Push(4);
-    //     bst.Push(3);
-    //     bst.Push(2);
-    //     bst.Push(1);
-    //     bst.MiddleOrderTraversal(); 
-    //     std::cout << std::endl << std::endl;
-    // }
+    {
+        MyTemplate::TreeContainer::BSTree<int, MyTemplate::ImitationFunctions::Greater<int>> bst;
+        bst.Push(5);
+        bst.Push(4);
+        bst.Push(3);
+        bst.Push(2);
+        bst.Push(1);
+        bst.MiddleOrderTraversal(); 
+        std::cout << std::endl << std::endl;
+    }
 
-    // {
-    //     const size_t Binary_search_tree_arraySize = 10;
-    //     MyTemplate::VectorContainer::Vector<int> Binary_search_tree_array(Binary_search_tree_arraySize);
-    //     for (size_t i = 0; i < Binary_search_tree_arraySize; ++i) 
-    //     {
-    //         Binary_search_tree_array[i] = i;
-    //     }
+    {
+        const size_t Binary_search_tree_arraySize = 10;
+        MyTemplate::VectorContainer::Vector<int> Binary_search_tree_array(Binary_search_tree_arraySize);
+        for (size_t i = 0; i < Binary_search_tree_arraySize; ++i) 
+        {
+            Binary_search_tree_array[i] = i;
+        }
 
-    //     // 创建随机数引擎和分布
-    //     std::random_device rd;
-    //     std::mt19937 g(rd());
-    //     std::shuffle(Binary_search_tree_array.begin(), Binary_search_tree_array.end(), g);
-    //     //输出打乱后的数组
-    //     // for(auto& i : Binary_search_tree_array)
-    //     // {
-    //     //     std::cout << i << " ";
-    //     // }
+        // 创建随机数引擎和分布
+        std::random_device rd;
+        std::mt19937 g(rd());
+        std::shuffle(Binary_search_tree_array.begin(), Binary_search_tree_array.end(), g);
+        //输出打乱后的数组
+        // for(auto& i : Binary_search_tree_array)
+        // {
+        //     std::cout << i << " ";
+        // }
 
-    //     //打乱数组元素顺序
-    //     size_t size = 0;
-    //     time_t Binary_search_tree_num1 = clock();
-    //     MyTemplate::TreeContainer::BSTree<int,MyTemplate::ImitationFunctions::Greater<int>> Binary_search_tree_test;
-    //     for(const auto& Binary_search_tree_for_test: Binary_search_tree_array)
-    //     {
-    //         if(Binary_search_tree_test.Push(Binary_search_tree_for_test))
-    //         {
-    //             size++;
-    //         }
-    //     }
-    //     time_t Binary_search_tree_num2 = clock();
+        //打乱数组元素顺序
+        size_t size = 0;
+        time_t Binary_search_tree_num1 = clock();
+        MyTemplate::TreeContainer::BSTree<int,MyTemplate::ImitationFunctions::Greater<int>> Binary_search_tree_test;
+        for(const auto& Binary_search_tree_for_test: Binary_search_tree_array)
+        {
+            if(Binary_search_tree_test.Push(Binary_search_tree_for_test))
+            {
+                size++;
+            }
+        }
+        time_t Binary_search_tree_num2 = clock();
 
-    //     const int Binary_search_tree_find = Binary_search_tree_array[Binary_search_tree_arraySize/2];
+        const int Binary_search_tree_find = Binary_search_tree_array[Binary_search_tree_arraySize/2];
 
-    //     time_t Binary_search_tree_num3 = clock();
-    //     Binary_search_tree_test.Find(Binary_search_tree_find);
-    //     time_t Binary_search_tree_num4 = clock();
-    //     // Binary_search_tree_test.MiddleOrderTraversal();
-    //     std::cout << "插入个数" << size << std::endl;
-    //     std::cout << "插入时间" << Binary_search_tree_num2-Binary_search_tree_num1 << std::endl;
-    //     std::cout << "查找时间" << Binary_search_tree_num4-Binary_search_tree_num3 << std::endl;
-    //     /*              查找数据时间不稳定时间复杂度是O(logN)        */
-    //     std::cout << std::endl << std::endl;
-    // }
+        time_t Binary_search_tree_num3 = clock();
+        Binary_search_tree_test.Find(Binary_search_tree_find);
+        time_t Binary_search_tree_num4 = clock();
+        // Binary_search_tree_test.MiddleOrderTraversal();
+        std::cout << "插入个数" << size << std::endl;
+        std::cout << "插入时间" << Binary_search_tree_num2-Binary_search_tree_num1 << std::endl;
+        std::cout << "查找时间" << Binary_search_tree_num4-Binary_search_tree_num3 << std::endl;
+        /*              查找数据时间不稳定时间复杂度是O(logN)        */
+        std::cout << std::endl << std::endl;
+    }
 
-    // {
-    //     const size_t Binary_search_tree_arraySize = 20;
-    //     MyTemplate::VectorContainer::Vector<int> Binary_search_tree_array(Binary_search_tree_arraySize);
-    //     for (size_t i = 0; i < Binary_search_tree_arraySize; ++i) 
-    //     {
-    //         Binary_search_tree_array[i] = i;
-    //     }
+    {
+        const size_t Binary_search_tree_arraySize = 20;
+        MyTemplate::VectorContainer::Vector<int> Binary_search_tree_array(Binary_search_tree_arraySize);
+        for (size_t i = 0; i < Binary_search_tree_arraySize; ++i) 
+        {
+            Binary_search_tree_array[i] = i;
+        }
 
-    //     // 创建随机数引擎和分布
-    //     std::random_device rd;
-    //     std::mt19937 g(rd());
-    //     std::shuffle(Binary_search_tree_array.begin(), Binary_search_tree_array.end(), g);
-    //     //输出打乱后的数组
-    //     // for(auto& i : Binary_search_tree_array)
-    //     // {
-    //     //     std::cout << i << " ";
-    //     // }
+        // 创建随机数引擎和分布
+        std::random_device rd;
+        std::mt19937 g(rd());
+        std::shuffle(Binary_search_tree_array.begin(), Binary_search_tree_array.end(), g);
+        //输出打乱后的数组
+        // for(auto& i : Binary_search_tree_array)
+        // {
+        //     std::cout << i << " ";
+        // }
 
-    //     //打乱数组元素顺序
-    //     size_t size = 0;
-    //     time_t Binary_search_tree_num1 = clock();
-    //     MyTemplate::TreeContainer::BSTree<int,MyTemplate::ImitationFunctions::Greater<int>> Binary_search_tree_test;
-    //     for(const auto& Binary_search_tree_for_test: Binary_search_tree_array)
-    //     {
-    //         if(Binary_search_tree_test.Push(Binary_search_tree_for_test))
-    //         {
-    //             size++;
-    //             std::cout << size << " ";
-    //         }
-    //     }
-    //     std::cout << std::endl;
-    //     time_t Binary_search_tree_num2 = clock();
-    //     MyTemplate::TreeContainer::BSTree<int,MyTemplate::ImitationFunctions::Greater<int>> Binary_search_tree_test1 = Binary_search_tree_test;
-    //     time_t Binary_search_tree_num3 = clock();
-    //     std::cout << "拷贝构造没问题 " << std::endl;
+        //打乱数组元素顺序
+        size_t size = 0;
+        time_t Binary_search_tree_num1 = clock();
+        MyTemplate::TreeContainer::BSTree<int,MyTemplate::ImitationFunctions::Greater<int>> Binary_search_tree_test;
+        for(const auto& Binary_search_tree_for_test: Binary_search_tree_array)
+        {
+            if(Binary_search_tree_test.Push(Binary_search_tree_for_test))
+            {
+                size++;
+                std::cout << size << " ";
+            }
+        }
+        std::cout << std::endl;
+        time_t Binary_search_tree_num2 = clock();
+        MyTemplate::TreeContainer::BSTree<int,MyTemplate::ImitationFunctions::Greater<int>> Binary_search_tree_test1 = Binary_search_tree_test;
+        time_t Binary_search_tree_num3 = clock();
+        std::cout << "拷贝构造没问题 " << std::endl;
 
-    //     Binary_search_tree_test.Pop(Binary_search_tree_array[2]);
-    //     std::cout << "Pop(1)函数没问题 " << std::endl;
-    //     Binary_search_tree_test.Pop(Binary_search_tree_array[0]);
-    //     std::cout << "Pop(2)函数没问题 " << std::endl;
-    //     Binary_search_tree_test.Pop(Binary_search_tree_array[1]);
-    //     std::cout << "Pop(3)函数没问题 " << std::endl;
-    //     Binary_search_tree_test.Pop(Binary_search_tree_array[3]);
-    //     std::cout << "Pop(4)函数没问题 " << std::endl;
+        Binary_search_tree_test.Pop(Binary_search_tree_array[2]);
+        std::cout << "Pop(1)函数没问题 " << std::endl;
+        Binary_search_tree_test.Pop(Binary_search_tree_array[0]);
+        std::cout << "Pop(2)函数没问题 " << std::endl;
+        Binary_search_tree_test.Pop(Binary_search_tree_array[1]);
+        std::cout << "Pop(3)函数没问题 " << std::endl;
+        Binary_search_tree_test.Pop(Binary_search_tree_array[3]);
+        std::cout << "Pop(4)函数没问题 " << std::endl;
 
 
-    //     Binary_search_tree_test.MiddleOrderTraversal();
-    //     std::cout << std::endl;
-    //     Binary_search_tree_test1.MiddleOrderTraversal();
+        Binary_search_tree_test.MiddleOrderTraversal();
+        std::cout << std::endl;
+        Binary_search_tree_test1.MiddleOrderTraversal();
 
-    //     std::cout << "前序遍历 "<< std::endl;
-    //     Binary_search_tree_test.PreOrderTraversal();
-    //     std::cout << std::endl;
-    //     Binary_search_tree_test1.PreOrderTraversal();
-    //     std::cout << std::endl;
-    //     std::cout << "插入个数" << size << std::endl;
-    //     std::cout << "插入时间" << Binary_search_tree_num2-Binary_search_tree_num1 << std::endl;
-    //     std::cout << "拷贝时间" << Binary_search_tree_num3-Binary_search_tree_num2 << std::endl;
-    // }
+        std::cout << "前序遍历 "<< std::endl;
+        Binary_search_tree_test.PreOrderTraversal();
+        std::cout << std::endl;
+        Binary_search_tree_test1.PreOrderTraversal();
+        std::cout << std::endl;
+        std::cout << "插入个数" << size << std::endl;
+        std::cout << "插入时间" << Binary_search_tree_num2-Binary_search_tree_num1 << std::endl;
+        std::cout << "拷贝时间" << Binary_search_tree_num3-Binary_search_tree_num2 << std::endl;
+    }
 
-    // {
-    //     MyTemplate::StringContainer::String str1 = {'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'};
-    //     std::cout << str1 << std::endl;
-    //     MyTemplate::VectorContainer::Vector< MyTemplate::StringContainer::String> vector_str = 
-    //     {"西瓜","樱桃","苹果","西瓜","樱桃","苹果","樱桃","西瓜","樱桃","西瓜","樱桃","苹果","樱桃","苹果","樱桃"};
+    {
+        MyTemplate::StringContainer::String str1 = {'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'};
+        std::cout << str1 << std::endl;
+        MyTemplate::VectorContainer::Vector< MyTemplate::StringContainer::String> vector_str = 
+        {"西瓜","樱桃","苹果","西瓜","樱桃","苹果","樱桃","西瓜","樱桃","西瓜","樱桃","苹果","樱桃","苹果","樱桃"};
 
-    //     MyTemplate::TreeContainer::BSTree< MyTemplate::StringContainer::String> BST_temp;
-    //     size_t _BST_size = vector_str.size();
-    //     for(size_t i = 0 ; i < _BST_size;i++)
-    //     {
-    //         if(BST_temp.Push(vector_str[i]))
-    //         {
-    //             std::cout << "插入成功" << std::endl;
-    //         }
-    //         else
-    //         {
-    //             //当前未实现累加功能
-    //             std::cout << "插入失败" << std::endl;
-    //         }
-    //     }
-    //     BST_temp.MiddleOrderTraversal();
-    //     std::cout << BST_temp.size() << std::endl;
-    // }
-    // /*            pair类 测试             */
-    // {
-    //     const int i = 31; const int j = 28;
-    //     MyTemplate::Practicality::Pair<int,int> pair_test =MyTemplate::Practicality::make_pair(i,j);
-    //     std::cout << pair_test << std::endl;
-    // }
+        MyTemplate::TreeContainer::BSTree< MyTemplate::StringContainer::String> BST_temp;
+        size_t _BST_size = vector_str.size();
+        for(size_t i = 0 ; i < _BST_size;i++)
+        {
+            if(BST_temp.Push(vector_str[i]))
+            {
+                std::cout << "插入成功" << std::endl;
+            }
+            else
+            {
+                //当前未实现累加功能
+                std::cout << "插入失败" << std::endl;
+            }
+        }
+        BST_temp.MiddleOrderTraversal();
+        std::cout << BST_temp.size() << std::endl;
+    }
+    /*            pair类 测试             */
+    {
+        const int i = 31; const int j = 28;
+        MyTemplate::Practicality::Pair<int,int> pair_test =MyTemplate::Practicality::make_pair(i,j);
+        std::cout << pair_test << std::endl;
+    }
     // /*            AVLTree 测试             */
     // {
     //     MyTemplate::TreeContainer::AVLTree <MyTemplate::Practicality::Pair<int,int>,int> AVL_Tree_test_pair(MyTemplate::Practicality::Pair(9,0), 10);
@@ -763,23 +764,23 @@ int main()
     //     //完美转发，不会丢失左右值属性
         
     // }
-    // // {
-    // //     std::atomic<size_t> sum(0);
-    // //     auto func = [&sum](){sum += 6;};
-    // //     MY_Template::VectorContainer::Vector<std::thread> array_thread;
-    // //     array_thread.Resize(30);//30个空线程
-    // //     for(auto& size_thread :array_thread)
-    // //     {
-    // //         size_thread = std::thread(func);
-    // //     }
-    // //     for(auto& size_join :array_thread)
-    // //     {
-    // //         std::cout << "线程：" << size_join.get_id() << " " << std::endl;
-    // //         size_join.join();
-    // //     }
-    // //     std::cout << sum << std::endl;
-    // // }
-    // //问题vector容器resize函数问题
+    // {
+    //     std::atomic<size_t> sum(0);
+    //     auto func = [&sum](){sum += 6;};
+    //     MY_Template::VectorContainer::Vector<std::thread> array_thread;
+    //     array_thread.Resize(30);//30个空线程
+    //     for(auto& size_thread :array_thread)
+    //     {
+    //         size_thread = std::thread(func);
+    //     }
+    //     for(auto& size_join :array_thread)
+    //     {
+    //         std::cout << "线程：" << size_join.get_id() << " " << std::endl;
+    //         size_join.join();
+    //     }
+    //     std::cout << sum << std::endl;
+    // }
+    //问题vector容器resize函数问题
     {
         //尝试构建线程池来测试给个容器性能开销
         using Vector_pair =  MyTemplate::VectorContainer::Vector<MyTemplate::Practicality::Pair<size_t,size_t>>;
