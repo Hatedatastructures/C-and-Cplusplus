@@ -831,79 +831,79 @@ namespace my_template
     /*############################     vector容器     ############################*/
     namespace vector_container
     {
-        template <typename VectorType>
+        template <typename vector_type>
         class vector
         {
         public:
-            using iterator = VectorType*;
-            using const_iterator = const VectorType*;
-            using reverse_iterator = VectorType*;
-            using const_reverse_iterator = const VectorType*;
+            using iterator = vector_type*;
+            using const_iterator = const vector_type*;
+            using reverse_iterator = vector_type*;
+            using const_reverse_iterator = const vector_type*;
         private:
-            iterator _DataPointer;     //指向数据的头
-            iterator _SizePointer;     //指向数据的尾
-            iterator _CapacityPointer; //指向容量的尾
+            iterator _data_pointer;     //指向数据的头
+            iterator _size_pointer;     //指向数据的尾
+            iterator _capacity_pointer; //指向容量的尾
         public:
-            iterator begin()        {   return _DataPointer;   }
+            iterator begin()        {   return _data_pointer;   }
 
-            iterator end()          {   return _SizePointer;   }
+            iterator end()          {   return _size_pointer;   }
 
-            size_t size()           {   return _DataPointer ? (_SizePointer - _DataPointer) : 0;  }
+            size_t size()           {   return _data_pointer ? (_size_pointer - _data_pointer) : 0;  }
 
-            size_t capacity()       {   return _DataPointer ? (_CapacityPointer - _DataPointer) : 0; }
+            size_t capacity()       {   return _data_pointer ? (_capacity_pointer - _data_pointer) : 0; }
 
-            size_t size() const     {   return _DataPointer ? (_SizePointer - _DataPointer) : 0; }
+            size_t size() const     {   return _data_pointer ? (_size_pointer - _data_pointer) : 0; }
 
-            size_t capacity() const {   return _DataPointer ? (_CapacityPointer - _DataPointer) : 0; }
+            size_t capacity() const {   return _data_pointer ? (_capacity_pointer - _data_pointer) : 0; }
 
-            VectorType& Front()    {   return Head();      }
+            vector_type& Front()    {   return Head();      }
 
-            VectorType& back()     {   return Tail();      }
+            vector_type& back()     {   return Tail();      }
 
             bool Empty()            {   return size() == 0; }
 
-            VectorType& Head()     {   return *_DataPointer;  }
+            vector_type& Head()     {   return *_data_pointer;  }
 
-            VectorType& Tail()     {   return *(_SizePointer-1);  }
+            vector_type& Tail()     {   return *(_size_pointer-1);  }
 
             vector()
             {
-                _DataPointer = nullptr;
-                _SizePointer = nullptr;
-                _CapacityPointer = nullptr;
+                _data_pointer = nullptr;
+                _size_pointer = nullptr;
+                _capacity_pointer = nullptr;
             }
-            vector(const size_t& sum_size , const VectorType& data = VectorType())
-            :_DataPointer(new VectorType[sum_size]),_SizePointer(_DataPointer + sum_size)
-            ,_CapacityPointer(_DataPointer + sum_size)
+            vector(const size_t& sum_size , const vector_type& data = vector_type())
+            :_data_pointer(new vector_type[sum_size]),_size_pointer(_data_pointer + sum_size)
+            ,_capacity_pointer(_data_pointer + sum_size)
             {
                 for(size_t i = 0;i < sum_size;i++)
                 {
-                    _DataPointer[i] = data;
+                    _data_pointer[i] = data;
                 }
             }
-            vector(std::initializer_list<VectorType> list_temp)
-            :_DataPointer(new VectorType[list_temp.size()]),_SizePointer(_DataPointer + list_temp.size())
-            ,_CapacityPointer(_DataPointer + list_temp.size())
+            vector(std::initializer_list<vector_type> list_temp)
+            :_data_pointer(new vector_type[list_temp.size()]),_size_pointer(_data_pointer + list_temp.size())
+            ,_capacity_pointer(_data_pointer + list_temp.size())
             {
                 //链式拷贝
                 size_t i = 0;
                 for(auto& e:list_temp)
                 {
-                    _DataPointer[i] = e;
+                    _data_pointer[i] = e;
                     i++;
                 }
             }
-            VectorType& find(const size_t& find_size_)
+            vector_type& find(const size_t& find_size_)
             {
                 if(find_size_ >= size())
                 {
                     //先默认返回空数组,但是需要提前写该类型的默认构造函数
-                    static VectorType dummy;
+                    static vector_type dummy;
                     return dummy;
                 }
-                return _DataPointer[find_size_];
+                return _data_pointer[find_size_];
             }
-            vector<VectorType>& Completion(const size_t& Completion_size_ , const vector<VectorType>& Completion_temp_)
+            vector<vector_type>& Completion(const size_t& Completion_size_ , const vector<vector_type>& Completion_temp_)
             {
                 size_t Completion_temp_size_ =size();
                 size_t Completion_capacity_  =capacity();
@@ -912,7 +912,7 @@ namespace my_template
                     resize(Completion_size_);
                     for(size_t i = Completion_capacity_; i < Completion_size_ ; i++)
                     {
-                        _DataPointer[i] = Completion_temp_;
+                        _data_pointer[i] = Completion_temp_;
                     }
                 }
                 else
@@ -921,74 +921,74 @@ namespace my_template
                     {
                         for(size_t i = Completion_temp_size_; i < Completion_size_ ; i++)
                         {
-                            _DataPointer[i] = Completion_temp_;
+                            _data_pointer[i] = Completion_temp_;
                         }
                     }
                     else if (Completion_size_ < Completion_temp_size_)
                     {
-                        _SizePointer = _DataPointer + Completion_size_;
+                        _size_pointer = _data_pointer + Completion_size_;
                     }
                 }
                 return *this;
             }
-            vector(const vector<VectorType>& temp_data)
-            :_DataPointer(temp_data.capacity() ? new VectorType[temp_data.capacity()] : nullptr),
-            _SizePointer(_DataPointer + temp_data.size()),_CapacityPointer(_DataPointer + temp_data.capacity())
+            vector(const vector<vector_type>& temp_data)
+            :_data_pointer(temp_data.capacity() ? new vector_type[temp_data.capacity()] : nullptr),
+            _size_pointer(_data_pointer + temp_data.size()),_capacity_pointer(_data_pointer + temp_data.capacity())
             {
                 for(size_t i = 0; i < temp_data.size();i++)
                 {
-                    _DataPointer[i] = temp_data._DataPointer[i];
+                    _data_pointer[i] = temp_data._data_pointer[i];
                 }
             }
-            vector(vector<VectorType>&& temp_data)
+            vector(vector<vector_type>&& temp_data)
             {
-                my_template::algorithm::swap(_DataPointer, temp_data._DataPointer);
-                my_template::algorithm::swap(_SizePointer, temp_data._SizePointer);
-                my_template::algorithm::swap(_CapacityPointer, temp_data._CapacityPointer);
+                my_template::algorithm::swap(_data_pointer, temp_data._data_pointer);
+                my_template::algorithm::swap(_size_pointer, temp_data._size_pointer);
+                my_template::algorithm::swap(_capacity_pointer, temp_data._capacity_pointer);
             }
             ~vector()
             {
-                delete[] _DataPointer;
-                _DataPointer = _SizePointer =_CapacityPointer = nullptr;
+                delete[] _data_pointer;
+                _data_pointer = _size_pointer =_capacity_pointer = nullptr;
             }
-            void swap(vector<VectorType>& temp_data)
+            void swap(vector<vector_type>& temp_data)
             {
-                my_template::algorithm::swap(_DataPointer, temp_data._DataPointer);
-                my_template::algorithm::swap(_SizePointer, temp_data._SizePointer);
-                my_template::algorithm::swap(_CapacityPointer, temp_data._CapacityPointer);
+                my_template::algorithm::swap(_data_pointer, temp_data._data_pointer);
+                my_template::algorithm::swap(_size_pointer, temp_data._size_pointer);
+                my_template::algorithm::swap(_capacity_pointer, temp_data._capacity_pointer);
             }
             iterator erase(iterator pos)
             {
                 //删除元素
                 iterator temp = pos + 1;
-                while (temp != _SizePointer)
+                while (temp != _size_pointer)
                 {
                     //(temp-1)就是pos的位置，从pos位置开始覆盖，覆盖到倒数第1个结束，最后一个会被--屏蔽掉
                     *(temp-1) = *temp;
                     temp++;
                 }
-                --_SizePointer;
+                --_size_pointer;
                 return temp;
                 //返回下一个位置地址
             }
-            vector<VectorType>& resize(const size_t& new_capacity, const VectorType& data = VectorType())
+            vector<vector_type>& resize(const size_t& new_capacity, const vector_type& data = vector_type())
             {
                 size_t old_size = size();  // 先保存原来的元素数量
-                if ((size_t)(_CapacityPointer - _DataPointer) < new_capacity) 
+                if ((size_t)(_capacity_pointer - _data_pointer) < new_capacity) 
                 {
                     //涉及到迭代器失效问题，不能调用size()函数，会释放未知空间
-                    iterator new_data = new VectorType[new_capacity]; 
+                    iterator new_data = new vector_type[new_capacity]; 
                     // 复制原先的数据
                     for (size_t i = 0; i < old_size; i++) 
                     {
-                        new_data[i] = _DataPointer[i];
+                        new_data[i] = _data_pointer[i];
                     }
                     for(size_t i = old_size; i < new_capacity; i++)
                     {
                         new_data[i] = data;
                     }
-                    delete [] _DataPointer;
-                    _DataPointer = new_data;
+                    delete [] _data_pointer;
+                    _data_pointer = new_data;
                     //对于自定义类型delete会释放资源，而new_data是新new出来的因该不会导致资源泄露
                     // if(old_size == 0)
                     // {
@@ -998,101 +998,101 @@ namespace my_template
                     // {
                     //     _size_pointer = _data_pointer + old_size;  // 使用 old_size 来重建 _size_pointer
                     // }
-                    _SizePointer = _DataPointer + old_size;  // 使用 old_size 来重建 _size_pointer
-                    _CapacityPointer = _DataPointer + new_capacity;
+                    _size_pointer = _data_pointer + old_size;  // 使用 old_size 来重建 _size_pointer
+                    _capacity_pointer = _data_pointer + new_capacity;
                 }
                 return *this;
             }
-            vector<VectorType>& push_back(const VectorType& push_back_temp_)
+            vector<vector_type>& push_back(const vector_type& push_back_temp_)
             {
-                if(_SizePointer == _CapacityPointer)
+                if(_size_pointer == _capacity_pointer)
                 {
-                    size_t push_banck_size_ = _DataPointer == nullptr ? 10 : (size_t)(_CapacityPointer-_DataPointer)*2;
+                    size_t push_banck_size_ = _data_pointer == nullptr ? 10 : (size_t)(_capacity_pointer-_data_pointer)*2;
                     resize(push_banck_size_);
                 }
                 //注意—_size_pointer是原生迭代器指针，需要解引用才能赋值
-                *_SizePointer = push_back_temp_;
-                _SizePointer++;
+                *_size_pointer = push_back_temp_;
+                _size_pointer++;
                 return *this;
             }
-            vector<VectorType>& push_back(VectorType&& push_back_temp_)
+            vector<vector_type>& push_back(vector_type&& push_back_temp_)
             {
-                if(_SizePointer == _CapacityPointer)
+                if(_size_pointer == _capacity_pointer)
                 {
-                    size_t push_banck_size_ = _DataPointer == nullptr ? 10 : (size_t)(_CapacityPointer-_DataPointer)*2;
+                    size_t push_banck_size_ = _data_pointer == nullptr ? 10 : (size_t)(_capacity_pointer-_data_pointer)*2;
                     resize(push_banck_size_);
                 }
                 //注意—_size_pointer是原生迭代器指针，需要解引用才能赋值
-                *_SizePointer = std::move(push_back_temp_);//转换移动语义
-                _SizePointer++;
+                *_size_pointer = std::move(push_back_temp_);//转换移动语义
+                _size_pointer++;
                 return *this;
             }
-            vector<VectorType>& pop_back() 
+            vector<vector_type>& pop_back() 
             {
-                if (_SizePointer > _DataPointer) 
+                if (_size_pointer > _data_pointer) 
                 { // 至少有一个元素
-                    --_SizePointer; // 尾指针前移
+                    --_size_pointer; // 尾指针前移
                 }
                 return *this;
             }
-            vector<VectorType>& PushFront(const VectorType& pop_back_temp_)
+            vector<vector_type>& PushFront(const vector_type& pop_back_temp_)
             {
                 //头插
-                if(_SizePointer == _CapacityPointer)
+                if(_size_pointer == _capacity_pointer)
                 {
-                    size_t pop_banck_size_ = _DataPointer == nullptr ? 10 : (size_t)(_CapacityPointer-_DataPointer)*2;
+                    size_t pop_banck_size_ = _data_pointer == nullptr ? 10 : (size_t)(_capacity_pointer-_data_pointer)*2;
                     resize(pop_banck_size_);
                 }
                 for(size_t pop_back_for_size = size();pop_back_for_size>0;--pop_back_for_size)
                 {
-                    _DataPointer[pop_back_for_size] = _DataPointer[pop_back_for_size -1];
+                    _data_pointer[pop_back_for_size] = _data_pointer[pop_back_for_size -1];
                 }
-                *_DataPointer = pop_back_temp_;
-                ++_SizePointer;
+                *_data_pointer = pop_back_temp_;
+                ++_size_pointer;
                 return *this;
             }
-            vector<VectorType>& PopFront()
+            vector<vector_type>& PopFront()
             {
                 if( size() > 0 )
                 {
                     for(size_t i = 1;i<size();i++)
                     {
-                        _DataPointer[i-1] = _DataPointer[i];
+                        _data_pointer[i-1] = _data_pointer[i];
                     }
-                    --_SizePointer;
+                    --_size_pointer;
                 }
                 return *this;
             }
-            VectorType& operator[](const size_t& _size_operator)
+            vector_type& operator[](const size_t& _size_operator)
             {
-                return _DataPointer[_size_operator];
+                return _data_pointer[_size_operator];
             }
-            const VectorType& operator[](const size_t& _size_operator)const 
+            const vector_type& operator[](const size_t& _size_operator)const 
             {
-                return _DataPointer[_size_operator];
+                return _data_pointer[_size_operator];
             }
-            vector<VectorType>& operator=(const vector<VectorType>&vector_temp_)
+            vector<vector_type>& operator=(const vector<vector_type>&vector_temp_)
             {
                 if (this != &vector_temp_) 
                 {
-                    vector<VectorType> temp(vector_temp_); // 拷贝构造
+                    vector<vector_type> temp(vector_temp_); // 拷贝构造
                     swap(temp); // 交换资源，temp析构时会释放原资源
                 }
                 return *this;
             }
-            vector<VectorType>& operator=(const vector<VectorType>&& _temp_)
+            vector<vector_type>& operator=(const vector<vector_type>&& _temp_)
             {
                 if( this != &_temp_)
                 {
-                    my_template::algorithm::swap(_DataPointer, _temp_._DataPointer);
-                    my_template::algorithm::swap(_SizePointer, _temp_._SizePointer);
-                    my_template::algorithm::swap(_CapacityPointer, _temp_._CapacityPointer);
+                    my_template::algorithm::swap(_data_pointer, _temp_._data_pointer);
+                    my_template::algorithm::swap(_size_pointer, _temp_._size_pointer);
+                    my_template::algorithm::swap(_capacity_pointer, _temp_._capacity_pointer);
                 }
                 return *this;
             }
-            vector<VectorType>& operator+=(const vector<VectorType>& _temp_)
+            vector<vector_type>& operator+=(const vector<vector_type>& _temp_)
             {
-                if(_temp_.size() == 0|| _temp_._DataPointer == nullptr)
+                if(_temp_.size() == 0|| _temp_._data_pointer == nullptr)
                 {
                     return *this;
                 }
@@ -1107,9 +1107,9 @@ namespace my_template
                 size_t sum = 0;
                 for(size_t i = _size_ ; i < (_temp_size_ + _size_); i++)
                 {
-                    _DataPointer[i] = _temp_._DataPointer[sum++];
+                    _data_pointer[i] = _temp_._data_pointer[sum++];
                 }
-                _SizePointer = _DataPointer + (_temp_size_ + _size_);
+                _size_pointer = _data_pointer + (_temp_size_ + _size_);
                 return *this;
             }
             template <typename ConstVectorOutputTemplates>
