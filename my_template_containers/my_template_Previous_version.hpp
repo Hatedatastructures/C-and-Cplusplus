@@ -4,7 +4,7 @@
 #include <cstring>
 //优化每个容器插入函数右值引用，调整每个容器扩容逻辑，减少深拷贝，尽量用移动拷贝，对于开辟空间和错误处理，使用异常处理，对于简单函数使用lambda表达式
 //添加每个容器完美转发，减少开销,整理每个容器,哈希表扩容导致size指针问题
-namespace my_exception  
+namespace Ex  
 {
     class customize_exception :public std::exception
     {
@@ -408,7 +408,7 @@ namespace MyTemplate
                     //中间位置插入子串
                     if(StartPosition > _size)
                     {
-                        throw my_exception::customize_exception("传入参数位置越界","InsertSubstring",__LINE__);
+                        throw Ex::customize_exception("传入参数位置越界","InsertSubstring",__LINE__);
                     }
                     size_t Len = strlen(Substring);
                     size_t NewSize = _size + Len;
@@ -424,7 +424,7 @@ namespace MyTemplate
                     delete [] TemporaryBuffers;
                     return *this;
                 }
-                catch(const my_exception::customize_exception& Process)
+                catch(const Ex::customize_exception& Process)
                 {
                     std::cerr << Process.what() << " " << Process.function_name_get() << " " << Process.line_number_get() << std::endl;
                     return *this; 
@@ -437,10 +437,10 @@ namespace MyTemplate
                 {
                     if(StartPosition > _size)
                     {
-                        throw my_exception::customize_exception("传入参数位置越界","SubString",__LINE__);
+                        throw Ex::customize_exception("传入参数位置越界","SubString",__LINE__);
                     }
                 }
-                catch(const my_exception::customize_exception& Process)
+                catch(const Ex::customize_exception& Process)
                 {
                     std::cerr << Process.what() << " " << Process.function_name_get() << " " << Process.line_number_get() << std::endl;
                     return *this;                
@@ -460,10 +460,10 @@ namespace MyTemplate
                 {
                     if(StartPosition > _size)
                     {
-                        throw my_exception::customize_exception("传入参数位置越界","SubStringFrom",__LINE__);
+                        throw Ex::customize_exception("传入参数位置越界","SubStringFrom",__LINE__);
                     }
                 }
-                catch(const my_exception::customize_exception& Process)
+                catch(const Ex::customize_exception& Process)
                 {
                     std::cerr << Process.what() << " " << Process.function_name_get() << " " << Process.line_number_get() << std::endl;
                     return *this;
@@ -483,10 +483,10 @@ namespace MyTemplate
                 {
                     if(StartPosition > _size || EndPosition > _size || StartPosition > EndPosition)
                     {
-                        throw my_exception::customize_exception("传入参数位置越界","SubString",__LINE__);
+                        throw Ex::customize_exception("传入参数位置越界","SubString",__LINE__);
                     }
                 }
-                catch(const my_exception::customize_exception& Process)
+                catch(const Ex::customize_exception& Process)
                 {
                     std::cerr << Process.what() << " " << Process.function_name_get() << " " << Process.line_number_get() << std::endl;
                     return *this;
@@ -606,10 +606,10 @@ namespace MyTemplate
                 {
                     if(_size == 0)
                     {
-                        throw my_exception::customize_exception("字符串为空","Reserve",__LINE__);
+                        throw Ex::customize_exception("字符串为空","Reserve",__LINE__);
                     }
                 }
-                catch(const my_exception::customize_exception& Process)
+                catch(const Ex::customize_exception& Process)
                 {
                     std::cerr << Process.what() << " " << Process.function_name_get() << " " << Process.line_number_get() << std::endl;
                     return *this;
@@ -627,10 +627,10 @@ namespace MyTemplate
                 {
                     if(StartPosition > _size || EndPosition > _size || StartPosition > EndPosition || _size == 0)
                     {
-                        throw my_exception::customize_exception("回滚位置异常","ReverseSubstring",__LINE__);
+                        throw Ex::customize_exception("回滚位置异常","ReverseSubstring",__LINE__);
                     }
                 }
-                catch(const my_exception::customize_exception& Process)
+                catch(const Ex::customize_exception& Process)
                 {
                     std::cerr << Process.what() << " " << Process.function_name_get() << " " << Process.line_number_get() << std::endl;
                     return *this;
@@ -753,10 +753,10 @@ namespace MyTemplate
                     }
                     else
                     {
-                        throw my_exception::customize_exception("越界访问","String::operator[]",__LINE__);
+                        throw Ex::customize_exception("越界访问","String::operator[]",__LINE__);
                     }
                 }
-                catch(const my_exception::customize_exception& ExceptionStr)
+                catch(const Ex::customize_exception& ExceptionStr)
                 {
                     std::cerr << ExceptionStr.what() << " " << ExceptionStr.function_name_get() << " " << ExceptionStr.line_number_get() << std::endl;
                     return _data[0];
@@ -773,10 +773,10 @@ namespace MyTemplate
                     }
                     else
                     {
-                        throw my_exception::customize_exception("越界访问","String::operator[]const",__LINE__);
+                        throw Ex::customize_exception("越界访问","String::operator[]const",__LINE__);
                     }
                 }
-                catch(const my_exception::customize_exception& ExceptionStr)
+                catch(const Ex::customize_exception& ExceptionStr)
                 {
                     std::cerr << ExceptionStr.what() << " " << ExceptionStr.function_name_get() << " " << ExceptionStr.line_number_get() << std::endl;
                     return _data[0];
@@ -887,14 +887,14 @@ namespace MyTemplate
                 {
                     if(FindSize >= size())
                     {
-                        throw my_exception::customize_exception("传入数据超出容器范围","Vector::Find",__LINE__);
+                        throw Ex::customize_exception("传入数据超出容器范围","Vector::Find",__LINE__);
                     }
                     else
                     {
                         return _DataPointer[FindSize];
                     }
                 }
-                catch(const my_exception::customize_exception& Process)
+                catch(const Ex::customize_exception& Process)
                 {
                     std::cerr << Process.what() << " " << Process.function_name_get() << " " << Process.line_number_get() << std::endl;
                     return _DataPointer[0];
@@ -1069,14 +1069,14 @@ namespace MyTemplate
                 {
                     if( SizeOperator >= capacity())
                     {
-                        throw my_exception::customize_exception("传入参数越界","Vector::operatot[]",__LINE__);
+                        throw Ex::customize_exception("传入参数越界","Vector::operatot[]",__LINE__);
                     }
                     else
                     {
                         return _DataPointer[SizeOperator];
                     }
                 }
-                catch(const my_exception::customize_exception& Process)
+                catch(const Ex::customize_exception& Process)
                 {
                     std::cerr << Process.what() << " " << Process.function_name_get() << " " << Process.line_number_get() << std::endl;
                     return _DataPointer[0];
@@ -1089,14 +1089,14 @@ namespace MyTemplate
                 {
                     if( SizeOperator >= capacity())
                     {
-                        throw my_exception::customize_exception("传入参数越界","Vector::operatot[]",__LINE__);
+                        throw Ex::customize_exception("传入参数越界","Vector::operatot[]",__LINE__);
                     }
                     else
                     {
                         return _DataPointer[SizeOperator];
                     }
                 }
-                catch(const my_exception::customize_exception& Process)
+                catch(const Ex::customize_exception& Process)
                 {
                     std::cerr << Process.what() << " " << Process.function_name_get() << " " << Process.line_number_get() << std::endl;
                     return _DataPointer[0];
@@ -1158,7 +1158,7 @@ namespace MyTemplate
     }
 
     /*############################     list容器     ############################*/
-    namespace ListContainer
+    namespace list_c
     {
         template <typename ListType>
         class List
@@ -1361,7 +1361,7 @@ namespace MyTemplate
                 _head = std::move(ListData._head);
                 ListData._head = nullptr;
             }
-            void Swap(MyTemplate::ListContainer::List<ListType>& SwapTemp)
+            void Swap(MyTemplate::list_c::List<ListType>& SwapTemp)
             {
                 MyTemplate::Algorithm::Swap(_head,SwapTemp._head);
             }
@@ -1627,7 +1627,7 @@ namespace MyTemplate
     /*############################     queue适配器     ############################*/
     namespace QueueAdapter
     {
-        template <typename Queue_Type ,typename ContainerQueue = MyTemplate::ListContainer::List<Queue_Type> >
+        template <typename Queue_Type ,typename ContainerQueue = MyTemplate::list_c::List<Queue_Type> >
         class Queue
         {
             //注意队列适配器不会自动检测队列有没有元素，为学异常，注意空间元素
@@ -1840,7 +1840,7 @@ namespace MyTemplate
             }
         };
     }
-    namespace TreeContainer
+    namespace tree_c
     {
         /*############################     BSTree 容器     ############################*/
         template <typename BSTreeType,typename CompareImitationFunctionsBS = MyTemplate::ImitationFunctions::Less <BSTreeType> >

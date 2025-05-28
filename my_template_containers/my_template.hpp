@@ -5,7 +5,7 @@
 #include <mutex>
 //优化每个容器插入函数右值引用，调整每个容器扩容逻辑，减少深拷贝，尽量用移动拷贝，对于开辟空间和错误处理，使用异常处理，对于简单函数使用lambda表达式
 //添加每个容器完美转发，减少开销,整理每个容器,哈希表扩容导致size指针问题
-namespace my_exception  
+namespace custom_exception
 {
     class customize_exception : public std::exception
     {
@@ -34,7 +34,7 @@ namespace my_exception
         }
     };
 }
-namespace my_smart_ptr_class
+namespace smart_pointer
 {
     template<typename smart_ptr_type>
     class smart_ptr
@@ -204,7 +204,7 @@ namespace my_smart_ptr_class
         using Ptr = weak_ptr_type*;
     public:
         weak_ptr() = default;
-        weak_ptr(my_smart_ptr_class::shared_ptr<weak_ptr_type>& Ptr) noexcept
+        weak_ptr(sp::shared_ptr<weak_ptr_type>& Ptr) noexcept
         {
             _Ptr = Ptr.get_ptr();
         }
@@ -220,14 +220,14 @@ namespace my_smart_ptr_class
         {
             return _Ptr;
         }
-        weak_ptr<weak_ptr_type>& operator=(my_smart_ptr_class::shared_ptr<weak_ptr_type>& Ptr) noexcept
+        weak_ptr<weak_ptr_type>& operator=(sp::shared_ptr<weak_ptr_type>& Ptr) noexcept
         {
             _Ptr = Ptr.get_ptr();
             return *this;
         }
     };
 }
-namespace my_template
+namespace template_container
 {
     namespace imitation_functions
     {
@@ -266,7 +266,7 @@ namespace my_template
             size_t operator()(const unsigned short DataUnsignedShort) noexcept          {       return DataUnsignedShort;      }
             
   
-            // size_t operator()(const MY_Template::string_container::string& data_string)
+            // size_t operator()(const MY_Template::string_c::string& data_string)
             // {
             //     size_t hash_value = 0;
             //     for(size_t i = 0; i < data_string._size; ++i)
@@ -314,7 +314,7 @@ namespace my_template
         }
         namespace hash_algorithm
         {
-            template <typename hash_algorithm_type ,typename hash_if = my_template::imitation_functions::hash_imitation_functions>
+            template <typename hash_algorithm_type ,typename hash_if = template_container::imitation_functions::hash_imitation_functions>
             class hash_function
             {
             public:
@@ -441,7 +441,7 @@ namespace my_template
     }
 
     /*############################     string容器     ############################*/
-    namespace string_container
+    namespace string_c
     {
         class string
         {
@@ -532,7 +532,7 @@ namespace my_template
             :_data(nullptr),_size(StrData._size),_capacity(StrData._capacity)
             {
                 //移动构造函数，拿传入对象的变量初始化本地变量，对于涉及开辟内存的都要深拷贝
-                my_template::algorithm::swap(StrData._data,_data);
+                template_container::algorithm::swap(StrData._data,_data);
                 ////////////////////////////////////////////////////////////////////////////////////////////问题：为什么move函数不行？
             }
             string(std::initializer_list<char> StrData)
@@ -541,7 +541,7 @@ namespace my_template
                 _size = StrData.size();
                 _capacity = _size;
                 _data = new char[_capacity + 1];
-                my_template::algorithm::copy(StrData.begin(), StrData.end(), _data);
+                template_container::algorithm::copy(StrData.begin(), StrData.end(), _data);
                 _data[_size] = '\0';
             }
             ~string() noexcept
@@ -602,7 +602,7 @@ namespace my_template
                     //中间位置插入子串
                     if(StartPosition > _size)
                     {
-                        throw my_exception::customize_exception("传入参数位置越界","InsertSubstring",__LINE__);
+                        throw Ex::customize_exception("传入参数位置越界","InsertSubstring",__LINE__);
                     }
                     size_t Len = strlen(Substring);
                     size_t NewSize = _size + Len;
@@ -618,7 +618,7 @@ namespace my_template
                     delete [] TemporaryBuffers;
                     return *this;
                 }
-                catch(const my_exception::customize_exception& Process)
+                catch(const Ex::customize_exception& Process)
                 {
                     std::cerr << Process.what() << " " << Process.function_name_get() << " " << Process.line_number_get() << std::endl;
                     return *this; 
@@ -631,10 +631,10 @@ namespace my_template
                 {
                     if(StartPosition > _size)
                     {
-                        throw my_exception::customize_exception("传入参数位置越界","SubString",__LINE__);
+                        throw Ex::customize_exception("传入参数位置越界","SubString",__LINE__);
                     }
                 }
-                catch(const my_exception::customize_exception& Process)
+                catch(const Ex::customize_exception& Process)
                 {
                     std::cerr << Process.what() << " " << Process.function_name_get() << " " << Process.line_number_get() << std::endl;
                     return *this;                
@@ -654,10 +654,10 @@ namespace my_template
                 {
                     if(StartPosition > _size)
                     {
-                        throw my_exception::customize_exception("传入参数位置越界","SubStringFrom",__LINE__);
+                        throw Ex::customize_exception("传入参数位置越界","SubStringFrom",__LINE__);
                     }
                 }
-                catch(const my_exception::customize_exception& Process)
+                catch(const Ex::customize_exception& Process)
                 {
                     std::cerr << Process.what() << " " << Process.function_name_get() << " " << Process.line_number_get() << std::endl;
                     return *this;
@@ -677,10 +677,10 @@ namespace my_template
                 {
                     if(StartPosition > _size || EndPosition > _size || StartPosition > EndPosition)
                     {
-                        throw my_exception::customize_exception("传入参数位置越界","SubString",__LINE__);
+                        throw Ex::customize_exception("传入参数位置越界","SubString",__LINE__);
                     }
                 }
-                catch(const my_exception::customize_exception& Process)
+                catch(const Ex::customize_exception& Process)
                 {
                     std::cerr << Process.what() << " " << Process.function_name_get() << " " << Process.line_number_get() << std::endl;
                     return *this;
@@ -789,9 +789,9 @@ namespace my_template
             }
             string& swap(string& StrData)
             {
-                my_template::algorithm::swap(_data,StrData._data);
-                my_template::algorithm::swap(_size,StrData._size);
-                my_template::algorithm::swap(_capacity,StrData._capacity);
+                template_container::algorithm::swap(_data,StrData._data);
+                template_container::algorithm::swap(_size,StrData._size);
+                template_container::algorithm::swap(_capacity,StrData._capacity);
                 return *this;
             }
             string Reverse()
@@ -800,10 +800,10 @@ namespace my_template
                 {
                     if(_size == 0)
                     {
-                        throw my_exception::customize_exception("字符串为空","Reserve",__LINE__);
+                        throw Ex::customize_exception("字符串为空","Reserve",__LINE__);
                     }
                 }
-                catch(const my_exception::customize_exception& Process)
+                catch(const Ex::customize_exception& Process)
                 {
                     std::cerr << Process.what() << " " << Process.function_name_get() << " " << Process.line_number_get() << std::endl;
                     return *this;
@@ -821,10 +821,10 @@ namespace my_template
                 {
                     if(StartPosition > _size || EndPosition > _size || StartPosition > EndPosition || _size == 0)
                     {
-                        throw my_exception::customize_exception("回滚位置异常","ReverseSubstring",__LINE__);
+                        throw Ex::customize_exception("回滚位置异常","ReverseSubstring",__LINE__);
                     }
                 }
-                catch(const my_exception::customize_exception& Process)
+                catch(const Ex::customize_exception& Process)
                 {
                     std::cerr << Process.what() << " " << Process.function_name_get() << " " << Process.line_number_get() << std::endl;
                     return *this;
@@ -947,10 +947,10 @@ namespace my_template
                     }
                     else
                     {
-                        throw my_exception::customize_exception("越界访问","string::operator[]",__LINE__);
+                        throw Ex::customize_exception("越界访问","string::operator[]",__LINE__);
                     }
                 }
-                catch(const my_exception::customize_exception& ExceptionStr)
+                catch(const Ex::customize_exception& ExceptionStr)
                 {
                     std::cerr << ExceptionStr.what() << " " << ExceptionStr.function_name_get() << " " << ExceptionStr.line_number_get() << std::endl;
                     return _data[0];
@@ -967,10 +967,10 @@ namespace my_template
                     }
                     else
                     {
-                        throw my_exception::customize_exception("越界访问","string::operator[]const",__LINE__);
+                        throw Ex::customize_exception("越界访问","string::operator[]const",__LINE__);
                     }
                 }
-                catch(const my_exception::customize_exception& ExceptionStr)
+                catch(const Ex::customize_exception& ExceptionStr)
                 {
                     std::cerr << ExceptionStr.what() << " " << ExceptionStr.function_name_get() << " " << ExceptionStr.line_number_get() << std::endl;
                     return _data[0];
@@ -1007,7 +1007,7 @@ namespace my_template
         }
         std::ostream& operator<<(std::ostream& Stringostream,const string &StrData) 
         {
-            for(my_template::string_container::string::const_iterator StartPosition = StrData.cbegin();StartPosition != StrData.cend();StartPosition++)
+            for(template_container::string_c::string::const_iterator StartPosition = StrData.cbegin();StartPosition != StrData.cend();StartPosition++)
             {
                 Stringostream << *StartPosition;
             }
@@ -1015,7 +1015,7 @@ namespace my_template
         }
     }
     /*############################     vector容器     ############################*/
-    namespace vector_container
+    namespace vector_c
     {
         template <typename vector_type>
         class vector
@@ -1081,14 +1081,14 @@ namespace my_template
                 {
                     if(FindSize >= size())
                     {
-                        throw my_exception::customize_exception("传入数据超出容器范围","vector::find",__LINE__);
+                        throw Ex::customize_exception("传入数据超出容器范围","vector::find",__LINE__);
                     }
                     else
                     {
                         return _data_pointer[FindSize];
                     }
                 }
-                catch(const my_exception::customize_exception& Process)
+                catch(const Ex::customize_exception& Process)
                 {
                     std::cerr << Process.what() << " " << Process.function_name_get() << " " << Process.line_number_get() << std::endl;
                     return _data_pointer[0];
@@ -1145,9 +1145,9 @@ namespace my_template
             }
             void swap(vector<vector_type>& TempData) noexcept
             {
-                my_template::algorithm::swap(_data_pointer, TempData._data_pointer);
-                my_template::algorithm::swap(_size_pointer, TempData._size_pointer);
-                my_template::algorithm::swap(_capacity_pointer, TempData._capacity_pointer);
+                template_container::algorithm::swap(_data_pointer, TempData._data_pointer);
+                template_container::algorithm::swap(_size_pointer, TempData._size_pointer);
+                template_container::algorithm::swap(_capacity_pointer, TempData._capacity_pointer);
             }
             iterator Erase(iterator Pos) noexcept
             {
@@ -1263,14 +1263,14 @@ namespace my_template
                 {
                     if( SizeOperator >= capacity())
                     {
-                        throw my_exception::customize_exception("传入参数越界","vector::operatot[]",__LINE__);
+                        throw Ex::customize_exception("传入参数越界","vector::operatot[]",__LINE__);
                     }
                     else
                     {
                         return _data_pointer[SizeOperator];
                     }
                 }
-                catch(const my_exception::customize_exception& Process)
+                catch(const Ex::customize_exception& Process)
                 {
                     std::cerr << Process.what() << " " << Process.function_name_get() << " " << Process.line_number_get() << std::endl;
                     return _data_pointer[0];
@@ -1283,14 +1283,14 @@ namespace my_template
                 {
                     if( SizeOperator >= capacity())
                     {
-                        throw my_exception::customize_exception("传入参数越界","vector::operatot[]",__LINE__);
+                        throw Ex::customize_exception("传入参数越界","vector::operatot[]",__LINE__);
                     }
                     else
                     {
                         return _data_pointer[SizeOperator];
                     }
                 }
-                catch(const my_exception::customize_exception& Process)
+                catch(const Ex::customize_exception& Process)
                 {
                     std::cerr << Process.what() << " " << Process.function_name_get() << " " << Process.line_number_get() << std::endl;
                     return _data_pointer[0];
@@ -1352,7 +1352,7 @@ namespace my_template
     }
 
     /*############################     list容器     ############################*/
-    namespace ListContainer
+    namespace list_c
     {
         template <typename ListType>
         class list
@@ -1555,9 +1555,9 @@ namespace my_template
                 _head = std::move(ListData._head);
                 ListData._head = nullptr;
             }
-            void swap(my_template::ListContainer::list<ListType>& SwapTemp)
+            void swap(template_container::list_c::list<ListType>& SwapTemp)
             {
-                my_template::algorithm::swap(_head,SwapTemp._head);
+                template_container::algorithm::swap(_head,SwapTemp._head);
             }
             iterator begin() noexcept                       {   return iterator(_head ->_next);  }
 
@@ -1746,9 +1746,9 @@ namespace my_template
         }
     }
     /*############################     stack适配器     ############################*/
-    namespace StackAdapter
+    namespace stack_a
     {
-        template <typename StaicType,typename ContainerStaic = my_template::vector_container::vector<StaicType>>
+        template <typename StaicType,typename ContainerStaic = template_container::vector_c::vector<StaicType>>
         class Stack
         {
         private:
@@ -1819,9 +1819,9 @@ namespace my_template
         };
     }
     /*############################     queue适配器     ############################*/
-    namespace QueueAdapter
+    namespace queue_a
     {
-        template <typename Queue_Type ,typename ContainerQueue = my_template::ListContainer::list<Queue_Type> >
+        template <typename Queue_Type ,typename ContainerQueue = template_container::list_c::list<Queue_Type> >
         class Queue
         {
             //注意队列适配器不会自动检测队列有没有元素，为学异常，注意空间元素
@@ -1902,8 +1902,8 @@ namespace my_template
             }
         };
         /*############################     PriorityQueue 适配器     ############################*/
-        template <typename PriorityQueueType,typename ImitationFunctionParameter = my_template::imitation_functions::Less<PriorityQueueType>,
-        typename ContainerPriorityQueue = my_template::vector_container::vector<PriorityQueueType>>
+        template <typename PriorityQueueType,typename ImitationFunctionParameter = template_container::imitation_functions::Less<PriorityQueueType>,
+        typename ContainerPriorityQueue = template_container::vector_c::vector<PriorityQueueType>>
         class PriorityQueue
         {
             //创建容器对象
@@ -1919,7 +1919,7 @@ namespace my_template
                 {
                     if(com(ContainerPriorityQueueTemp[parent],ContainerPriorityQueueTemp[AdjustUpwardsChild]))
                     {
-                        my_template::algorithm::swap(ContainerPriorityQueueTemp[parent],ContainerPriorityQueueTemp[AdjustUpwardsChild]);
+                        template_container::algorithm::swap(ContainerPriorityQueueTemp[parent],ContainerPriorityQueueTemp[AdjustUpwardsChild]);
                         AdjustUpwardsChild = parent;
                         parent = (AdjustUpwardsChild-1)/2;
                     }
@@ -1944,7 +1944,7 @@ namespace my_template
                     if(com(ContainerPriorityQueueTemp[parent],ContainerPriorityQueueTemp[PriorityQueueAdjustDownwardsChild]))
                     {
                         //建大堆把小的换下去，建小堆把大的换下去
-                        my_template::algorithm::swap( ContainerPriorityQueueTemp[parent] , ContainerPriorityQueueTemp[PriorityQueueAdjustDownwardsChild]);
+                        template_container::algorithm::swap( ContainerPriorityQueueTemp[parent] , ContainerPriorityQueueTemp[PriorityQueueAdjustDownwardsChild]);
 
                         //换完之后如果是大堆，则父亲节点是较大的值，需要更新孩子节点继续向下找比孩子节点大的值，如果有继续交换
                         parent = PriorityQueueAdjustDownwardsChild;
@@ -1980,7 +1980,7 @@ namespace my_template
             }
             void Pop()
             {
-                my_template::algorithm::swap(ContainerPriorityQueueTemp[0],ContainerPriorityQueueTemp[ContainerPriorityQueueTemp.size()-(size_t)1]);
+                template_container::algorithm::swap(ContainerPriorityQueueTemp[0],ContainerPriorityQueueTemp[ContainerPriorityQueueTemp.size()-(size_t)1]);
                 ContainerPriorityQueueTemp.PopBack();
                 PriorityQueueAdjustDownwards();
             }
@@ -2034,10 +2034,10 @@ namespace my_template
             }
         };
     }
-    namespace TreeContainer
+    namespace tree_c
     {
         /*############################     BSTree 容器     ############################*/
-        template <typename BSTreeType,typename CompareImitationFunctionsBS = my_template::imitation_functions::Less <BSTreeType> >
+        template <typename BSTreeType,typename CompareImitationFunctionsBS = template_container::imitation_functions::Less <BSTreeType> >
         class BSTree
         {
         private:
@@ -2065,7 +2065,7 @@ namespace my_template
             void _MiddleOrderTraversal(Node* ROOT_Temp)
             {
                 //中序遍历函数
-                my_template::StackAdapter::Stack<Node*> StackTemp;
+                template_container::stack_a::Stack<Node*> StackTemp;
                 while(ROOT_Temp != nullptr || !StackTemp.Empty())
                 {
                     while(ROOT_Temp!= nullptr)
@@ -2088,7 +2088,7 @@ namespace my_template
             }
             size_t _MiddleOrderTraversal(Node* ROOT_Temp,size_t& SizeTemp )
             {
-                my_template::StackAdapter::Stack<Node*> StackTemp;
+                template_container::stack_a::Stack<Node*> StackTemp;
                 while(ROOT_Temp != nullptr || !StackTemp.Empty())
                 {
                     while(ROOT_Temp!= nullptr)
@@ -2116,7 +2116,7 @@ namespace my_template
                     return;
                 }
                 Node* _PreOrderTraversalTest = ROOT_Temp;
-                my_template::StackAdapter::Stack<Node*> stack_Temp;
+                template_container::stack_a::Stack<Node*> stack_Temp;
                 stack_Temp.Push(_PreOrderTraversalTest);
                 //不能添加|| _PreOrderTraversalTest != nullptr ，因为最后一层循环后_Pre_order_traversal_test还是为真后面循环无意义，反之还会破环性质
                 while( !stack_Temp.Empty() )
@@ -2143,7 +2143,7 @@ namespace my_template
                     return;
                 }
                 //循环释放资源
-                my_template::StackAdapter::Stack<Node*> StaicClearTemp;
+                template_container::stack_a::Stack<Node*> StaicClearTemp;
                 StaicClearTemp.Push(_ROOT);
                 while(StaicClearTemp.Empty() == false)
                 {
@@ -2196,11 +2196,11 @@ namespace my_template
                 {
                     return;
                 }
-                my_template::StackAdapter::Stack<my_template::practicality::pair<Node*,Node**> > StackTemp;
+                template_container::stack_a::Stack<template_container::practicality::pair<Node*,Node**> > StackTemp;
                 //注意这里把本地_ROOT类型传过去，是因为要对本地的_ROOT进行操作，所以要传二级指针
                 //这里传引用也不行，这里的对象是动态变化的，所以传引用也不行
                 //如果是对全局的_ROOT进行操作，就传一级指针
-                StackTemp.Push(my_template::practicality::pair<Node*,Node**>(BinarySearchTreeTempCopy,&_ROOT));
+                StackTemp.Push(template_container::practicality::pair<Node*,Node**>(BinarySearchTreeTempCopy,&_ROOT));
                 while( !StackTemp.Empty() )
                 {
                     auto StacKTempPair = StackTemp.top();
@@ -2218,11 +2218,11 @@ namespace my_template
                     //移除临时变量，直接使用指针解引用
                     if(StacKTempPair.first->_right!= nullptr)
                     {
-                        StackTemp.Push(my_template::practicality::pair<Node*,Node**>(StacKTempPair.first->_right,&((*StacKTempPair.second)->_right)));
+                        StackTemp.Push(template_container::practicality::pair<Node*,Node**>(StacKTempPair.first->_right,&((*StacKTempPair.second)->_right)));
                     }
                     if(StacKTempPair.first->_left!= nullptr)
                     {
-                        StackTemp.Push(my_template::practicality::pair<Node*,Node**>(StacKTempPair.first->_left,&((*StacKTempPair.second)->_left)));
+                        StackTemp.Push(template_container::practicality::pair<Node*,Node**>(StacKTempPair.first->_left,&((*StacKTempPair.second)->_left)));
                     }
                 }
             }
@@ -2346,7 +2346,7 @@ namespace my_template
                                 _ROOT_Temp_right_min = _ROOT_Temp_right_min->_left;
                             }
                             //找到最左节点	
-                            my_template::algorithm::swap(ROOT_Temp->_data,_ROOT_Temp_right_min->_data);
+                            template_container::algorithm::swap(ROOT_Temp->_data,_ROOT_Temp_right_min->_data);
                             //因为右树最左节点已经被删，但是还需要把被删的上一节点的左子树指向被删节点的右子树，不管右子树有没有节点都要连接上
                             if(_ROOT_Temp_test_Parent == ROOT_Temp)
                             {
@@ -2432,7 +2432,7 @@ namespace my_template
                     Clear();
                     com = BinarySearchTreeTemp.com;
                     BSTree BinarySearchTreeTempCopy = BinarySearchTreeTemp;
-                    my_template::algorithm::swap(BinarySearchTreeTempCopy._ROOT,_ROOT);
+                    template_container::algorithm::swap(BinarySearchTreeTempCopy._ROOT,_ROOT);
                 }
                 return *this;
             }
@@ -2451,8 +2451,8 @@ namespace my_template
 
         };
         /*############################     AVLTree 容器     ############################*/
-        template <typename AVLTreeTypeK,typename AVLTreeTypeV,typename CompareImitationFunctionsAVL = my_template::imitation_functions::Less <AVLTreeTypeK>,
-        typename AVLSyntheticClass = my_template::practicality::pair<AVLTreeTypeK,AVLTreeTypeV> >
+        template <typename AVLTreeTypeK,typename AVLTreeTypeV,typename CompareImitationFunctionsAVL = template_container::imitation_functions::Less <AVLTreeTypeK>,
+        typename AVLSyntheticClass = template_container::practicality::pair<AVLTreeTypeK,AVLTreeTypeV> >
         class AVLTree
         {
         private:
@@ -2792,7 +2792,7 @@ namespace my_template
                 }
                 else
                 {
-                    my_template::StackAdapter::Stack<Node*> StackTemp;
+                    template_container::stack_a::Stack<Node*> StackTemp;
                     //前序释放
                     StackTemp.Push(_ROOT);
                     while(!StackTemp.Empty())
@@ -2822,7 +2822,7 @@ namespace my_template
                     return;
                 }
                 Node* _PreOrderTraversalTest = ROOT_Temp;
-                my_template::StackAdapter::Stack<Node*> stack_Temp;
+                template_container::stack_a::Stack<Node*> stack_Temp;
                 stack_Temp.Push(_PreOrderTraversalTest);
                 //不能添加|| _PreOrderTraversalTest != nullptr ，因为最后一层循环后_Pre_order_traversal_test还是为真后面循环无意义，反之还会破环性质
                 while( !stack_Temp.Empty() )
@@ -2845,7 +2845,7 @@ namespace my_template
             void _MiddleOrderTraversal(Node* ROOT_Temp)
             {
                 //中序遍历函数
-                my_template::StackAdapter::Stack<Node*> StackTemp;
+                template_container::stack_a::Stack<Node*> StackTemp;
                 while(ROOT_Temp != nullptr || !StackTemp.Empty())
                 {
                     while(ROOT_Temp!= nullptr)
@@ -2876,7 +2876,7 @@ namespace my_template
                 else
                 {
                     Node* _PreOrderTraversalTest = _ROOT;
-                    my_template::StackAdapter::Stack<Node*> stack_Temp;
+                    template_container::stack_a::Stack<Node*> stack_Temp;
                     stack_Temp.Push(_PreOrderTraversalTest);
                     while( !stack_Temp.Empty() )
                     {
@@ -2985,7 +2985,7 @@ namespace my_template
                 }
 
                 // 使用单栈，存储源节点和目标父节点（均为一级指针）
-                my_template::StackAdapter::Stack<my_template::practicality::pair<Node*, Node*>> Stack;
+                template_container::stack_a::Stack<template_container::practicality::pair<Node*, Node*>> Stack;
                 
                 // 创建根节点
                 _ROOT = new Node(AVLTreeTemp._ROOT->_data);
@@ -2995,11 +2995,11 @@ namespace my_template
                 // 初始化栈，将根节点的子节点压入（注意：这里父节点是 _ROOT，一级指针）
                 if (AVLTreeTemp._ROOT->_right != nullptr)
                 {
-                    Stack.Push(my_template::practicality::pair<Node*, Node*>(AVLTreeTemp._ROOT->_right, _ROOT));
+                    Stack.Push(template_container::practicality::pair<Node*, Node*>(AVLTreeTemp._ROOT->_right, _ROOT));
                 }
                 if (AVLTreeTemp._ROOT->_left != nullptr)
                 {
-                    Stack.Push(my_template::practicality::pair<Node*, Node*>(AVLTreeTemp._ROOT->_left, _ROOT));
+                    Stack.Push(template_container::practicality::pair<Node*, Node*>(AVLTreeTemp._ROOT->_left, _ROOT));
                 }
 
                 // 遍历并复制剩余节点
@@ -3035,11 +3035,11 @@ namespace my_template
                     // 处理子节点（注意：压栈时父节点是 new_node，一级指针）
                     if (SourceNode->_right != nullptr)
                     {
-                        Stack.Push(my_template::practicality::pair<Node*, Node*>(SourceNode->_right, NewNode));
+                        Stack.Push(template_container::practicality::pair<Node*, Node*>(SourceNode->_right, NewNode));
                     }
                     if (SourceNode->_left != nullptr)
                     {
-                        Stack.Push(my_template::practicality::pair<Node*, Node*>(SourceNode->_left, NewNode));
+                        Stack.Push(template_container::practicality::pair<Node*, Node*>(SourceNode->_left, NewNode));
                     }
                 }
             }
@@ -3070,8 +3070,8 @@ namespace my_template
                 {
                     return *this;
                 }
-                my_template::algorithm::swap(com,AVLTreeTemp.com);
-                my_template::algorithm::swap(_ROOT,AVLTreeTemp._ROOT);
+                template_container::algorithm::swap(com,AVLTreeTemp.com);
+                template_container::algorithm::swap(_ROOT,AVLTreeTemp._ROOT);
                 return *this;
             }
             ~AVLTree()
@@ -3406,7 +3406,7 @@ namespace my_template
                         _right_parent = _right_min;
                         _right_min = _right_min->_left;
                     }
-                    my_template::algorithm::swap(_right_min->_data,ROOT_Temp->_data);
+                    template_container::algorithm::swap(_right_min->_data,ROOT_Temp->_data);
                     if (_right_parent == ROOT_Temp) 
                     {
                         _right_parent->_right = (_right_min->_right != nullptr) ? _right_min->_right : nullptr;
@@ -3477,11 +3477,11 @@ namespace my_template
         };
     }
     /*############################     基类容器命名空间     ############################*/
-    namespace BaseClassContainer
+    namespace base_class_c
     {
         /*############################     RBTree 容器     ############################*/
         template <typename RBTreeTypeKey, typename RBTreeTypeVal, typename DataExtractionFunction,
-        typename CompareImitationFunctionsRB = my_template::imitation_functions::Less<RBTreeTypeKey> >
+        typename CompareImitationFunctionsRB = template_container::imitation_functions::Less<RBTreeTypeKey> >
         class RBTree
         {
         private:
@@ -3766,7 +3766,7 @@ namespace my_template
                 }
                 else
                 {
-                    my_template::StackAdapter::Stack<Node*> _stack;
+                    template_container::stack_a::Stack<Node*> _stack;
                     _stack.Push(_clear_Temp);
                     while ( !_stack.Empty() )
                     {
@@ -3788,7 +3788,7 @@ namespace my_template
             void _MiddleOrderTraversal(Node* ROOT_Temp)
             {
                 //中序遍历函数
-                my_template::StackAdapter::Stack<Node*> StackTemp;
+                template_container::stack_a::Stack<Node*> StackTemp;
                 while(ROOT_Temp != nullptr || !StackTemp.Empty())
                 {
                     while(ROOT_Temp!= nullptr)
@@ -3811,7 +3811,7 @@ namespace my_template
                     return;
                 }
                 Node* _PreOrderTraversalTest = ROOT_Temp;
-                my_template::StackAdapter::Stack<Node*> stack_Temp;
+                template_container::stack_a::Stack<Node*> stack_Temp;
                 stack_Temp.Push(_PreOrderTraversalTest);
                 while( !stack_Temp.Empty() )
                 {
@@ -3852,7 +3852,7 @@ namespace my_template
                     return size;
                 }
                 Node* _PreOrderTraversalTest = ROOT_Temp;
-                my_template::StackAdapter::Stack<Node*> stack_Temp;
+                template_container::stack_a::Stack<Node*> stack_Temp;
                 stack_Temp.Push(_PreOrderTraversalTest);
                 while( !stack_Temp.Empty() )
                 {
@@ -3878,7 +3878,7 @@ namespace my_template
             using reverse_iterator = RBTreeReverseIterator<iterator>;
             using const_reverse_iterator = RBTreeReverseIterator<const_iterator>;
 
-            using insert_result = my_template::practicality::pair<iterator,bool>;
+            using insert_result = template_container::practicality::pair<iterator,bool>;
             RBTree()
             {
                 _ROOT = nullptr;
@@ -3911,7 +3911,7 @@ namespace my_template
                     else
                     {
                         // 使用单栈，存储源节点和目标父节点（均为一级指针）
-                        my_template::StackAdapter::Stack<my_template::practicality::pair<Node*, Node*>> Stack;
+                        template_container::stack_a::Stack<template_container::practicality::pair<Node*, Node*>> Stack;
                         
                         // 创建根节点
                         _ROOT = new Node(RBTreeTemp._ROOT->_data);
@@ -3921,11 +3921,11 @@ namespace my_template
                         // 初始化栈，将根节点的子节点压入（注意：这里父节点是 _ROOT，一级指针）
                         if (RBTreeTemp._ROOT->_right != nullptr)
                         {
-                            Stack.Push(my_template::practicality::pair<Node*, Node*>(RBTreeTemp._ROOT->_right, _ROOT));
+                            Stack.Push(template_container::practicality::pair<Node*, Node*>(RBTreeTemp._ROOT->_right, _ROOT));
                         }
                         if (RBTreeTemp._ROOT->_left != nullptr)
                         {
-                            Stack.Push(my_template::practicality::pair<Node*, Node*>(RBTreeTemp._ROOT->_left, _ROOT));
+                            Stack.Push(template_container::practicality::pair<Node*, Node*>(RBTreeTemp._ROOT->_left, _ROOT));
                         }
 
                         // 遍历并复制剩余节点
@@ -3961,11 +3961,11 @@ namespace my_template
                             // 处理子节点（注意：压栈时父节点是 new_node，一级指针）
                             if (SourceNode->_right != nullptr)
                             {
-                                Stack.Push(my_template::practicality::pair<Node*, Node*>(SourceNode->_right, NewNode));
+                                Stack.Push(template_container::practicality::pair<Node*, Node*>(SourceNode->_right, NewNode));
                             }
                             if (SourceNode->_left != nullptr)
                             {
-                                Stack.Push(my_template::practicality::pair<Node*, Node*>(SourceNode->_left, NewNode));
+                                Stack.Push(template_container::practicality::pair<Node*, Node*>(SourceNode->_left, NewNode));
                             }
                         }
                     }
@@ -3980,9 +3980,9 @@ namespace my_template
                 else
                 {
                     Clear(_ROOT);
-                    my_template::algorithm::swap(RBTreeTemp._ROOT,_ROOT);
-                    my_template::algorithm::swap(RBTreeTemp.Element,Element);
-                    my_template::algorithm::swap(RBTreeTemp.com,com);
+                    template_container::algorithm::swap(RBTreeTemp._ROOT,_ROOT);
+                    template_container::algorithm::swap(RBTreeTemp.Element,Element);
+                    template_container::algorithm::swap(RBTreeTemp.com,com);
                     return *this;
                 }
             }
@@ -4073,7 +4073,7 @@ namespace my_template
                                 if(ROOT_Temp == ROOT_Temp_Parent->_right)
                                 {
                                     LeftRevolve(ROOT_Temp_Parent);
-                                    my_template::algorithm::swap(ROOT_Temp,ROOT_Temp_Parent);
+                                    template_container::algorithm::swap(ROOT_Temp,ROOT_Temp_Parent);
                                     // ROOT_Temp = ROOT_Temp_Parent;
                                     //折线调整，交换位置调整为情况2
                                 }
@@ -4102,7 +4102,7 @@ namespace my_template
                                 if(ROOT_Temp == ROOT_Temp_Parent->_left)
                                 {
                                     RightRevolve(ROOT_Temp_Parent);
-                                    my_template::algorithm::swap(ROOT_Temp,ROOT_Temp_Parent);
+                                    template_container::algorithm::swap(ROOT_Temp,ROOT_Temp_Parent);
                                     // ROOT_Temp = ROOT_Temp_Parent;
                                     //交换指针转换为单旋
                                 }
@@ -4360,8 +4360,8 @@ namespace my_template
                         DeleteColor = _right_min->_color;
 
                         // 交换数据 AND 交换颜色
-                        my_template::algorithm::swap(_right_min->_data,  ROOT_Temp->_data);
-                        my_template::algorithm::swap(_right_min->_color, ROOT_Temp->_color);
+                        template_container::algorithm::swap(_right_min->_data,  ROOT_Temp->_data);
+                        template_container::algorithm::swap(_right_min->_color, ROOT_Temp->_color);
 
                         // 然后正确地把后继节点的位置接到它父节点上：
                         if (_right_parent->_left == _right_min) 
@@ -4526,7 +4526,7 @@ namespace my_template
             size_t _size;                                             //哈希表大小
             size_t LoadFactor;                                        //负载因子   
             size_t Capacity;                                          //哈希表容量
-            my_template::vector_container::vector<Node*> _HashTable;    //哈希表
+            template_container::vector_c::vector<Node*> _HashTable;    //哈希表
             HashTableFunction hash_function;                           //哈希函数
             Node* PreviousData = nullptr;                             //上一个数据
             Node* HeadData = nullptr;                                 //插入头数据
@@ -4717,7 +4717,7 @@ namespace my_template
                     //扩容
                     size_t NewCapacity = (Capacity == 0 && _HashTable.size() == 0) ? 10 : Capacity * 2;
                     //新容量
-                    my_template::vector_container::vector<Node*> _NewHashTable;
+                    template_container::vector_c::vector<Node*> _NewHashTable;
                     _NewHashTable.Resize(NewCapacity,nullptr);
                     size_t _New_size = 0;
                     //重新映射,按照插入链表顺序
@@ -4895,7 +4895,7 @@ namespace my_template
         /*############################     BitSet 容器     ############################*/
         class BitSet
         {
-            my_template::vector_container::vector<int> _BitSet;
+            template_container::vector_c::vector<int> _BitSet;
             size_t _size;
         public:
             BitSet() {  ;  }
@@ -4962,12 +4962,12 @@ namespace my_template
         };
     }
     /*############################     tree_map 容器     ############################*/
-    namespace MapContainer
+    namespace map_c
     {
         template <typename MapTypeK,typename MapTypeV>
         class tree_map
         {
-            using KeyValType = my_template::practicality::pair<MapTypeK,MapTypeV>;
+            using KeyValType = template_container::practicality::pair<MapTypeK,MapTypeV>;
             struct Key_Val
             {
                 const MapTypeK& operator()(const KeyValType& TempKey)
@@ -4975,7 +4975,7 @@ namespace my_template
                     return TempKey.first;
                 }
             };
-            using RBTREE = BaseClassContainer::RBTree <MapTypeK,KeyValType,Key_Val>;
+            using RBTREE = base_class_c::RBTree <MapTypeK,KeyValType,Key_Val>;
             RBTREE ROOTMap;
         public:
             using iterator = typename RBTREE::iterator;
@@ -4983,7 +4983,7 @@ namespace my_template
             using reverse_iterator = typename RBTREE::reverse_iterator;
             using const_reverse_iterator = typename RBTREE::const_reverse_iterator;
             
-            using Map_iterator = my_template::practicality::pair<iterator,bool>;
+            using Map_iterator = template_container::practicality::pair<iterator,bool>;
             ~tree_map()
             {
                 ROOTMap.~RBTree();
@@ -5028,7 +5028,7 @@ namespace my_template
         template <typename UnorderedMapTypeK,typename UnorderedMapTypeV>
         class hash_map
         {
-            using KeyValType = my_template::practicality::pair<UnorderedMapTypeK,UnorderedMapTypeV>;
+            using KeyValType = template_container::practicality::pair<UnorderedMapTypeK,UnorderedMapTypeV>;
             struct Key_Val
             {
                 const UnorderedMapTypeK& operator()(const KeyValType& TempKey)
@@ -5041,14 +5041,14 @@ namespace my_template
             public:
                 size_t operator()(const KeyValType& TempKey)
                 {
-                    size_t num_One =  my_template::imitation_functions::hash_imitation_functions()(TempKey.first);
+                    size_t num_One =  template_container::imitation_functions::hash_imitation_functions()(TempKey.first);
                     num_One = num_One * 31;
-                    size_t num_Two =  my_template::imitation_functions::hash_imitation_functions()(TempKey.second);
+                    size_t num_Two =  template_container::imitation_functions::hash_imitation_functions()(TempKey.second);
                     num_Two = num_Two * 31;
                     return (num_One + num_Two);
                 }
             };
-            using HashTable = BaseClassContainer::HashTable<UnorderedMapTypeK,KeyValType,Key_Val,Hash_Functor>;
+            using HashTable = base_class_c::HashTable<UnorderedMapTypeK,KeyValType,Key_Val,Hash_Functor>;
             HashTable HashMap;
         public:
             using iterator = typename HashTable::iterator;
@@ -5071,7 +5071,7 @@ namespace my_template
         };
     }
     /*############################     tree_set 容器     ############################*/
-    namespace SetContainer
+    namespace set_c
     {
         template <typename SetTypeK>
         class tree_set
@@ -5085,7 +5085,7 @@ namespace my_template
                     return TempKey;
                 }
             };
-            using RBTREE = BaseClassContainer::RBTree<SetTypeK,KeyValType,Key_Val>;
+            using RBTREE = base_class_c::RBTree<SetTypeK,KeyValType,Key_Val>;
             RBTREE ROOTSet;
         public:
             using iterator = typename RBTREE::iterator;
@@ -5093,7 +5093,7 @@ namespace my_template
             using reverse_iterator = typename RBTREE::reverse_iterator;
             using const_reverse_iterator = typename RBTREE::const_reverse_iterator;
             
-            using Set_iterator = my_template::practicality::pair<iterator,bool>;
+            using Set_iterator = template_container::practicality::pair<iterator,bool>;
             tree_set& operator=(const tree_set& SetTemp)             
             {  
                 if(this!= &SetTemp)                     
@@ -5141,7 +5141,7 @@ namespace my_template
             public:
                 size_t operator()(const KeyValType& TempKey)
                 {
-                    return my_template::imitation_functions::hash_imitation_functions()(TempKey)* 131;
+                    return template_container::imitation_functions::hash_imitation_functions()(TempKey)* 131;
                 }
             };
             class Key_Val
@@ -5152,7 +5152,7 @@ namespace my_template
                     return TempKey;
                 }
             };
-            using HashTable = my_template::BaseClassContainer::HashTable<UnorderedSetTypeK,KeyValType,Key_Val,Hash_Functor>;
+            using HashTable = template_container::base_class_c::HashTable<UnorderedSetTypeK,KeyValType,Key_Val,Hash_Functor>;
             HashTable HashSet;
         public:
             using iterator = typename HashTable::iterator;
@@ -5175,13 +5175,13 @@ namespace my_template
         };
     }
     /*############################     BloomFilter 容器     ############################*/
-    namespace BloomFilterContainer
+    namespace bloom_filter_c
     {
-        template <typename BloomFilterTypeVal,typename HashFunctorBloomFilter = my_template::algorithm::hash_algorithm::hash_function<BloomFilterTypeVal> >
+        template <typename BloomFilterTypeVal,typename HashFunctorBloomFilter = template_container::algorithm::hash_algorithm::hash_function<BloomFilterTypeVal> >
         class BloomFilter
         {
             HashFunctorBloomFilter   _Hash;
-            using BitSet = my_template::BaseClassContainer::BitSet;
+            using BitSet = template_container::base_class_c::BitSet;
             BitSet VectorBitSet;
             size_t _Capacity;
         public:
@@ -5228,3 +5228,4 @@ namespace my_template
         };
     }
 }
+using tc  = template_container;
