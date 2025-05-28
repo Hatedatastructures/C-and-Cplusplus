@@ -827,7 +827,7 @@ namespace my_template
         }
     }
     /*############################     vector容器     ############################*/
-    namespace VectorContainer
+    namespace vector_container
     {
         template <typename VectorType>
         class vector
@@ -1552,7 +1552,7 @@ namespace my_template
     /*############################     stack适配器     ############################*/
     namespace StackAdapter
     {
-        template <typename StaicType,typename ContainerStaic = my_template::VectorContainer::vector<StaicType>>
+        template <typename StaicType,typename ContainerStaic = my_template::vector_container::vector<StaicType>>
         class Stack
         {
         private:
@@ -1708,7 +1708,7 @@ namespace my_template
         /*############################     PriorityQueue 适配器     ############################*/
         template <typename PriorityQueueType,
         typename ImitationFunctionParameter = my_template::imitation_functions::Less<PriorityQueueType>,
-        typename ContainerPriorityQueue = my_template::VectorContainer::vector<PriorityQueueType>>
+        typename ContainerPriorityQueue = my_template::vector_container::vector<PriorityQueueType>>
         class PriorityQueue
         {
             //创建容器对象
@@ -4324,7 +4324,7 @@ namespace my_template
             size_t _size;                                               //哈希表大小
             size_t LoadFactor;                                         //负载因子   
             size_t Capacity;                                            //哈希表容量
-            my_template::VectorContainer::vector<Node*> _HashTable;   //哈希表
+            my_template::vector_container::vector<Node*> _HashTable;   //哈希表
             DataExtractionFunction DataExtractionFunction;           //哈希函数
             Node* PreviousData = nullptr;                             //上一个数据
             Node* HeadData = nullptr;                                 //插入头数据
@@ -4515,7 +4515,7 @@ namespace my_template
                     //扩容
                     size_t NewCapacity = (Capacity == 0 && _HashTable.size() == 0) ? 10 : Capacity * 2;
                     //新容量
-                    my_template::VectorContainer::vector<Node*> _New_Hash_Table;
+                    my_template::vector_container::vector<Node*> _New_Hash_Table;
                     _New_Hash_Table.Resize(NewCapacity,nullptr);
                     size_t _New_size = 0;
                     //重新映射,按照插入链表顺序
@@ -4693,7 +4693,7 @@ namespace my_template
         /*############################     BitSet 容器     ############################*/
         class BitSet
         {
-            my_template::VectorContainer::vector<int> _BitSet;
+            my_template::vector_container::vector<int> _BitSet;
             size_t _size;
         public:
             BitSet() {  ;  }
