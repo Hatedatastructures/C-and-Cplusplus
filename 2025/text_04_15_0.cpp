@@ -79,7 +79,7 @@ namespace wa
         //创建反向迭代器
         typedef typename iterator::reference Ref;
         typedef typename iterator::pointer Ptr;
-        typedef _Reverse_list_iterator_<iterator> _const_reverse_list_iterator;
+        typedef _Reverse_list_iterator_<iterator> ConstReverseListIterator;
     public:
         iterator _it;
         _Reverse_list_iterator_(iterator it)
@@ -122,7 +122,7 @@ namespace wa
             ++_it;
             return _temp;
         }
-        bool operator!=(const _const_reverse_list_iterator& _temp_)
+        bool operator!=(const ConstReverseListIterator& _temp_)
         {
             return _it != _temp_._it;
         }

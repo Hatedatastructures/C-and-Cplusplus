@@ -1244,7 +1244,7 @@ namespace MyTemplate
                 //创建反向迭代器
                 using  Ref = typename iterator::reference;
                 using  Ptr = typename iterator::pointer ;
-                using  _const_reverse_list_iterator = ReverselistIterator<iterator>;
+                using  ConstReverseListIterator = ReverselistIterator<iterator>;
             public:
                 iterator _it;
                 ReverselistIterator(iterator it) noexcept
@@ -1287,7 +1287,7 @@ namespace MyTemplate
                     ++_it;
                     return _temp;
                 }
-                bool operator!=(const _const_reverse_list_iterator& Temp) noexcept
+                bool operator!=(const ConstReverseListIterator& Temp) noexcept
                 {
                     return _it != Temp._it;
                 }
@@ -1333,7 +1333,7 @@ namespace MyTemplate
                 CreateHead();
                 for(auto& e:ListTemp)
                 {
-                    PushBack(e);
+                    PushBack(std::move(e));
                 }
             }
             List(const_iterator first , const_iterator last)
@@ -2425,7 +2425,7 @@ namespace MyTemplate
             Node* _ROOT;
 
             CompareImitationFunctionsAVL com;
-            void LeftRevolve(Node*& parentTempNode)
+            void LeftRevolve(Node*& ParentTempNode)
             {
                 //传进来的值是发现该树平衡性被破坏的节点地址
                 //大致思想：因为这是左单旋，所以找传进来的父亲节点的右根节点来当调整节点
@@ -2433,33 +2433,33 @@ namespace MyTemplate
                 //再把父亲节点赋值给调整节点的左根节点，！！注意：在旋转的过程中还要处理每个调整节点的父亲节点的指向和平衡因子
 
                 // {
-                //     Node* SubRightTemp = parentTempNode->_right;
-                //     parentTempNode->_right = SubRightTemp->_left;
-                //     SubRightTemp->_left = parentTempNode;
+                //     Node* SubRightTemp = ParentTempNode->_right;
+                //     ParentTempNode->_right = SubRightTemp->_left;
+                //     SubRightTemp->_left = ParentTempNode;
                 //     //错误写法：未同步调整父亲节点和判断调整节点的左根节点是否为空，以及全部需要调整节点的父亲指针的指针的指向
                 // }
-                if(parentTempNode == nullptr|| parentTempNode->_right == nullptr)
+                if(ParentTempNode == nullptr|| ParentTempNode->_right == nullptr)
                 {
                     std::cout <<"left "<< "空指针"  <<std::endl;
                     return ;
                 }
-                Node* SubRightTemp = parentTempNode->_right;
+                Node* SubRightTemp = ParentTempNode->_right;
                 // Node* SubRightLeftTemp = SubRightTemp->_left;
                 Node* SubRightLeftTemp = (SubRightTemp->_left)? SubRightTemp->_left : nullptr;
                 //防止空指针解引用
-                parentTempNode->_right = SubRightLeftTemp;
+                ParentTempNode->_right = SubRightLeftTemp;
                 if(SubRightLeftTemp)
                 {
-                    SubRightLeftTemp->_parent = parentTempNode;
+                    SubRightLeftTemp->_parent = ParentTempNode;
                     //如果Sub_right_left_temp(调整节点的左根节点)不等于空，还需要调整Sub_right_left_temp它的父亲节点
                 }
-                SubRightTemp->_left = parentTempNode;
+                SubRightTemp->_left = ParentTempNode;
                 //这里先保存一下parent_temp_Node的父亲地址，防止到下面else比较的时候丢失
-                Node* ParentParentTempNode = parentTempNode->_parent;
-                parentTempNode->_parent = SubRightTemp;
+                Node* ParentParentTempNode = ParentTempNode->_parent;
+                ParentTempNode->_parent = SubRightTemp;
                 //更新parent_temp_Node节点指向正确的地址
 
-                if(_ROOT == parentTempNode)
+                if(_ROOT == ParentTempNode)
                 {
                     //如果要调整的节点是根根节点，直接把调整节点赋值给根节点，然后把调整节点的父亲节点置空
                     _ROOT = SubRightTemp;
@@ -2468,7 +2468,7 @@ namespace MyTemplate
                 else
                 {
                     //调整前parent_temp_Node是这个树的根现在是Sub_right_temp是这个树的根
-                    if(ParentParentTempNode->_left == parentTempNode)
+                    if(ParentParentTempNode->_left == ParentTempNode)
                     {
                         ParentParentTempNode->_left = SubRightTemp;
                     }
@@ -2478,38 +2478,38 @@ namespace MyTemplate
                     }
                     SubRightTemp->_parent = ParentParentTempNode;
                 }
-                parentTempNode->_BalanceFactor = SubRightTemp->_BalanceFactor = 0;
+                ParentTempNode->_BalanceFactor = SubRightTemp->_BalanceFactor = 0;
             }
 
-            void RightRevolve(Node*& parentTempNode)
+            void RightRevolve(Node*& ParentTempNode)
             {
                 //思路同左单旋思路差不多
-                if(parentTempNode == nullptr|| parentTempNode->_left == nullptr)
+                if(ParentTempNode == nullptr|| ParentTempNode->_left == nullptr)
                 {
                     std::cout <<"right "<< "空指针"  <<std::endl; 
                     return ;
                 }
-                Node* SubLeftTemp = parentTempNode->_left;
+                Node* SubLeftTemp = ParentTempNode->_left;
                 Node* SubLeftRightTemp = (SubLeftTemp->_right) ? SubLeftTemp->_right : nullptr;
                 //防止空指针解引用
-                parentTempNode->_left = SubLeftRightTemp;
+                ParentTempNode->_left = SubLeftRightTemp;
                 if(SubLeftRightTemp)
                 {
-                    SubLeftRightTemp->_parent = parentTempNode;
+                    SubLeftRightTemp->_parent = ParentTempNode;
                 }
-                SubLeftTemp->_right = parentTempNode;
+                SubLeftTemp->_right = ParentTempNode;
                 //保存parent_temp_Node的父亲节点
-                Node* ParentParentTempNode = parentTempNode->_parent;
-                parentTempNode->_parent = SubLeftTemp;
+                Node* ParentParentTempNode = ParentTempNode->_parent;
+                ParentTempNode->_parent = SubLeftTemp;
 
-                if(_ROOT == parentTempNode)
+                if(_ROOT == ParentTempNode)
                 {
                     _ROOT = SubLeftTemp;
                     SubLeftTemp->_parent = nullptr;
                 }
                 else
                 {
-                    if(ParentParentTempNode->_left == parentTempNode)
+                    if(ParentParentTempNode->_left == ParentTempNode)
                     {
                         ParentParentTempNode->_left = SubLeftTemp;
                     }
@@ -2519,72 +2519,72 @@ namespace MyTemplate
                     }
                     SubLeftTemp->_parent = ParentParentTempNode;
                 }
-                parentTempNode->_BalanceFactor = SubLeftTemp->_BalanceFactor = 0;
+                ParentTempNode->_BalanceFactor = SubLeftTemp->_BalanceFactor = 0;
             }
-            void RightLeftRevolve(Node*& parentTempNode)
+            void RightLeftRevolve(Node*& ParentTempNode)
             {
-                if(parentTempNode==nullptr || parentTempNode->_right == nullptr)
+                if(ParentTempNode==nullptr || ParentTempNode->_right == nullptr)
                 {
                     std::cout <<"right_left "<< "空指针"  <<std::endl;
                     return;
                 }
-                Node* SubRightTemp = parentTempNode->_right;
+                Node* SubRightTemp = ParentTempNode->_right;
                 Node* SubRightLeftTemp = SubRightTemp->_left;
                 int BalanceFactorTemp = SubRightLeftTemp->_BalanceFactor;
 
-                RightRevolve(parentTempNode->_right);
+                RightRevolve(ParentTempNode->_right);
                 //右旋
-                LeftRevolve(parentTempNode);
+                LeftRevolve(ParentTempNode);
                 //左旋
                 if(BalanceFactorTemp == -1)
                 {
-                    parentTempNode->_BalanceFactor = 0;
+                    ParentTempNode->_BalanceFactor = 0;
                     SubRightTemp->_BalanceFactor = 1;
                     SubRightLeftTemp->_BalanceFactor = 0;
                 }
                 else if(BalanceFactorTemp == 1)
                 {
-                    parentTempNode->_BalanceFactor = -1;
+                    ParentTempNode->_BalanceFactor = -1;
                     SubRightTemp->_BalanceFactor = 0;
                     SubRightLeftTemp->_BalanceFactor = 0;
                 }
                 else
                 {
-                    parentTempNode->_BalanceFactor = 0;
+                    ParentTempNode->_BalanceFactor = 0;
                     SubRightTemp->_BalanceFactor = 0;
                     SubRightLeftTemp->_BalanceFactor = 0;
                 }
             }
-            void LeftRightRevolve(Node*& parentTempNode)
+            void LeftRightRevolve(Node*& ParentTempNode)
             {   
-                if(parentTempNode == nullptr || parentTempNode->_left == nullptr)
+                if(ParentTempNode == nullptr || ParentTempNode->_left == nullptr)
                 {
                     std::cout << "left_right " << "空指针" << std::endl;
                     return ;
                 }
-                Node* SubLeftTemp = parentTempNode->_left;
+                Node* SubLeftTemp = ParentTempNode->_left;
                 Node* SubLeftRightTemp = SubLeftTemp->_right;
                 int BalanceFactorTemp = SubLeftRightTemp->_BalanceFactor;
 
-                LeftRevolve(parentTempNode->_left);
+                LeftRevolve(ParentTempNode->_left);
                 //左旋
-                RightRevolve(parentTempNode);
+                RightRevolve(ParentTempNode);
                 //右旋
                 if(BalanceFactorTemp == -1)
                 {
-                    parentTempNode->_BalanceFactor = 0;
+                    ParentTempNode->_BalanceFactor = 0;
                     SubLeftTemp->_BalanceFactor = 1;
                     SubLeftRightTemp->_BalanceFactor = 0;
                 }
                 else if(BalanceFactorTemp == 1)
                 {
-                    parentTempNode->_BalanceFactor = -1;
+                    ParentTempNode->_BalanceFactor = -1;
                     SubLeftTemp->_BalanceFactor = 0;
                     SubLeftRightTemp->_BalanceFactor = 0;
                 }
                 else
                 {
-                    parentTempNode->_BalanceFactor = 0;
+                    ParentTempNode->_BalanceFactor = 0;
                     SubLeftTemp->_BalanceFactor = 0;
                     SubLeftRightTemp->_BalanceFactor = 0;
                 }
@@ -3471,7 +3471,7 @@ namespace MyTemplate
             Node* _ROOT;
             DataExtractionFunction Element;
             CompareImitationFunctionsRB com;
-            void LeftRevolve(Node* parentTempNode)
+            void LeftRevolve(Node* ParentTempNode)
             {
                 //传进来的值是发现该树平衡性被破坏的节点地址
                 //大致思想：因为这是左单旋，所以找传进来的父亲节点的右根节点来当调整节点
@@ -3479,33 +3479,33 @@ namespace MyTemplate
                 //再把父亲节点赋值给调整节点的左根节点，！！注意：在旋转的过程中还要处理每个调整节点的父亲节点的指向和平衡因子
 
                 // {
-                //     Node* SubRightTemp = parentTempNode->_right;
-                //     parentTempNode->_right = SubRightTemp->_left;
-                //     SubRightTemp->_left = parentTempNode;
+                //     Node* SubRightTemp = ParentTempNode->_right;
+                //     ParentTempNode->_right = SubRightTemp->_left;
+                //     SubRightTemp->_left = ParentTempNode;
                 //     //错误写法：未同步调整父亲节点和判断调整节点的左根节点是否为空，以及全部需要调整节点的父亲指针的指针的指向
                 // }
-                if(parentTempNode == nullptr|| parentTempNode->_right == nullptr)
+                if(ParentTempNode == nullptr|| ParentTempNode->_right == nullptr)
                 {
                     std::cout <<"left "<< "空指针"  <<std::endl;
                     return ;
                 }
-                Node* SubRightTemp = parentTempNode->_right;
+                Node* SubRightTemp = ParentTempNode->_right;
                 // Node* SubRightLeftTemp = SubRightTemp->_left;
                 Node* SubRightLeftTemp = (SubRightTemp->_left)? SubRightTemp->_left : nullptr;
                 //防止空指针解引用
-                parentTempNode->_right = SubRightLeftTemp;
+                ParentTempNode->_right = SubRightLeftTemp;
                 if(SubRightLeftTemp)
                 {
-                    SubRightLeftTemp->_parent = parentTempNode;
+                    SubRightLeftTemp->_parent = ParentTempNode;
                     //如果Sub_right_left_temp(调整节点的左根节点)不等于空，还需要调整Sub_right_left_temp它的父亲节点
                 }
-                SubRightTemp->_left = parentTempNode;
+                SubRightTemp->_left = ParentTempNode;
                 //这里先保存一下parent_temp_Node的父亲地址，防止到下面else比较的时候丢失
-                Node* ParentParentTempNode = parentTempNode->_parent;
-                parentTempNode->_parent = SubRightTemp;
+                Node* ParentParentTempNode = ParentTempNode->_parent;
+                ParentTempNode->_parent = SubRightTemp;
                 //更新parent_temp_Node节点指向正确的地址
 
-                if(_ROOT == parentTempNode)
+                if(_ROOT == ParentTempNode)
                 {
                     //如果要调整的节点是根根节点，直接把调整节点赋值给根节点，然后把调整节点的父亲节点置空
                     _ROOT = SubRightTemp;
@@ -3514,7 +3514,7 @@ namespace MyTemplate
                 else
                 {
                     //调整前parent_temp_Node是这个树的根现在是Sub_right_temp是这个树的根
-                    if(ParentParentTempNode->_left == parentTempNode)
+                    if(ParentParentTempNode->_left == ParentTempNode)
                     {
                         ParentParentTempNode->_left = SubRightTemp;
                     }
@@ -3525,35 +3525,35 @@ namespace MyTemplate
                     SubRightTemp->_parent = ParentParentTempNode;
                 }
             }
-            void RightRevolve(Node*& parentTempNode)
+            void RightRevolve(Node*& ParentTempNode)
             {
                 //思路同左单旋思路差不多,但是相反
-                if(parentTempNode == nullptr|| parentTempNode->_left == nullptr)
+                if(ParentTempNode == nullptr|| ParentTempNode->_left == nullptr)
                 {
                     std::cout <<"right "<< "空指针"  <<std::endl; 
                     return ;
                 }
-                Node* SubLeftTemp = parentTempNode->_left;
+                Node* SubLeftTemp = ParentTempNode->_left;
                 Node* SubLeftRightTemp = (SubLeftTemp->_right) ? SubLeftTemp->_right : nullptr;
                 //防止空指针解引用
-                parentTempNode->_left = SubLeftRightTemp;
+                ParentTempNode->_left = SubLeftRightTemp;
                 if(SubLeftRightTemp)
                 {
-                    SubLeftRightTemp->_parent = parentTempNode;
+                    SubLeftRightTemp->_parent = ParentTempNode;
                 }
-                SubLeftTemp->_right = parentTempNode;
+                SubLeftTemp->_right = ParentTempNode;
                 //保存parent_temp_Node的父亲节点
-                Node* ParentParentTempNode = parentTempNode->_parent;
-                parentTempNode->_parent = SubLeftTemp;
+                Node* ParentParentTempNode = ParentTempNode->_parent;
+                ParentTempNode->_parent = SubLeftTemp;
 
-                if(_ROOT == parentTempNode)
+                if(_ROOT == ParentTempNode)
                 {
                     _ROOT = SubLeftTemp;
                     SubLeftTemp->_parent = nullptr;
                 }
                 else
                 {
-                    if(ParentParentTempNode->_left == parentTempNode)
+                    if(ParentParentTempNode->_left == ParentTempNode)
                     {
                         ParentParentTempNode->_left = SubLeftTemp;
                     }

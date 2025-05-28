@@ -1,7 +1,8 @@
 #include <iostream>
 #include <string>
 template<typename T>
-class Vector {
+class Vector 
+{
 private:
     T* _DataPointer;
     T* _SizePointer;

@@ -1209,7 +1209,7 @@ namespace MyTemplate
                 //创建反向迭代器
                 using  Ref = typename iterator::reference;
                 using  Ptr = typename iterator::pointer ;
-                using  _const_reverse_list_iterator = ReverselistIterator<iterator>;
+                using  ConstReverseListIterator = ReverselistIterator<iterator>;
             public:
                 iterator _it;
                 ReverselistIterator(iterator it)
@@ -1252,7 +1252,7 @@ namespace MyTemplate
                     ++_it;
                     return _temp;
                 }
-                bool operator!=(const _const_reverse_list_iterator& _temp_)
+                bool operator!=(const ConstReverseListIterator& _temp_)
                 {
                     return _it != _temp_._it;
                 }
