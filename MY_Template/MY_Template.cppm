@@ -2,30 +2,30 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
 #include <cstring>
-namespace MyTemplate
+namespace my_template
 {
-    namespace ImitationFunctions
+    namespace imitation_functions
     {
         //仿函数命名空间
-        template<typename ImitationFunctionsLess>
+        template<typename imitation_functions_less>
         class Less
         {
         public:
-            bool operator()(const ImitationFunctionsLess& _test1 ,const ImitationFunctionsLess& _test2)
+            bool operator()(const imitation_functions_less& _test1 ,const imitation_functions_less& _test2)
             {
                 return _test1 < _test2;
             }
         };
-        template<typename ImitationFunctionsGreater>
+        template<typename imitation_functions_greater>
         class Greater
         {
         public:
-            bool operator()(const ImitationFunctionsGreater& _test1 ,const ImitationFunctionsGreater& _test2)
+            bool operator()(const imitation_functions_greater& _test1 ,const imitation_functions_greater& _test2)
             {
                 return _test1 > _test2;
             }
         };
-        class HashImitationFunctions
+        class hash_imitation_functions
         {
         public:
             size_t operator()(const int data_str)                               {       return data_str;                }
@@ -41,7 +41,7 @@ namespace MyTemplate
             size_t operator()(const unsigned short data_unsigned_short)         {       return data_unsigned_short;     }
             
   
-            // size_t operator()(const MY_Template::StringContainer::string& data_string)
+            // size_t operator()(const MY_Template::string_container::string& data_string)
             // {
             //     size_t hash_value = 0;
             //     for(size_t i = 0; i < data_string._size; ++i)
@@ -53,10 +53,10 @@ namespace MyTemplate
             //有需要可以重载本文件的string容器和vector容器.list容器等计算哈希的函数
         };
     }
-    namespace Algorithm
+    namespace algorithm
     {
-        template <typename SourceSequenceCopy,typename TargetSequenceCopy>
-        TargetSequenceCopy copy(SourceSequenceCopy begin,SourceSequenceCopy end,TargetSequenceCopy first)
+        template <typename source_sequence_copy,typename target_sequence_copy>
+        target_sequence_copy copy(source_sequence_copy begin,source_sequence_copy end,target_sequence_copy first)
         {
             while(begin != end)
             {
@@ -67,8 +67,8 @@ namespace MyTemplate
             return first;
         }
         //返回下一个位置的迭代器，是否深浅拷贝取决于自定义类型重载和拷贝构造
-        template<typename SourceSequenceFind,typename TargetSequenceFind>
-        SourceSequenceFind Find(SourceSequenceFind begin,SourceSequenceFind end,const TargetSequenceFind& value)
+        template<typename source_sequence_find,typename target_sequence_find>
+        source_sequence_find find(source_sequence_find begin,source_sequence_find end,const target_sequence_find& value)
         {
             while(begin!= end)
             {
@@ -80,78 +80,78 @@ namespace MyTemplate
             }
             return end;
         } 
-        template<typename SwapDataType>
-        void Swap(SwapDataType& a,SwapDataType& b)
+        template<typename swap_data_type>
+        void swap(swap_data_type& a,swap_data_type& b)
         {
-            SwapDataType temp = a;
+            swap_data_type temp = a;
             a = b;
             b = temp;
         }
-        namespace HashAlgorithm
+        namespace hash_algorithm
         {
-            template <typename HashAlgorithmType ,typename Hash_IF = MyTemplate::ImitationFunctions::HashImitationFunctions>
-            class HashFunction
+            template <typename hash_algorithm_type ,typename hash_if = my_template::imitation_functions::hash_imitation_functions>
+            class hash_function
             {
             public:
-                Hash_IF HashImitationFunctionsObject;
-                size_t Hash_SDBMHash(const HashAlgorithmType& data_Hahs)
+                hash_if hash_imitation_functions_object;
+                size_t Hash_SDBMHash(const hash_algorithm_type& data_Hahs)
                 {
-                    size_t return_value = HashImitationFunctionsObject(data_Hahs);
+                    size_t return_value = hash_imitation_functions_object(data_Hahs);
                     return_value = 65599 * return_value;
                     return return_value;
                 }
-                size_t Hash_BKDRHash(const HashAlgorithmType& data_Hahs)
+                size_t Hash_BKDRHash(const hash_algorithm_type& data_Hahs)
                 {
-                    size_t return_value = HashImitationFunctionsObject(data_Hahs);
+                    size_t return_value = hash_imitation_functions_object(data_Hahs);
                     return_value = 131 * return_value;
                     return return_value;
                 }
-                size_t Hash_DJBHash(const HashAlgorithmType& data_Hahs)
+                size_t Hash_DJBHash(const hash_algorithm_type& data_Hahs)
                 {
-                    size_t return_value = HashImitationFunctionsObject(data_Hahs);
+                    size_t return_value = hash_imitation_functions_object(data_Hahs);
                     return_value = 33 * return_value;
                     return return_value;
                 }
-                size_t Hash_APHash(const HashAlgorithmType& data_Hahs)
+                size_t Hash_APHash(const hash_algorithm_type& data_Hahs)
                 {
-                    size_t return_value = HashImitationFunctionsObject(data_Hahs);
+                    size_t return_value = hash_imitation_functions_object(data_Hahs);
                     return_value = return_value * 1031;
                     return return_value;
                 }
-                size_t Hash_PJWHash(const HashAlgorithmType& data_Hahs)
+                size_t Hash_PJWHash(const hash_algorithm_type& data_Hahs)
                 {
-                    size_t return_value = HashImitationFunctionsObject(data_Hahs);
+                    size_t return_value = hash_imitation_functions_object(data_Hahs);
                     return_value = (return_value << 2) + return_value;
                     return return_value;
                 }
             };
         }
     }
-    namespace Practicality
+    namespace practicality
     {
-        template<typename PairDataTypeExampleT,typename PairDataTypeExampleK>
-        class Pair
+        template<typename pair_data_type_example_t,typename pair_data_type_example_k>
+        class pair
         {
-            using T = PairDataTypeExampleT;
-            using K = PairDataTypeExampleK;
+            using T = pair_data_type_example_t;
+            using K = pair_data_type_example_k;
             //处理指针类型
         public:
             //链接两个相同或不同的类型为一个类型，方便使用
             T first;
             K second;
-            Pair() : first(T()), second(K())                    {       ;           }
-            Pair(const T& _first,const K& _second) 
+            pair() : first(T()), second(K())                    {       ;           }
+            pair(const T& _first,const K& _second) 
             : first(_first), second(_second)                    {       ;           }
-            Pair(const Pair& other) 
+            pair(const pair& other) 
             : first(other.first), second(other.second)          {       ;           }
-            Pair(const T&& _first,const K&& _second) 
+            pair(const T&& _first,const K&& _second) 
             : first(std::move(_first)), second(std::move(_second))                    {       ;           }
-            Pair(Pair&& other)
+            pair(pair&& other)
             {
-                MyTemplate::Algorithm::Swap(first,other.first);
-                MyTemplate::Algorithm::Swap(second,other.second);
+                my_template::algorithm::swap(first,other.first);
+                my_template::algorithm::swap(second,other.second);
             }
-            Pair& operator=(const Pair& other)
+            pair& operator=(const pair& other)
             {
                 if(this != &other)
                 {
@@ -160,7 +160,7 @@ namespace MyTemplate
                 }
                 return *this;
             }
-            Pair& operator=(Pair&& other)
+            pair& operator=(pair&& other)
             {
                 if(this != &other)
                 {
@@ -169,34 +169,34 @@ namespace MyTemplate
                 }
                 return *this;
             }
-            bool operator==(const Pair& other) const    {       return (this == &other) ? true : (first == other.first && second == other.second);  }
-            bool operator==(const Pair& other)          {       return this == &other ? true : (first == other.first && second == other.second);    }
-            bool operator!=(const Pair& other)          {       return !(*this == other);   }
-            Pair* operator->()                          {       return this;        }
-            const Pair* operator->()const               {       return this;        }
+            bool operator==(const pair& other) const    {       return (this == &other) ? true : (first == other.first && second == other.second);  }
+            bool operator==(const pair& other)          {       return this == &other ? true : (first == other.first && second == other.second);    }
+            bool operator!=(const pair& other)          {       return !(*this == other);   }
+            pair* operator->()                          {       return this;        }
+            const pair* operator->()const               {       return this;        }
             // pair& operator*() { return *this; }
             // const pair& operator*() const { return *this; }
-            template<typename PairostreamT,typename PairostreamK>
-            friend std::ostream& operator<<(std::ostream& os,const Pair<PairostreamT,PairostreamK>& p);
+            template<typename pair_ostream_t,typename pair_ostream_k>
+            friend std::ostream& operator<<(std::ostream& os,const pair<pair_ostream_t,pair_ostream_k>& p);
         };
-        template<typename PairostreamT,typename PairostreamK>
-        std::ostream& operator<<(std::ostream& os,const Pair<PairostreamT,PairostreamK>& p)
+        template<typename pair_ostream_t,typename pair_ostream_k>
+        std::ostream& operator<<(std::ostream& os,const pair<pair_ostream_t,pair_ostream_k>& p)
         {
             os << "(" << p.first << ":" << p.second << ")";
             return os;
         }
         /*                               类分隔                                   */
-        template<typename MakePairT,typename MakePairK>
-        Pair<MakePairT,MakePairK> make_pair (const MakePairT& _first,const MakePairK& _second)
+        template<typename make_pair_t,typename make_pair_k>
+        pair<make_pair_t,make_pair_k> make_pair (const make_pair_t& _first,const make_pair_k& _second)
         {
-            return Pair<MakePairT,MakePairK>(_first,_second);
+            return pair<make_pair_t,make_pair_k>(_first,_second);
         }
     }
 
     /*############################     string容器     ############################*/
-    namespace StringContainer
+    namespace string_container
     {
-        class String
+        class string
         {
         private:
             char *_data;
@@ -240,7 +240,7 @@ namespace MyTemplate
 
             char Front()                            {   return _data[0];    }//返回尾字符
 
-            String(const char* data_str = " ")
+            string(const char* data_str = " ")
             :_size(data_str == nullptr ? 0 : strlen(data_str)),_capacity(_size)
             {
                 //传进来的字符串是常量字符串，不能直接修改，需要拷贝一份，并且常量字符串在数据段(常量区)浅拷贝会导致程序崩溃
@@ -257,7 +257,7 @@ namespace MyTemplate
                     _data[0] = '\0';
                 }
             }
-            String(char*&& data_str)
+            string(char*&& data_str)
             :_data(nullptr),_size(data_str == nullptr ? 0 : strlen(data_str)),_capacity(_size)
             {
                 //移动构造函数，拿传入对象的变量初始化本地变量，对于涉及开辟内存的都要深拷贝
@@ -272,40 +272,40 @@ namespace MyTemplate
                     _data[0] = '\0';
                 }
             }
-            String(const String& data_str)
+            string(const string& data_str)
             :_data(nullptr),_size(data_str._size),_capacity(data_str._capacity)
             {
                 //拷贝构造函数，拿传入对象的变量初始化本地变量，对于涉及开辟内存的都要深拷贝
                 size_t capacity = data_str._capacity;
                 _data = new char[capacity + 1];
-                // Algorithm::copy(_data,_data+capacity,data_str._data); const对象出错
+                // algorithm::copy(_data,_data+capacity,data_str._data); const对象出错
                 std::strcpy(_data, data_str._data);
             }
-            String(String&& data_str)
+            string(string&& data_str)
             :_data(nullptr),_size(data_str._size),_capacity(data_str._capacity)
             {
                 //移动构造函数，拿传入对象的变量初始化本地变量，对于涉及开辟内存的都要深拷贝
-                MyTemplate::Algorithm::Swap(data_str._data,_data);
+                my_template::algorithm::swap(data_str._data,_data);
             }
-            String(std::initializer_list<char> data_str)
+            string(std::initializer_list<char> data_str)
             {
                 //初始化列表构造函数
                 _size = data_str.size();
                 _capacity = _size;
                 _data = new char[_capacity + 1];
-                MyTemplate::Algorithm::copy(data_str.begin(), data_str.end(), _data);
+                my_template::algorithm::copy(data_str.begin(), data_str.end(), _data);
                 _data[_size] = '\0';
             }
-            ~String()
+            ~string()
             {
                 delete [] _data;
                 _data = nullptr;
                 _capacity = _size = 0;
             }
-            String& Lowercase()
+            string& Lowercase()
             {
                 //字符串转大写
-                for(String::iterator originate = _data; originate != _data + _size; originate++)
+                for(string::iterator originate = _data; originate != _data + _size; originate++)
                 {
                     if(*originate >= 'a' && *originate <= 'z')
                     {
@@ -314,10 +314,10 @@ namespace MyTemplate
                 }
                 return *this;
             }
-            String& conversions_few()
+            string& conversions_few()
             {
                 //字符串转小写
-                for(String::iterator originate = _data; originate != _data + _size; originate++)
+                for(string::iterator originate = _data; originate != _data + _size; originate++)
                 {
                     if(*originate >= 'A' && *originate <= 'Z')
                     {
@@ -330,7 +330,7 @@ namespace MyTemplate
             // {
             //     //查找子串
             // }
-            String& Prepend(const char*& c_str_substring)
+            string& Prepend(const char*& c_str_substring)
             {
                 //前部插入子串
                 size_t len = strlen(c_str_substring);
@@ -351,7 +351,7 @@ namespace MyTemplate
                 delete [] _c_nose_insert_substrings_temp;
                 return *this;
             }
-            String& InsertSubstring(const char*& c_str_substring,const size_t& oid_pos)
+            string& InsertSubstring(const char*& c_str_substring,const size_t& oid_pos)
             {
                 //中间位置插入子串
                 if(oid_pos > _size)
@@ -377,60 +377,60 @@ namespace MyTemplate
                 delete [] _c_interlocutory_insert_substrings_temp;
                 return *this;
             }
-            String SubString(const size_t& old_pos)
+            string SubString(const size_t& old_pos)
             {
                 //提取字串到'\0'
                 if(old_pos > _size)
                 {
                     std::cout << "提取位置越界！" << std::endl;
-                    return String();
+                    return string();
                 }
-                String _str_withdraw_temp;
+                string _str_withdraw_temp;
                 size_t _str_withdraw_temp_len = _size - old_pos;
                 if(_str_withdraw_temp.AllocateResources(_str_withdraw_temp_len) != true)
                 {
                     std::cout << "开辟内存失败！" << std::endl;
-                    return String();
+                    return string();
                 }
                 strncpy(_str_withdraw_temp._data , _data + old_pos,_str_withdraw_temp_len);
                 _str_withdraw_temp._size = _str_withdraw_temp_len;
                 _str_withdraw_temp._data[_str_withdraw_temp._size] = '\0';
                 return _str_withdraw_temp;
             }
-            String SubStringFrom(const size_t& old_begin)
+            string SubStringFrom(const size_t& old_begin)
             {
                 //提取字串到末尾
                 if(old_begin > _size)
                 {
                     std::cout << "提取位置越界！" << std::endl;
-                    return String();
+                    return string();
                 }
-                String _str_withdraw_extremity_temp;
+                string _str_withdraw_extremity_temp;
                 size_t _str_withdraw_extremity_temp_len = _size - old_begin;
                 if(_str_withdraw_extremity_temp.AllocateResources(_str_withdraw_extremity_temp_len) != true)
                 {
                     std::cout << "开辟内存失败！" << std::endl;
-                    return String();
+                    return string();
                 }
                 strncpy(_str_withdraw_extremity_temp._data , _data + old_begin,_str_withdraw_extremity_temp_len);
                 _str_withdraw_extremity_temp._size = _str_withdraw_extremity_temp_len;
                 _str_withdraw_extremity_temp._data[_str_withdraw_extremity_temp._size] = '\0';
                 return _str_withdraw_extremity_temp;
             }
-            String SubString(const size_t& old_begin ,const size_t& old_end)
+            string SubString(const size_t& old_begin ,const size_t& old_end)
             {
                 //提取字串到指定位置
                 if(old_begin > _size || old_end > _size || old_begin > old_end)
                 {
                     std::cout << "提取位置越界！" << std::endl;
-                    return String();
+                    return string();
                 }
-                String _str_withdraw_detail_temp;
+                string _str_withdraw_detail_temp;
                 size_t _str_withdraw_detail_temp_len = old_end - old_begin;
                 if(_str_withdraw_detail_temp.AllocateResources(_str_withdraw_detail_temp_len) != true)
                 {
                     std::cout << "开辟内存失败！" << std::endl;
-                    return String();
+                    return string();
                 }
                 //strncpy更安全
                 strncpy(_str_withdraw_detail_temp._data , _data + old_begin,_str_withdraw_detail_temp_len);
@@ -458,7 +458,7 @@ namespace MyTemplate
                 }
                 return false;
             }
-            String& PushBack(const char& c_temp_str)
+            string& push_back(const char& c_temp_str)
             {
                 if(_size == _capacity)
                 {
@@ -474,7 +474,7 @@ namespace MyTemplate
                 _data[_size] = '\0';
                 return *this;
             }
-            String& PushBack(const String& cpp_temp_str)
+            string& push_back(const string& cpp_temp_str)
             {
                 size_t len = _size + cpp_temp_str._size;
                 if(len > _capacity)
@@ -491,7 +491,7 @@ namespace MyTemplate
                 _data[_size] = '\0';
                 return *this;
             }
-            String& PushBack(const char* c_temp_str)
+            string& push_back(const char* c_temp_str)
             {
                 if(c_temp_str == nullptr)
                 {
@@ -512,7 +512,7 @@ namespace MyTemplate
                 _data[_size] = '\0';
                 return *this;
             }
-            String& Resize(const size_t& new_size ,const char& c_temp_str = '\0')
+            string& Resize(const size_t& new_size ,const char& c_temp_str = '\0')
             {
                 //扩展字符串长度
                 if(new_size >_capacity)
@@ -523,7 +523,7 @@ namespace MyTemplate
                         std::cout << "开辟内存失败！" << std::endl;
                         return *this;
                     }
-                    for(String::iterator originate = _data + _size;originate != _data + new_size;originate++)
+                    for(string::iterator originate = _data + _size;originate != _data + new_size;originate++)
                     {
                         *originate = c_temp_str;
                     }
@@ -547,55 +547,55 @@ namespace MyTemplate
                 return _data;
                 //返回首地址迭代器
             }
-            String& Swap(String& data_str)
+            string& swap(string& data_str)
             {
-                MyTemplate::Algorithm::Swap(_data,data_str._data);
-                MyTemplate::Algorithm::Swap(_size,data_str._size);
-                MyTemplate::Algorithm::Swap(_capacity,data_str._capacity);
+                my_template::algorithm::swap(_data,data_str._data);
+                my_template::algorithm::swap(_size,data_str._size);
+                my_template::algorithm::swap(_capacity,data_str._capacity);
                 return *this;
             }
-            String Reverse()
+            string Reverse()
             {
                 if(_size == 0)
                 {
                     std::cout << "回滚失败，字符串为空！" << std::endl;
-                    return String();
+                    return string();
                 }
-                String _rollback_temp;
+                string _rollback_temp;
     
                 // for(size_t i = _size - 1; i != nops; i--)
                 // {
-                //     _rollback_temp.PushBack(_data[i]);
+                //     _rollback_temp.push_back(_data[i]);
                 // }
-                for(String::const_reverse_iterator Reverse = rbegin();Reverse != rend();Reverse--)
+                for(string::const_reverse_iterator Reverse = rbegin();Reverse != rend();Reverse--)
                 {
-                    _rollback_temp.PushBack(*Reverse);
+                    _rollback_temp.push_back(*Reverse);
                 }
                 return _rollback_temp;
             }
-            String ReverseSubstring(const size_t& limit_begin , const size_t& limit_end)
+            string ReverseSubstring(const size_t& limit_begin , const size_t& limit_end)
             {
-                String _rollback_linit_temp;
+                string _rollback_linit_temp;
                 if(limit_begin > _size || limit_end > _size || limit_begin > limit_end ||_size == 0)
                 {
                     std::cout << "回滚位置越界！" << std::endl;
-                    return String();
+                    return string();
                 }
                 // for(size_t i = limit_end - 1; i != limit_begin - 1; i--)
                 // {
                 //     //[]遍历
-                //     _rollback_linit_temp.PushBack(_data[i]);
+                //     _rollback_linit_temp.push_back(_data[i]);
                 // } 
     
-                for(String::const_reverse_iterator Reverse = _data + limit_end - 1;Reverse != _data + limit_begin - 1;Reverse--)
+                for(string::const_reverse_iterator Reverse = _data + limit_end - 1;Reverse != _data + limit_begin - 1;Reverse--)
                 {
-                    _rollback_linit_temp.PushBack(*Reverse);
+                    _rollback_linit_temp.push_back(*Reverse);
                 }
                 return _rollback_linit_temp;
             }
             void StringPrint()
             {
-                for(String::const_iterator originate = begin();originate != end();originate++)
+                for(string::const_iterator originate = begin();originate != end();originate++)
                 {
                     std::cout << *originate;
                 }
@@ -603,16 +603,16 @@ namespace MyTemplate
             }
             void StringPrintReverse()
             {
-                for(String::const_reverse_iterator originate = rbegin();originate != rend();originate--)
+                for(string::const_reverse_iterator originate = rbegin();originate != rend();originate--)
                 {
                     std::cout << *originate;
                 }
                 std::cout << std::endl;
             }
-            friend std::ostream& operator<<(std::ostream& string_ostream,const String &data_str);
-            friend std::ostream& operator<<(std::ostream& string_ostream,String &data_str);
-            friend std::istream& operator>>(std::istream& string_istream,String &data_str);
-            String& operator=(const String& data_str)
+            friend std::ostream& operator<<(std::ostream& string_ostream,const string &data_str);
+            friend std::ostream& operator<<(std::ostream& string_ostream,string &data_str);
+            friend std::istream& operator>>(std::istream& string_istream,string &data_str);
+            string& operator=(const string& data_str)
             {
                 //防止无意义拷贝
                 if(this != &data_str)
@@ -627,7 +627,7 @@ namespace MyTemplate
                 }
                 return *this;
             }
-            String& operator=(String&& data_str)
+            string& operator=(string&& data_str)
             {
                 if(this != &data_str)
                 {
@@ -638,7 +638,7 @@ namespace MyTemplate
                 }
                 return *this;
             }
-            String& operator+=(const String& data_str)
+            string& operator+=(const string& data_str)
             {
                 size_t len = _size + data_str._size;
                 if(AllocateResources(len) != true)
@@ -651,7 +651,7 @@ namespace MyTemplate
                 _data[_size] = '\0';
                 return *this;
             }
-            bool operator==(const String& data_str)
+            bool operator==(const string& data_str)
             {
                 if(_size != data_str._size)
                 {
@@ -666,7 +666,7 @@ namespace MyTemplate
                 }
                 return true;
             }
-            bool operator==(const String& data_str)const
+            bool operator==(const string& data_str)const
             {
                 if(_size != data_str._size)
                 {
@@ -681,7 +681,7 @@ namespace MyTemplate
                 }
                 return true;
             }
-            bool operator<(const String& data_str)
+            bool operator<(const string& data_str)
             {
                 size_t min_len = _size < data_str._size? _size : data_str._size;
                 for(size_t i = 0;i < min_len;i++)
@@ -693,7 +693,7 @@ namespace MyTemplate
                 }
                 return _size < data_str._size;
             }
-            bool operator<(const String& data_str) const
+            bool operator<(const string& data_str) const
             {
                 size_t min_len = _size < data_str._size? _size : data_str._size;
                 for(size_t i = 0;i < min_len;i++)
@@ -705,7 +705,7 @@ namespace MyTemplate
                 }
                 return _size < data_str._size;
             }
-            bool operator<(String& data_str) const
+            bool operator<(string& data_str) const
             {
                 size_t min_len = _size < data_str._size? _size : data_str._size;
                 for(size_t i = 0;i < min_len;i++)
@@ -717,7 +717,7 @@ namespace MyTemplate
                 }
                 return _size < data_str._size;
             }
-            bool operator<(String& data_str)
+            bool operator<(string& data_str)
             {
                 size_t min_len = _size < data_str._size? _size : data_str._size;
                 for(size_t i = 0;i < min_len;i++)
@@ -729,7 +729,7 @@ namespace MyTemplate
                 }
                 return _size < data_str._size;
             }
-            bool operator>(const String& data_str)
+            bool operator>(const string& data_str)
             {
                 size_t min_len = _size < data_str._size? _size : data_str._size;
                 for(size_t i = 0;i < min_len;i++)
@@ -741,7 +741,7 @@ namespace MyTemplate
                 }
                 return _size > data_str._size;
             }
-            bool operator>(const String& data_str) const
+            bool operator>(const string& data_str) const
             {
                 size_t min_len = _size < data_str._size? _size : data_str._size;
                 for(size_t i = 0;i < min_len;i++)
@@ -775,14 +775,14 @@ namespace MyTemplate
                 // }
                 return _data[ergodic_value]; 
             }
-            String operator+(const String& cpp_str_)
+            string operator+(const string& cpp_str_)
             {
-                String _str_temp;
+                string _str_temp;
                 size_t _str_temp_len = _size + cpp_str_._size;
                 if(_str_temp.AllocateResources(_str_temp_len) != true)
                 {
                     std::cout << "开辟内存失败！" << std::endl;
-                    return String();
+                    return string();
                 }
                 std::strncpy(_str_temp._data , _data,size());
                 std::strncpy(_str_temp._data + _size , cpp_str_._data,cpp_str_.size());
@@ -791,7 +791,7 @@ namespace MyTemplate
                 return _str_temp;
             }
         };
-        std::ostream& operator<<(std::ostream& string_ostream,const String &data_str) 
+        std::ostream& operator<<(std::ostream& string_ostream,const string &data_str) 
         {
             for(size_t i = 0;i < data_str._size;i++)
             {
@@ -799,7 +799,7 @@ namespace MyTemplate
             }
             return string_ostream;
         }
-        std::istream& operator>>(std::istream& string_istream, String &data_str)
+        std::istream& operator>>(std::istream& string_istream, string &data_str)
         {
             while(true)
             {
@@ -811,15 +811,15 @@ namespace MyTemplate
                 }
                 else
                 {
-                    data_str.PushBack(C_istream_str);
+                    data_str.push_back(C_istream_str);
                 }
             }
             return string_istream;
         }
-        std::ostream& operator<<(std::ostream& string_ostream,String &data_str) 
+        std::ostream& operator<<(std::ostream& string_ostream,string &data_str) 
         {
             //当前没实现【】访问.可以用迭代器
-            for(MyTemplate::StringContainer::String::const_iterator originate = data_str.begin();originate != data_str.end();originate++)
+            for(my_template::string_container::string::const_iterator originate = data_str.begin();originate != data_str.end();originate++)
             {
                 string_ostream << *originate;
             }
@@ -830,7 +830,7 @@ namespace MyTemplate
     namespace VectorContainer
     {
         template <typename VectorType>
-        class Vector
+        class vector
         {
         public:
             using iterator = VectorType*;
@@ -864,13 +864,13 @@ namespace MyTemplate
 
             VectorType& Tail()     {   return *(_SizePointer-1);  }
 
-            Vector()
+            vector()
             {
                 _DataPointer = nullptr;
                 _SizePointer = nullptr;
                 _CapacityPointer = nullptr;
             }
-            Vector(const size_t& sum_size , const VectorType& data = VectorType())
+            vector(const size_t& sum_size , const VectorType& data = VectorType())
             :_DataPointer(new VectorType[sum_size]),_SizePointer(_DataPointer + sum_size)
             ,_CapacityPointer(_DataPointer + sum_size)
             {
@@ -879,7 +879,7 @@ namespace MyTemplate
                     _DataPointer[i] = data;
                 }
             }
-            Vector(std::initializer_list<VectorType> list_temp)
+            vector(std::initializer_list<VectorType> list_temp)
             :_DataPointer(new VectorType[list_temp.size()]),_SizePointer(_DataPointer + list_temp.size())
             ,_CapacityPointer(_DataPointer + list_temp.size())
             {
@@ -891,7 +891,7 @@ namespace MyTemplate
                     i++;
                 }
             }
-            VectorType& Find(const size_t& find_size_)
+            VectorType& find(const size_t& find_size_)
             {
                 if(find_size_ >= size())
                 {
@@ -901,7 +901,7 @@ namespace MyTemplate
                 }
                 return _DataPointer[find_size_];
             }
-            Vector<VectorType>& Completion(const size_t& Completion_size_ , const Vector<VectorType>& Completion_temp_)
+            vector<VectorType>& Completion(const size_t& Completion_size_ , const vector<VectorType>& Completion_temp_)
             {
                 size_t Completion_temp_size_ =size();
                 size_t Completion_capacity_  =capacity();
@@ -929,7 +929,7 @@ namespace MyTemplate
                 }
                 return *this;
             }
-            Vector(const Vector<VectorType>& temp_data)
+            vector(const vector<VectorType>& temp_data)
             :_DataPointer(temp_data.capacity() ? new VectorType[temp_data.capacity()] : nullptr),
             _SizePointer(_DataPointer + temp_data.size()),_CapacityPointer(_DataPointer + temp_data.capacity())
             {
@@ -938,22 +938,22 @@ namespace MyTemplate
                     _DataPointer[i] = temp_data._DataPointer[i];
                 }
             }
-            Vector(Vector<VectorType>&& temp_data)
+            vector(vector<VectorType>&& temp_data)
             {
-                MyTemplate::Algorithm::Swap(_DataPointer, temp_data._DataPointer);
-                MyTemplate::Algorithm::Swap(_SizePointer, temp_data._SizePointer);
-                MyTemplate::Algorithm::Swap(_CapacityPointer, temp_data._CapacityPointer);
+                my_template::algorithm::swap(_DataPointer, temp_data._DataPointer);
+                my_template::algorithm::swap(_SizePointer, temp_data._SizePointer);
+                my_template::algorithm::swap(_CapacityPointer, temp_data._CapacityPointer);
             }
-            ~Vector()
+            ~vector()
             {
                 delete[] _DataPointer;
                 _DataPointer = _SizePointer =_CapacityPointer = nullptr;
             }
-            void Swap(Vector<VectorType>& temp_data)
+            void swap(vector<VectorType>& temp_data)
             {
-                MyTemplate::Algorithm::Swap(_DataPointer, temp_data._DataPointer);
-                MyTemplate::Algorithm::Swap(_SizePointer, temp_data._SizePointer);
-                MyTemplate::Algorithm::Swap(_CapacityPointer, temp_data._CapacityPointer);
+                my_template::algorithm::swap(_DataPointer, temp_data._DataPointer);
+                my_template::algorithm::swap(_SizePointer, temp_data._SizePointer);
+                my_template::algorithm::swap(_CapacityPointer, temp_data._CapacityPointer);
             }
             iterator Erase(iterator pos)
             {
@@ -969,7 +969,7 @@ namespace MyTemplate
                 return temp;
                 //返回下一个位置地址
             }
-            Vector<VectorType>& Resize(const size_t& new_capacity, const VectorType& data = VectorType())
+            vector<VectorType>& Resize(const size_t& new_capacity, const VectorType& data = VectorType())
             {
                 size_t old_size = size();  // 先保存原来的元素数量
                 if ((size_t)(_CapacityPointer - _DataPointer) < new_capacity) 
@@ -1001,7 +1001,7 @@ namespace MyTemplate
                 }
                 return *this;
             }
-            Vector<VectorType>& PushBack(const VectorType& push_back_temp_)
+            vector<VectorType>& push_back(const VectorType& push_back_temp_)
             {
                 if(_SizePointer == _CapacityPointer)
                 {
@@ -1013,7 +1013,7 @@ namespace MyTemplate
                 _SizePointer++;
                 return *this;
             }
-            Vector<VectorType>& PushBack(VectorType&& push_back_temp_)
+            vector<VectorType>& push_back(VectorType&& push_back_temp_)
             {
                 if(_SizePointer == _CapacityPointer)
                 {
@@ -1025,7 +1025,7 @@ namespace MyTemplate
                 _SizePointer++;
                 return *this;
             }
-            Vector<VectorType>& PopBack() 
+            vector<VectorType>& PopBack() 
             {
                 if (_SizePointer > _DataPointer) 
                 { // 至少有一个元素
@@ -1033,7 +1033,7 @@ namespace MyTemplate
                 }
                 return *this;
             }
-            Vector<VectorType>& PushFront(const VectorType& pop_back_temp_)
+            vector<VectorType>& PushFront(const VectorType& pop_back_temp_)
             {
                 //头插
                 if(_SizePointer == _CapacityPointer)
@@ -1049,7 +1049,7 @@ namespace MyTemplate
                 ++_SizePointer;
                 return *this;
             }
-            Vector<VectorType>& PopFront()
+            vector<VectorType>& PopFront()
             {
                 if( size() > 0 )
                 {
@@ -1069,26 +1069,26 @@ namespace MyTemplate
             {
                 return _DataPointer[_size_operator];
             }
-            Vector<VectorType>& operator=(const Vector<VectorType>&vector_temp_)
+            vector<VectorType>& operator=(const vector<VectorType>&vector_temp_)
             {
                 if (this != &vector_temp_) 
                 {
-                    Vector<VectorType> temp(vector_temp_); // 拷贝构造
-                    Swap(temp); // 交换资源，temp析构时会释放原资源
+                    vector<VectorType> temp(vector_temp_); // 拷贝构造
+                    swap(temp); // 交换资源，temp析构时会释放原资源
                 }
                 return *this;
             }
-            Vector<VectorType>& operator=(const Vector<VectorType>&& _temp_)
+            vector<VectorType>& operator=(const vector<VectorType>&& _temp_)
             {
                 if( this != &_temp_)
                 {
-                    MyTemplate::Algorithm::Swap(_DataPointer, _temp_._DataPointer);
-                    MyTemplate::Algorithm::Swap(_SizePointer, _temp_._SizePointer);
-                    MyTemplate::Algorithm::Swap(_CapacityPointer, _temp_._CapacityPointer);
+                    my_template::algorithm::swap(_DataPointer, _temp_._DataPointer);
+                    my_template::algorithm::swap(_SizePointer, _temp_._SizePointer);
+                    my_template::algorithm::swap(_CapacityPointer, _temp_._CapacityPointer);
                 }
                 return *this;
             }
-            Vector<VectorType>& operator+=(const Vector<VectorType>& _temp_)
+            vector<VectorType>& operator+=(const vector<VectorType>& _temp_)
             {
                 if(_temp_.size() == 0|| _temp_._DataPointer == nullptr)
                 {
@@ -1111,10 +1111,10 @@ namespace MyTemplate
                 return *this;
             }
             template <typename ConstVectorOutputTemplates>
-            friend std::ostream& operator<< (std::ostream& vector_ostream, const Vector<ConstVectorOutputTemplates>& Dynamic_arrays_data);
+            friend std::ostream& operator<< (std::ostream& vector_ostream, const vector<ConstVectorOutputTemplates>& Dynamic_arrays_data);
         };
         template <typename ConstVectorOutputTemplates>
-        std::ostream& operator<<(std::ostream& vector_ostream, const Vector<ConstVectorOutputTemplates>& Dynamic_arrays_data)
+        std::ostream& operator<<(std::ostream& vector_ostream, const vector<ConstVectorOutputTemplates>& Dynamic_arrays_data)
         {
             for(size_t i = 0; i < Dynamic_arrays_data.size(); i++)
             {
@@ -1128,7 +1128,7 @@ namespace MyTemplate
     namespace ListContainer
     {
         template <typename ListType>
-        class List
+        class list
         {
             template<typename listTypeFunctionNode>
             struct ListNode
@@ -1272,64 +1272,64 @@ namespace MyTemplate
             //拿正向迭代器构造反向迭代器，可以直接调用 iterator 已经重载的运算符和函数，相当于在封装一层类
             using reverse_iterator = ReverselistIterator<iterator> ;
             using reverse_const_iterator = ReverselistIterator<const_iterator>;
-            List()
+            list()
             {
                 CreateHead();
             }
-            ~List()
+            ~list()
             {
                 Clear();
                 delete _head;
                 _head = nullptr;
             }
-            List(iterator first , iterator last)
+            list(iterator first , iterator last)
             {
                 //通过另一个list对象构建一个list
                 CreateHead();
                 //已经创建一个哨兵节点
                 while (first != last)
                 {
-                    PushBack(*first);
+                    push_back(*first);
                     ++first;
                 }
             }
-            List(std::initializer_list<ListType> list_temp)
+            list(std::initializer_list<ListType> list_temp)
             {
                 //通过初始化列表构建一个list
                 CreateHead();
                 for(auto& e:list_temp)
                 {
-                    PushBack(e);
+                    push_back(e);
                 }
             }
-            List(const_iterator first , const_iterator last)
+            list(const_iterator first , const_iterator last)
             {
                 //通过另一个list对象构建一个list
                 CreateHead();
                 //已经创建一个哨兵节点
                 while (first != last)
                 {
-                    PushBack(*first);
+                    push_back(*first);
                     ++first;
                 }
             }
-            List(const List<ListType>& _list_data)
+            list(const list<ListType>& _list_data)
             {
                 //拷贝构造
                 CreateHead();
-                List<ListType> _temp_ (_list_data.cbegin(),_list_data.cend());
-                Swap(_temp_);
+                list<ListType> _temp_ (_list_data.cbegin(),_list_data.cend());
+                swap(_temp_);
             }
-            List(List<ListType>&& _list_data)
+            list(list<ListType>&& _list_data)
             {
                 //移动构造
                 CreateHead();
                 _head = std::move(_list_data._head);
                 _list_data._head = nullptr;
             }
-            void Swap(MyTemplate::ListContainer::List<ListType>& _swap_temp)
+            void swap(my_template::ListContainer::list<ListType>& _swap_temp)
             {
-                MyTemplate::Algorithm::Swap(_head,_swap_temp._head);
+                my_template::algorithm::swap(_head,_swap_temp._head);
             }
             iterator begin()
             {
@@ -1405,7 +1405,7 @@ namespace MyTemplate
             /*
             插入删除操作
             */
-            void PushBack(const ListType& push_back_data)
+            void push_back(const ListType& push_back_data)
             {
                 Insert(end(),push_back_data);
             }
@@ -1466,7 +1466,7 @@ namespace MyTemplate
                 {
                     while (oldsize < newsize)
                     {
-                        PushBack(data);
+                        push_back(data);
                         oldsize++;
                     }
                 }
@@ -1485,49 +1485,49 @@ namespace MyTemplate
 
                 _head->_next = _head->_prev = _head;
             }
-            List& operator=(List<ListType> _lsit_temp)
+            list& operator=(list<ListType> _lsit_temp)
             {
                 //运算符重载
                 if( this != &_lsit_temp)
                 {
-                    Swap(_lsit_temp);
+                    swap(_lsit_temp);
                 }
                 return *this;
             }
-            List operator+(const List<ListType>& _list_temp_)
+            list operator+(const list<ListType>& _list_temp_)
             {
-                List<ListType> _return_temp_ (cbegin(),cend());
+                list<ListType> _return_temp_ (cbegin(),cend());
                 const_iterator _begin = _list_temp_.cbegin();
                 const_iterator _end  = _list_temp_.cend();
                 while(_begin != _end)
                 {
-                    _return_temp_.PushBack(*_begin);
+                    _return_temp_.push_back(*_begin);
                     ++_begin;
                 }
                 return _return_temp_;
             }
-            List& operator+=(const List<ListType>& _lsit_temp_)
+            list& operator+=(const list<ListType>& _lsit_temp_)
             {
                 const_iterator _begin = _lsit_temp_.cbegin();
                 const_iterator _end  = _lsit_temp_.cend();
                 while(_begin != _end)
                 {
-                    PushBack(*_begin);
+                    push_back(*_begin);
                     ++_begin;
                 }
                 return *this;
             }
             template <typename ConstListOutputTemplates>
-            friend std::ostream& operator<< (std::ostream& list_ostream, const List<ConstListOutputTemplates>& Dynamic_arrays_data);
+            friend std::ostream& operator<< (std::ostream& list_ostream, const list<ConstListOutputTemplates>& Dynamic_arrays_data);
             
             template <typename ListOutputTemplates>
-            friend std::ostream& operator<< (std::ostream& list_ostream, List<ListOutputTemplates>& Dynamic_arrays_data);
+            friend std::ostream& operator<< (std::ostream& list_ostream, list<ListOutputTemplates>& Dynamic_arrays_data);
         };
         template <typename ConstListOutputTemplates>
-        std::ostream& operator<< (std::ostream& list_ostream, const List<ConstListOutputTemplates>& Dynamic_arrays_data)
+        std::ostream& operator<< (std::ostream& list_ostream, const list<ConstListOutputTemplates>& Dynamic_arrays_data)
         {
             //typename声明这是一个类型而不是表达式
-            typename List<ConstListOutputTemplates>::const_iterator it = Dynamic_arrays_data.cbegin();
+            typename list<ConstListOutputTemplates>::const_iterator it = Dynamic_arrays_data.cbegin();
             while (it != Dynamic_arrays_data.cend()) 
             {
                 list_ostream << *it << " ";
@@ -1537,10 +1537,10 @@ namespace MyTemplate
         }
 
         template <typename ListOutputTemplates>
-        std::ostream& operator<< (std::ostream& list_ostream, List<ListOutputTemplates>& Dynamic_arrays_data)
+        std::ostream& operator<< (std::ostream& list_ostream, list<ListOutputTemplates>& Dynamic_arrays_data)
         {
             //typename声明这是一个类型而不是表达式
-            typename List<ListOutputTemplates>::iterator it = Dynamic_arrays_data.begin();
+            typename list<ListOutputTemplates>::iterator it = Dynamic_arrays_data.begin();
             while (it != Dynamic_arrays_data.end()) 
             {
                 list_ostream << *it << " ";
@@ -1552,7 +1552,7 @@ namespace MyTemplate
     /*############################     stack适配器     ############################*/
     namespace StackAdapter
     {
-        template <typename StaicType,typename ContainerStaic = MyTemplate::VectorContainer::Vector<StaicType>>
+        template <typename StaicType,typename ContainerStaic = my_template::VectorContainer::vector<StaicType>>
         class Stack
         {
         private:
@@ -1565,7 +1565,7 @@ namespace MyTemplate
             void Push(const StaicType& _stack_temp)
             {
                 //插入尾
-                ContainerStackTemp.PushBack(_stack_temp);
+                ContainerStackTemp.push_back(_stack_temp);
             }
             void pop()
             {
@@ -1596,12 +1596,12 @@ namespace MyTemplate
             {
                 for(auto& e:_stack_temp)
                 {
-                    ContainerStackTemp.PushBack(e);
+                    ContainerStackTemp.push_back(e);
                 }
             }
             Stack(const StaicType& _stack_temp)
             {
-                ContainerStackTemp.PushBack(_stack_temp);
+                ContainerStackTemp.push_back(_stack_temp);
             }
             Stack& operator= (const Stack<StaicType>& _stack_temp)
             {
@@ -1625,7 +1625,7 @@ namespace MyTemplate
     /*############################     queue适配器     ############################*/
     namespace QueueAdapter
     {
-        template <typename Queue_Type ,typename ContainerQueue = MyTemplate::ListContainer::List<Queue_Type> >
+        template <typename Queue_Type ,typename ContainerQueue = my_template::ListContainer::list<Queue_Type> >
         class Queue
         {
             //注意队列适配器不会自动检测队列有没有元素，为学异常，注意空间元素
@@ -1637,7 +1637,7 @@ namespace MyTemplate
             }
             void Push(const Queue_Type& _queue_temp)
             {
-                ContainerQueueTemp.PushBack(_queue_temp);
+                ContainerQueueTemp.push_back(_queue_temp);
             }
             void pop ()
             {
@@ -1680,12 +1680,12 @@ namespace MyTemplate
                 //链式构造
                 for(auto& e:_queue_temp)
                 {
-                    ContainerQueueTemp.PushBack(e);
+                    ContainerQueueTemp.push_back(e);
                 }
             }
             Queue(const Queue_Type& _queue_temp)
             {
-                ContainerQueueTemp.PushBack(_queue_temp);
+                ContainerQueueTemp.push_back(_queue_temp);
             }
             Queue() = default;
             Queue& operator= (const Queue<Queue_Type>& _queue_temp)
@@ -1707,8 +1707,8 @@ namespace MyTemplate
         };
         /*############################     PriorityQueue 适配器     ############################*/
         template <typename PriorityQueueType,
-        typename ImitationFunctionParameter = MyTemplate::ImitationFunctions::Less<PriorityQueueType>,
-        typename ContainerPriorityQueue = MyTemplate::VectorContainer::Vector<PriorityQueueType>>
+        typename ImitationFunctionParameter = my_template::imitation_functions::Less<PriorityQueueType>,
+        typename ContainerPriorityQueue = my_template::VectorContainer::vector<PriorityQueueType>>
         class PriorityQueue
         {
             //创建容器对象
@@ -1724,7 +1724,7 @@ namespace MyTemplate
                 {
                     if(com(ContainerPriorityQueueTemp[parent],ContainerPriorityQueueTemp[Adjust_upwards_child]))
                     {
-                        MyTemplate::Algorithm::Swap(ContainerPriorityQueueTemp[parent],ContainerPriorityQueueTemp[Adjust_upwards_child]);
+                        my_template::algorithm::swap(ContainerPriorityQueueTemp[parent],ContainerPriorityQueueTemp[Adjust_upwards_child]);
                         Adjust_upwards_child = parent;
                         parent = (Adjust_upwards_child-1)/2;
                     }
@@ -1749,7 +1749,7 @@ namespace MyTemplate
                     if(com(ContainerPriorityQueueTemp[parent],ContainerPriorityQueueTemp[priority_queue_Adjust_downwards_child]))
                     {
                         //建大堆把小的换下去，建小堆把大的换下去
-                        MyTemplate::Algorithm::Swap( ContainerPriorityQueueTemp[parent] , ContainerPriorityQueueTemp[priority_queue_Adjust_downwards_child]);
+                        my_template::algorithm::swap( ContainerPriorityQueueTemp[parent] , ContainerPriorityQueueTemp[priority_queue_Adjust_downwards_child]);
 
                         //换完之后如果是大堆，则父亲节点是较大的值，需要更新孩子节点继续向下找比孩子节点大的值，如果有继续交换
                         parent = priority_queue_Adjust_downwards_child;
@@ -1765,7 +1765,7 @@ namespace MyTemplate
             ~PriorityQueue()  = default;
             void Push(const PriorityQueueType& Function_templates_priority_queue_push_back)
             {
-                ContainerPriorityQueueTemp.PushBack(Function_templates_priority_queue_push_back);
+                ContainerPriorityQueueTemp.push_back(Function_templates_priority_queue_push_back);
                 PriorityQueueAdjustUpwards((int)ContainerPriorityQueueTemp.size()-1);
             }
             PriorityQueueType& top()
@@ -1782,7 +1782,7 @@ namespace MyTemplate
             }
             void pop()
             {
-                MyTemplate::Algorithm::Swap(ContainerPriorityQueueTemp[0],ContainerPriorityQueueTemp[ContainerPriorityQueueTemp.size()-(size_t)1]);
+                my_template::algorithm::swap(ContainerPriorityQueueTemp[0],ContainerPriorityQueueTemp[ContainerPriorityQueueTemp.size()-(size_t)1]);
                 ContainerPriorityQueueTemp.PopBack();
                 PriorityQueueAdjustDownwards();
             }
@@ -1811,7 +1811,7 @@ namespace MyTemplate
             }
             PriorityQueue(const PriorityQueueType& _priority_queue_temp)
             {
-                ContainerPriorityQueueTemp.PushBack(_priority_queue_temp);
+                ContainerPriorityQueueTemp.push_back(_priority_queue_temp);
                 PriorityQueueAdjustUpwards((int)ContainerPriorityQueueTemp.size()-1);
             }
             PriorityQueue& operator=(PriorityQueue&& _priority_queue_temp)
@@ -1839,7 +1839,7 @@ namespace MyTemplate
     namespace TreeContainer
     {
         /*############################     BSTree 容器     ############################*/
-        template <typename BSTreeType,typename CompareImitationFunctionsBS = MyTemplate::ImitationFunctions::Less <BSTreeType> >
+        template <typename BSTreeType,typename CompareImitationFunctionsBS = my_template::imitation_functions::Less <BSTreeType> >
         class BSTree
         {
         private:
@@ -1867,7 +1867,7 @@ namespace MyTemplate
             void _MiddleOrderTraversal(Node* _ROOT_Temp)
             {
                 //中序遍历函数
-                MyTemplate::StackAdapter::Stack<Node*> _staic_temp_;
+                my_template::StackAdapter::Stack<Node*> _staic_temp_;
                 while(_ROOT_Temp != nullptr || !_staic_temp_.Empty())
                 {
                     while(_ROOT_Temp!= nullptr)
@@ -1890,7 +1890,7 @@ namespace MyTemplate
             }
             size_t _MiddleOrderTraversal(Node* _ROOT_Temp,size_t& _size_temp_ )
             {
-                MyTemplate::StackAdapter::Stack<Node*> _staic_temp_;
+                my_template::StackAdapter::Stack<Node*> _staic_temp_;
                 while(_ROOT_Temp != nullptr || !_staic_temp_.Empty())
                 {
                     while(_ROOT_Temp!= nullptr)
@@ -1918,7 +1918,7 @@ namespace MyTemplate
                     return;
                 }
                 Node* _Pre_order_traversal_test = _ROOT_Temp;
-                MyTemplate::StackAdapter::Stack<Node*> stack_Temp;
+                my_template::StackAdapter::Stack<Node*> stack_Temp;
                 stack_Temp.Push(_Pre_order_traversal_test);
                 //不能添加|| _Pre_order_traversal_test != nullptr ，因为最后一层循环后_Pre_order_traversal_test还是为真后面循环无意义，反之还会破环性质
                 while( !stack_Temp.Empty() )
@@ -1945,7 +1945,7 @@ namespace MyTemplate
                     return;
                 }
                 //循环释放资源
-                MyTemplate::StackAdapter::Stack<Node*> _staic_clear_temp_;
+                my_template::StackAdapter::Stack<Node*> _staic_clear_temp_;
                 _staic_clear_temp_.Push(_ROOT);
                 while(_staic_clear_temp_.Empty() == false)
                 {
@@ -1998,11 +1998,11 @@ namespace MyTemplate
                 {
                     return;
                 }
-                MyTemplate::StackAdapter::Stack<MyTemplate::Practicality::Pair<Node*,Node**> > _staic_temp_;
+                my_template::StackAdapter::Stack<my_template::practicality::pair<Node*,Node**> > _staic_temp_;
                 //注意这里把本地_ROOT类型传过去，是因为要对本地的_ROOT进行操作，所以要传二级指针
                 //这里传引用也不行，这里的对象是动态变化的，所以传引用也不行
                 //如果是对全局的_ROOT进行操作，就传一级指针
-                _staic_temp_.Push(MyTemplate::Practicality::Pair<Node*,Node**>(_Binary_search_tree_temp_copy,&_ROOT));
+                _staic_temp_.Push(my_template::practicality::pair<Node*,Node**>(_Binary_search_tree_temp_copy,&_ROOT));
                 while( !_staic_temp_.Empty() )
                 {
                     auto _staic_temp_pair = _staic_temp_.top();
@@ -2011,20 +2011,20 @@ namespace MyTemplate
                     // Node* _staic_temp_pair_second = *(_staic_temp_pair.second);
                     // if(_staic_temp_pair.first->_left!= nullptr)
                     // {
-                    //     _staic_temp_.Push(MY_Template::Practicality::pair<Node*,Node**>(_staic_temp_pair.first->_left,&_staic_temp_pair_second->_left));
+                    //     _staic_temp_.Push(MY_Template::practicality::pair<Node*,Node**>(_staic_temp_pair.first->_left,&_staic_temp_pair_second->_left));
                     // }
                     // if(_staic_temp_pair.first->_right!= nullptr)
                     // {
-                    //     _staic_temp_.Push(MY_Template::Practicality::pair<Node*,Node**>(_staic_temp_pair.first->_right,&_staic_temp_pair_second->_right));
+                    //     _staic_temp_.Push(MY_Template::practicality::pair<Node*,Node**>(_staic_temp_pair.first->_right,&_staic_temp_pair_second->_right));
                     // }
                     //移除临时变量，直接使用指针解引用
                     if(_staic_temp_pair.first->_right!= nullptr)
                     {
-                        _staic_temp_.Push(MyTemplate::Practicality::Pair<Node*,Node**>(_staic_temp_pair.first->_right,&((*_staic_temp_pair.second)->_right)));
+                        _staic_temp_.Push(my_template::practicality::pair<Node*,Node**>(_staic_temp_pair.first->_right,&((*_staic_temp_pair.second)->_right)));
                     }
                     if(_staic_temp_pair.first->_left!= nullptr)
                     {
-                        _staic_temp_.Push(MyTemplate::Practicality::Pair<Node*,Node**>(_staic_temp_pair.first->_left,&((*_staic_temp_pair.second)->_left)));
+                        _staic_temp_.Push(my_template::practicality::pair<Node*,Node**>(_staic_temp_pair.first->_left,&((*_staic_temp_pair.second)->_left)));
                     }
                 }
             }
@@ -2148,7 +2148,7 @@ namespace MyTemplate
                                 _ROOT_Temp_right_min = _ROOT_Temp_right_min->_left;
                             }
                             //找到最左节点	
-                            MyTemplate::Algorithm::Swap(_ROOT_Temp->_data,_ROOT_Temp_right_min->_data);
+                            my_template::algorithm::swap(_ROOT_Temp->_data,_ROOT_Temp_right_min->_data);
                             //因为右树最左节点已经被删，但是还需要把被删的上一节点的左子树指向被删节点的右子树，不管右子树有没有节点都要连接上
                             if(_ROOT_Temp_test_Parent == _ROOT_Temp)
                             {
@@ -2189,7 +2189,7 @@ namespace MyTemplate
                 size_t _size = 0;
                 return _MiddleOrderTraversal(_ROOT,_size);
             }
-            Node* Find(const BSTreeType& data)
+            Node* find(const BSTreeType& data)
             {
                 //查找函数
                 Node* _ROOT_Find = _ROOT;
@@ -2213,7 +2213,7 @@ namespace MyTemplate
             void Insert(const BSTreeType& former_data,const BSTreeType& latter_data)
             {
                 //在former_data后面插入latter_data
-                Node* _ROOT_former_data = Find(former_data);
+                Node* _ROOT_former_data = find(former_data);
                 //插入节点
                 if(_ROOT_former_data == nullptr)
                 {
@@ -2234,7 +2234,7 @@ namespace MyTemplate
                     Clear();
                     com = _Binary_search_tree_temp.com;
                     BSTree _Binary_search_tree_temp_copy = _Binary_search_tree_temp;
-                    MyTemplate::Algorithm::Swap(_Binary_search_tree_temp_copy._ROOT,_ROOT);
+                    my_template::algorithm::swap(_Binary_search_tree_temp_copy._ROOT,_ROOT);
                 }
                 return *this;
             }
@@ -2254,8 +2254,8 @@ namespace MyTemplate
         };
         /*############################     AVLTree 容器     ############################*/
         template <typename AVLTreeTypeK,     typename AVLTreeTypeV,
-        typename CompareImitationFunctionsAVL = MyTemplate::ImitationFunctions::Less < AVLTreeTypeK >,
-        typename AVLSyntheticClass = MyTemplate::Practicality::Pair<AVLTreeTypeK,AVLTreeTypeV> >
+        typename CompareImitationFunctionsAVL = my_template::imitation_functions::Less < AVLTreeTypeK >,
+        typename AVLSyntheticClass = my_template::practicality::pair<AVLTreeTypeK,AVLTreeTypeV> >
         class AVLTree
         {
         private:
@@ -2595,7 +2595,7 @@ namespace MyTemplate
                 }
                 else
                 {
-                    MyTemplate::StackAdapter::Stack<Node*> _stack_temp;
+                    my_template::StackAdapter::Stack<Node*> _stack_temp;
                     //前序释放
                     _stack_temp.Push(_ROOT);
                     while(!_stack_temp.Empty())
@@ -2625,7 +2625,7 @@ namespace MyTemplate
                     return;
                 }
                 Node* _Pre_order_traversal_test = _ROOT_Temp;
-                MyTemplate::StackAdapter::Stack<Node*> stack_Temp;
+                my_template::StackAdapter::Stack<Node*> stack_Temp;
                 stack_Temp.Push(_Pre_order_traversal_test);
                 //不能添加|| _Pre_order_traversal_test != nullptr ，因为最后一层循环后_Pre_order_traversal_test还是为真后面循环无意义，反之还会破环性质
                 while( !stack_Temp.Empty() )
@@ -2648,7 +2648,7 @@ namespace MyTemplate
             void _MiddleOrderTraversal(Node* _ROOT_Temp)
             {
                 //中序遍历函数
-                MyTemplate::StackAdapter::Stack<Node*> _staic_temp_;
+                my_template::StackAdapter::Stack<Node*> _staic_temp_;
                 while(_ROOT_Temp != nullptr || !_staic_temp_.Empty())
                 {
                     while(_ROOT_Temp!= nullptr)
@@ -2679,7 +2679,7 @@ namespace MyTemplate
                 else
                 {
                     Node* _Pre_order_traversal_test = _ROOT;
-                    MyTemplate::StackAdapter::Stack<Node*> stack_Temp;
+                    my_template::StackAdapter::Stack<Node*> stack_Temp;
                     stack_Temp.Push(_Pre_order_traversal_test);
                     while( !stack_Temp.Empty() )
                     {
@@ -2788,7 +2788,7 @@ namespace MyTemplate
                 }
 
                 // 使用单栈，存储源节点和目标父节点（均为一级指针）
-                MyTemplate::StackAdapter::Stack<MyTemplate::Practicality::Pair<Node*, Node*>> Stack;
+                my_template::StackAdapter::Stack<my_template::practicality::pair<Node*, Node*>> Stack;
                 
                 // 创建根节点
                 _ROOT = new Node(AVL_Tree_temp_._ROOT->_data);
@@ -2798,11 +2798,11 @@ namespace MyTemplate
                 // 初始化栈，将根节点的子节点压入（注意：这里父节点是 _ROOT，一级指针）
                 if (AVL_Tree_temp_._ROOT->_right != nullptr)
                 {
-                    Stack.Push(MyTemplate::Practicality::Pair<Node*, Node*>(AVL_Tree_temp_._ROOT->_right, _ROOT));
+                    Stack.Push(my_template::practicality::pair<Node*, Node*>(AVL_Tree_temp_._ROOT->_right, _ROOT));
                 }
                 if (AVL_Tree_temp_._ROOT->_left != nullptr)
                 {
-                    Stack.Push(MyTemplate::Practicality::Pair<Node*, Node*>(AVL_Tree_temp_._ROOT->_left, _ROOT));
+                    Stack.Push(my_template::practicality::pair<Node*, Node*>(AVL_Tree_temp_._ROOT->_left, _ROOT));
                 }
 
                 // 遍历并复制剩余节点
@@ -2838,11 +2838,11 @@ namespace MyTemplate
                     // 处理子节点（注意：压栈时父节点是 new_node，一级指针）
                     if (source_node->_right != nullptr)
                     {
-                        Stack.Push(MyTemplate::Practicality::Pair<Node*, Node*>(source_node->_right, new_node));
+                        Stack.Push(my_template::practicality::pair<Node*, Node*>(source_node->_right, new_node));
                     }
                     if (source_node->_left != nullptr)
                     {
-                        Stack.Push(MyTemplate::Practicality::Pair<Node*, Node*>(source_node->_left, new_node));
+                        Stack.Push(my_template::practicality::pair<Node*, Node*>(source_node->_left, new_node));
                     }
                 }
             }
@@ -2873,8 +2873,8 @@ namespace MyTemplate
                 {
                     return *this;
                 }
-                MyTemplate::Algorithm::Swap(com,AVL_Tree_temp_.com);
-                MyTemplate::Algorithm::Swap(_ROOT,AVL_Tree_temp_._ROOT);
+                my_template::algorithm::swap(com,AVL_Tree_temp_.com);
+                my_template::algorithm::swap(_ROOT,AVL_Tree_temp_._ROOT);
                 return *this;
             }
             ~AVLTree()
@@ -3096,7 +3096,7 @@ namespace MyTemplate
                 }
                 return true;
             }
-            Node* Find(const AVLTreeTypeK& _data_temp)
+            Node* find(const AVLTreeTypeK& _data_temp)
             {
                 Node* _ROOT_Temp = _ROOT;
                 while(_ROOT_Temp != nullptr)
@@ -3209,7 +3209,7 @@ namespace MyTemplate
                         _right_parent = _right_min;
                         _right_min = _right_min->_left;
                     }
-                    MyTemplate::Algorithm::Swap(_right_min->_data,_ROOT_Temp->_data);
+                    my_template::algorithm::swap(_right_min->_data,_ROOT_Temp->_data);
                     if (_right_parent == _ROOT_Temp) 
                     {
                         _right_parent->_right = (_right_min->_right != nullptr) ? _right_min->_right : nullptr;
@@ -3284,7 +3284,7 @@ namespace MyTemplate
     {
         /*############################     RBTree 容器     ############################*/
         template <typename RBTreeTypeKey, typename RBTreeTypeVal, typename DataExtractionFunction,
-        typename CompareImitationFunctionsRB = MyTemplate::ImitationFunctions::Less<RBTreeTypeKey> >
+        typename CompareImitationFunctionsRB = my_template::imitation_functions::Less<RBTreeTypeKey> >
         class RBTree
         {
         private:
@@ -3565,7 +3565,7 @@ namespace MyTemplate
                 }
                 else
                 {
-                    MyTemplate::StackAdapter::Stack<Node*> _stack;
+                    my_template::StackAdapter::Stack<Node*> _stack;
                     _stack.Push(_clear_Temp);
                     while ( !_stack.Empty() )
                     {
@@ -3587,7 +3587,7 @@ namespace MyTemplate
             void _MiddleOrderTraversal(Node* _ROOT_Temp)
             {
                 //中序遍历函数
-                MyTemplate::StackAdapter::Stack<Node*> _staic_temp_;
+                my_template::StackAdapter::Stack<Node*> _staic_temp_;
                 while(_ROOT_Temp != nullptr || !_staic_temp_.Empty())
                 {
                     while(_ROOT_Temp!= nullptr)
@@ -3610,7 +3610,7 @@ namespace MyTemplate
                     return;
                 }
                 Node* _Pre_order_traversal_test = _ROOT_Temp;
-                MyTemplate::StackAdapter::Stack<Node*> stack_Temp;
+                my_template::StackAdapter::Stack<Node*> stack_Temp;
                 stack_Temp.Push(_Pre_order_traversal_test);
                 while( !stack_Temp.Empty() )
                 {
@@ -3651,7 +3651,7 @@ namespace MyTemplate
                     return size;
                 }
                 Node* _Pre_order_traversal_test = _ROOT_Temp;
-                MyTemplate::StackAdapter::Stack<Node*> stack_Temp;
+                my_template::StackAdapter::Stack<Node*> stack_Temp;
                 stack_Temp.Push(_Pre_order_traversal_test);
                 while( !stack_Temp.Empty() )
                 {
@@ -3677,7 +3677,7 @@ namespace MyTemplate
             using reverse_iterator = RBTreeReverseIterator<iterator>;
             using const_reverse_iterator = RBTreeReverseIterator<const_iterator>;
 
-            using insert_result = MyTemplate::Practicality::Pair<iterator,bool>;
+            using insert_result = my_template::practicality::pair<iterator,bool>;
             RBTree()
             {
                 _ROOT = nullptr;
@@ -3710,7 +3710,7 @@ namespace MyTemplate
                     else
                     {
                         // 使用单栈，存储源节点和目标父节点（均为一级指针）
-                        MyTemplate::StackAdapter::Stack<MyTemplate::Practicality::Pair<Node*, Node*>> Stack;
+                        my_template::StackAdapter::Stack<my_template::practicality::pair<Node*, Node*>> Stack;
                         
                         // 创建根节点
                         _ROOT = new Node(RB_Tree_Temp._ROOT->_data);
@@ -3720,11 +3720,11 @@ namespace MyTemplate
                         // 初始化栈，将根节点的子节点压入（注意：这里父节点是 _ROOT，一级指针）
                         if (RB_Tree_Temp._ROOT->_right != nullptr)
                         {
-                            Stack.Push(MyTemplate::Practicality::Pair<Node*, Node*>(RB_Tree_Temp._ROOT->_right, _ROOT));
+                            Stack.Push(my_template::practicality::pair<Node*, Node*>(RB_Tree_Temp._ROOT->_right, _ROOT));
                         }
                         if (RB_Tree_Temp._ROOT->_left != nullptr)
                         {
-                            Stack.Push(MyTemplate::Practicality::Pair<Node*, Node*>(RB_Tree_Temp._ROOT->_left, _ROOT));
+                            Stack.Push(my_template::practicality::pair<Node*, Node*>(RB_Tree_Temp._ROOT->_left, _ROOT));
                         }
 
                         // 遍历并复制剩余节点
@@ -3760,11 +3760,11 @@ namespace MyTemplate
                             // 处理子节点（注意：压栈时父节点是 new_node，一级指针）
                             if (source_node->_right != nullptr)
                             {
-                                Stack.Push(MyTemplate::Practicality::Pair<Node*, Node*>(source_node->_right, new_node));
+                                Stack.Push(my_template::practicality::pair<Node*, Node*>(source_node->_right, new_node));
                             }
                             if (source_node->_left != nullptr)
                             {
-                                Stack.Push(MyTemplate::Practicality::Pair<Node*, Node*>(source_node->_left, new_node));
+                                Stack.Push(my_template::practicality::pair<Node*, Node*>(source_node->_left, new_node));
                             }
                         }
                     }
@@ -3779,9 +3779,9 @@ namespace MyTemplate
                 else
                 {
                     Clear(_ROOT);
-                    MyTemplate::Algorithm::Swap(RB_Tree_Temp._ROOT,_ROOT);
-                    MyTemplate::Algorithm::Swap(RB_Tree_Temp.Element,Element);
-                    MyTemplate::Algorithm::Swap(RB_Tree_Temp.com,com);
+                    my_template::algorithm::swap(RB_Tree_Temp._ROOT,_ROOT);
+                    my_template::algorithm::swap(RB_Tree_Temp.Element,Element);
+                    my_template::algorithm::swap(RB_Tree_Temp.com,com);
                     return *this;
                 }
             }
@@ -3872,7 +3872,7 @@ namespace MyTemplate
                                 if(_ROOT_Temp == _ROOT_Temp_parent->_right)
                                 {
                                     LeftRevolve(_ROOT_Temp_parent);
-                                    MyTemplate::Algorithm::Swap(_ROOT_Temp,_ROOT_Temp_parent);
+                                    my_template::algorithm::swap(_ROOT_Temp,_ROOT_Temp_parent);
                                     // _ROOT_Temp = _ROOT_Temp_parent;
                                     //折线调整，交换位置调整为情况2
                                 }
@@ -3901,7 +3901,7 @@ namespace MyTemplate
                                 if(_ROOT_Temp == _ROOT_Temp_parent->_left)
                                 {
                                     RightRevolve(_ROOT_Temp_parent);
-                                    MyTemplate::Algorithm::Swap(_ROOT_Temp,_ROOT_Temp_parent);
+                                    my_template::algorithm::swap(_ROOT_Temp,_ROOT_Temp_parent);
                                     // _ROOT_Temp = _ROOT_Temp_parent;
                                     //交换指针转换为单旋
                                 }
@@ -4159,8 +4159,8 @@ namespace MyTemplate
                         Delete_color = _right_min->_color;
 
                         // 交换数据 AND 交换颜色
-                        MyTemplate::Algorithm::Swap(_right_min->_data,  _ROOT_Temp->_data);
-                        MyTemplate::Algorithm::Swap(_right_min->_color, _ROOT_Temp->_color);
+                        my_template::algorithm::swap(_right_min->_data,  _ROOT_Temp->_data);
+                        my_template::algorithm::swap(_right_min->_color, _ROOT_Temp->_color);
 
                         // 然后正确地把后继节点的位置接到它父节点上：
                         if (_right_parent->_left == _right_min) 
@@ -4195,7 +4195,7 @@ namespace MyTemplate
                     return insert_result(iterator(nullptr),false);
                 }
             }
-            iterator Find(const RBTreeTypeVal& RB_Tree_Temp_)
+            iterator find(const RBTreeTypeVal& RB_Tree_Temp_)
             {
                 if(_ROOT == nullptr)
                 {
@@ -4296,7 +4296,7 @@ namespace MyTemplate
             }
             iterator operator[](const RBTreeTypeVal& RB_Tree_Temp)
             {
-                return Find(RB_Tree_Temp);
+                return find(RB_Tree_Temp);
             }
         };
         /*############################     hash 容器     ############################*/
@@ -4324,7 +4324,7 @@ namespace MyTemplate
             size_t _size;                                               //哈希表大小
             size_t LoadFactor;                                         //负载因子   
             size_t Capacity;                                            //哈希表容量
-            MyTemplate::VectorContainer::Vector<Node*> _HashTable;   //哈希表
+            my_template::VectorContainer::vector<Node*> _HashTable;   //哈希表
             DataExtractionFunction DataExtractionFunction;           //哈希函数
             Node* PreviousData = nullptr;                             //上一个数据
             Node* HeadData = nullptr;                                 //插入头数据
@@ -4505,7 +4505,7 @@ namespace MyTemplate
 
             bool Push (const HashTableTypeVal& Temp_Val)
             {
-                if( Find(Temp_Val) != nullptr)
+                if( find(Temp_Val) != nullptr)
                 {
                     return false;
                 }
@@ -4515,7 +4515,7 @@ namespace MyTemplate
                     //扩容
                     size_t NewCapacity = (Capacity == 0 && _HashTable.size() == 0) ? 10 : Capacity * 2;
                     //新容量
-                    MyTemplate::VectorContainer::Vector<Node*> _New_Hash_Table;
+                    my_template::VectorContainer::vector<Node*> _New_Hash_Table;
                     _New_Hash_Table.Resize(NewCapacity,nullptr);
                     size_t _New_size = 0;
                     //重新映射,按照插入链表顺序
@@ -4579,7 +4579,7 @@ namespace MyTemplate
                         }
                     }
                     _size = _New_size;
-                    _HashTable.Swap(_New_Hash_Table);
+                    _HashTable.swap(_New_Hash_Table);
                     Capacity = NewCapacity;
                     HeadData = _Temp_Head_Node;
                     PreviousData = _Temp_previous_data;
@@ -4610,7 +4610,7 @@ namespace MyTemplate
             bool pop(const HashTableTypeVal& Temp_Val)
             {
                 //空表判断
-                if( Find(Temp_Val) == nullptr)
+                if( find(Temp_Val) == nullptr)
                 {
                     return false;
                 }
@@ -4666,7 +4666,7 @@ namespace MyTemplate
                 }
                 return false;
             }
-            iterator Find(const HashTableTypeVal& Temp_Val)
+            iterator find(const HashTableTypeVal& Temp_Val)
             {
                 if( _size == 0)
                 {
@@ -4693,7 +4693,7 @@ namespace MyTemplate
         /*############################     BitSet 容器     ############################*/
         class BitSet
         {
-            MyTemplate::VectorContainer::Vector<int> _BitSet;
+            my_template::VectorContainer::vector<int> _BitSet;
             size_t _size;
         public:
             BitSet() {  ;  }
@@ -4759,13 +4759,13 @@ namespace MyTemplate
             }
         };
     }
-    /*############################     Map 容器     ############################*/
+    /*############################     tree_map 容器     ############################*/
     namespace MapContainer
     {
         template <typename MapTypeK,typename MapTypeV>
-        class Map
+        class tree_map
         {
-            using KeyValType = MyTemplate::Practicality::Pair<MapTypeK,MapTypeV>;
+            using KeyValType = my_template::practicality::pair<MapTypeK,MapTypeV>;
             struct Key_Val
             {
                 const MapTypeK& operator()(const KeyValType& Temp_Key_)
@@ -4781,12 +4781,12 @@ namespace MyTemplate
             using reverse_iterator = typename RBTREE::reverse_iterator;
             using const_reverse_iterator = typename RBTREE::const_reverse_iterator;
             
-            using Map_iterator = MyTemplate::Practicality::Pair<iterator,bool>;
-            ~Map()
+            using Map_iterator = my_template::practicality::pair<iterator,bool>;
+            ~tree_map()
             {
                 ROOTMap.~RBTree();
             }
-            Map& operator=(const Map& Map_Temp)
+            tree_map& operator=(const tree_map& Map_Temp)
             {
                 if(this != &Map_Temp)
                 {
@@ -4794,7 +4794,7 @@ namespace MyTemplate
                 }
                 return *this;
             }
-            Map& operator=(Map&& Map_Temp)
+            tree_map& operator=(tree_map&& Map_Temp)
             {
                 if(this != &Map_Temp)
                 {
@@ -4802,13 +4802,13 @@ namespace MyTemplate
                 }
                 return *this;
             }
-            Map()                                                   {  ;                                     }
-            Map(const Map& Map_Temp)                                {  ROOTMap = Map_Temp.ROOTMap;       }
-            Map(Map&& Map_Temp)                                     {  ROOTMap=std::move(Map_Temp.ROOTMap);}
-            Map(const KeyValType& Map_Temp)                       {  ROOTMap.Push(Map_Temp);             }
+            tree_map()                                                   {  ;                                     }
+            tree_map(const tree_map& Map_Temp)                                {  ROOTMap = Map_Temp.ROOTMap;       }
+            tree_map(tree_map&& Map_Temp)                                     {  ROOTMap=std::move(Map_Temp.ROOTMap);}
+            tree_map(const KeyValType& Map_Temp)                       {  ROOTMap.Push(Map_Temp);             }
             Map_iterator Push(const KeyValType& Map_Temp)         {  return ROOTMap.Push(Map_Temp);      }
             Map_iterator pop(const KeyValType& Map_Temp)          {  return ROOTMap.pop(Map_Temp);       }
-            iterator Find(const KeyValType& Map_Temp)             {  return ROOTMap.Find(Map_Temp);      }
+            iterator find(const KeyValType& Map_Temp)             {  return ROOTMap.find(Map_Temp);      }
             void MiddleOrderTraversal()                           {  ROOTMap.MiddleOrderTraversal();   }
             void Pre_order_traversal()                              {  ROOTMap.Pre_order_traversal();      }
             size_t size() const                                     {  return ROOTMap.size();              }
@@ -4824,9 +4824,9 @@ namespace MyTemplate
             iterator operator[](const KeyValType& Map_Temp)       {  return ROOTMap[Map_Temp];           }
         };
         template <typename UnorderedMapTypeK,typename UnorderedMapTypeV>
-        class UnorderedMap
+        class hash_map
         {
-            using KeyValType = MyTemplate::Practicality::Pair<UnorderedMapTypeK,UnorderedMapTypeV>;
+            using KeyValType = my_template::practicality::pair<UnorderedMapTypeK,UnorderedMapTypeV>;
             struct Key_Val
             {
                 const UnorderedMapTypeK& operator()(const KeyValType& Temp_Key_)
@@ -4839,9 +4839,9 @@ namespace MyTemplate
             public:
                 size_t operator()(const KeyValType& Temp_Key_)
                 {
-                    size_t num_One =  MyTemplate::ImitationFunctions::HashImitationFunctions()(Temp_Key_.first);
+                    size_t num_One =  my_template::imitation_functions::hash_imitation_functions()(Temp_Key_.first);
                     num_One = num_One * 31;
-                    size_t num_Two =  MyTemplate::ImitationFunctions::HashImitationFunctions()(Temp_Key_.second);
+                    size_t num_Two =  my_template::imitation_functions::hash_imitation_functions()(Temp_Key_.second);
                     num_Two = num_Two * 31;
                     return (num_One + num_Two);
                 }
@@ -4851,12 +4851,12 @@ namespace MyTemplate
         public:
             using iterator = typename HashTable::iterator;
             using const_iterator = typename HashTable::const_iterator;
-            UnorderedMap()                                     {   ;                                 }  
-            ~UnorderedMap()                                    {  HashMap.~HashTable();           }
-            UnorderedMap(const KeyValType& Temp_Key_)        {  HashMap.Push(Temp_Key_);         }
+            hash_map()                                     {   ;                                 }  
+            ~hash_map()                                    {  HashMap.~HashTable();           }
+            hash_map(const KeyValType& Temp_Key_)        {  HashMap.Push(Temp_Key_);         }
             bool Push(const KeyValType& Temp_Key_)            {  return HashMap.Push(Temp_Key_);  }
             bool pop(const KeyValType& Temp_Key_)             {  return HashMap.pop(Temp_Key_);   }
-            iterator Find(const KeyValType& Temp_Key_)        {  return HashMap.Find(Temp_Key_);  }
+            iterator find(const KeyValType& Temp_Key_)        {  return HashMap.find(Temp_Key_);  }
             size_t size()                                       {  return HashMap.size();           }
             size_t size() const                                 {  return HashMap.size();           }
             size_t capacity() const                             {  return HashMap.capacity();       } 
@@ -4868,11 +4868,11 @@ namespace MyTemplate
             iterator operator[](const KeyValType& Temp_Key_)  {  return HashMap[Temp_Key_];       }
         };
     }
-    /*############################     Set 容器     ############################*/
+    /*############################     tree_set 容器     ############################*/
     namespace SetContainer
     {
         template <typename SetTypeK>
-        class Set
+        class tree_set
         {
             using KeyValType = SetTypeK;
             struct Key_Val
@@ -4891,8 +4891,8 @@ namespace MyTemplate
             using reverse_iterator = typename RBTREE::reverse_iterator;
             using const_reverse_iterator = typename RBTREE::const_reverse_iterator;
             
-            using Set_iterator = MyTemplate::Practicality::Pair<iterator,bool>;
-            Set& operator=(const Set& Set_Temp)             
+            using Set_iterator = my_template::practicality::pair<iterator,bool>;
+            tree_set& operator=(const tree_set& Set_Temp)             
             {  
                 if(this!= &Set_Temp)                     
                 {  
@@ -4900,7 +4900,7 @@ namespace MyTemplate
                 }  
                 return *this; 
             }
-            Set& operator=(Set&& Set_temp)
+            tree_set& operator=(tree_set&& Set_temp)
             {
                 if(this!= &Set_temp)                     
                 {  
@@ -4908,14 +4908,14 @@ namespace MyTemplate
                 }
                 return *this;
             }
-            Set()                                               {  ;                                        }
-            ~Set()                                              {  ROOTSet.~RBTree();                    }
-            Set(const Set& Set_Temp)                            {  ROOTSet = Set_Temp.ROOTSet;          }
-            Set(Set&& Set_Temp)                                 {  ROOTSet=std::move(Set_Temp.ROOTSet); }
-            Set(const KeyValType& Set_Temp)                   {  ROOTSet.Push(Set_Temp);                }
+            tree_set()                                               {  ;                                        }
+            ~tree_set()                                              {  ROOTSet.~RBTree();                    }
+            tree_set(const tree_set& Set_Temp)                            {  ROOTSet = Set_Temp.ROOTSet;          }
+            tree_set(tree_set&& Set_Temp)                                 {  ROOTSet=std::move(Set_Temp.ROOTSet); }
+            tree_set(const KeyValType& Set_Temp)                   {  ROOTSet.Push(Set_Temp);                }
             Set_iterator Push(const KeyValType& Set_Temp)     {  return ROOTSet.Push(Set_Temp);         }
             Set_iterator pop(const KeyValType& Set_Temp)      {  return ROOTSet.pop(Set_Temp);          }
-            iterator Find(const KeyValType& Set_Temp)         {  return ROOTSet.Find(Set_Temp);         }
+            iterator find(const KeyValType& Set_Temp)         {  return ROOTSet.find(Set_Temp);         }
             void MiddleOrderTraversal()                       {  ROOTSet.MiddleOrderTraversal();      }    
             void Pre_order_traversal()                          {  ROOTSet.Pre_order_traversal();         }  
             size_t size() const                                 {  return ROOTSet.size();                 }
@@ -4931,7 +4931,7 @@ namespace MyTemplate
             iterator operator[](const KeyValType& Set_Temp)   {  return ROOTSet[Set_Temp];              }
         };
         template <typename UnorderedSetTypeK>
-        class UnorderedSet
+        class hash_set
         {
             using KeyValType = UnorderedSetTypeK;
             class Hash_Functor
@@ -4939,7 +4939,7 @@ namespace MyTemplate
             public:
                 size_t operator()(const KeyValType& Temp_Key_)
                 {
-                    return MyTemplate::ImitationFunctions::HashImitationFunctions()(Temp_Key_)* 131;
+                    return my_template::imitation_functions::hash_imitation_functions()(Temp_Key_)* 131;
                 }
             };
             class Key_Val
@@ -4950,16 +4950,16 @@ namespace MyTemplate
                     return Temp_Key_;
                 }
             };
-            using HashTable = MyTemplate::BaseClassContainer::HashTable<UnorderedSetTypeK,KeyValType,Key_Val,Hash_Functor>;
+            using HashTable = my_template::BaseClassContainer::HashTable<UnorderedSetTypeK,KeyValType,Key_Val,Hash_Functor>;
             HashTable HashSet;
         public:
             using iterator = typename HashTable::iterator;
             using const_iterator = typename HashTable::const_iterator;
-            UnorderedSet()                                     {  ;                                        }
-            ~UnorderedSet()                                    {   HashSet.~HashTable();                }
+            hash_set()                                     {  ;                                        }
+            ~hash_set()                                    {   HashSet.~HashTable();                }
             bool Push(const KeyValType& Set_Temp)             {  return HashSet.Push(Set_Temp);         }
             bool pop(const KeyValType& Set_Temp)              {  return HashSet.pop(Set_Temp);          }            
-            iterator Find(const KeyValType& Set_Temp)         {  return HashSet.Find(Set_Temp);         }
+            iterator find(const KeyValType& Set_Temp)         {  return HashSet.find(Set_Temp);         }
             size_t size()                                       {  return HashSet.size();                 }
             bool Empty()                                        {  return HashSet.Empty();                }
             size_t capacity()                                   {  return HashSet.capacity();             }
@@ -4975,11 +4975,11 @@ namespace MyTemplate
     /*############################     BloomFilter 容器     ############################*/
     namespace BloomFilterContainer
     {
-        template <typename BloomFilterTypeVal,typename HashFunctorBloomFilter = MyTemplate::Algorithm::HashAlgorithm::HashFunction<BloomFilterTypeVal> >
+        template <typename BloomFilterTypeVal,typename HashFunctorBloomFilter = my_template::algorithm::hash_algorithm::hash_function<BloomFilterTypeVal> >
         class BloomFilter
         {
             HashFunctorBloomFilter   _Hash;
-            using BitSet = MyTemplate::BaseClassContainer::BitSet;
+            using BitSet = my_template::BaseClassContainer::BitSet;
             BitSet VectorBitSet;
             size_t _Capacity;
         public:

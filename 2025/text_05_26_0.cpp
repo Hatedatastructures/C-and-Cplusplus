@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
 template<typename T>
-class Vector 
+class vector 
 {
 private:
     T* _DataPointer;
@@ -9,15 +9,15 @@ private:
     T* _CapacityPointer;
 
     // 禁止拷贝（为简化示例，实际应实现拷贝语义）
-    Vector(const Vector&) = delete;
-    Vector& operator=(const Vector&) = delete;
+    vector(const vector&) = delete;
+    vector& operator=(const vector&) = delete;
 
 public:
     // 默认构造函数
-    Vector() : _DataPointer(nullptr), _SizePointer(nullptr), _CapacityPointer(nullptr) {}
+    vector() : _DataPointer(nullptr), _SizePointer(nullptr), _CapacityPointer(nullptr) {}
 
     // 移动构造函数
-    Vector(Vector&& other) noexcept 
+    vector(vector&& other) noexcept 
         : _DataPointer(other._DataPointer), 
           _SizePointer(other._SizePointer), 
           _CapacityPointer(other._CapacityPointer) {
@@ -27,7 +27,7 @@ public:
     }
 
     // 移动赋值运算符
-    Vector& operator=(Vector&& other) noexcept {
+    vector& operator=(vector&& other) noexcept {
         if (this != &other) {
             clear();
             operator delete(_DataPointer);
@@ -44,7 +44,7 @@ public:
     }
 
     // 析构函数
-    ~Vector() {
+    ~vector() {
         clear();
         operator delete(_DataPointer);
     }
@@ -109,14 +109,14 @@ public:
     }
 };
 void testVector() {
-    Vector<std::string> vec;
+    vector<std::string> vec;
     
     // 测试添加元素
     vec.push_back("Hello");
     vec.push_back(std::string("World"));
     
     // 测试移动语义
-    Vector<std::string> vec2 = std::move(vec);
+    vector<std::string> vec2 = std::move(vec);
     
     // 测试边界情况
     try 

@@ -11,33 +11,33 @@ int main()
 {   
     // /*            string测试             */
     // {
-    //     MyTemplate::StringContainer::String string_test1;
-    //     MyTemplate::StringContainer::String string_test2 = string_test1.ReverseSubstring(10,20);
+    //     my_template::string_container::string string_test1;
+    //     my_template::string_container::string string_test2 = string_test1.ReverseSubstring(10,20);
     //     std::cout << string_test1 << std::endl << string_test2 << std::endl;
     // }
     // {
     //     std::cout << " string 测试 " << std::endl << std::endl;
-    //     MyTemplate::StringContainer::String string_test1("hello");
-    //     MyTemplate::StringContainer::String string_test2("world");
+    //     my_template::string_container::string string_test1("hello");
+    //     my_template::string_container::string string_test2("world");
         
-    //     MyTemplate::StringContainer::String string_test3 = string_test1 + string_test2;
+    //     my_template::string_container::string string_test3 = string_test1 + string_test2;
     //     std::cout << "string_test3: " << string_test3 << std::endl;
-    //     string_test3.PushBack('!');
+    //     string_test3.push_back('!');
     //     const char* insert_str = "inserted";
     //     string_test3.Prepend(insert_str);
     //     std::cout << "str3 after insertion: " << string_test3 << std::endl;
 
     //     size_t old_pos = strlen(insert_str);
-    //     MyTemplate::StringContainer::String string_test4 = string_test3.SubString(old_pos);
+    //     my_template::string_container::string string_test4 = string_test3.SubString(old_pos);
     //     std::cout << "string_test4: " << string_test4 << std::endl;
 
     //     std::cout << string_test3.Lowercase() << std::endl;
     //     std::cout << string_test3.Lowercase() << std::endl;
 
-    //     MyTemplate::StringContainer::String string_test5 = string_test3.SubStringFrom(5);
+    //     my_template::string_container::string string_test5 = string_test3.SubStringFrom(5);
     //     std::cout << "string_test5: " << string_test5 << std::endl;
 
-    //     MyTemplate::StringContainer::String string_test6 = string_test3.SubString(5, 10);
+    //     my_template::string_container::string string_test6 = string_test3.SubString(5, 10);
     //     std::cout << "string_test6: " << string_test6 << std::endl;
 
     //     std::cout << "str3 size: " << string_test3.size() << std::endl;
@@ -57,7 +57,7 @@ int main()
     //     }
     //     std::cout << std::endl;
 
-    //     for(MyTemplate::StringContainer::String::const_iterator i = string_test3.begin();i != string_test3.end();i++)
+    //     for(my_template::string_container::string::const_iterator i = string_test3.begin();i != string_test3.end();i++)
     //     {
     //         std::cout << *i << " ";
     //     }
@@ -65,48 +65,48 @@ int main()
     //     std::cout << std::endl;
     //     {
     //         //异常测试
-    //         MyTemplate::StringContainer::String Ex;
+    //         my_template::string_container::string Ex;
     //         Ex.Resize(size_t(10000000));
-    //         Ex.PushBack("异常测试");
+    //         Ex.push_back("异常测试");
     //     }
     // }
 
     // /*            vector测试             */
     // {
-    //     std::cout << " Vector 测试 " << std::endl << std::endl;
-    //     MyTemplate::VectorContainer::Vector<int> vector_test(5,1);
+    //     std::cout << " vector 测试 " << std::endl << std::endl;
+    //     my_template::VectorContainer::vector<int> vector_test(5,1);
     //     for(auto i: vector_test)
     //     {
     //         std::cout << i << " ";
     //     }
     //     std::cout << std::endl;
-    //     MyTemplate::VectorContainer::Vector<int> vector_test1(vector_test);
+    //     my_template::VectorContainer::vector<int> vector_test1(vector_test);
     //     for(const auto& i  : vector_test1 )
     //     {
     //         std::cout << i << " ";
     //     }
     //     std::cout << std::endl;
-    //     MyTemplate::VectorContainer::Vector<int> test2 = vector_test1;
+    //     my_template::VectorContainer::vector<int> test2 = vector_test1;
     //     for(const auto i : test2)
     //     {
     //         std::cout << i << " ";
     //     }
-    //     MyTemplate::StringContainer::String s2 = "name";
+    //     my_template::string_container::string s2 = "name";
     //     std::cout << std::endl;
-    //     MyTemplate::VectorContainer::Vector<MyTemplate::StringContainer::String> name_test(10,s2);
+    //     my_template::VectorContainer::vector<my_template::string_container::string> name_test(10,s2);
     //     for(const auto& i : name_test )
     //     {
     //         std::cout << i << " ";
     //     }
     //     std::cout << std::endl;
-    //     MyTemplate::VectorContainer::Vector<MyTemplate::StringContainer::String> name_test1 =name_test ;
+    //     my_template::VectorContainer::vector<my_template::string_container::string> name_test1 =name_test ;
     //     for(const auto& i : name_test1 )
     //     {
     //         std::cout << i << " ";
     //     }
     //     std::cout << std::endl;
-    //     MyTemplate::StringContainer::String s3 = "hello word!";
-    //     name_test1.PushBack(s3);
+    //     my_template::string_container::string s3 = "hello word!";
+    //     name_test1.push_back(s3);
     //     for(const auto& i : name_test1 )
     //     {
     //         std::cout << i << " ";
@@ -134,20 +134,20 @@ int main()
 
     // /*            list测试             */
     // {
-    //     std::cout << " List 测试 " << std::endl << std::endl;
-    //     MyTemplate::ListContainer::List<int> list_test1;
+    //     std::cout << " list 测试 " << std::endl << std::endl;
+    //     my_template::ListContainer::list<int> list_test1;
     //     for(size_t i = 1; i < 10; i++)
     //     {
-    //         list_test1.PushBack(i);
+    //         list_test1.push_back(i);
     //     }
-    //     MyTemplate::ListContainer::List<int>::const_iterator it =list_test1.cbegin();
+    //     my_template::ListContainer::list<int>::const_iterator it =list_test1.cbegin();
     //     while(it != list_test1.cend())
     //     {
     //         std::cout << *it  << " ";
     //         it++;
     //     }
     //     std::cout << std::endl;
-    //     MyTemplate::ListContainer::List<int>::reverse_const_iterator i = list_test1.rcbegin();
+    //     my_template::ListContainer::list<int>::reverse_const_iterator i = list_test1.rcbegin();
     //     while(i != list_test1.rcend())
     //     {
     //         std::cout << *i << " ";
@@ -156,7 +156,7 @@ int main()
     //     std::cout <<std::endl;
 
     //     list_test1.PopBack(); 
-    //     MyTemplate::ListContainer::List<int>::const_iterator j =list_test1.cbegin();
+    //     my_template::ListContainer::list<int>::const_iterator j =list_test1.cbegin();
     //     while(j != list_test1.cend())
     //     {
     //         std::cout << *j  << " ";
@@ -165,8 +165,8 @@ int main()
     //     std::cout << std::endl;
     //     std::cout << list_test1.size() << std::endl;
 
-    //     MyTemplate::ListContainer::List<int> list_test2 = list_test1;
-    //     MyTemplate::ListContainer::List<int>::const_iterator p =list_test2.cbegin();
+    //     my_template::ListContainer::list<int> list_test2 = list_test1;
+    //     my_template::ListContainer::list<int>::const_iterator p =list_test2.cbegin();
     //     while(p != list_test2.cend())
     //     {
     //         std::cout << *p  << " ";
@@ -175,8 +175,8 @@ int main()
     //     std::cout << std::endl;
     //     std::cout << list_test2.size() << std::endl;
 
-    //     MyTemplate::ListContainer::List<int> list_test3 = list_test2 + list_test1;
-    //     MyTemplate::ListContainer::List<int>::const_iterator k =list_test3.cbegin();
+    //     my_template::ListContainer::list<int> list_test3 = list_test2 + list_test1;
+    //     my_template::ListContainer::list<int>::const_iterator k =list_test3.cbegin();
     //     while(k != list_test3.cend())
     //     {
     //         std::cout << *k  << " ";
@@ -185,8 +185,8 @@ int main()
     //     std::cout << std::endl;
     //     std::cout << list_test3.size() << std::endl;
 
-    //     MyTemplate::ListContainer::List<int> list_test4 = list_test3 + list_test1;
-    //     MyTemplate::ListContainer::List<int>::const_iterator kp =list_test4.cbegin();
+    //     my_template::ListContainer::list<int> list_test4 = list_test3 + list_test1;
+    //     my_template::ListContainer::list<int>::const_iterator kp =list_test4.cbegin();
     //     while(kp != list_test4.cend())
     //     {
     //         std::cout << *kp  << " ";
@@ -200,10 +200,10 @@ int main()
     // /*            staic测试             */
     // {
     //     std::cout << " staic 测试 " << std::endl << std::endl;
-    //     MyTemplate::StringContainer::String staic_test_str1 = "hello";
-    //     MyTemplate::StringContainer::String staic_test_str2 = "word";
-    //     MyTemplate::StringContainer::String staic_test_str3 = "  ";
-    //     MyTemplate::StackAdapter::Stack< MyTemplate::StringContainer::String> staic_test1;
+    //     my_template::string_container::string staic_test_str1 = "hello";
+    //     my_template::string_container::string staic_test_str2 = "word";
+    //     my_template::string_container::string staic_test_str3 = "  ";
+    //     my_template::StackAdapter::Stack< my_template::string_container::string> staic_test1;
 
     //     staic_test1.Push(staic_test_str1);
     //     staic_test1.Push(staic_test_str3);
@@ -220,10 +220,10 @@ int main()
     // /*            queue测试             */
     // {
     //     std::cout << " Queue 测试 " << std::endl << std::endl;
-    //     MyTemplate::StringContainer::String queue_test_str1 = "hello";
-    //     MyTemplate::StringContainer::String queue_test_str2 = "word";
-    //     MyTemplate::StringContainer::String queue_test_str3 = "  ";
-    //     MyTemplate::QueueAdapter::Queue< MyTemplate::StringContainer::String,MyTemplate::ListContainer::List< MyTemplate::StringContainer::String>> queue_test1;
+    //     my_template::string_container::string queue_test_str1 = "hello";
+    //     my_template::string_container::string queue_test_str2 = "word";
+    //     my_template::string_container::string queue_test_str3 = "  ";
+    //     my_template::QueueAdapter::Queue< my_template::string_container::string,my_template::ListContainer::list< my_template::string_container::string>> queue_test1;
 
     //     queue_test1.Push(queue_test_str1);
     //     queue_test1.Push(queue_test_str3);
@@ -243,7 +243,7 @@ int main()
     /*            priority_queue测试             */
     {
         std::cout << " PriorityQueue 测试 " << std::endl << std::endl;
-        MyTemplate::QueueAdapter::PriorityQueue<int> priority_queue_test;
+        my_template::QueueAdapter::PriorityQueue<int> priority_queue_test;
         int size = 10000000;
         time_t num1 = clock();
         for(int i = 0; i < size ; i++)
@@ -264,7 +264,7 @@ int main()
     // /*            BSTree 测试             */
     // {
     //     time_t Binary_search_tree_num1 = clock();
-    //     MyTemplate::TreeContainer::BSTree<int,MyTemplate::ImitationFunctions::Greater<int>> Binary_search_tree_test;
+    //     my_template::TreeContainer::BSTree<int,my_template::imitation_functions::Greater<int>> Binary_search_tree_test;
     //     for(size_t i = 100; i > 0; i--)
     //     {
     //         //相对来说这算是有序插入导致二叉树相乘时间复杂度为O(N)的链表
@@ -273,7 +273,7 @@ int main()
     //     time_t Binary_search_tree_num2 = clock();
 
     //     time_t Binary_search_tree_num3 = clock();
-    //     std::cout << Binary_search_tree_test.Find(58) << std::endl;
+    //     std::cout << Binary_search_tree_test.find(58) << std::endl;
     //     time_t Binary_search_tree_num4 = clock();
     //     // Binary_search_tree_test.MiddleOrderTraversal();
     //     std::cout << "退化链表插入时间" << Binary_search_tree_num2-Binary_search_tree_num1 << std::endl;
@@ -282,7 +282,7 @@ int main()
     // }
 
     // {
-    //     MyTemplate::TreeContainer::BSTree<int, MyTemplate::ImitationFunctions::Greater<int>> bst;
+    //     my_template::TreeContainer::BSTree<int, my_template::imitation_functions::Greater<int>> bst;
     //     bst.Push(5);
     //     bst.Push(4);
     //     bst.Push(3);
@@ -294,7 +294,7 @@ int main()
 
     // {
     //     const size_t Binary_search_tree_arraySize = 10;
-    //     MyTemplate::VectorContainer::Vector<int> Binary_search_tree_array(Binary_search_tree_arraySize);
+    //     my_template::VectorContainer::vector<int> Binary_search_tree_array(Binary_search_tree_arraySize);
     //     for (size_t i = 0; i < Binary_search_tree_arraySize; ++i) 
     //     {
     //         Binary_search_tree_array[i] = i;
@@ -313,7 +313,7 @@ int main()
     //     //打乱数组元素顺序
     //     size_t size = 0;
     //     time_t Binary_search_tree_num1 = clock();
-    //     MyTemplate::TreeContainer::BSTree<int,MyTemplate::ImitationFunctions::Greater<int>> Binary_search_tree_test;
+    //     my_template::TreeContainer::BSTree<int,my_template::imitation_functions::Greater<int>> Binary_search_tree_test;
     //     for(const auto& Binary_search_tree_for_test: Binary_search_tree_array)
     //     {
     //         if(Binary_search_tree_test.Push(Binary_search_tree_for_test))
@@ -326,7 +326,7 @@ int main()
     //     const int Binary_search_tree_find = Binary_search_tree_array[Binary_search_tree_arraySize/2];
 
     //     time_t Binary_search_tree_num3 = clock();
-    //     Binary_search_tree_test.Find(Binary_search_tree_find);
+    //     Binary_search_tree_test.find(Binary_search_tree_find);
     //     time_t Binary_search_tree_num4 = clock();
     //     // Binary_search_tree_test.MiddleOrderTraversal();
     //     std::cout << "插入个数" << size << std::endl;
@@ -338,7 +338,7 @@ int main()
 
     // {
     //     const size_t Binary_search_tree_arraySize = 20;
-    //     MyTemplate::VectorContainer::Vector<int> Binary_search_tree_array(Binary_search_tree_arraySize);
+    //     my_template::VectorContainer::vector<int> Binary_search_tree_array(Binary_search_tree_arraySize);
     //     for (size_t i = 0; i < Binary_search_tree_arraySize; ++i) 
     //     {
     //         Binary_search_tree_array[i] = i;
@@ -357,7 +357,7 @@ int main()
     //     //打乱数组元素顺序
     //     size_t size = 0;
     //     time_t Binary_search_tree_num1 = clock();
-    //     MyTemplate::TreeContainer::BSTree<int,MyTemplate::ImitationFunctions::Greater<int>> Binary_search_tree_test;
+    //     my_template::TreeContainer::BSTree<int,my_template::imitation_functions::Greater<int>> Binary_search_tree_test;
     //     for(const auto& Binary_search_tree_for_test: Binary_search_tree_array)
     //     {
     //         if(Binary_search_tree_test.Push(Binary_search_tree_for_test))
@@ -368,7 +368,7 @@ int main()
     //     }
     //     std::cout << std::endl;
     //     time_t Binary_search_tree_num2 = clock();
-    //     MyTemplate::TreeContainer::BSTree<int,MyTemplate::ImitationFunctions::Greater<int>> Binary_search_tree_test1 = Binary_search_tree_test;
+    //     my_template::TreeContainer::BSTree<int,my_template::imitation_functions::Greater<int>> Binary_search_tree_test1 = Binary_search_tree_test;
     //     time_t Binary_search_tree_num3 = clock();
     //     std::cout << "拷贝构造没问题 " << std::endl;
 
@@ -397,12 +397,12 @@ int main()
     // }
 
     // {
-    //     MyTemplate::StringContainer::String str1 = {'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'};
+    //     my_template::string_container::string str1 = {'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'};
     //     std::cout << str1 << std::endl;
-    //     MyTemplate::VectorContainer::Vector< MyTemplate::StringContainer::String> vector_str = 
+    //     my_template::VectorContainer::vector< my_template::string_container::string> vector_str = 
     //     {"西瓜","樱桃","苹果","西瓜","樱桃","苹果","樱桃","西瓜","樱桃","西瓜","樱桃","苹果","樱桃","苹果","樱桃"};
 
-    //     MyTemplate::TreeContainer::BSTree< MyTemplate::StringContainer::String> BST_temp;
+    //     my_template::TreeContainer::BSTree< my_template::string_container::string> BST_temp;
     //     size_t _BST_size = vector_str.size();
     //     for(size_t i = 0 ; i < _BST_size;i++)
     //     {
@@ -422,21 +422,21 @@ int main()
     // /*            pair类 测试             */
     // {
     //     const int i = 31; const int j = 28;
-    //     MyTemplate::Practicality::Pair<int,int> pair_test =MyTemplate::Practicality::make_pair(i,j);
+    //     my_template::practicality::pair<int,int> pair_test =my_template::practicality::make_pair(i,j);
     //     std::cout << pair_test << std::endl;
     // }
     // /*            AVLTree 测试             */
     // {
-    //     MyTemplate::TreeContainer::AVLTree <MyTemplate::Practicality::Pair<int,int>,int> AVL_Tree_test_pair(MyTemplate::Practicality::Pair(9,0), 10);
-    //     MyTemplate::Practicality::Pair<MyTemplate::Practicality::Pair<int,int>,int> pair_test_ (MyTemplate::Practicality::Pair(9,0), 10);
-    //     MyTemplate::TreeContainer::AVLTree <MyTemplate::Practicality::Pair<int,int>,int> AVL_Tree_test(pair_test_);
+    //     my_template::TreeContainer::AVLTree <my_template::practicality::pair<int,int>,int> AVL_Tree_test_pair(my_template::practicality::pair(9,0), 10);
+    //     my_template::practicality::pair<my_template::practicality::pair<int,int>,int> pair_test_ (my_template::practicality::pair(9,0), 10);
+    //     my_template::TreeContainer::AVLTree <my_template::practicality::pair<int,int>,int> AVL_Tree_test(pair_test_);
     //     //两个构造函数，根据传值调用来查看调用情况
-    //     MyTemplate::TreeContainer::AVLTree<MyTemplate::StringContainer::String,int> AVL_Tree_test2;
+    //     my_template::TreeContainer::AVLTree<my_template::string_container::string,int> AVL_Tree_test2;
     //     AVL_Tree_test2.~AVLTree();
     // }
     // {
-    //     MyTemplate::TreeContainer::AVLTree<int,int> AVL_Tree_test_pair;
-    //     MyTemplate::VectorContainer::Vector<MyTemplate::Practicality::Pair<int,int>> AVL_Tree_array_pair = 
+    //     my_template::TreeContainer::AVLTree<int,int> AVL_Tree_test_pair;
+    //     my_template::VectorContainer::vector<my_template::practicality::pair<int,int>> AVL_Tree_array_pair = 
     //     {{22,0},{16,0},{13,0},{15,0},{11,0},{12,0},{14,0},{10,0},{2,0},{10,0}};
     //     for(auto& i : AVL_Tree_array_pair)
     //     {
@@ -450,8 +450,8 @@ int main()
     //     std::cout << std::endl;
     // }
     // {
-    //     MyTemplate::TreeContainer::AVLTree<int,int> AVL_Tree_test_pair;
-    //     MyTemplate::VectorContainer::Vector<MyTemplate::Practicality::Pair<int,int>> AVL_Tree_array_pair = 
+    //     my_template::TreeContainer::AVLTree<int,int> AVL_Tree_test_pair;
+    //     my_template::VectorContainer::vector<my_template::practicality::pair<int,int>> AVL_Tree_array_pair = 
     //     {{22,0},{16,0},{13,0},{15,0},{11,0},{12,0},{14,0},{10,0},{2,0},{10,0}};
 
     //     for(auto& i : AVL_Tree_array_pair)
@@ -464,7 +464,7 @@ int main()
     //     std::cout << "中序遍历 "<< std::endl;
     //     AVL_Tree_test_pair.MiddleOrderTraversal();
     //     std::cout << std::endl; 
-    //     MyTemplate::TreeContainer::AVLTree<int,int>AVL_Tree_test_pair1(AVL_Tree_test_pair);
+    //     my_template::TreeContainer::AVLTree<int,int>AVL_Tree_test_pair1(AVL_Tree_test_pair);
     //     std::cout << "前序遍历 "<< std::endl;
     //     AVL_Tree_test_pair1.PreOrderTraversal();
     //     std::cout << std::endl;
@@ -472,21 +472,21 @@ int main()
     //     AVL_Tree_test_pair1.MiddleOrderTraversal();
     //     std::cout << std::endl; 
 
-    //     MyTemplate::TreeContainer::BSTree<char> BS_Tr;
-    //     MyTemplate::StringContainer::String str1 = {'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'};
+    //     my_template::TreeContainer::BSTree<char> BS_Tr;
+    //     my_template::string_container::string str1 = {'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'};
     //     for(auto& i :str1)
     //     {
     //         BS_Tr.Push(i);
     //     }
     //     BS_Tr.MiddleOrderTraversal();
     //     std::cout << std::endl;
-    //     MyTemplate::TreeContainer::BSTree<char> BS_TREE(BS_Tr);
+    //     my_template::TreeContainer::BSTree<char> BS_TREE(BS_Tr);
     //     BS_TREE.MiddleOrderTraversal();
     //     std::cout << std::endl;
     // }
     // {
-    //     MyTemplate::TreeContainer::AVLTree<int,int> AVL_Tree_test_pair;
-    //     MyTemplate::VectorContainer::Vector<MyTemplate::Practicality::Pair<int,int>> AVL_Tree_array_pair = 
+    //     my_template::TreeContainer::AVLTree<int,int> AVL_Tree_test_pair;
+    //     my_template::VectorContainer::vector<my_template::practicality::pair<int,int>> AVL_Tree_array_pair = 
     //     {{22,0},{16,0},{13,0},{15,0},{11,0},{12,0},{14,0},{10,0},{2,0},{10,0}};
 
     //     for(auto& i : AVL_Tree_array_pair)
@@ -514,8 +514,8 @@ int main()
     // }
     // {
     //     //删除测试
-    //     MyTemplate::TreeContainer::AVLTree<int,int> AVL_Tree_test_pair;
-    //     MyTemplate::VectorContainer::Vector<MyTemplate::Practicality::Pair<int,int>> AVL_Tree_array_pair = 
+    //     my_template::TreeContainer::AVLTree<int,int> AVL_Tree_test_pair;
+    //     my_template::VectorContainer::vector<my_template::practicality::pair<int,int>> AVL_Tree_array_pair = 
     //     {{22,0},{16,0},{13,0},{15,0},{11,0},{12,0},{14,0},{10,0},{2,0},{10,0}};
     //     for(auto& i : AVL_Tree_array_pair)
     //     {
@@ -536,12 +536,12 @@ int main()
     // {
     //     //性能测试
     //     /*                   pair 类型                */
-    //     MyTemplate::TreeContainer::AVLTree<size_t,int> AVL_Tree_test_pair;
-    //     MyTemplate::VectorContainer::Vector<MyTemplate::Practicality::Pair<size_t,int>> AVL_Tree_array_pair;
+    //     my_template::TreeContainer::AVLTree<size_t,int> AVL_Tree_test_pair;
+    //     my_template::VectorContainer::vector<my_template::practicality::pair<size_t,int>> AVL_Tree_array_pair;
     //     size_t size = 100000;
     //     for(size_t i = 0; i < size; i++)
     //     {
-    //         AVL_Tree_array_pair.PushBack(MyTemplate::Practicality::Pair<size_t,int>(i,0));
+    //         AVL_Tree_array_pair.push_back(my_template::practicality::pair<size_t,int>(i,0));
     //     }
     //     time_t AVL_Tree_num1 = clock();
     //     for(auto& i : AVL_Tree_array_pair)
@@ -552,11 +552,11 @@ int main()
     //     std::cout << "插入个数:" << AVL_Tree_test_pair.size()  << " " << " 插入时间:" << AVL_Tree_num2 - AVL_Tree_num1 << std::endl;
 
     //     /*                  非pair 类型               */
-    //     MyTemplate::TreeContainer::AVLTree<size_t,int> AVL_Tree_test;
-    //     MyTemplate::VectorContainer::Vector<size_t> AVL_Tree_array;
+    //     my_template::TreeContainer::AVLTree<size_t,int> AVL_Tree_test;
+    //     my_template::VectorContainer::vector<size_t> AVL_Tree_array;
     //     for(size_t j = 0; j < size ; j++)
     //     {
-    //         AVL_Tree_array.PushBack(j);
+    //         AVL_Tree_array.push_back(j);
     //     }
     //     time_t AVL_Tree_num3 = clock();
     //     for(auto& j : AVL_Tree_array)
@@ -566,15 +566,15 @@ int main()
     //     time_t AVL_Tree_num4 = clock();
     //     std::cout << "插入个数:" << AVL_Tree_test.size()  << " " << " 插入时间:" << AVL_Tree_num4 - AVL_Tree_num3 << std::endl;
     // }
-    // /*            Map 测试             */
+    // /*            tree_map 测试             */
     // {
-    //     MyTemplate::MapContainer::Map<size_t,size_t> Map_Test;
+    //     my_template::MapContainer::tree_map<size_t,size_t> Map_Test;
     //     size_t size = 10;
-    //     MyTemplate::VectorContainer::Vector<MyTemplate::Practicality::Pair<size_t,size_t>> arr;
+    //     my_template::VectorContainer::vector<my_template::practicality::pair<size_t,size_t>> arr;
     //     size_t l = 0;
     //     for(size_t i = 0 ; i < size; i++ ,l = i)
     //     {
-    //         arr.PushBack(MyTemplate::Practicality::Pair<size_t,size_t>(i,l));
+    //         arr.push_back(my_template::practicality::pair<size_t,size_t>(i,l));
     //     }
     //     std::cout << arr << std::endl;
     //     for(auto& j : arr)
@@ -588,9 +588,9 @@ int main()
     //     }
     //     std::cout << Map_Test.Empty() << " ";
     //     std::cout << "正向" << std::endl;
-    //     for(const auto& Map : Map_Test)
+    //     for(const auto& tree_map : Map_Test)
     //     {
-    //         std::cout << Map << " ";
+    //         std::cout << tree_map << " ";
     //     }
     //     std::cout << "反向" << std::endl;
     //     for(auto it = Map_Test.crbegin(); it != Map_Test.crend(); it++)
@@ -607,14 +607,14 @@ int main()
     //         std::cout << std::endl;
     //     }
     // }
-    // /*            Set 测试             */
+    // /*            tree_set 测试             */
     // {
-    //     MyTemplate::SetContainer::Set<size_t> Set_test;
+    //     my_template::SetContainer::tree_set<size_t> Set_test;
     //     size_t size = 20;
-    //     MyTemplate::VectorContainer::Vector<size_t> arr;
+    //     my_template::VectorContainer::vector<size_t> arr;
     //     for(size_t i = 0; i < size; i++ )
     //     {
-    //         arr.PushBack(i);
+    //         arr.push_back(i);
     //     }
     //      std::cout << arr << std::endl;
     //     for(auto& j : arr)
@@ -637,15 +637,15 @@ int main()
     //         std::cout << *j << " ";
     //     }
     // }
-    // /*            UnorderedMap 测试             */
+    // /*            hash_map 测试             */
     // {
-    //     MyTemplate::MapContainer::UnorderedMap<size_t,size_t> unordered_Map_test;
+    //     my_template::MapContainer::hash_map<size_t,size_t> unordered_Map_test;
     //     size_t size = 23;
-    //     MyTemplate::VectorContainer::Vector<MyTemplate::Practicality::Pair<size_t,size_t>> arr;
+    //     my_template::VectorContainer::vector<my_template::practicality::pair<size_t,size_t>> arr;
     //     size_t l = 0;
     //     for(size_t i = 0 ; i < size; i++,l = i)
     //     {
-    //         arr.PushBack(MyTemplate::Practicality::Pair<size_t,size_t>(i,l));
+    //         arr.push_back(my_template::practicality::pair<size_t,size_t>(i,l));
     //     }
     //     for(size_t i = 0; i < size; i++)
     //     {
@@ -654,15 +654,15 @@ int main()
     //     std::cout << std::endl;
 
     //     std::cout << arr << std::endl;
-    //     std::cout << *unordered_Map_test.Find(MyTemplate::Practicality::Pair<size_t,size_t>(20,20)) << std::endl;
+    //     std::cout << *unordered_Map_test.find(my_template::practicality::pair<size_t,size_t>(20,20)) << std::endl;
     //     for(size_t i = 0; i < size; i++)
     //     {
-    //         std::cout << *unordered_Map_test.Find(MyTemplate::Practicality::Pair<size_t,size_t>(i,i)) << " ";
+    //         std::cout << *unordered_Map_test.find(my_template::practicality::pair<size_t,size_t>(i,i)) << " ";
     //     }
     //     std::cout << std::endl;
     //     for(size_t i = 0; i < (size - 10); i++)
     //     {
-    //         std::cout <<  unordered_Map_test.Pop(MyTemplate::Practicality::Pair<size_t,size_t>(i,i)) <<" ";
+    //         std::cout <<  unordered_Map_test.Pop(my_template::practicality::pair<size_t,size_t>(i,i)) <<" ";
     //     }
     //     // auto it = unordered_Map_test.begin();//迭代器越界
     //     // for(size_t i = 0; i < size; i++)
@@ -680,12 +680,12 @@ int main()
     // }
     // /*            BloomFilter 测试             */
     // {
-    //     MyTemplate::BloomFilterContainer::BloomFilter<size_t> BloomFilter_test(3000000000);
+    //     my_template::BloomFilterContainer::BloomFilter<size_t> BloomFilter_test(3000000000);
     //     size_t size = 20;
-    //     MyTemplate::VectorContainer::Vector<size_t> arr;
+    //     my_template::VectorContainer::vector<size_t> arr;
     //     for(size_t i = 0; i < size; i++ )
     //     {
-    //         arr.PushBack(i);
+    //         arr.push_back(i);
     //     }
     //     std::cout << arr << std::endl;
     //     for(auto& j : arr)
@@ -701,8 +701,8 @@ int main()
     // }
     // {
     //     std::cout << "AVL_Tree移动构造测试" <<std::endl;
-    //     MyTemplate::TreeContainer::AVLTree<int,int> AVL_Tree_test_pair;
-    //     MyTemplate::VectorContainer::Vector<MyTemplate::Practicality::Pair<int,int>> AVL_Tree_array_pair = 
+    //     my_template::TreeContainer::AVLTree<int,int> AVL_Tree_test_pair;
+    //     my_template::VectorContainer::vector<my_template::practicality::pair<int,int>> AVL_Tree_array_pair = 
     //     {{22,0},{16,0},{13,0},{15,0},{11,0},{12,0},{14,0},{10,0},{2,0},{10,0}};
 
     //     for(auto& i : AVL_Tree_array_pair)
@@ -712,7 +712,7 @@ int main()
 
     //     std::cout << "移动前：" ;
     //     AVL_Tree_test_pair.MiddleOrderTraversal();
-    //     MyTemplate::TreeContainer::AVLTree<int,int> AVL_Tree_test = std::move(AVL_Tree_test_pair);
+    //     my_template::TreeContainer::AVLTree<int,int> AVL_Tree_test = std::move(AVL_Tree_test_pair);
     //     std::cout << std::endl;
     //     std::cout << "移动构造：";
     //     AVL_Tree_test.MiddleOrderTraversal();
@@ -724,8 +724,8 @@ int main()
     // }
     // {
     //     std::cout << "AVL_Tree拷贝构造测试" <<std::endl;
-    //     MyTemplate::TreeContainer::AVLTree<int,int> AVL_Tree_test_pair;
-    //     MyTemplate::VectorContainer::Vector<MyTemplate::Practicality::Pair<int,int>> AVL_Tree_array_pair = 
+    //     my_template::TreeContainer::AVLTree<int,int> AVL_Tree_test_pair;
+    //     my_template::VectorContainer::vector<my_template::practicality::pair<int,int>> AVL_Tree_array_pair = 
     //     {{22,0},{16,0},{13,0},{15,0},{11,0},{12,0},{14,0},{10,0},{2,0},{10,0}};
 
     //     for(auto& i : AVL_Tree_array_pair)
@@ -735,7 +735,7 @@ int main()
 
     //     std::cout << "拷贝前：" ;
     //     AVL_Tree_test_pair.MiddleOrderTraversal();
-    //     MyTemplate::TreeContainer::AVLTree<int,int> AVL_Tree_test = AVL_Tree_test_pair;
+    //     my_template::TreeContainer::AVLTree<int,int> AVL_Tree_test = AVL_Tree_test_pair;
     //     std::cout << std::endl;
     //     std::cout << "移动构造：";
     //     AVL_Tree_test.MiddleOrderTraversal();
@@ -767,7 +767,7 @@ int main()
     // {
     //     std::atomic<size_t> sum(0);
     //     auto func = [&sum](){sum += 6;};
-    //     MY_Template::VectorContainer::Vector<std::thread> array_thread;
+    //     MY_Template::VectorContainer::vector<std::thread> array_thread;
     //     array_thread.Resize(30);//30个空线程
     //     for(auto& size_thread :array_thread)
     //     {
@@ -783,8 +783,8 @@ int main()
     //问题vector容器resize函数问题
     {
         //尝试构建线程池来测试给个容器性能开销
-        using Vector_pair =  MyTemplate::VectorContainer::Vector<MyTemplate::Practicality::Pair<size_t,size_t>>;
-        MyTemplate::VectorContainer::Vector<Vector_pair> array_vector;
+        using Vector_pair =  my_template::VectorContainer::vector<my_template::practicality::pair<size_t,size_t>>;
+        my_template::VectorContainer::vector<Vector_pair> array_vector;
         size_t size = 20000;
         size_t sum = clock();
         for(size_t i = 0; i < size; i++)
@@ -792,9 +792,9 @@ int main()
             Vector_pair temp;
             for(size_t j = 0; j < size; j++)
             {
-                temp.PushBack(MyTemplate::Practicality::Pair<size_t,size_t>(j,j));
+                temp.push_back(my_template::practicality::pair<size_t,size_t>(j,j));
             }
-            array_vector.PushBack(std::move(temp));
+            array_vector.push_back(std::move(temp));
         }
         size_t num2 = clock();
         std::cout << "pushback时间：" << num2 - sum << std::endl;

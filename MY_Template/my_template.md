@@ -1,83 +1,18 @@
-###
----------
-- 移动语义
-    - [ ] string 
-    - [ ] vector
-    - [ ] list
-    - [ ] bs_tree
-    - [ ] avl_tree
-    - [ ] rb_tree
-    - [ ] map
-    - [ ] set
-    - [ ] unordered_map
-    - [ ] unordered_set
-    - [ ] stack
-    - [ ] queue
-    - [ ] priority_queue
-    - [ ] bitset
-- 智能指针
-    - [ ] string 
-    - [ ] vector
-    - [ ] list
-    - [ ] bs_tree
-    - [ ] avl_tree
-    - [ ] rb_tree
-    - [ ] map
-    - [ ] set
-    - [ ] unordered_map
-    - [ ] unordered_set
-    - [ ] stack
-    - [ ] queue
-    - [ ] priority_queue
-    - [ ] bitset
-- 异常
-    - [ ] string 
-    - [ ] vector
-    - [ ] list
-    - [ ] bs_tree
-    - [ ] avl_tree
-    - [ ] rb_tree
-    - [ ] map
-    - [ ] set
-    - [ ] unordered_map
-    - [ ] unordered_set
-    - [ ] stack
-    - [ ] queue
-    - [ ] priority_queue
-    - [ ] bitset
-- 完美转发
-    - [ ] string 
-    - [ ] vector
-    - [ ] list
-    - [ ] bs_tree
-    - [ ] avl_tree
-    - [ ] rb_tree
-    - [ ] map
-    - [ ] set
-    - [ ] unordered_map
-    - [ ] unordered_set
-    - [ ] stack
-    - [ ] queue
-    - [ ] priority_queue
-    - [ ] bitset
-- 迭代器 
-    - [ ] string 
-    - [ ] vector
-    - [ ] list
-    - [ ] bs_tree
-    - [ ] avl_tree
-    - [ ] rb_tree
-    - [ ] map
-    - [ ] set
-    - [ ] unordered_map
-    - [ ] unordered_set
-    - [ ] stack
-    - [ ] queue
-    - [ ] priority_queue
-    - [ ] bitset
---------
-库文件进度
-| 姓名   | 年龄 | 分数   |
-|--------|:-----|-----:|
-| 张三   | 25   | 90   |
-| 李四   | 30   | 85   
+### C++ 特性实现进度表
+
+| 数据结构/容器  | 移动语义    | 智能指针  | 异常处理    | 完美转发 | 迭代器   |
+|---------------|:--------:  |:--------:|:--------:|:--------:  |:------: |
+| string        | [✅]      | [❌]      | [✅]      | [✅]    | [✅]    |
+| vector        | [✅]      | [❌]      | [✅]      | [✅]    | [✅]    |
+| list          | [✅]      | [❌]      | [❌]      | [❌]    | [✅]    |
+| bs_tree       | [❌]      | [❌]      | [❌]      | [❌]    | [❌]    |
+| avl_tree      | [❌]      | [❌]      | [❌]      | [❌]    | [✅]    |
+| rb_tree       | [❌]      | [❌]      | [❌]      | [❌]    | [✅]    |
+| tree_map      | [❌]      | [❌]      | [❌]      | [❌]    | [✅]    |
+| tree_set      | [❌]      | [❌]      | [❌]      | [❌]    | [✅]    |
+| hash_map      | [❌]      | [❌]      | [❌]      | [❌]    | [✅]    |
+| hash_set      | [❌]      | [❌]      | [❌]      | [❌]    | [✅]    |
+| stack         | [✅]      | [❌]      | [✅]      | [❌]    | [❌]    |
+| queue         | [✅]      | [❌]      | [✅]      | [❌]    | [❌]    |
+| priority_queue| [✅]      | [❌]      | [✅]      | [❌]    | [❌]    |
+| bitset        | [❌]      | [❌]      | [❌]      | [❌]    | [❌]    |    

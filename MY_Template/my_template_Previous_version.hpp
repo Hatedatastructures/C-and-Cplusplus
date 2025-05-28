@@ -4,16 +4,16 @@
 #include <cstring>
 //优化每个容器插入函数右值引用，调整每个容器扩容逻辑，减少深拷贝，尽量用移动拷贝，对于开辟空间和错误处理，使用异常处理，对于简单函数使用lambda表达式
 //添加每个容器完美转发，减少开销,整理每个容器,哈希表扩容导致size指针问题
-namespace MyException  
+namespace my_exception  
 {
-    class CustomizeException :public std::exception
+    class customize_exception :public std::exception
     {
     private:
         const char* message;
         const char* function_name;
         size_t line_number;
     public:
-        CustomizeException(const char* _Message,const char* _FunctionName,const size_t& _LineNumber) noexcept 
+        customize_exception(const char* _Message,const char* _FunctionName,const size_t& _LineNumber) noexcept 
         {
             message = _Message;
             function_name = _FunctionName;
@@ -38,20 +38,20 @@ namespace MyTemplate
     namespace ImitationFunctions
     {
         //仿函数命名空间
-        template<typename ImitationFunctionsLess>
+        template<typename imitation_functions_less>
         class Less
         {
         public:
-            bool operator()(const ImitationFunctionsLess& _test1 ,const ImitationFunctionsLess& _test2) noexcept
+            bool operator()(const imitation_functions_less& _test1 ,const imitation_functions_less& _test2) noexcept
             {
                 return _test1 < _test2;
             }
         };
-        template<typename ImitationFunctionsGreater>
+        template<typename imitation_functions_greater>
         class Greater
         {
         public:
-            bool operator()(const ImitationFunctionsGreater& _test1 ,const ImitationFunctionsGreater& _test2) noexcept
+            bool operator()(const imitation_functions_greater& _test1 ,const imitation_functions_greater& _test2) noexcept
             {
                 return _test1 > _test2;
             }
@@ -86,8 +86,8 @@ namespace MyTemplate
     }
     namespace Algorithm
     {
-        template <typename SourceSequenceCopy,typename TargetSequenceCopy>
-        TargetSequenceCopy copy(SourceSequenceCopy begin,SourceSequenceCopy end,TargetSequenceCopy first) noexcept
+        template <typename source_sequence_copy,typename target_sequence_copy>
+        target_sequence_copy copy(source_sequence_copy begin,source_sequence_copy end,target_sequence_copy first) noexcept
         {
             while(begin != end)
             {
@@ -98,8 +98,8 @@ namespace MyTemplate
             return first;
         }
         //返回下一个位置的迭代器，是否深浅拷贝取决于自定义类型重载和拷贝构造
-        template<typename SourceSequenceFind,typename TargetSequenceFind>
-        SourceSequenceFind Find(SourceSequenceFind begin,SourceSequenceFind end,const TargetSequenceFind& value) noexcept
+        template<typename source_sequence_find,typename target_sequence_find>
+        source_sequence_find Find(source_sequence_find begin,source_sequence_find end,const target_sequence_find& value) noexcept
         {
             while(begin!= end)
             {
@@ -111,45 +111,45 @@ namespace MyTemplate
             }
             return end;
         } 
-        template<typename SwapDataType>
-        void Swap(SwapDataType& a,SwapDataType& b) noexcept
+        template<typename swap_data_type>
+        void Swap(swap_data_type& a,swap_data_type& b) noexcept
         {
-            SwapDataType temp = a;
+            swap_data_type temp = a;
             a = b;
             b = temp;
         }
         namespace HashAlgorithm
         {
-            template <typename HashAlgorithmType ,typename Hash_IF = MyTemplate::ImitationFunctions::HashImitationFunctions>
+            template <typename hash_algorithm_type ,typename hash_if = MyTemplate::ImitationFunctions::HashImitationFunctions>
             class HashFunction
             {
             public:
-                Hash_IF HashImitationFunctionsObject;
-                size_t Hash_SDBMHash(const HashAlgorithmType& DataHash) noexcept
+                hash_if HashImitationFunctionsObject;
+                size_t Hash_SDBMHash(const hash_algorithm_type& DataHash) noexcept
                 {
                     size_t return_value = HashImitationFunctionsObject(DataHash);
                     return_value = 65599 * return_value;
                     return return_value;
                 }
-                size_t Hash_BKDRHash(const HashAlgorithmType& DataHash) noexcept
+                size_t Hash_BKDRHash(const hash_algorithm_type& DataHash) noexcept
                 {
                     size_t return_value = HashImitationFunctionsObject(DataHash);
                     return_value = 131 * return_value;
                     return return_value;
                 }
-                size_t Hash_DJBHash(const HashAlgorithmType& DataHash) noexcept
+                size_t Hash_DJBHash(const hash_algorithm_type& DataHash) noexcept
                 {
                     size_t return_value = HashImitationFunctionsObject(DataHash);
                     return_value = 33 * return_value;
                     return return_value;
                 }
-                size_t Hash_APHash(const HashAlgorithmType& DataHash) noexcept
+                size_t Hash_APHash(const hash_algorithm_type& DataHash) noexcept
                 {
                     size_t return_value = HashImitationFunctionsObject(DataHash);
                     return_value = return_value * 1031;
                     return return_value;
                 }
-                size_t Hash_PJWHash(const HashAlgorithmType& DataHash) noexcept
+                size_t Hash_PJWHash(const hash_algorithm_type& DataHash) noexcept
                 {
                     size_t return_value = HashImitationFunctionsObject(DataHash);
                     return_value = (return_value << 2) + return_value;
@@ -160,11 +160,11 @@ namespace MyTemplate
     }
     namespace Practicality
     {
-        template<typename PairDataTypeExampleT,typename PairDataTypeExampleK>
+        template<typename pair_data_type_example_t,typename pair_data_type_example_k>
         class Pair
         {
-            using T = PairDataTypeExampleT;
-            using K = PairDataTypeExampleK;
+            using T = pair_data_type_example_t;
+            using K = pair_data_type_example_k;
             //处理指针类型
         public:
             //链接两个相同或不同的类型为一个类型，方便使用
@@ -229,20 +229,20 @@ namespace MyTemplate
             }
             Pair* operator->() noexcept                         {       return this;        }
             const Pair* operator->()const  noexcept             {       return this;        }
-            template<typename PairostreamT,typename PairostreamK>
-            friend std::ostream& operator<<(std::ostream& os,const Pair<PairostreamT,PairostreamK>& p);
+            template<typename pair_ostream_t,typename pair_ostream_k>
+            friend std::ostream& operator<<(std::ostream& os,const Pair<pair_ostream_t,pair_ostream_k>& p);
         };
-        template<typename PairostreamT,typename PairostreamK>
-        std::ostream& operator<<(std::ostream& os,const Pair<PairostreamT,PairostreamK>& p)
+        template<typename pair_ostream_t,typename pair_ostream_k>
+        std::ostream& operator<<(std::ostream& os,const Pair<pair_ostream_t,pair_ostream_k>& p)
         {
             os << "(" << p.first << ":" << p.second << ")";
             return os;
         }
         /*                               类分隔                                   */
-        template<typename MakePairT,typename MakePairK>
-        Pair<MakePairT,MakePairK> make_pair (const MakePairT& _First,const MakePairK& _Second)
+        template<typename make_pair_t,typename make_pair_k>
+        Pair<make_pair_t,make_pair_k> make_pair (const make_pair_t& _First,const make_pair_k& _Second)
         {
-            return Pair<MakePairT,MakePairK>(_First,_Second);
+            return Pair<make_pair_t,make_pair_k>(_First,_Second);
         }
     }
 
@@ -408,7 +408,7 @@ namespace MyTemplate
                     //中间位置插入子串
                     if(StartPosition > _size)
                     {
-                        throw MyException::CustomizeException("传入参数位置越界","InsertSubstring",__LINE__);
+                        throw my_exception::customize_exception("传入参数位置越界","InsertSubstring",__LINE__);
                     }
                     size_t Len = strlen(Substring);
                     size_t NewSize = _size + Len;
@@ -424,7 +424,7 @@ namespace MyTemplate
                     delete [] TemporaryBuffers;
                     return *this;
                 }
-                catch(const MyException::CustomizeException& Process)
+                catch(const my_exception::customize_exception& Process)
                 {
                     std::cerr << Process.what() << " " << Process.function_name_get() << " " << Process.line_number_get() << std::endl;
                     return *this; 
@@ -437,10 +437,10 @@ namespace MyTemplate
                 {
                     if(StartPosition > _size)
                     {
-                        throw MyException::CustomizeException("传入参数位置越界","SubString",__LINE__);
+                        throw my_exception::customize_exception("传入参数位置越界","SubString",__LINE__);
                     }
                 }
-                catch(const MyException::CustomizeException& Process)
+                catch(const my_exception::customize_exception& Process)
                 {
                     std::cerr << Process.what() << " " << Process.function_name_get() << " " << Process.line_number_get() << std::endl;
                     return *this;                
@@ -460,10 +460,10 @@ namespace MyTemplate
                 {
                     if(StartPosition > _size)
                     {
-                        throw MyException::CustomizeException("传入参数位置越界","SubStringFrom",__LINE__);
+                        throw my_exception::customize_exception("传入参数位置越界","SubStringFrom",__LINE__);
                     }
                 }
-                catch(const MyException::CustomizeException& Process)
+                catch(const my_exception::customize_exception& Process)
                 {
                     std::cerr << Process.what() << " " << Process.function_name_get() << " " << Process.line_number_get() << std::endl;
                     return *this;
@@ -483,10 +483,10 @@ namespace MyTemplate
                 {
                     if(StartPosition > _size || EndPosition > _size || StartPosition > EndPosition)
                     {
-                        throw MyException::CustomizeException("传入参数位置越界","SubString",__LINE__);
+                        throw my_exception::customize_exception("传入参数位置越界","SubString",__LINE__);
                     }
                 }
-                catch(const MyException::CustomizeException& Process)
+                catch(const my_exception::customize_exception& Process)
                 {
                     std::cerr << Process.what() << " " << Process.function_name_get() << " " << Process.line_number_get() << std::endl;
                     return *this;
@@ -606,10 +606,10 @@ namespace MyTemplate
                 {
                     if(_size == 0)
                     {
-                        throw MyException::CustomizeException("字符串为空","Reserve",__LINE__);
+                        throw my_exception::customize_exception("字符串为空","Reserve",__LINE__);
                     }
                 }
-                catch(const MyException::CustomizeException& Process)
+                catch(const my_exception::customize_exception& Process)
                 {
                     std::cerr << Process.what() << " " << Process.function_name_get() << " " << Process.line_number_get() << std::endl;
                     return *this;
@@ -627,10 +627,10 @@ namespace MyTemplate
                 {
                     if(StartPosition > _size || EndPosition > _size || StartPosition > EndPosition || _size == 0)
                     {
-                        throw MyException::CustomizeException("回滚位置异常","ReverseSubstring",__LINE__);
+                        throw my_exception::customize_exception("回滚位置异常","ReverseSubstring",__LINE__);
                     }
                 }
-                catch(const MyException::CustomizeException& Process)
+                catch(const my_exception::customize_exception& Process)
                 {
                     std::cerr << Process.what() << " " << Process.function_name_get() << " " << Process.line_number_get() << std::endl;
                     return *this;
@@ -753,10 +753,10 @@ namespace MyTemplate
                     }
                     else
                     {
-                        throw MyException::CustomizeException("越界访问","String::operator[]",__LINE__);
+                        throw my_exception::customize_exception("越界访问","String::operator[]",__LINE__);
                     }
                 }
-                catch(const MyException::CustomizeException& ExceptionStr)
+                catch(const my_exception::customize_exception& ExceptionStr)
                 {
                     std::cerr << ExceptionStr.what() << " " << ExceptionStr.function_name_get() << " " << ExceptionStr.line_number_get() << std::endl;
                     return _data[0];
@@ -773,10 +773,10 @@ namespace MyTemplate
                     }
                     else
                     {
-                        throw MyException::CustomizeException("越界访问","String::operator[]const",__LINE__);
+                        throw my_exception::customize_exception("越界访问","String::operator[]const",__LINE__);
                     }
                 }
-                catch(const MyException::CustomizeException& ExceptionStr)
+                catch(const my_exception::customize_exception& ExceptionStr)
                 {
                     std::cerr << ExceptionStr.what() << " " << ExceptionStr.function_name_get() << " " << ExceptionStr.line_number_get() << std::endl;
                     return _data[0];
@@ -887,14 +887,14 @@ namespace MyTemplate
                 {
                     if(FindSize >= size())
                     {
-                        throw MyException::CustomizeException("传入数据超出容器范围","Vector::Find",__LINE__);
+                        throw my_exception::customize_exception("传入数据超出容器范围","Vector::Find",__LINE__);
                     }
                     else
                     {
                         return _DataPointer[FindSize];
                     }
                 }
-                catch(const MyException::CustomizeException& Process)
+                catch(const my_exception::customize_exception& Process)
                 {
                     std::cerr << Process.what() << " " << Process.function_name_get() << " " << Process.line_number_get() << std::endl;
                     return _DataPointer[0];
@@ -1069,14 +1069,14 @@ namespace MyTemplate
                 {
                     if( SizeOperator >= capacity())
                     {
-                        throw MyException::CustomizeException("传入参数越界","Vector::operatot[]",__LINE__);
+                        throw my_exception::customize_exception("传入参数越界","Vector::operatot[]",__LINE__);
                     }
                     else
                     {
                         return _DataPointer[SizeOperator];
                     }
                 }
-                catch(const MyException::CustomizeException& Process)
+                catch(const my_exception::customize_exception& Process)
                 {
                     std::cerr << Process.what() << " " << Process.function_name_get() << " " << Process.line_number_get() << std::endl;
                     return _DataPointer[0];
@@ -1089,14 +1089,14 @@ namespace MyTemplate
                 {
                     if( SizeOperator >= capacity())
                     {
-                        throw MyException::CustomizeException("传入参数越界","Vector::operatot[]",__LINE__);
+                        throw my_exception::customize_exception("传入参数越界","Vector::operatot[]",__LINE__);
                     }
                     else
                     {
                         return _DataPointer[SizeOperator];
                     }
                 }
-                catch(const MyException::CustomizeException& Process)
+                catch(const my_exception::customize_exception& Process)
                 {
                     std::cerr << Process.what() << " " << Process.function_name_get() << " " << Process.line_number_get() << std::endl;
                     return _DataPointer[0];
