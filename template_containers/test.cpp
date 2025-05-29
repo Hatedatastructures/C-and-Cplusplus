@@ -1,4 +1,4 @@
-#include "my_template.hpp"
+#include "template_container.hpp"
 // #include "MY_Test.h"
 #include <thread>
 // import MY_Template;
@@ -197,25 +197,25 @@ int main()
     //     std::cout << list_test4 << std::endl;
     // }
 
-    // /*            staic测试             */
-    // {
-    //     std::cout << " staic 测试 " << std::endl << std::endl;
-    //     template_container::string_c::string staic_test_str1 = "hello";
-    //     template_container::string_c::string staic_test_str2 = "word";
-    //     template_container::string_c::string staic_test_str3 = "  ";
-    //     template_container::stack_a::Stack< template_container::string_c::string> staic_test1;
+    /*            staic测试             */
+    {
+        std::cout << " staic 测试 " << std::endl << std::endl;
+        template_container::string_c::string staic_test_str1 = "hello";
+        template_container::string_c::string staic_test_str2 = "word";
+        template_container::string_c::string staic_test_str3 = "  ";
+        template_container::stack_a::stack< template_container::string_c::string> staic_test1;
 
-    //     staic_test1.Push(staic_test_str1);
-    //     staic_test1.Push(staic_test_str3);
-    //     staic_test1.Push(staic_test_str2);
+        staic_test1.push(staic_test_str1);
+        staic_test1.push(staic_test_str3);
+        staic_test1.push(staic_test_str2);
 
-    //     std::cout << staic_test1.top() << std::endl;
-    //     staic_test1.Pop();
-    //     std::cout << staic_test1.top() << std::endl;
-    //     staic_test1.Pop();
-    //     std::cout << staic_test1.top() << std::endl;
-    //     staic_test1.Pop();
-    // }
+        std::cout << staic_test1.top() << std::endl;
+        staic_test1.pop();
+        std::cout << staic_test1.top() << std::endl;
+        staic_test1.pop();
+        std::cout << staic_test1.top() << std::endl;
+        staic_test1.pop();
+    }
 
     // /*            queue测试             */
     // {
@@ -225,41 +225,41 @@ int main()
     //     template_container::string_c::string queue_test_str3 = "  ";
     //     template_container::queue_a::Queue< template_container::string_c::string,template_container::list_c::list< template_container::string_c::string>> queue_test1;
 
-    //     queue_test1.Push(queue_test_str1);
-    //     queue_test1.Push(queue_test_str3);
-    //     queue_test1.Push(queue_test_str2);
+    //     queue_test1.push(queue_test_str1);
+    //     queue_test1.push(queue_test_str3);
+    //     queue_test1.push(queue_test_str2);
 
     //     std::cout << queue_test1.front() << std::endl;
     //     std::cout << queue_test1.back()  << std::endl;
 
     //     std::cout << queue_test1.front() << " ";
-    //     queue_test1.Pop();
+    //     queue_test1.pop();
     //     std::cout << queue_test1.front() << " ";
-    //     queue_test1.Pop();
+    //     queue_test1.pop();
     //     std::cout << queue_test1.front() << " ";
-    //     queue_test1.Pop();
+    //     queue_test1.pop();
     // }
 
-    // /*            priority_queue测试             */
-    // {
-    //     std::cout << " PriorityQueue 测试 " << std::endl << std::endl;
-    //     template_container::queue_a::PriorityQueue<int> priority_queue_test;
-    //     int size = 10000000;
-    //     time_t num1 = clock();
-    //     for(int i = 0; i < size ; i++)
-    //     {
-    //         priority_queue_test.Push(std::move(i));
-    //     }
-    //     time_t num2 = clock();
-    //     std::cout << priority_queue_test.size() << std::endl;
-    //     for(int i = 0; i < size; i++)
-    //     {
-    //         // std::cout << priority_queue_test.top() << " ";
-    //         priority_queue_test.Pop();
-    //     }
-    //     std::cout << std::endl;
-    //     std::cout << "PriorityQueue 测试插入 " << size << " 个数时间： " << num2-num1 << std::endl;
-    // }
+    /*            priority_queue测试             */
+    {
+        std::cout << " priority_queue 测试 " << std::endl << std::endl;
+        template_container::queue_a::priority_queue<int> priority_queue_test;
+        int size = 10000000;
+        time_t num1 = clock();
+        for(int i = 0; i < size ; i++)
+        {
+            priority_queue_test.push(std::move(i));
+        }
+        time_t num2 = clock();
+        std::cout << priority_queue_test.size() << std::endl;
+        for(int i = 0; i < size; i++)
+        {
+            // std::cout << priority_queue_test.top() << " ";
+            priority_queue_test.pop();
+        }
+        std::cout << std::endl;
+        std::cout << "priority_queue 测试插入 " << size << " 个数时间： " << num2-num1 << std::endl;
+    }
 
     // /*            BSTree 测试             */
     // {
@@ -268,7 +268,7 @@ int main()
     //     for(size_t i = 100; i > 0; i--)
     //     {
     //         //相对来说这算是有序插入导致二叉树相乘时间复杂度为O(N)的链表
-    //         Binary_search_tree_test.Push(i);
+    //         Binary_search_tree_test.push(i);
     //     }
     //     time_t Binary_search_tree_num2 = clock();
 
@@ -283,11 +283,11 @@ int main()
 
     // {
     //     template_container::tree_c::BSTree<int, template_container::imitation_functions::Greater<int>> bst;
-    //     bst.Push(5);
-    //     bst.Push(4);
-    //     bst.Push(3);
-    //     bst.Push(2);
-    //     bst.Push(1);
+    //     bst.push(5);
+    //     bst.push(4);
+    //     bst.push(3);
+    //     bst.push(2);
+    //     bst.push(1);
     //     bst.MiddleOrderTraversal(); 
     //     std::cout << std::endl << std::endl;
     // }
@@ -316,7 +316,7 @@ int main()
     //     template_container::tree_c::BSTree<int,template_container::imitation_functions::Greater<int>> Binary_search_tree_test;
     //     for(const auto& Binary_search_tree_for_test: Binary_search_tree_array)
     //     {
-    //         if(Binary_search_tree_test.Push(Binary_search_tree_for_test))
+    //         if(Binary_search_tree_test.push(Binary_search_tree_for_test))
     //         {
     //             size++;
     //         }
@@ -360,7 +360,7 @@ int main()
     //     template_container::tree_c::BSTree<int,template_container::imitation_functions::Greater<int>> Binary_search_tree_test;
     //     for(const auto& Binary_search_tree_for_test: Binary_search_tree_array)
     //     {
-    //         if(Binary_search_tree_test.Push(Binary_search_tree_for_test))
+    //         if(Binary_search_tree_test.push(Binary_search_tree_for_test))
     //         {
     //             size++;
     //             std::cout << size << " ";
@@ -372,14 +372,14 @@ int main()
     //     time_t Binary_search_tree_num3 = clock();
     //     std::cout << "拷贝构造没问题 " << std::endl;
 
-    //     Binary_search_tree_test.Pop(Binary_search_tree_array[2]);
-    //     std::cout << "Pop(1)函数没问题 " << std::endl;
-    //     Binary_search_tree_test.Pop(Binary_search_tree_array[0]);
-    //     std::cout << "Pop(2)函数没问题 " << std::endl;
-    //     Binary_search_tree_test.Pop(Binary_search_tree_array[1]);
-    //     std::cout << "Pop(3)函数没问题 " << std::endl;
-    //     Binary_search_tree_test.Pop(Binary_search_tree_array[3]);
-    //     std::cout << "Pop(4)函数没问题 " << std::endl;
+    //     Binary_search_tree_test.pop(Binary_search_tree_array[2]);
+    //     std::cout << "pop(1)函数没问题 " << std::endl;
+    //     Binary_search_tree_test.pop(Binary_search_tree_array[0]);
+    //     std::cout << "pop(2)函数没问题 " << std::endl;
+    //     Binary_search_tree_test.pop(Binary_search_tree_array[1]);
+    //     std::cout << "pop(3)函数没问题 " << std::endl;
+    //     Binary_search_tree_test.pop(Binary_search_tree_array[3]);
+    //     std::cout << "pop(4)函数没问题 " << std::endl;
 
 
     //     Binary_search_tree_test.MiddleOrderTraversal();
@@ -406,7 +406,7 @@ int main()
     //     size_t _BST_size = vector_str.size();
     //     for(size_t i = 0 ; i < _BST_size;i++)
     //     {
-    //         if(BST_temp.Push(vector_str[i]))
+    //         if(BST_temp.push(vector_str[i]))
     //         {
     //             std::cout << "插入成功" << std::endl;
     //         }
@@ -440,7 +440,7 @@ int main()
     //     {{22,0},{16,0},{13,0},{15,0},{11,0},{12,0},{14,0},{10,0},{2,0},{10,0}};
     //     for(auto& i : AVL_Tree_array_pair)
     //     {
-    //         AVL_Tree_test_pair.Push(i);
+    //         AVL_Tree_test_pair.push(i);
     //     }
     //     std::cout << "前序遍历 "<< std::endl;
     //     AVL_Tree_test_pair.PreOrderTraversal();
@@ -456,7 +456,7 @@ int main()
 
     //     for(auto& i : AVL_Tree_array_pair)
     //     {
-    //         AVL_Tree_test_pair.Push(i);
+    //         AVL_Tree_test_pair.push(i);
     //     }
     //     std::cout << "前序遍历 "<< std::endl;
     //     AVL_Tree_test_pair.PreOrderTraversal();
@@ -476,7 +476,7 @@ int main()
     //     template_container::string_c::string str1 = {'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'};
     //     for(auto& i :str1)
     //     {
-    //         BS_Tr.Push(i);
+    //         BS_Tr.push(i);
     //     }
     //     BS_Tr.MiddleOrderTraversal();
     //     std::cout << std::endl;
@@ -491,7 +491,7 @@ int main()
 
     //     for(auto& i : AVL_Tree_array_pair)
     //     {
-    //         AVL_Tree_test_pair.Push(i);
+    //         AVL_Tree_test_pair.push(i);
     //     }
     //     std::cout << std::endl;
     //     for ( auto i : AVL_Tree_test_pair)
@@ -519,7 +519,7 @@ int main()
     //     {{22,0},{16,0},{13,0},{15,0},{11,0},{12,0},{14,0},{10,0},{2,0},{10,0}};
     //     for(auto& i : AVL_Tree_array_pair)
     //     {
-    //         AVL_Tree_test_pair.Push(i);
+    //         AVL_Tree_test_pair.push(i);
     //     }
     //     std::cout << "前序遍历 "<< std::endl;
     //     AVL_Tree_test_pair.PreOrderTraversal();
@@ -527,7 +527,7 @@ int main()
     //     std::cout << "开始删除 "<< std::endl;
     //     for(auto& i : AVL_Tree_array_pair)
     //     {
-    //         AVL_Tree_test_pair.Pop(i.first);
+    //         AVL_Tree_test_pair.pop(i.first);
     //         AVL_Tree_test_pair.PreOrderTraversal();
     //         std::cout << std::endl;
     //     }
@@ -546,7 +546,7 @@ int main()
     //     time_t AVL_Tree_num1 = clock();
     //     for(auto& i : AVL_Tree_array_pair)
     //     {
-    //         AVL_Tree_test_pair.Push(i);
+    //         AVL_Tree_test_pair.push(i);
     //     }
     //     time_t AVL_Tree_num2 = clock();
     //     std::cout << "插入个数:" << AVL_Tree_test_pair.size()  << " " << " 插入时间:" << AVL_Tree_num2 - AVL_Tree_num1 << std::endl;
@@ -561,7 +561,7 @@ int main()
     //     time_t AVL_Tree_num3 = clock();
     //     for(auto& j : AVL_Tree_array)
     //     {
-    //         AVL_Tree_test.Push(j);
+    //         AVL_Tree_test.push(j);
     //     }
     //     time_t AVL_Tree_num4 = clock();
     //     std::cout << "插入个数:" << AVL_Tree_test.size()  << " " << " 插入时间:" << AVL_Tree_num4 - AVL_Tree_num3 << std::endl;
@@ -579,7 +579,7 @@ int main()
     //     std::cout << arr << std::endl;
     //     for(auto& j : arr)
     //     {
-    //         Map_Test.Push(j);
+    //         Map_Test.push(j);
     //         std::cout << "前序" << " ";
     //         Map_Test.PreOrderTraversal();
     //         std::cout << "   " << "中序:"<< Map_Test.size() << " " << Map_Test.empty() << " ";
@@ -599,7 +599,7 @@ int main()
     //     }
     //     for(auto& j : arr)
     //     {
-    //         Map_Test.Pop(j);
+    //         Map_Test.pop(j);
     //         // std::cout << "前序" << " ";
     //         // Map_Test.PreOrderTraversal();
     //         std::cout << "   " << "中序:"<< Map_Test.size() << " " << Map_Test.empty() << " ";
@@ -619,7 +619,7 @@ int main()
     //      std::cout << arr << std::endl;
     //     for(auto& j : arr)
     //     {
-    //         Set_test.Push(j);
+    //         Set_test.push(j);
     //         std::cout << "前序" << " ";
     //         Set_test.PreOrderTraversal();
     //         std::cout << "   " << "中序" << " ";
@@ -649,7 +649,7 @@ int main()
     //     }
     //     for(size_t i = 0; i < size; i++)
     //     {
-    //         unordered_Map_test.Push(arr[i]);
+    //         unordered_Map_test.push(arr[i]);
     //     }
     //     std::cout << std::endl;
 
@@ -662,7 +662,7 @@ int main()
     //     std::cout << std::endl;
     //     for(size_t i = 0; i < (size - 10); i++)
     //     {
-    //         std::cout <<  unordered_Map_test.Pop(template_container::practicality::pair<size_t,size_t>(i,i)) <<" ";
+    //         std::cout <<  unordered_Map_test.pop(template_container::practicality::pair<size_t,size_t>(i,i)) <<" ";
     //     }
     //     // auto it = unordered_Map_test.begin();//迭代器越界
     //     // for(size_t i = 0; i < size; i++)
@@ -707,7 +707,7 @@ int main()
 
     //     for(auto& i : AVL_Tree_array_pair)
     //     {
-    //         AVL_Tree_test_pair.Push(i);
+    //         AVL_Tree_test_pair.push(i);
     //     }
 
     //     std::cout << "移动前：" ;
@@ -730,7 +730,7 @@ int main()
 
     //     for(auto& i : AVL_Tree_array_pair)
     //     {
-    //         AVL_Tree_test_pair.Push(i);
+    //         AVL_Tree_test_pair.push(i);
     //     }
 
     //     std::cout << "拷贝前：" ;
@@ -781,26 +781,26 @@ int main()
     //     std::cout << sum << std::endl;
     // }
     //问题vector容器resize函数问题
-    // {
-    //     //尝试构建线程池来测试给个容器性能开销
-    //     using Vector_pair =  template_container::vector_c::vector<template_container::practicality::pair<size_t,size_t>>;
-    //     template_container::vector_c::vector<Vector_pair> array_vector;
-    //     size_t size = 20000;
-    //     size_t sum = clock();
-    //     for(size_t i = 0; i < size; i++)
-    //     {
-    //         Vector_pair temp;
-    //         for(size_t j = 0; j < size; j++)
-    //         {
-    //             temp.push_back(template_container::practicality::pair<size_t,size_t>(j,j));
-    //         }
-    //         array_vector.push_back(std::move(temp));
-    //     }
-    //     size_t num2 = clock();
-    //     std::cout << "pushback时间：" << num2 - sum << std::endl;
-    // }
-    // {
-    //     system("pause");
-    // }
+    {
+        //尝试构建线程池来测试给个容器性能开销
+        using Vector_pair =  template_container::vector_c::vector<template_container::practicality::pair<size_t,size_t>>;
+        template_container::vector_c::vector<Vector_pair> array_vector;
+        size_t size = 20000;
+        size_t sum = clock();
+        for(size_t i = 0; i < size; i++)
+        {
+            Vector_pair temp;
+            for(size_t j = 0; j < size; j++)
+            {
+                temp.push_back(template_container::practicality::pair<size_t,size_t>(j,j));
+            }
+            array_vector.push_back(std::move(temp));
+        }
+        size_t num2 = clock();
+        std::cout << "pushback时间：" << num2 - sum << std::endl;
+    }
+    {
+        system("pause");
+    }
     return 0;
 }

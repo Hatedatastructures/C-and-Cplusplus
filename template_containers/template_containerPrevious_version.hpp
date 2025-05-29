@@ -1160,23 +1160,23 @@ namespace MyTemplate
     /*############################     list容器     ############################*/
     namespace list_c
     {
-        template <typename ListType>
+        template <typename list_type>
         class List
         {
-            template<typename listTypeFunctionNode>
+            template<typename list_type_function_node>
             struct ListNode
             {
                 //节点类
-                ListNode<listTypeFunctionNode>* _prev;
-                ListNode<listTypeFunctionNode>* _next;
-                listTypeFunctionNode _data;
+                ListNode<list_type_function_node>* _prev;
+                ListNode<list_type_function_node>* _next;
+                list_type_function_node _data;
 
-                ListNode(const listTypeFunctionNode& Data = listTypeFunctionNode()) noexcept
+                ListNode(const list_type_function_node& Data = list_type_function_node()) noexcept
                 :_prev(nullptr), _next(nullptr), _data(Data)
                 {
                     //列表初始化
                 }
-                ListNode(const listTypeFunctionNode&& data) noexcept
+                ListNode(const list_type_function_node&& data) noexcept
                 :_prev(nullptr), _next(nullptr)
                 {
                     _data = std::move(data);
@@ -1292,7 +1292,7 @@ namespace MyTemplate
                     return _it != Temp._it;
                 }
             };
-            using Node = ListNode<ListType>;
+            using Node = ListNode<list_type>;
 
             Node* _head;
             //_head为哨兵位
@@ -1303,8 +1303,8 @@ namespace MyTemplate
                 _head -> _next = _head;
             }
         public:
-            using iterator = ListIterator<ListType,ListType& ,ListType*>;
-            using const_iterator = ListIterator<ListType,const ListType&,const ListType*>;
+            using iterator = ListIterator<list_type,list_type& ,list_type*>;
+            using const_iterator = ListIterator<list_type,const list_type&,const list_type*>;
 
             //拿正向迭代器构造反向迭代器，可以直接调用 iterator 已经重载的运算符和函数，相当于在封装一层类
             using reverse_iterator = ReverselistIterator<iterator> ;
@@ -1327,7 +1327,7 @@ namespace MyTemplate
                     ++first;
                 }
             }
-            List(std::initializer_list<ListType> ListTemp)
+            List(std::initializer_list<list_type> ListTemp)
             {
                 //通过初始化列表构建一个list
                 CreateHead();
@@ -1347,21 +1347,21 @@ namespace MyTemplate
                     ++first;
                 }
             }
-            List(const List<ListType>& ListData)
+            List(const List<list_type>& ListData)
             {
                 //拷贝构造
                 CreateHead();
-                List<ListType> Temp (ListData.cbegin(),ListData.cend());
+                List<list_type> Temp (ListData.cbegin(),ListData.cend());
                 Swap(Temp);
             }
-            List(List<ListType>&& ListData)
+            List(List<list_type>&& ListData)
             {
                 //移动构造
                 CreateHead();
                 _head = std::move(ListData._head);
                 ListData._head = nullptr;
             }
-            void Swap(MyTemplate::list_c::List<ListType>& SwapTemp)
+            void Swap(MyTemplate::list_c::List<list_type>& SwapTemp)
             {
                 MyTemplate::Algorithm::Swap(_head,SwapTemp._head);
             }
@@ -1397,34 +1397,34 @@ namespace MyTemplate
             /*
             元素访问操作
             */
-            const ListType& Front()const noexcept       {       return _head->_next->_data;         }
+            const list_type& Front()const noexcept       {       return _head->_next->_data;         }
 
-            const ListType& Back()const noexcept        {       return _head->_prev->_data;         }
-            ListType& Front()noexcept
+            const list_type& Back()const noexcept        {       return _head->_prev->_data;         }
+            list_type& Front()noexcept
             {
                 return _head->_next->_data;
             }
 
-            ListType& Back()noexcept
+            list_type& Back()noexcept
             {
                 return _head->_prev->_data;
             }
             /*
             插入删除操作
             */
-            void PushBack(const ListType& PushBackData)     {       Insert(end(),PushBackData);     }
+            void PushBack(const list_type& PushBackData)     {       Insert(end(),PushBackData);     }
 
-            void PushFront(const ListType& PushfrontData)   {       Insert(begin(),PushfrontData);  }
+            void PushFront(const list_type& PushfrontData)   {       Insert(begin(),PushfrontData);  }
 
-            void PushBack(ListType&& PushBackData)          {       Insert(end(),std::forward<ListType>(PushBackData)); }
+            void PushBack(list_type&& PushBackData)          {       Insert(end(),std::forward<list_type>(PushBackData)); }
 
-            void PushFront(ListType&& PushfrontData)        {       Insert(begin(),std::forward<ListType>(PushfrontData));  }
+            void PushFront(list_type&& PushfrontData)        {       Insert(begin(),std::forward<list_type>(PushfrontData));  }
 
             void PopBack()                                  {       Erase(--end());     }
 
             iterator PopFront()                             {       return Erase(begin());  }
 
-            iterator Insert(iterator Pos ,const ListType& Val)
+            iterator Insert(iterator Pos ,const list_type& Val)
             {
                 Node* PNewNode = new Node(Val);
                 //开辟新节点
@@ -1436,9 +1436,9 @@ namespace MyTemplate
                 PCur->_prev = PNewNode;
                 return iterator(PNewNode);
             }
-            iterator Insert(iterator Pos ,ListType&& Val)
+            iterator Insert(iterator Pos ,list_type&& Val)
             {
-                Node* PNewNode = new Node(std::forward<ListType>(Val));
+                Node* PNewNode = new Node(std::forward<list_type>(Val));
                 Node* PCur = Pos._node;
                 PNewNode->_prev = PCur->_prev;
                 PNewNode->_next = PCur;
@@ -1459,7 +1459,7 @@ namespace MyTemplate
 
                 return iterator(pRet);
             }
-            void Resize(size_t newsize, const ListType& Data = ListType())
+            void Resize(size_t newsize, const list_type& Data = list_type())
             {
                 //将data插入到链表中
                 size_t OldSize = size();
@@ -1494,7 +1494,7 @@ namespace MyTemplate
                 }
                 _head->_next = _head->_prev = _head;
             }
-            List& operator=(List<ListType> ListTemp) noexcept
+            List& operator=(List<list_type> ListTemp) noexcept
             {
                 //运算符重载
                 if( this != &ListTemp)
@@ -1503,7 +1503,7 @@ namespace MyTemplate
                 }
                 return *this;
             }
-            List& operator=(List<ListType>&& ListTemp) noexcept
+            List& operator=(List<list_type>&& ListTemp) noexcept
             {
                 //运算符重载
                 if( this != &ListTemp)
@@ -1512,9 +1512,9 @@ namespace MyTemplate
                 }
                 return *this;
             }
-            List operator+(const List<ListType>& ListTemp)
+            List operator+(const List<list_type>& ListTemp)
             {
-                List<ListType> ReturnTemp (cbegin(),cend());
+                List<list_type> ReturnTemp (cbegin(),cend());
                 const_iterator _begin = ListTemp.cbegin();
                 const_iterator _end  = ListTemp.cend();
                 while(_begin != _end)
@@ -1524,7 +1524,7 @@ namespace MyTemplate
                 }
                 return ReturnTemp;
             }
-            List& operator+=(const List<ListType>& ListTemp)
+            List& operator+=(const List<list_type>& ListTemp)
             {
                 const_iterator _begin = ListTemp.cbegin();
                 const_iterator _end  = ListTemp.cend();
@@ -1554,17 +1554,17 @@ namespace MyTemplate
     /*############################     stack适配器     ############################*/
     namespace StackAdapter
     {
-        template <typename StaicType,typename ContainerStaic = MyTemplate::VectorContainer::Vector<StaicType>>
+        template <typename stack_type,typename container_stack = MyTemplate::VectorContainer::Vector<stack_type>>
         class Stack
         {
         private:
-            ContainerStaic ContainerStackTemp;
+            container_stack ContainerStackTemp;
         public:
             ~Stack()
             {
                 ;
             }
-            void Push(const StaicType& StackTemp)
+            void Push(const stack_type& StackTemp)
             {
                 //插入尾
                 ContainerStackTemp.PushBack(StackTemp);
@@ -1582,30 +1582,30 @@ namespace MyTemplate
             {
                 return ContainerStackTemp.Empty();
             } 
-            StaicType& top() noexcept
+            stack_type& top() noexcept
             {
                 return ContainerStackTemp.Back();
             }
-            Stack(const Stack<StaicType>& StackTemp)
+            Stack(const Stack<stack_type>& StackTemp)
             {
                 ContainerStackTemp = StackTemp.ContainerStackTemp;
             }
-            Stack( Stack<StaicType>&& StackTemp) noexcept
+            Stack( Stack<stack_type>&& StackTemp) noexcept
             {
                 ContainerStackTemp = std::move(StackTemp.ContainerStackTemp);//std::move将对象转换为右值引用
             }
-            Stack(std::initializer_list<StaicType> StackTemp)
+            Stack(std::initializer_list<stack_type> StackTemp)
             {
                 for(auto& e:StackTemp)
                 {
                     ContainerStackTemp.PushBack(e);
                 }
             }
-            Stack(const StaicType& StackTemp)
+            Stack(const stack_type& StackTemp)
             {
                 ContainerStackTemp.PushBack(StackTemp);
             }
-            Stack& operator= (const Stack<StaicType>& StackTemp)
+            Stack& operator= (const Stack<stack_type>& StackTemp)
             {
                 if(this != &StackTemp)
                 {
@@ -1613,7 +1613,7 @@ namespace MyTemplate
                 }
                 return *this;
             }
-            Stack& operator=(Stack<StaicType>&& StackTemp) noexcept
+            Stack& operator=(Stack<stack_type>&& StackTemp) noexcept
             {
                 if(this != &StackTemp)
                 {
@@ -1708,13 +1708,13 @@ namespace MyTemplate
             }
         };
         /*############################     PriorityQueue 适配器     ############################*/
-        template <typename PriorityQueueType,typename ImitationFunctionParameter = MyTemplate::ImitationFunctions::Less<PriorityQueueType>,
-        typename ContainerPriorityQueue = MyTemplate::VectorContainer::Vector<PriorityQueueType>>
+        template <typename priority_queue_type,typename imitation_function_parameter = MyTemplate::ImitationFunctions::Less<priority_queue_type>,
+        typename container_priority_queue = MyTemplate::VectorContainer::Vector<priority_queue_type>>
         class PriorityQueue
         {
             //创建容器对象
-            ContainerPriorityQueue ContainerPriorityQueueTemp;
-            ImitationFunctionParameter com;
+            container_priority_queue ContainerPriorityQueueTemp;
+            imitation_function_parameter com;
             //仿函数对象
 
             void PriorityQueueAdjustUpwards(int AdjustUpwardsChild) noexcept
@@ -1767,12 +1767,12 @@ namespace MyTemplate
             {
                 ContainerPriorityQueueTemp.~Vector();
             }
-            void Push(const PriorityQueueType& FunctionTemplatesPriorityQueuePushBack)
+            void Push(const priority_queue_type& FunctionTemplatesPriorityQueuePushBack)
             {
                 ContainerPriorityQueueTemp.PushBack(FunctionTemplatesPriorityQueuePushBack);
                 PriorityQueueAdjustUpwards((int)ContainerPriorityQueueTemp.size()-1);
             }
-            PriorityQueueType& top() noexcept
+            priority_queue_type& top() noexcept
             {
                 return ContainerPriorityQueueTemp.Front();
             }
@@ -1794,7 +1794,7 @@ namespace MyTemplate
             {
                 ;
             }
-            PriorityQueue(std::initializer_list<PriorityQueueType> ListTemp)
+            PriorityQueue(std::initializer_list<priority_queue_type> ListTemp)
             {
                 //通过初始化列表构建一个list
                 for(auto& e:ListTemp)
@@ -1813,7 +1813,7 @@ namespace MyTemplate
                 //移动构造
                 ContainerPriorityQueueTemp = std::move(PriorityQueueTemp.ContainerPriorityQueueTemp);
             }
-            PriorityQueue(const PriorityQueueType& PriorityQueueTemp)
+            PriorityQueue(const priority_queue_type& PriorityQueueTemp)
             {
                 ContainerPriorityQueueTemp.PushBack(PriorityQueueTemp);
                 PriorityQueueAdjustUpwards((int)ContainerPriorityQueueTemp.size()-1);

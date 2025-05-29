@@ -1129,18 +1129,18 @@ namespace my_template
     /*############################     list容器     ############################*/
     namespace ListContainer
     {
-        template <typename ListType>
+        template <typename list_type>
         class list
         {
-            template<typename listTypeFunctionNode>
+            template<typename list_type_function_node>
             struct ListNode
             {
                 //节点类
-                ListNode<listTypeFunctionNode>* _prev;
-                ListNode<listTypeFunctionNode>* _next;
-                listTypeFunctionNode _data;
+                ListNode<list_type_function_node>* _prev;
+                ListNode<list_type_function_node>* _next;
+                list_type_function_node _data;
 
-                ListNode(const listTypeFunctionNode& data = listTypeFunctionNode())
+                ListNode(const list_type_function_node& data = list_type_function_node())
                 :_prev(nullptr), _next(nullptr), _data(data)
                 {
                     //列表初始化
@@ -1257,7 +1257,7 @@ namespace my_template
                     return _it != _temp_._it;
                 }
             };
-            using Node = ListNode<ListType>;
+            using Node = ListNode<list_type>;
 
             Node* _head;
             //_head为哨兵位
@@ -1268,8 +1268,8 @@ namespace my_template
                 _head -> _next = _head;
             }
         public:
-            using iterator = ListIterator<ListType,ListType& ,ListType*>;
-            using const_iterator = ListIterator<ListType,const ListType&,const ListType*>;
+            using iterator = ListIterator<list_type,list_type& ,list_type*>;
+            using const_iterator = ListIterator<list_type,const list_type&,const list_type*>;
 
             //拿正向迭代器构造反向迭代器，可以直接调用 iterator 已经重载的运算符和函数，相当于在封装一层类
             using reverse_iterator = ReverselistIterator<iterator> ;
@@ -1295,7 +1295,7 @@ namespace my_template
                     ++first;
                 }
             }
-            list(std::initializer_list<ListType> list_temp)
+            list(std::initializer_list<list_type> list_temp)
             {
                 //通过初始化列表构建一个list
                 CreateHead();
@@ -1315,21 +1315,21 @@ namespace my_template
                     ++first;
                 }
             }
-            list(const list<ListType>& _list_data)
+            list(const list<list_type>& _list_data)
             {
                 //拷贝构造
                 CreateHead();
-                list<ListType> _temp_ (_list_data.cbegin(),_list_data.cend());
+                list<list_type> _temp_ (_list_data.cbegin(),_list_data.cend());
                 swap(_temp_);
             }
-            list(list<ListType>&& _list_data)
+            list(list<list_type>&& _list_data)
             {
                 //移动构造
                 CreateHead();
                 _head = std::move(_list_data._head);
                 _list_data._head = nullptr;
             }
-            void swap(my_template::ListContainer::list<ListType>& _swap_temp)
+            void swap(my_template::ListContainer::list<list_type>& _swap_temp)
             {
                 my_template::algorithm::swap(_head,_swap_temp._head);
             }
@@ -1385,33 +1385,33 @@ namespace my_template
             /*
             元素访问操作
             */
-            ListType& front()
+            list_type& front()
             {
                 return _head->_next->_data;
             }
 
-            const ListType& front()const
+            const list_type& front()const
             {
                 return _head->_next->_data;
             }
 
-            ListType& Back()
+            list_type& Back()
             {
                 return _head->_prev->_data;
             }
 
-            const ListType& back()const
+            const list_type& back()const
             {
                 return _head->_prev->_data;
             }
             /*
             插入删除操作
             */
-            void push_back(const ListType& push_back_data)
+            void push_back(const list_type& push_back_data)
             {
                 Insert(end(),push_back_data);
             }
-            void PushFront(const ListType& push_front_data)
+            void PushFront(const list_type& push_front_data)
             {
                 //插入到头
                 Insert(begin(),push_front_data);
@@ -1426,7 +1426,7 @@ namespace my_template
                 //删除头
                 return Erase(begin()); 
             }
-            iterator Insert(iterator pos ,const ListType& val)
+            iterator Insert(iterator pos ,const list_type& val)
             {
                 Node* Pnew_node = new Node(val);
                 //开辟新节点
@@ -1451,7 +1451,7 @@ namespace my_template
 
                 return iterator(pRet);
             }
-            void resize(size_t newsize, const ListType& data = ListType())
+            void resize(size_t newsize, const list_type& data = list_type())
             {
                 //将data插入到链表中
                 size_t oldsize = size();
@@ -1487,7 +1487,7 @@ namespace my_template
 
                 _head->_next = _head->_prev = _head;
             }
-            list& operator=(list<ListType> _lsit_temp)
+            list& operator=(list<list_type> _lsit_temp)
             {
                 //运算符重载
                 if( this != &_lsit_temp)
@@ -1496,9 +1496,9 @@ namespace my_template
                 }
                 return *this;
             }
-            list operator+(const list<ListType>& _list_temp_)
+            list operator+(const list<list_type>& _list_temp_)
             {
-                list<ListType> _return_temp_ (cbegin(),cend());
+                list<list_type> _return_temp_ (cbegin(),cend());
                 const_iterator _begin = _list_temp_.cbegin();
                 const_iterator _end  = _list_temp_.cend();
                 while(_begin != _end)
@@ -1508,7 +1508,7 @@ namespace my_template
                 }
                 return _return_temp_;
             }
-            list& operator+=(const list<ListType>& _lsit_temp_)
+            list& operator+=(const list<list_type>& _lsit_temp_)
             {
                 const_iterator _begin = _lsit_temp_.cbegin();
                 const_iterator _end  = _lsit_temp_.cend();
@@ -1554,17 +1554,17 @@ namespace my_template
     /*############################     stack适配器     ############################*/
     namespace StackAdapter
     {
-        template <typename StaicType,typename ContainerStaic = my_template::vector_container::vector<StaicType>>
+        template <typename stack_type,typename container_stack = my_template::vector_container::vector<stack_type>>
         class Stack
         {
         private:
-            ContainerStaic ContainerStackTemp;
+            container_stack ContainerStackTemp;
         public:
             ~Stack()
             {
                 ;
             }
-            void push(const StaicType& _stack_temp)
+            void push(const stack_type& _stack_temp)
             {
                 //插入尾
                 ContainerStackTemp.push_back(_stack_temp);
@@ -1582,30 +1582,30 @@ namespace my_template
             {
                 return ContainerStackTemp.empty();
             } 
-            StaicType& top()
+            stack_type& top()
             {
                 return ContainerStackTemp.back();
             }
-            Stack(const Stack<StaicType>& _stack_temp)
+            Stack(const Stack<stack_type>& _stack_temp)
             {
                 ContainerStackTemp = _stack_temp.ContainerStackTemp;
             }
-            Stack( Stack<StaicType>&& _stack_temp)
+            Stack( Stack<stack_type>&& _stack_temp)
             {
                 ContainerStackTemp = std::move(_stack_temp.ContainerStackTemp);//std::move将对象转换为右值引用
             }
-            Stack(std::initializer_list<StaicType> _stack_temp)
+            Stack(std::initializer_list<stack_type> _stack_temp)
             {
                 for(auto& e:_stack_temp)
                 {
                     ContainerStackTemp.push_back(e);
                 }
             }
-            Stack(const StaicType& _stack_temp)
+            Stack(const stack_type& _stack_temp)
             {
                 ContainerStackTemp.push_back(_stack_temp);
             }
-            Stack& operator= (const Stack<StaicType>& _stack_temp)
+            Stack& operator= (const Stack<stack_type>& _stack_temp)
             {
                 if(this != &_stack_temp)
                 {
@@ -1613,7 +1613,7 @@ namespace my_template
                 }
                 return *this;
             }
-            Stack& operator=(Stack<StaicType>&& _stack_temp)
+            Stack& operator=(Stack<stack_type>&& _stack_temp)
             {
                 if(this != &_stack_temp)
                 {
@@ -1708,14 +1708,14 @@ namespace my_template
             }
         };
         /*############################     PriorityQueue 适配器     ############################*/
-        template <typename PriorityQueueType,
-        typename ImitationFunctionParameter = my_template::imitation_functions::Less<PriorityQueueType>,
-        typename ContainerPriorityQueue = my_template::vector_container::vector<PriorityQueueType>>
+        template <typename priority_queue_type,
+        typename imitation_function_parameter = my_template::imitation_functions::Less<priority_queue_type>,
+        typename container_priority_queue = my_template::vector_container::vector<priority_queue_type>>
         class PriorityQueue
         {
             //创建容器对象
-            ContainerPriorityQueue ContainerPriorityQueueTemp;
-            ImitationFunctionParameter com;
+            container_priority_queue ContainerPriorityQueueTemp;
+            imitation_function_parameter com;
             //仿函数对象
 
             void PriorityQueueAdjustUpwards(int Adjust_upwards_child)
@@ -1765,12 +1765,12 @@ namespace my_template
             }
         public:
             ~PriorityQueue()  = default;
-            void Push(const PriorityQueueType& Function_templates_priority_queue_push_back)
+            void Push(const priority_queue_type& Function_templates_priority_queue_push_back)
             {
                 ContainerPriorityQueueTemp.push_back(Function_templates_priority_queue_push_back);
                 PriorityQueueAdjustUpwards((int)ContainerPriorityQueueTemp.size()-1);
             }
-            PriorityQueueType& top()
+            priority_queue_type& top()
             {
                 return ContainerPriorityQueueTemp.front();
             }
@@ -1792,7 +1792,7 @@ namespace my_template
             {
                 ;
             }
-            PriorityQueue(std::initializer_list<PriorityQueueType> list_temp)
+            PriorityQueue(std::initializer_list<priority_queue_type> list_temp)
             {
                 //通过初始化列表构建一个list
                 for(auto& e:list_temp)
@@ -1811,7 +1811,7 @@ namespace my_template
                 //移动构造
                 ContainerPriorityQueueTemp = std::move(_priority_queue_temp.ContainerPriorityQueueTemp);
             }
-            PriorityQueue(const PriorityQueueType& _priority_queue_temp)
+            PriorityQueue(const priority_queue_type& _priority_queue_temp)
             {
                 ContainerPriorityQueueTemp.push_back(_priority_queue_temp);
                 PriorityQueueAdjustUpwards((int)ContainerPriorityQueueTemp.size()-1);
