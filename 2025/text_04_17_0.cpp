@@ -1112,11 +1112,11 @@ namespace my_template
                 _size_pointer = _data_pointer + (_temp_size_ + _size_);
                 return *this;
             }
-            template <typename ConstVectorOutputTemplates>
-            friend std::ostream& operator<< (std::ostream& vector_ostream, const vector<ConstVectorOutputTemplates>& Dynamic_arrays_data);
+            template <typename const_vector_output_templates>
+            friend std::ostream& operator<< (std::ostream& vector_ostream, const vector<const_vector_output_templates>& Dynamic_arrays_data);
         };
-        template <typename ConstVectorOutputTemplates>
-        std::ostream& operator<<(std::ostream& vector_ostream, const vector<ConstVectorOutputTemplates>& Dynamic_arrays_data)
+        template <typename const_vector_output_templates>
+        std::ostream& operator<<(std::ostream& vector_ostream, const vector<const_vector_output_templates>& Dynamic_arrays_data)
         {
             for(size_t i = 0; i < Dynamic_arrays_data.size(); i++)
             {

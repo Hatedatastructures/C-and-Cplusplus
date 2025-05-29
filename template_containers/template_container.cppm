@@ -220,23 +220,23 @@ namespace template_container
 
             const_iterator cend()const              {   return const_iterator(_data + _size);   }
 
-            reverse_iterator rbegin()               {   return Empty() ? reverse_iterator(end()) : reverse_iterator(end() - 1);  }
+            reverse_iterator rbegin()               {   return empty() ? reverse_iterator(end()) : reverse_iterator(end() - 1);  }
 
-            reverse_iterator rend()                 {   return Empty() ? reverse_iterator(begin()) : reverse_iterator(begin() - 1);  }
+            reverse_iterator rend()                 {   return empty() ? reverse_iterator(begin()) : reverse_iterator(begin() - 1);  }
 
             const_reverse_iterator crbegin()const   {   return const_reverse_iterator(cend()- 1);   }
 
             const_reverse_iterator crend()const     {   return const_reverse_iterator(cbegin()- 1); }
 
-            bool Empty()                            {   return _size == 0;  }
+            bool empty()                            {   return _size == 0;  }
 
             size_t size()const                      {   return _size;       }
 
             size_t capacity()const                  {   return _capacity;   }
 
-            char* C_Str()const                      {   return _data;       } //返回C风格字符串
+            char* c_str()const                      {   return _data;       } //返回C风格字符串
 
-            char Back()                             {   return _size > 0 ? _data[_size - 1] : '\0';    }
+            char back()                             {   return _size > 0 ? _data[_size - 1] : '\0';    }
 
             char Front()                            {   return _data[0];    }//返回尾字符
 
@@ -330,12 +330,12 @@ namespace template_container
             // {
             //     //查找子串
             // }
-            string& Prepend(const char*& c_str_substring)
+            string& prepend(const char*& c_str_substring)
             {
                 //前部插入子串
                 size_t len = strlen(c_str_substring);
                 size_t new_nose_insert_substrings = _size + len;
-                if(AllocateResources(new_nose_insert_substrings) != true)
+                if(allocate_resources(new_nose_insert_substrings) != true)
                 {
                     std::cout << "开辟内存失败！" << std::endl;
                     return *this;
@@ -351,7 +351,7 @@ namespace template_container
                 delete [] _c_nose_insert_substrings_temp;
                 return *this;
             }
-            string& InsertSubstring(const char*& c_str_substring,const size_t& oid_pos)
+            string& insert_sub_string(const char*& c_str_substring,const size_t& oid_pos)
             {
                 //中间位置插入子串
                 if(oid_pos > _size)
@@ -361,7 +361,7 @@ namespace template_container
                 }
                 size_t len = strlen(c_str_substring);
                 size_t new_interlocutory_insert_substrings = _size + len;
-                if(AllocateResources(new_interlocutory_insert_substrings) != true)
+                if(allocate_resources(new_interlocutory_insert_substrings) != true)
                 {
                     std::cout << "开辟内存失败！" << std::endl;
                     return *this;
@@ -377,7 +377,7 @@ namespace template_container
                 delete [] _c_interlocutory_insert_substrings_temp;
                 return *this;
             }
-            string SubString(const size_t& old_pos)
+            string sub_string(const size_t& old_pos)
             {
                 //提取字串到'\0'
                 if(old_pos > _size)
@@ -387,7 +387,7 @@ namespace template_container
                 }
                 string _str_withdraw_temp;
                 size_t _str_withdraw_temp_len = _size - old_pos;
-                if(_str_withdraw_temp.AllocateResources(_str_withdraw_temp_len) != true)
+                if(_str_withdraw_temp.allocate_resources(_str_withdraw_temp_len) != true)
                 {
                     std::cout << "开辟内存失败！" << std::endl;
                     return string();
@@ -397,7 +397,7 @@ namespace template_container
                 _str_withdraw_temp._data[_str_withdraw_temp._size] = '\0';
                 return _str_withdraw_temp;
             }
-            string SubStringFrom(const size_t& old_begin)
+            string sub_string_from(const size_t& old_begin)
             {
                 //提取字串到末尾
                 if(old_begin > _size)
@@ -407,7 +407,7 @@ namespace template_container
                 }
                 string _str_withdraw_extremity_temp;
                 size_t _str_withdraw_extremity_temp_len = _size - old_begin;
-                if(_str_withdraw_extremity_temp.AllocateResources(_str_withdraw_extremity_temp_len) != true)
+                if(_str_withdraw_extremity_temp.allocate_resources(_str_withdraw_extremity_temp_len) != true)
                 {
                     std::cout << "开辟内存失败！" << std::endl;
                     return string();
@@ -417,7 +417,7 @@ namespace template_container
                 _str_withdraw_extremity_temp._data[_str_withdraw_extremity_temp._size] = '\0';
                 return _str_withdraw_extremity_temp;
             }
-            string SubString(const size_t& old_begin ,const size_t& old_end)
+            string sub_string(const size_t& old_begin ,const size_t& old_end)
             {
                 //提取字串到指定位置
                 if(old_begin > _size || old_end > _size || old_begin > old_end)
@@ -427,7 +427,7 @@ namespace template_container
                 }
                 string _str_withdraw_detail_temp;
                 size_t _str_withdraw_detail_temp_len = old_end - old_begin;
-                if(_str_withdraw_detail_temp.AllocateResources(_str_withdraw_detail_temp_len) != true)
+                if(_str_withdraw_detail_temp.allocate_resources(_str_withdraw_detail_temp_len) != true)
                 {
                     std::cout << "开辟内存失败！" << std::endl;
                     return string();
@@ -438,7 +438,7 @@ namespace template_container
                 _str_withdraw_detail_temp._data[_str_withdraw_detail_temp._size] = '\0';
                 return _str_withdraw_detail_temp;
             }
-            bool AllocateResources(const size_t& temporary_variable)
+            bool allocate_resources(const size_t& temporary_variable)
             {
                 //检查string空间大小，来分配内存
                 if(temporary_variable <= _capacity)
@@ -463,7 +463,7 @@ namespace template_container
                 if(_size == _capacity)
                 {
                     size_t newcapacity = _capacity == 0 ? 2 :_capacity*2;
-                    if(AllocateResources(newcapacity) != true)
+                    if(allocate_resources(newcapacity) != true)
                     {
                         std::cout << "开辟内存失败！" << std::endl;
                         return *this;
@@ -480,7 +480,7 @@ namespace template_container
                 if(len > _capacity)
                 {
                     size_t new_capacity = len;
-                    if(AllocateResources(new_capacity) != true)
+                    if(allocate_resources(new_capacity) != true)
                     {
                         std::cout << "开辟内存失败！" << std::endl;
                         return *this;
@@ -501,7 +501,7 @@ namespace template_container
                 size_t new_capacity = len + _size ;
                 if(new_capacity >_capacity)
                 {
-                    if(AllocateResources( new_capacity) != true)
+                    if(allocate_resources( new_capacity) != true)
                     {
                         std::cout << "开辟内存失败！" << std::endl;
                         return *this;
@@ -512,13 +512,13 @@ namespace template_container
                 _data[_size] = '\0';
                 return *this;
             }
-            string& Resize(const size_t& new_size ,const char& c_temp_str = '\0')
+            string& resize(const size_t& new_size ,const char& c_temp_str = '\0')
             {
                 //扩展字符串长度
                 if(new_size >_capacity)
                 {
                     //长度大于容量，重新开辟内存
-                    if(AllocateResources(new_size) != true)
+                    if(allocate_resources(new_size) != true)
                     {
                         std::cout << "开辟内存失败！" << std::endl;
                         return *this;
@@ -538,9 +538,9 @@ namespace template_container
                 }
                 return *this;
             }
-            iterator Reserve(const size_t& new_capacity)
+            iterator reserve(const size_t& new_capacity)
             {
-                if(AllocateResources(new_capacity) != true)
+                if(allocate_resources(new_capacity) != true)
                 {
                     std::cout << "开辟内存失败！" << std::endl;
                 }
@@ -554,7 +554,7 @@ namespace template_container
                 template_container::algorithm::swap(_capacity,data_str._capacity);
                 return *this;
             }
-            string Reverse()
+            string reverse()
             {
                 if(_size == 0)
                 {
@@ -567,13 +567,13 @@ namespace template_container
                 // {
                 //     _rollback_temp.push_back(_data[i]);
                 // }
-                for(string::const_reverse_iterator Reverse = rbegin();Reverse != rend();Reverse--)
+                for(string::const_reverse_iterator reverse = rbegin();reverse != rend();reverse--)
                 {
-                    _rollback_temp.push_back(*Reverse);
+                    _rollback_temp.push_back(*reverse);
                 }
                 return _rollback_temp;
             }
-            string ReverseSubstring(const size_t& limit_begin , const size_t& limit_end)
+            string reverse_sub_string(const size_t& limit_begin , const size_t& limit_end)
             {
                 string _rollback_linit_temp;
                 if(limit_begin > _size || limit_end > _size || limit_begin > limit_end ||_size == 0)
@@ -587,13 +587,13 @@ namespace template_container
                 //     _rollback_linit_temp.push_back(_data[i]);
                 // } 
     
-                for(string::const_reverse_iterator Reverse = _data + limit_end - 1;Reverse != _data + limit_begin - 1;Reverse--)
+                for(string::const_reverse_iterator reverse = _data + limit_end - 1;reverse != _data + limit_begin - 1;reverse--)
                 {
-                    _rollback_linit_temp.push_back(*Reverse);
+                    _rollback_linit_temp.push_back(*reverse);
                 }
                 return _rollback_linit_temp;
             }
-            void StringPrint()
+            void string_print()
             {
                 for(string::const_iterator originate = begin();originate != end();originate++)
                 {
@@ -601,7 +601,7 @@ namespace template_container
                 }
                 std::cout << std::endl;
             }
-            void StringPrintReverse()
+            void string_reverse_print()
             {
                 for(string::const_reverse_iterator originate = rbegin();originate != rend();originate--)
                 {
@@ -641,7 +641,7 @@ namespace template_container
             string& operator+=(const string& data_str)
             {
                 size_t len = _size + data_str._size;
-                if(AllocateResources(len) != true)
+                if(allocate_resources(len) != true)
                 {
                     std::cout << "开辟内存失败！" << std::endl;
                     return *this;
@@ -779,7 +779,7 @@ namespace template_container
             {
                 string _str_temp;
                 size_t _str_temp_len = _size + cpp_str_._size;
-                if(_str_temp.AllocateResources(_str_temp_len) != true)
+                if(_str_temp.allocate_resources(_str_temp_len) != true)
                 {
                     std::cout << "开辟内存失败！" << std::endl;
                     return string();
@@ -856,9 +856,9 @@ namespace template_container
 
             vector_type& Front()    {   return Head();      }
 
-            vector_type& Back()     {   return Tail();      }
+            vector_type& back()     {   return Tail();      }
 
-            bool Empty()            {   return size() == 0; }
+            bool empty()            {   return size() == 0; }
 
             vector_type& Head()     {   return *_data_pointer;  }
 
@@ -901,13 +901,13 @@ namespace template_container
                 }
                 return _data_pointer[find_size_];
             }
-            vector<vector_type>& Completion(const size_t& Completion_size_ , const vector<vector_type>& Completion_temp_)
+            vector<vector_type>& completion(const size_t& Completion_size_ , const vector<vector_type>& Completion_temp_)
             {
                 size_t Completion_temp_size_ =size();
                 size_t Completion_capacity_  =capacity();
                 if(Completion_size_ > Completion_capacity_)
                 {
-                    Resize(Completion_size_);
+                    resize(Completion_size_);
                     for(size_t i = Completion_capacity_; i < Completion_size_ ; i++)
                     {
                         _data_pointer[i] = Completion_temp_;
@@ -969,7 +969,7 @@ namespace template_container
                 return temp;
                 //返回下一个位置地址
             }
-            vector<vector_type>& Resize(const size_t& new_capacity, const vector_type& data = vector_type())
+            vector<vector_type>& resize(const size_t& new_capacity, const vector_type& data = vector_type())
             {
                 size_t old_size = size();  // 先保存原来的元素数量
                 if ((size_t)(_capacity_pointer - _data_pointer) < new_capacity) 
@@ -1006,7 +1006,7 @@ namespace template_container
                 if(_size_pointer == _capacity_pointer)
                 {
                     size_t push_banck_size_ = _data_pointer == nullptr ? 10 : (size_t)(_capacity_pointer-_data_pointer)*2;
-                    Resize(push_banck_size_);
+                    resize(push_banck_size_);
                 }
                 //注意—_size_pointer是原生迭代器指针，需要解引用才能赋值
                 *_size_pointer = push_back_temp_;
@@ -1018,14 +1018,14 @@ namespace template_container
                 if(_size_pointer == _capacity_pointer)
                 {
                     size_t push_banck_size_ = _data_pointer == nullptr ? 10 : (size_t)(_capacity_pointer-_data_pointer)*2;
-                    Resize(push_banck_size_);
+                    resize(push_banck_size_);
                 }
                 //注意—_size_pointer是原生迭代器指针，需要解引用才能赋值
                 *_size_pointer = std::move(push_back_temp_);//转换移动语义
                 _size_pointer++;
                 return *this;
             }
-            vector<vector_type>& PopBack() 
+            vector<vector_type>& pop_back() 
             {
                 if (_size_pointer > _data_pointer) 
                 { // 至少有一个元素
@@ -1033,13 +1033,13 @@ namespace template_container
                 }
                 return *this;
             }
-            vector<vector_type>& PushFront(const vector_type& pop_back_temp_)
+            vector<vector_type>& push_front(const vector_type& pop_back_temp_)
             {
                 //头插
                 if(_size_pointer == _capacity_pointer)
                 {
                     size_t pop_banck_size_ = _data_pointer == nullptr ? 10 : (size_t)(_capacity_pointer-_data_pointer)*2;
-                    Resize(pop_banck_size_);
+                    resize(pop_banck_size_);
                 }
                 for(size_t pop_back_for_size = size();pop_back_for_size>0;--pop_back_for_size)
                 {
@@ -1049,7 +1049,7 @@ namespace template_container
                 ++_size_pointer;
                 return *this;
             }
-            vector<vector_type>& PopFront()
+            vector<vector_type>& pop_front()
             {
                 if( size() > 0 )
                 {
@@ -1099,7 +1099,7 @@ namespace template_container
                 size_t _capacity_ = capacity();
                 if(_temp_size_ + _size_ > _capacity_)
                 {
-                    Resize(_temp_size_ + _size_);
+                    resize(_temp_size_ + _size_);
                 
                 } 
                 size_t sum = 0;
@@ -1110,11 +1110,11 @@ namespace template_container
                 _size_pointer = _data_pointer + (_temp_size_ + _size_);
                 return *this;
             }
-            template <typename ConstVectorOutputTemplates>
-            friend std::ostream& operator<< (std::ostream& vector_ostream, const vector<ConstVectorOutputTemplates>& Dynamic_arrays_data);
+            template <typename const_vector_output_templates>
+            friend std::ostream& operator<< (std::ostream& vector_ostream, const vector<const_vector_output_templates>& Dynamic_arrays_data);
         };
-        template <typename ConstVectorOutputTemplates>
-        std::ostream& operator<<(std::ostream& vector_ostream, const vector<ConstVectorOutputTemplates>& Dynamic_arrays_data)
+        template <typename const_vector_output_templates>
+        std::ostream& operator<<(std::ostream& vector_ostream, const vector<const_vector_output_templates>& Dynamic_arrays_data)
         {
             for(size_t i = 0; i < Dynamic_arrays_data.size(); i++)
             {
@@ -1360,7 +1360,7 @@ namespace template_container
                 }
                 return count;
             }
-            bool Empty()const
+            bool empty()const
             {
                 return _head->_next == _head;
             }
@@ -1393,12 +1393,12 @@ namespace template_container
                 return _head->_next->_data;
             }
 
-            ListType& Back()
+            ListType& back()
             {
                 return _head->_prev->_data;
             }
 
-            const ListType& Back()const
+            const ListType& back()const
             {
                 return _head->_prev->_data;
             }
@@ -1414,12 +1414,12 @@ namespace template_container
                 //插入到头
                 Insert(begin(),push_front_data);
             }
-            void PopBack() 
+            void pop_back() 
             { 
                 //删除尾
                 Erase(--end()); 
             }
-            iterator PopFront() 
+            iterator pop_front() 
             { 
                 //删除头
                 return Erase(begin()); 
@@ -1449,7 +1449,7 @@ namespace template_container
 
                 return iterator(pRet);
             }
-            void Resize(size_t newsize, const ListType& data = ListType())
+            void resize(size_t newsize, const ListType& data = ListType())
             {
                 //将data插入到链表中
                 size_t oldsize = size();
@@ -1458,7 +1458,7 @@ namespace template_container
                     // 有效元素个数减少到newsize
                     while (newsize < oldsize)
                     {
-                        PopBack();
+                        pop_back();
                         oldsize--;
                     }
                 }
@@ -1570,19 +1570,19 @@ namespace template_container
             void pop()
             {
                 //删除尾
-                ContainerStackTemp.PopBack();
+                ContainerStackTemp.pop_back();
             }
             size_t size()
             {
                 return ContainerStackTemp.size();
             }
-            bool Empty()
+            bool empty()
             {
-                return ContainerStackTemp.Empty();
+                return ContainerStackTemp.empty();
             } 
             StaicType& top()
             {
-                return ContainerStackTemp.Back();
+                return ContainerStackTemp.back();
             }
             Stack(const Stack<StaicType>& _stack_temp)
             {
@@ -1641,7 +1641,7 @@ namespace template_container
             }
             void pop ()
             {
-                ContainerQueueTemp.PopFront();
+                ContainerQueueTemp.pop_front();
                 //list返回的是指向下一个位置的正向迭代器
                 //vector返回的是整个容器
             }
@@ -1650,20 +1650,20 @@ namespace template_container
                 //返回元素个数
                 return ContainerQueueTemp.size();
             }
-            bool Empty()
+            bool empty()
             {
                 //判断容器是否为空
-                return ContainerQueueTemp.Empty();
+                return ContainerQueueTemp.empty();
             }
             Queue_Type& Front()
             {
                 //查看头数据
                 return ContainerQueueTemp.Front();
             }
-            Queue_Type& Back()
+            Queue_Type& back()
             {
                 //查看尾数据
-                return ContainerQueueTemp.Back();
+                return ContainerQueueTemp.back();
             }
             Queue(const Queue<Queue_Type>& _queue_temp)
             {
@@ -1772,9 +1772,9 @@ namespace template_container
             {
                 return ContainerPriorityQueueTemp.Front();
             }
-            bool Empty()
+            bool empty()
             {
-                return ContainerPriorityQueueTemp.Empty();
+                return ContainerPriorityQueueTemp.empty();
             }
             size_t size()
             {
@@ -1783,7 +1783,7 @@ namespace template_container
             void pop()
             {
                 template_container::algorithm::swap(ContainerPriorityQueueTemp[0],ContainerPriorityQueueTemp[ContainerPriorityQueueTemp.size()-(size_t)1]);
-                ContainerPriorityQueueTemp.PopBack();
+                ContainerPriorityQueueTemp.pop_back();
                 PriorityQueueAdjustDownwards();
             }
             PriorityQueue()
@@ -1868,7 +1868,7 @@ namespace template_container
             {
                 //中序遍历函数
                 template_container::stack_a::Stack<Node*> _staic_temp_;
-                while(_ROOT_Temp != nullptr || !_staic_temp_.Empty())
+                while(_ROOT_Temp != nullptr || !_staic_temp_.empty())
                 {
                     while(_ROOT_Temp!= nullptr)
                     {
@@ -1891,7 +1891,7 @@ namespace template_container
             size_t _MiddleOrderTraversal(Node* _ROOT_Temp,size_t& _size_temp_ )
             {
                 template_container::stack_a::Stack<Node*> _staic_temp_;
-                while(_ROOT_Temp != nullptr || !_staic_temp_.Empty())
+                while(_ROOT_Temp != nullptr || !_staic_temp_.empty())
                 {
                     while(_ROOT_Temp!= nullptr)
                     {
@@ -1921,7 +1921,7 @@ namespace template_container
                 template_container::stack_a::Stack<Node*> stack_Temp;
                 stack_Temp.Push(_Pre_order_traversal_test);
                 //不能添加|| _Pre_order_traversal_test != nullptr ，因为最后一层循环后_Pre_order_traversal_test还是为真后面循环无意义，反之还会破环性质
-                while( !stack_Temp.Empty() )
+                while( !stack_Temp.empty() )
                 {
                     _Pre_order_traversal_test = stack_Temp.top();
                     stack_Temp.pop();
@@ -1947,7 +1947,7 @@ namespace template_container
                 //循环释放资源
                 template_container::stack_a::Stack<Node*> _staic_clear_temp_;
                 _staic_clear_temp_.Push(_ROOT);
-                while(_staic_clear_temp_.Empty() == false)
+                while(_staic_clear_temp_.empty() == false)
                 {
                     Node* _ROOT_Temp = _staic_clear_temp_.top();
                     //取出元素，把左右节点入进去
@@ -2003,7 +2003,7 @@ namespace template_container
                 //这里传引用也不行，这里的对象是动态变化的，所以传引用也不行
                 //如果是对全局的_ROOT进行操作，就传一级指针
                 _staic_temp_.Push(template_container::practicality::pair<Node*,Node**>(_Binary_search_tree_temp_copy,&_ROOT));
-                while( !_staic_temp_.Empty() )
+                while( !_staic_temp_.empty() )
                 {
                     auto _staic_temp_pair = _staic_temp_.top();
                     _staic_temp_.pop();
@@ -2598,7 +2598,7 @@ namespace template_container
                     template_container::stack_a::Stack<Node*> _stack_temp;
                     //前序释放
                     _stack_temp.Push(_ROOT);
-                    while(!_stack_temp.Empty())
+                    while(!_stack_temp.empty())
                     {
                         Node* temp = _stack_temp.top();
                         _stack_temp.pop();
@@ -2628,7 +2628,7 @@ namespace template_container
                 template_container::stack_a::Stack<Node*> stack_Temp;
                 stack_Temp.Push(_Pre_order_traversal_test);
                 //不能添加|| _Pre_order_traversal_test != nullptr ，因为最后一层循环后_Pre_order_traversal_test还是为真后面循环无意义，反之还会破环性质
-                while( !stack_Temp.Empty() )
+                while( !stack_Temp.empty() )
                 {
                     _Pre_order_traversal_test = stack_Temp.top();
                     stack_Temp.pop();
@@ -2649,7 +2649,7 @@ namespace template_container
             {
                 //中序遍历函数
                 template_container::stack_a::Stack<Node*> _staic_temp_;
-                while(_ROOT_Temp != nullptr || !_staic_temp_.Empty())
+                while(_ROOT_Temp != nullptr || !_staic_temp_.empty())
                 {
                     while(_ROOT_Temp!= nullptr)
                     {
@@ -2681,7 +2681,7 @@ namespace template_container
                     Node* _Pre_order_traversal_test = _ROOT;
                     template_container::stack_a::Stack<Node*> stack_Temp;
                     stack_Temp.Push(_Pre_order_traversal_test);
-                    while( !stack_Temp.Empty() )
+                    while( !stack_Temp.empty() )
                     {
                         _Pre_order_traversal_test = stack_Temp.top();
                         stack_Temp.pop();
@@ -2759,7 +2759,7 @@ namespace template_container
             {
                 return const_reverse_iterator(const_iterator(nullptr));
             }
-            bool Empty()
+            bool empty()
             {
                 return _ROOT == nullptr;
             }
@@ -2806,7 +2806,7 @@ namespace template_container
                 }
 
                 // 遍历并复制剩余节点
-                while (!Stack.Empty())
+                while (!Stack.empty())
                 {
                     auto [source_node, parent_node] = Stack.top();
                     Stack.pop();
@@ -3567,7 +3567,7 @@ namespace template_container
                 {
                     template_container::stack_a::Stack<Node*> _stack;
                     _stack.Push(_clear_Temp);
-                    while ( !_stack.Empty() )
+                    while ( !_stack.empty() )
                     {
                         _clear_Temp = _stack.top();
                         _stack.pop();
@@ -3588,7 +3588,7 @@ namespace template_container
             {
                 //中序遍历函数
                 template_container::stack_a::Stack<Node*> _staic_temp_;
-                while(_ROOT_Temp != nullptr || !_staic_temp_.Empty())
+                while(_ROOT_Temp != nullptr || !_staic_temp_.empty())
                 {
                     while(_ROOT_Temp!= nullptr)
                     {
@@ -3612,7 +3612,7 @@ namespace template_container
                 Node* _Pre_order_traversal_test = _ROOT_Temp;
                 template_container::stack_a::Stack<Node*> stack_Temp;
                 stack_Temp.Push(_Pre_order_traversal_test);
-                while( !stack_Temp.Empty() )
+                while( !stack_Temp.empty() )
                 {
                     _Pre_order_traversal_test = stack_Temp.top();
                     stack_Temp.pop();
@@ -3653,7 +3653,7 @@ namespace template_container
                 Node* _Pre_order_traversal_test = _ROOT_Temp;
                 template_container::stack_a::Stack<Node*> stack_Temp;
                 stack_Temp.Push(_Pre_order_traversal_test);
-                while( !stack_Temp.Empty() )
+                while( !stack_Temp.empty() )
                 {
                     _Pre_order_traversal_test = stack_Temp.top();
                     stack_Temp.pop();
@@ -3728,7 +3728,7 @@ namespace template_container
                         }
 
                         // 遍历并复制剩余节点
-                        while (!Stack.Empty())
+                        while (!Stack.empty())
                         {
                             auto [source_node, parent_node] = Stack.top();
                             Stack.pop();
@@ -4230,7 +4230,7 @@ namespace template_container
             {
                 return _size();
             }
-            bool Empty()
+            bool empty()
             {
                 return _ROOT == nullptr;
             }
@@ -4371,14 +4371,14 @@ namespace template_container
                 _size = 0;
                 LoadFactor = 7;
                 Capacity = 10;
-                _HashTable.Resize(Capacity);
+                _HashTable.resize(Capacity);
             }
             HashTable(size_t Temp_capacity)
             {
                 _size = 0;
                 LoadFactor = 7;
                 Capacity = Temp_capacity;
-                _HashTable.Resize(Capacity);
+                _HashTable.resize(Capacity);
             }
             HashTable(const HashTable& Temp_Hash_Table)
             : HashDataFunctor(Temp_Hash_Table.HashDataFunctor),_size(Temp_Hash_Table._size),LoadFactor(Temp_Hash_Table.LoadFactor),Capacity(Temp_Hash_Table.Capacity),
@@ -4389,7 +4389,7 @@ namespace template_container
                     return;
                 }
                 // 1. 分配同样大小的桶数组，所有桶初始为空
-                _HashTable.Resize(Capacity, nullptr);
+                _HashTable.resize(Capacity, nullptr);
         
                 // 2. 遍历原表的每一个桶
                 for (size_t i = 0; i < Capacity; ++i) 
@@ -4499,7 +4499,7 @@ namespace template_container
             const_iterator cend() const         {   return const_iterator(nullptr);     }
             size_t size()                       {   return _size;                       }
             size_t size() const                 {   return _size;                       }
-            bool   Empty()                      {   return _size == 0;                  }
+            bool   empty()                      {   return _size == 0;                  }
             size_t capacity()                   {   return Capacity;                    }
             size_t capacity() const             {   return Capacity;                    }
 
@@ -4516,7 +4516,7 @@ namespace template_container
                     size_t NewCapacity = (Capacity == 0 && _HashTable.size() == 0) ? 10 : Capacity * 2;
                     //新容量
                     template_container::vector_c::vector<Node*> _New_Hash_Table;
-                    _New_Hash_Table.Resize(NewCapacity,nullptr);
+                    _New_Hash_Table.resize(NewCapacity,nullptr);
                     size_t _New_size = 0;
                     //重新映射,按照插入链表顺序
                     Node* _Temp_Head_Node = nullptr;
@@ -4700,13 +4700,13 @@ namespace template_container
             BitSet(const size_t& Temp_size)
             {
                 _size = 0;
-                _BitSet.Resize((Temp_size / 32) + 1,0);
+                _BitSet.resize((Temp_size / 32) + 1,0);
                 //多开一个int的空间，防止不够
             }
-            void Resize(const size_t& Temp_size)
+            void resize(const size_t& Temp_size)
             {
                 _size = 0;
-                _BitSet.Resize((Temp_size / 32) + 1,0);
+                _BitSet.resize((Temp_size / 32) + 1,0);
             }
             BitSet(const BitSet& BitMap_Temp)
             {
@@ -4812,7 +4812,7 @@ namespace template_container
             void MiddleOrderTraversal()                           {  ROOTMap.MiddleOrderTraversal();   }
             void Pre_order_traversal()                              {  ROOTMap.Pre_order_traversal();      }
             size_t size() const                                     {  return ROOTMap.size();              }
-            bool Empty()                                            {  return ROOTMap.Empty();             }
+            bool empty()                                            {  return ROOTMap.empty();             }
             iterator begin()                                        {  return ROOTMap.begin();             }
             iterator end()                                          {  return ROOTMap.end();               }
             const_iterator cbegin()                                 {  return ROOTMap.cbegin();            }
@@ -4860,7 +4860,7 @@ namespace template_container
             size_t size()                                       {  return HashMap.size();           }
             size_t size() const                                 {  return HashMap.size();           }
             size_t capacity() const                             {  return HashMap.capacity();       } 
-            bool Empty()                                        {  return HashMap.Empty();          }
+            bool empty()                                        {  return HashMap.empty();          }
             iterator begin()                                    {  return HashMap.begin();          }
             iterator end()                                      {  return HashMap.end();            }
             const_iterator cbegin()                             {  return HashMap.cbegin();         }
@@ -4919,7 +4919,7 @@ namespace template_container
             void MiddleOrderTraversal()                       {  ROOTSet.MiddleOrderTraversal();      }    
             void Pre_order_traversal()                          {  ROOTSet.Pre_order_traversal();         }  
             size_t size() const                                 {  return ROOTSet.size();                 }
-            bool Empty()                                        {  return ROOTSet.Empty();                }  
+            bool empty()                                        {  return ROOTSet.empty();                }  
             iterator begin()                                    {  return ROOTSet.begin();                }
             iterator end()                                      {  return ROOTSet.end();                  }
             const_iterator cbegin()                             {  return ROOTSet.cbegin();               }
@@ -4961,7 +4961,7 @@ namespace template_container
             bool pop(const KeyValType& Set_Temp)              {  return HashSet.pop(Set_Temp);          }            
             iterator find(const KeyValType& Set_Temp)         {  return HashSet.find(Set_Temp);         }
             size_t size()                                       {  return HashSet.size();                 }
-            bool Empty()                                        {  return HashSet.Empty();                }
+            bool empty()                                        {  return HashSet.empty();                }
             size_t capacity()                                   {  return HashSet.capacity();             }
             size_t size() const                                 {  return HashSet.size();                 }
             size_t capacity() const                             {  return HashSet.capacity();             }
@@ -4986,12 +4986,12 @@ namespace template_container
             BloomFilter()
             {
                 _Capacity = 1000;
-                VectorBitSet.Resize(_Capacity);
+                VectorBitSet.resize(_Capacity);
             }
             BloomFilter(const size_t& Temp_Capacity)
             {
                 _Capacity = Temp_Capacity;
-                VectorBitSet.Resize(_Capacity);
+                VectorBitSet.resize(_Capacity);
             }
             size_t size()
             {
