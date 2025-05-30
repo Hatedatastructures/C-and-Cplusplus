@@ -1259,7 +1259,7 @@ namespace template_container
 
             container_node* _head;
             //_head为哨兵位
-            void CreateHead()
+            void create_head()
             {
                 _head = new container_node;
                 _head -> _prev = _head;
@@ -1274,7 +1274,7 @@ namespace template_container
             using reverse_const_iterator = reverse_list_iterator<const_iterator>;
             list()
             {
-                CreateHead();
+                create_head();
             }
             ~list()
             {
@@ -1285,7 +1285,7 @@ namespace template_container
             list(iterator first , iterator last)
             {
                 //通过另一个list对象构建一个list
-                CreateHead();
+                create_head();
                 //已经创建一个哨兵节点
                 while (first != last)
                 {
@@ -1296,7 +1296,7 @@ namespace template_container
             list(std::initializer_list<list_type> list_temp)
             {
                 //通过初始化列表构建一个list
-                CreateHead();
+                create_head();
                 for(auto& e:list_temp)
                 {
                     push_back(e);
@@ -1305,7 +1305,7 @@ namespace template_container
             list(const_iterator first , const_iterator last)
             {
                 //通过另一个list对象构建一个list
-                CreateHead();
+                create_head();
                 //已经创建一个哨兵节点
                 while (first != last)
                 {
@@ -1316,14 +1316,14 @@ namespace template_container
             list(const list<list_type>& _list_data)
             {
                 //拷贝构造
-                CreateHead();
+                create_head();
                 list<list_type> _temp_ (_list_data.cbegin(),_list_data.cend());
                 swap(_temp_);
             }
             list(list<list_type>&& _list_data)
             {
                 //移动构造
-                CreateHead();
+                create_head();
                 _head = std::move(_list_data._head);
                 _list_data._head = nullptr;
             }
@@ -1407,12 +1407,12 @@ namespace template_container
             */
             void push_back(const list_type& push_back_data)
             {
-                Insert(end(),push_back_data);
+                insert(end(),push_back_data);
             }
             void PushFront(const list_type& push_front_data)
             {
                 //插入到头
-                Insert(begin(),push_front_data);
+                insert(begin(),push_front_data);
             }
             void pop_back() 
             { 
@@ -1424,7 +1424,7 @@ namespace template_container
                 //删除头
                 return Erase(begin()); 
             }
-            iterator Insert(iterator pos ,const list_type& val)
+            iterator insert(iterator pos ,const list_type& val)
             {
                 container_node* Pnew_node = new container_node(val);
                 //开辟新节点
@@ -1517,17 +1517,17 @@ namespace template_container
                 }
                 return *this;
             }
-            template <typename ConstListOutputTemplates>
-            friend std::ostream& operator<< (std::ostream& list_ostream, const list<ConstListOutputTemplates>& Dynamic_arrays_data);
+            template <typename const_list_output_templates>
+            friend std::ostream& operator<< (std::ostream& list_ostream, const list<const_list_output_templates>& Dynamic_arrays_data);
             
             template <typename ListOutputTemplates>
             friend std::ostream& operator<< (std::ostream& list_ostream, list<ListOutputTemplates>& Dynamic_arrays_data);
         };
-        template <typename ConstListOutputTemplates>
-        std::ostream& operator<< (std::ostream& list_ostream, const list<ConstListOutputTemplates>& Dynamic_arrays_data)
+        template <typename const_list_output_templates>
+        std::ostream& operator<< (std::ostream& list_ostream, const list<const_list_output_templates>& Dynamic_arrays_data)
         {
             //typename声明这是一个类型而不是表达式
-            typename list<ConstListOutputTemplates>::const_iterator it = Dynamic_arrays_data.cbegin();
+            typename list<const_list_output_templates>::const_iterator it = Dynamic_arrays_data.cbegin();
             while (it != Dynamic_arrays_data.cend()) 
             {
                 list_ostream << *it << " ";
@@ -1626,12 +1626,12 @@ namespace template_container
     namespace queue_a
     {
         template <typename Queue_Type ,typename ContainerQueue = template_container::list_c::list<Queue_Type> >
-        class Queue
+        class queue
         {
             //注意队列适配器不会自动检测队列有没有元素，为学异常，注意空间元素
             ContainerQueue ContainerQueueTemp;
         public:
-            ~Queue()
+            ~queue()
             {
                 ;
             }
@@ -1665,17 +1665,17 @@ namespace template_container
                 //查看尾数据
                 return ContainerQueueTemp.back();
             }
-            Queue(const Queue<Queue_Type>& _queue_temp)
+            queue(const queue<Queue_Type>& _queue_temp)
             {
                 //拷贝构造
                 ContainerQueueTemp = _queue_temp.ContainerQueueTemp;
             }
-            Queue(Queue<Queue_Type>&& _queue_temp)
+            queue(queue<Queue_Type>&& _queue_temp)
             {
                 //移动构造
                 ContainerQueueTemp = std::move(_queue_temp.ContainerQueueTemp);
             }
-            Queue(std::initializer_list<Queue_Type> _queue_temp)
+            queue(std::initializer_list<Queue_Type> _queue_temp)
             {
                 //链式构造
                 for(auto& e:_queue_temp)
@@ -1683,12 +1683,12 @@ namespace template_container
                     ContainerQueueTemp.push_back(e);
                 }
             }
-            Queue(const Queue_Type& _queue_temp)
+            queue(const Queue_Type& _queue_temp)
             {
                 ContainerQueueTemp.push_back(_queue_temp);
             }
-            Queue() = default;
-            Queue& operator= (const Queue<Queue_Type>& _queue_temp)
+            queue() = default;
+            queue& operator= (const queue<Queue_Type>& _queue_temp)
             {
                 if(this != &_queue_temp)
                 {
@@ -1696,7 +1696,7 @@ namespace template_container
                 }
                 return *this;
             }
-            Queue& operator=(Queue<Queue_Type>&& _queue_temp)
+            queue& operator=(queue<Queue_Type>&& _queue_temp)
             {
                 if(this != &_queue_temp)
                 {
@@ -2210,7 +2210,7 @@ namespace template_container
                 }
                 return _ROOT_Find;
             }
-            void Insert(const BSTreeType& former_data,const BSTreeType& latter_data)
+            void insert(const BSTreeType& former_data,const BSTreeType& latter_data)
             {
                 //在former_data后面插入latter_data
                 container_node* _ROOT_former_data = find(former_data);

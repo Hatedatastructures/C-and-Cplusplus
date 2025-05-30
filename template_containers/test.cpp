@@ -9,127 +9,127 @@
 // std::terminate() 异常抛出函数
 int main()
 {
-    /*            string测试             */
-    {
-        template_container::string_c::string string_test1;
-        template_container::string_c::string string_test2 = string_test1.reverse_sub_string(10,20);
-        std::cout << string_test1 << std::endl << string_test2 << std::endl;
-    }
-    {
-        std::cout << " string 测试 " << std::endl << std::endl;
-        template_container::string_c::string string_test1("hello");
-        template_container::string_c::string string_test2("world");
+    // /*            string测试             */
+    // {
+    //     template_container::string_c::string string_test1;
+    //     template_container::string_c::string string_test2 = string_test1.reverse_sub_string(10,20);
+    //     std::cout << string_test1 << std::endl << string_test2 << std::endl;
+    // }
+    // {
+    //     std::cout << " string 测试 " << std::endl << std::endl;
+    //     template_container::string_c::string string_test1("hello");
+    //     template_container::string_c::string string_test2("world");
         
-        template_container::string_c::string string_test3 = string_test1 + string_test2;
-        std::cout << "string_test3: " << string_test3 << std::endl;
-        string_test3.push_back('!');
-        const char* insert_str = "inserted";
-        string_test3.prepend(insert_str);
-        std::cout << "str3 after insertion: " << string_test3 << std::endl;
+    //     template_container::string_c::string string_test3 = string_test1 + string_test2;
+    //     std::cout << "string_test3: " << string_test3 << std::endl;
+    //     string_test3.push_back('!');
+    //     const char* insert_str = "inserted";
+    //     string_test3.prepend(insert_str);
+    //     std::cout << "str3 after insertion: " << string_test3 << std::endl;
 
-        size_t old_pos = strlen(insert_str);
-        template_container::string_c::string string_test4 = string_test3.sub_string(old_pos);
-        std::cout << "string_test4: " << string_test4 << std::endl;
+    //     size_t old_pos = strlen(insert_str);
+    //     template_container::string_c::string string_test4 = string_test3.sub_string(old_pos);
+    //     std::cout << "string_test4: " << string_test4 << std::endl;
 
-        std::cout << string_test3.lowercase() << std::endl;
-        std::cout << string_test3.lowercase() << std::endl;
+    //     std::cout << string_test3.lowercase() << std::endl;
+    //     std::cout << string_test3.lowercase() << std::endl;
 
-        template_container::string_c::string string_test5 = string_test3.sub_string_from(5);
-        std::cout << "string_test5: " << string_test5 << std::endl;
+    //     template_container::string_c::string string_test5 = string_test3.sub_string_from(5);
+    //     std::cout << "string_test5: " << string_test5 << std::endl;
 
-        template_container::string_c::string string_test6 = string_test3.sub_string(5, 10);
-        std::cout << "string_test6: " << string_test6 << std::endl;
+    //     template_container::string_c::string string_test6 = string_test3.sub_string(5, 10);
+    //     std::cout << "string_test6: " << string_test6 << std::endl;
 
-        std::cout << "str3 size: " << string_test3.size() << std::endl;
-        std::cout << "str3 capacity: " << string_test3.capacity() << std::endl;
-        std::cout << "string_test3 after resize: " << string_test3.resize(21, '*') << std::endl;
+    //     std::cout << "str3 size: " << string_test3.size() << std::endl;
+    //     std::cout << "str3 capacity: " << string_test3.capacity() << std::endl;
+    //     std::cout << "string_test3 after resize: " << string_test3.resize(21, '*') << std::endl;
 
-        std::cout << "string_test3 after reverse: " << string_test3.reverse() << std::endl;
+    //     std::cout << "string_test3 after reverse: " << string_test3.reverse() << std::endl;
 
-        std::cout << "string_test3 after reverse_sub_string: " << string_test3.reverse_sub_string(5, 10) << std::endl;
+    //     std::cout << "string_test3 after reverse_sub_string: " << string_test3.reverse_sub_string(5, 10) << std::endl;
 
-        string_test3.string_print();
-        string_test3.string_reverse_print();
+    //     string_test3.string_print();
+    //     string_test3.string_reverse_print();
 
-        for(auto i :string_test3)
-        {
-            std::cout << i << " ";
-        }
-        std::cout << std::endl;
+    //     for(auto i :string_test3)
+    //     {
+    //         std::cout << i << " ";
+    //     }
+    //     std::cout << std::endl;
 
-        for(template_container::string_c::string::const_iterator i = string_test3.begin();i != string_test3.end();i++)
-        {
-            std::cout << *i << " ";
-        }
-        // std::cout << string_test3[30000000] << std::endl;
-        std::cout << std::endl;
-        {
-            //异常测试
-            template_container::string_c::string Ex;
-            Ex.resize(size_t(10000000));
-            Ex.push_back("异常测试");
-        }
-    }
+    //     for(template_container::string_c::string::const_iterator i = string_test3.begin();i != string_test3.end();i++)
+    //     {
+    //         std::cout << *i << " ";
+    //     }
+    //     // std::cout << string_test3[30000000] << std::endl;
+    //     std::cout << std::endl;
+    //     {
+    //         //异常测试
+    //         template_container::string_c::string Ex;
+    //         Ex.resize(size_t(10000000));
+    //         Ex.push_back("异常测试");
+    //     }
+    // }
 
-    /*            vector测试             */
-    {
-        std::cout << " vector 测试 " << std::endl << std::endl;
-        template_container::vector_c::vector<int> vector_test(5,1);
-        for(auto i: vector_test)
-        {
-            std::cout << i << " ";
-        }
-        std::cout << std::endl;
-        template_container::vector_c::vector<int> vector_test1(vector_test);
-        for(const auto& i  : vector_test1 )
-        {
-            std::cout << i << " ";
-        }
-        std::cout << std::endl;
-        template_container::vector_c::vector<int> test2 = vector_test1;
-        for(const auto i : test2)
-        {
-            std::cout << i << " ";
-        }
-        template_container::string_c::string s2 = "name";
-        std::cout << std::endl;
-        template_container::vector_c::vector<template_container::string_c::string> name_test(10,s2);
-        for(const auto& i : name_test )
-        {
-            std::cout << i << " ";
-        }
-        std::cout << std::endl;
-        template_container::vector_c::vector<template_container::string_c::string> name_test1 =name_test ;
-        for(const auto& i : name_test1 )
-        {
-            std::cout << i << " ";
-        }
-        std::cout << std::endl;
-        template_container::string_c::string s3 = "hello word!";
-        name_test1.push_back(s3);
-        for(const auto& i : name_test1 )
-        {
-            std::cout << i << " ";
-        }
-        std::cout << std::endl;
+    // /*            vector测试             */
+    // {
+    //     std::cout << " vector 测试 " << std::endl << std::endl;
+    //     template_container::vector_c::vector<int> vector_test(5,1);
+    //     for(auto i: vector_test)
+    //     {
+    //         std::cout << i << " ";
+    //     }
+    //     std::cout << std::endl;
+    //     template_container::vector_c::vector<int> vector_test1(vector_test);
+    //     for(const auto& i  : vector_test1 )
+    //     {
+    //         std::cout << i << " ";
+    //     }
+    //     std::cout << std::endl;
+    //     template_container::vector_c::vector<int> test2 = vector_test1;
+    //     for(const auto i : test2)
+    //     {
+    //         std::cout << i << " ";
+    //     }
+    //     template_container::string_c::string s2 = "name";
+    //     std::cout << std::endl;
+    //     template_container::vector_c::vector<template_container::string_c::string> name_test(10,s2);
+    //     for(const auto& i : name_test )
+    //     {
+    //         std::cout << i << " ";
+    //     }
+    //     std::cout << std::endl;
+    //     template_container::vector_c::vector<template_container::string_c::string> name_test1 =name_test ;
+    //     for(const auto& i : name_test1 )
+    //     {
+    //         std::cout << i << " ";
+    //     }
+    //     std::cout << std::endl;
+    //     template_container::string_c::string s3 = "hello word!";
+    //     name_test1.push_back(s3);
+    //     for(const auto& i : name_test1 )
+    //     {
+    //         std::cout << i << " ";
+    //     }
+    //     std::cout << std::endl;
 
-        name_test1.push_front(s3);
-        for(const auto& i : name_test1 )
-        {
-            std::cout << i << " ";
-        }
-        std::cout << std::endl;
+    //     name_test1.push_front(s3);
+    //     for(const auto& i : name_test1 )
+    //     {
+    //         std::cout << i << " ";
+    //     }
+    //     std::cout << std::endl;
 
-        name_test1+=name_test;
-        for(const auto& i : name_test1 )
-        {
-            std::cout << i << " ";
-        }
-        std::cout << std::endl;
+    //     name_test1+=name_test;
+    //     for(const auto& i : name_test1 )
+    //     {
+    //         std::cout << i << " ";
+    //     }
+    //     std::cout << std::endl;
 
-        std::cout << name_test1 << std::endl;
-        std::cout << name_test1.pop_back() << std::endl;
-    }
+    //     std::cout << name_test1 << std::endl;
+    //     std::cout << name_test1.pop_back() << std::endl;
+    // }
 
 
     // /*            list测试             */
@@ -197,33 +197,33 @@ int main()
     //     std::cout << list_test4 << std::endl;
     // }
 
-    /*            staic测试             */
-    {
-        std::cout << " staic 测试 " << std::endl << std::endl;
-        template_container::string_c::string staic_test_str1 = "hello";
-        template_container::string_c::string staic_test_str2 = "word";
-        template_container::string_c::string staic_test_str3 = "  ";
-        template_container::stack_a::stack< template_container::string_c::string> staic_test1;
+    // /*            staic测试             */
+    // {
+    //     std::cout << " staic 测试 " << std::endl << std::endl;
+    //     template_container::string_c::string staic_test_str1 = "hello";
+    //     template_container::string_c::string staic_test_str2 = "word";
+    //     template_container::string_c::string staic_test_str3 = "  ";
+    //     template_container::stack_a::stack< template_container::string_c::string> staic_test1;
 
-        staic_test1.push(staic_test_str1);
-        staic_test1.push(staic_test_str3);
-        staic_test1.push(staic_test_str2);
+    //     staic_test1.push(staic_test_str1);
+    //     staic_test1.push(staic_test_str3);
+    //     staic_test1.push(staic_test_str2);
 
-        std::cout << staic_test1.top() << std::endl;
-        staic_test1.pop();
-        std::cout << staic_test1.top() << std::endl;
-        staic_test1.pop();
-        std::cout << staic_test1.top() << std::endl;
-        staic_test1.pop();
-    }
+    //     std::cout << staic_test1.top() << std::endl;
+    //     staic_test1.pop();
+    //     std::cout << staic_test1.top() << std::endl;
+    //     staic_test1.pop();
+    //     std::cout << staic_test1.top() << std::endl;
+    //     staic_test1.pop();
+    // }
 
     // /*            queue测试             */
     // {
-    //     std::cout << " Queue 测试 " << std::endl << std::endl;
+    //     std::cout << " queue 测试 " << std::endl << std::endl;
     //     template_container::string_c::string queue_test_str1 = "hello";
     //     template_container::string_c::string queue_test_str2 = "word";
     //     template_container::string_c::string queue_test_str3 = "  ";
-    //     template_container::queue_a::Queue< template_container::string_c::string,template_container::list_c::list< template_container::string_c::string>> queue_test1;
+    //     template_container::queue_a::queue< template_container::string_c::string,template_container::list_c::list< template_container::string_c::string>> queue_test1;
 
     //     queue_test1.push(queue_test_str1);
     //     queue_test1.push(queue_test_str3);
@@ -241,25 +241,25 @@ int main()
     // }
 
     /*            priority_queue测试             */
-    {
-        std::cout << " priority_queue 测试 " << std::endl << std::endl;
-        template_container::queue_a::priority_queue<int> priority_queue_test;
-        int size = 10000000;
-        time_t num1 = clock();
-        for(int i = 0; i < size ; i++)
-        {
-            priority_queue_test.push(std::move(i));
-        }
-        time_t num2 = clock();
-        std::cout << priority_queue_test.size() << std::endl;
-        for(int i = 0; i < size; i++)
-        {
-            // std::cout << priority_queue_test.top() << " ";
-            priority_queue_test.pop();
-        }
-        std::cout << std::endl;
-        std::cout << "priority_queue 测试插入 " << size << " 个数时间： " << num2-num1 << std::endl;
-    }
+    // {
+    //     std::cout << " priority_queue 测试 " << std::endl << std::endl;
+    //     template_container::queue_a::priority_queue<int> priority_queue_test;
+    //     int size = 10000000;
+    //     time_t num1 = clock();
+    //     for(int i = 0; i < size ; i++)
+    //     {
+    //         priority_queue_test.push(std::move(i));
+    //     }
+    //     time_t num2 = clock();
+    //     std::cout << priority_queue_test.size() << std::endl;
+    //     for(int i = 0; i < size; i++)
+    //     {
+    //         // std::cout << priority_queue_test.top() << " ";
+    //         priority_queue_test.pop();
+    //     }
+    //     std::cout << std::endl;
+    //     std::cout << "priority_queue 测试插入 " << size << " 个数时间： " << num2-num1 << std::endl;
+    // }
 
     // /*            BSTree 测试             */
     // {
@@ -780,24 +780,34 @@ int main()
     //     }
     //     std::cout << sum << std::endl;
     // }
-    //问题vector容器resize函数问题
+    //问题vector容器resize函数问题啊大大。
+    // {
+    //     //尝试构建线程池来测试给个容器性能开销
+    //     using Vector_pair =  template_container::vector_c::vector<template_container::practicality::pair<size_t,size_t>>;
+    //     template_container::vector_c::vector<Vector_pair> array_vector;
+    //     size_t size = 20000;
+    //     size_t sum = clock();
+    //     for(size_t i = 0; i < size; i++)
+    //     {
+    //         Vector_pair temp;
+    //         for(size_t j = 0; j < size; j++)
+    //         {
+    //             temp.push_back(template_container::practicality::pair<size_t,size_t>(j,j));
+    //         }
+    //         array_vector.push_back(std::move(temp));
+    //     }
+    //     size_t num2 = clock();
+    //     std::cout << "push_back函数时间：" << num2 - sum << std::endl;
+    // }
     {
-        //尝试构建线程池来测试给个容器性能开销
-        using Vector_pair =  template_container::vector_c::vector<template_container::practicality::pair<size_t,size_t>>;
-        template_container::vector_c::vector<Vector_pair> array_vector;
-        size_t size = 20000;
-        size_t sum = clock();
-        for(size_t i = 0; i < size; i++)
-        {
-            Vector_pair temp;
-            for(size_t j = 0; j < size; j++)
-            {
-                temp.push_back(template_container::practicality::pair<size_t,size_t>(j,j));
-            }
-            array_vector.push_back(std::move(temp));
-        }
-        size_t num2 = clock();
-        std::cout << "pushback时间：" << num2 - sum << std::endl;
+        // set::vector<set::pair<set::list,set::queue>> array_list_stack;
+        template_container::algorithm::hash_algorithm::hash_function <int,template_container::imitation_functions::hash_imitation_functions> hash;
+        int test_size = 792;
+        std::cout << "计算哈希值： " << hash.Hash_APHash(test_size)   << std::endl; 
+        std::cout << "计算哈希值： " << hash.Hash_BKDRHash(test_size) << std::endl;
+        std::cout << "计算哈希值： " << hash.Hash_PJWHash(test_size)  << std::endl;
+        std::cout << "计算哈希值： " << hash.Hash_DJBHash(test_size)  << std::endl;
+        std::cout << "计算哈希值： " << hash.Hash_SDBMHash(test_size) << std::endl;
     }
     {
         system("pause");

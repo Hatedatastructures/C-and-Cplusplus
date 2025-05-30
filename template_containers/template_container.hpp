@@ -1,10 +1,7 @@
-//本文件都是自己造的轮子
 #define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
 #include <cstring>
 #include <mutex>
-//优化每个容器插入函数右值引用，调整每个容器扩容逻辑，减少深拷贝，尽量用移动拷贝，对于开辟空间和错误处理，使用异常处理，对于简单函数使用lambda表达式
-//添加每个容器完美转发，减少开销,整理每个容器,哈希表扩容导致size指针问题
 namespace custom_exception
 {
     class customize_exception : public std::exception
@@ -14,11 +11,11 @@ namespace custom_exception
         const char* function_name;
         size_t line_number;
     public:
-        customize_exception(const char* _Message,const char* _FunctionName,const size_t& _LineNumber) noexcept 
+        customize_exception(const char* message_target,const char* function_name_target,const size_t& line_number_target) noexcept 
         {
-            message = _Message;
-            function_name = _FunctionName;
-            line_number = _LineNumber;
+            message = message_target;
+            function_name = function_name_target;
+            line_number = line_number_target;
         }
         virtual const char* what() const noexcept override
         {
@@ -1387,8 +1384,8 @@ namespace template_container
                 list_container_node<list_type_function_node>* _next;
                 list_type_function_node _data;
 
-                list_container_node(const list_type_function_node& vector_data = list_type_function_node()) noexcept
-                :_prev(nullptr), _next(nullptr), _data(vector_data)
+                list_container_node(const list_type_function_node& list_type_data = list_type_function_node()) noexcept
+                :_prev(nullptr), _next(nullptr), _data(list_type_data)
                 {
                     //列表初始化
                 }
@@ -1512,7 +1509,7 @@ namespace template_container
 
             container_node* _head;
             //_head为哨兵位
-            void CreateHead()
+            void create_head()
             {
                 _head = new container_node;
                 _head -> _prev = _head;
@@ -1525,17 +1522,16 @@ namespace template_container
             //拿正向迭代器构造反向迭代器，可以直接调用 iterator 已经重载的运算符和函数，相当于在封装一层类
             using reverse_iterator = reverse_list_iterator<iterator> ;
             using reverse_const_iterator = reverse_list_iterator<const_iterator>;
-            list()      {       CreateHead();       }
+            list()      {       create_head();       }
             ~list()
             {
-                Clear();
+                clear();
                 delete _head;
                 _head = nullptr;
             }
             list(iterator first , iterator last)
             {
-                //通过另一个list对象构建一个list
-                CreateHead();
+                create_head();       //通过另一个list对象构建一个list
                 //已经创建一个哨兵节点
                 while (first != last)
                 {
@@ -1546,7 +1542,7 @@ namespace template_container
             list(std::initializer_list<list_type> lightweight_container)
             {
                 //通过初始化列表构建一个list
-                CreateHead();
+                create_head();
                 for(auto& chained_values:lightweight_container)
                 {
                     push_back(std::move(chained_values));
@@ -1554,8 +1550,7 @@ namespace template_container
             }
             list(const_iterator first , const_iterator last)
             {
-                //通过另一个list对象构建一个list
-                CreateHead();
+                create_head();
                 //已经创建一个哨兵节点
                 while (first != last)
                 {
@@ -1563,23 +1558,21 @@ namespace template_container
                     ++first;
                 }
             }
-            list(const list<list_type>& ListData)
+            list(const list<list_type>& list_data)
             {
-                //拷贝构造
-                CreateHead();
-                list<list_type> Temp (ListData.cbegin(),ListData.cend());
+                create_head();
+                list<list_type> Temp (list_data.cbegin(),list_data.cend());
                 swap(Temp);
             }
-            list(list<list_type>&& ListData)
+            list(list<list_type>&& list_data)
             {
-                //移动构造
-                CreateHead();
-                _head = std::move(ListData._head);
-                ListData._head = nullptr;
+                create_head();  //移动构造
+                _head = std::move(list_data._head);
+                list_data._head = nullptr;
             }
-            void swap(template_container::list_c::list<list_type>& SwapTemp)
+            void swap(template_container::list_c::list<list_type>& swap_target)
             {
-                template_container::algorithm::swap(_head,SwapTemp._head);
+                template_container::algorithm::swap(_head,swap_target._head);
             }
             iterator begin() noexcept                       {   return iterator(_head ->_next);  }
 
@@ -1628,39 +1621,39 @@ namespace template_container
             /*
             插入删除操作
             */
-            void push_back(const list_type& PushBackData)     {       Insert(end(),PushBackData);     }
+            void push_back (const list_type& PushBackData)     {       insert(end(),PushBackData);     }
 
-            void push_front(const list_type& PushfrontData)   {       Insert(begin(),PushfrontData);  }
+            void push_front(const list_type& PushfrontData)    {       insert(begin(),PushfrontData);  }
 
-            void push_back(list_type&& PushBackData)          {       Insert(end(),std::forward<list_type>(PushBackData)); }
+            void push_back(list_type&& PushBackData)           {       insert(end(),std::forward<list_type>(PushBackData)); }
 
-            void push_front(list_type&& PushfrontData)        {       Insert(begin(),std::forward<list_type>(PushfrontData));  }
+            void push_front(list_type&& PushfrontData)         {       insert(begin(),std::forward<list_type>(PushfrontData));  }
 
-            void pop_back()                                  {       erase(--end());     }
+            void pop_back()                                    {       erase(--end());     }
 
-            iterator pop_front()                             {       return erase(begin());  }
+            iterator pop_front()                               {       return erase(begin());  }
 
-            iterator Insert(iterator Pos ,const list_type& Val)
+            iterator insert(iterator Pos ,const list_type& Val)
             {
-                container_node* PNewNode = new container_node(Val);
+                container_node* new_container_node = new container_node(Val);
                 //开辟新节点
                 container_node* PCur = Pos._node;
                 //保存pos位置的值
-                PNewNode->_prev = PCur->_prev;
-                PNewNode->_next = PCur;
-                PNewNode->_prev->_next = PNewNode;
-                PCur->_prev = PNewNode;
-                return iterator(PNewNode);
+                new_container_node->_prev = PCur->_prev;
+                new_container_node->_next = PCur;
+                new_container_node->_prev->_next = new_container_node;
+                PCur->_prev = new_container_node;
+                return iterator(new_container_node);
             }
-            iterator Insert(iterator Pos ,list_type&& Val)
+            iterator insert(iterator Pos ,list_type&& Val)
             {
-                container_node* PNewNode = new container_node(std::forward<list_type>(Val));
+                container_node* new_container_node = new container_node(std::forward<list_type>(Val));
                 container_node* PCur = Pos._node;
-                PNewNode->_prev = PCur->_prev;
-                PNewNode->_next = PCur;
-                PNewNode->_prev->_next = PNewNode;
-                PCur->_prev = PNewNode;
-                return iterator(PNewNode);
+                new_container_node->_prev = PCur->_prev;
+                new_container_node->_next = PCur;
+                new_container_node->_prev->_next = new_container_node;
+                PCur->_prev = new_container_node;
+                return iterator(new_container_node);
             }
             iterator erase(iterator Pos) noexcept
             {
@@ -1675,7 +1668,7 @@ namespace template_container
 
                 return iterator(pRet);
             }
-            void resize(size_t newsize, const list_type& vector_data = list_type())
+            void resize(size_t newsize, const list_type& list_type_data = list_type())
             {
                 //将data插入到链表中
                 size_t OldSize = size();
@@ -1692,12 +1685,12 @@ namespace template_container
                 {
                     while (OldSize < newsize)
                     {
-                        push_back(vector_data);
+                        push_back(list_type_data);
                         OldSize++;
                     }
                 }
             }
-            void Clear() noexcept
+            void clear() noexcept
             {
                 //循环释放资源
                 container_node* cur = _head->_next;
@@ -1710,40 +1703,48 @@ namespace template_container
                 }
                 _head->_next = _head->_prev = _head;
             }
-            list& operator=(list<list_type> ListTemp) noexcept
+            list& operator=(list<list_type> list_data) noexcept
             {
                 //运算符重载
-                if( this != &ListTemp)
+                if( this != &list_data)
                 {
-                    swap(ListTemp);
+                    swap(list_data);
                 }
                 return *this;
             }
-            list& operator=(list<list_type>&& ListTemp) noexcept
+            list& operator=(std::initializer_list<list_type> lightweight_container)
             {
-                //运算符重载
-                if( this != &ListTemp)
+                clear();
+                for(auto& chained_values:lightweight_container)
                 {
-                    _head = std::move(ListTemp._head);
+                    push_back(std::move(chained_values));
                 }
                 return *this;
             }
-            list operator+(const list<list_type>& ListTemp)
+            list& operator=(list<list_type>&& list_data) noexcept
             {
-                list<list_type> ReturnTemp (cbegin(),cend());
-                const_iterator _begin = ListTemp.cbegin();
-                const_iterator _end  = ListTemp.cend();
+                if( this != &list_data)
+                {
+                    _head = std::move(list_data._head);
+                }
+                return *this;
+            }
+            list operator+(const list<list_type>& list_data)
+            {
+                list<list_type> return_list_object (cbegin(),cend());
+                const_iterator _begin = list_data.cbegin();
+                const_iterator _end   = list_data.cend();
                 while(_begin != _end)
                 {
-                    ReturnTemp.push_back(*_begin);
+                    return_list_object.push_back(*_begin);
                     ++_begin;
                 }
-                return ReturnTemp;
+                return return_list_object;
             }
-            list& operator+=(const list<list_type>& ListTemp)
+            list& operator+=(const list<list_type>& list_data)
             {
-                const_iterator _begin = ListTemp.cbegin();
-                const_iterator _end  = ListTemp.cend();
+                const_iterator _begin = list_data.cbegin();
+                const_iterator _end  = list_data.cend();
                 while(_begin != _end)
                 {
                     push_back(*_begin);
@@ -1751,20 +1752,19 @@ namespace template_container
                 }
                 return *this;
             }
-            template <typename ConstListOutputTemplates>
-            friend std::ostream& operator<< (std::ostream& ListOstream, const list<ConstListOutputTemplates>& dynamic_arrays_data);
+            template <typename const_list_output_templates>
+            friend std::ostream& operator<< (std::ostream& list_ostream, const list<const_list_output_templates>& dynamic_arrays_data);
         };
-        template <typename ConstListOutputTemplates>
-        std::ostream& operator<< (std::ostream& ListOstream, const list<ConstListOutputTemplates>& dynamic_arrays_data)
+        template <typename const_list_output_templates>
+        std::ostream& operator<< (std::ostream& list_ostream, const list<const_list_output_templates>& dynamic_arrays_data)
         {
-            //typename声明这是一个类型而不是表达式
-            typename list<ConstListOutputTemplates>::const_iterator it = dynamic_arrays_data.cbegin();
+            typename list<const_list_output_templates>::const_iterator it = dynamic_arrays_data.cbegin();
             while (it != dynamic_arrays_data.cend()) 
             {
-                ListOstream << *it << " ";
+                list_ostream << *it << " ";
                 ++it;
             }
-            return ListOstream;
+            return list_ostream;
         }
     }
     /*############################     stack适配器     ############################*/
@@ -1842,12 +1842,12 @@ namespace template_container
     namespace queue_a
     {
         template <typename Queue_Type ,typename ContainerQueue = template_container::list_c::list<Queue_Type> >
-        class Queue
+        class queue
         {
             //注意队列适配器不会自动检测队列有没有元素，为学异常，注意空间元素
             ContainerQueue ContainerQueueTemp;
         public:
-            ~Queue()
+            ~queue()
             {
                 ;
             }
@@ -1881,17 +1881,17 @@ namespace template_container
                 //查看尾数据
                 return ContainerQueueTemp.back();
             }
-            Queue(const Queue<Queue_Type>& QueueTemp)
+            queue(const queue<Queue_Type>& QueueTemp)
             {
                 //拷贝构造
                 ContainerQueueTemp = QueueTemp.ContainerQueueTemp;
             }
-            Queue(Queue<Queue_Type>&& QueueTemp) noexcept
+            queue(queue<Queue_Type>&& QueueTemp) noexcept
             {
                 //移动构造
                 ContainerQueueTemp = std::move(QueueTemp.ContainerQueueTemp);
             }
-            Queue(std::initializer_list<Queue_Type> QueueTemp)
+            queue(std::initializer_list<Queue_Type> QueueTemp)
             {
                 //链式构造
                 for(auto& chained_values:QueueTemp)
@@ -1899,12 +1899,12 @@ namespace template_container
                     ContainerQueueTemp.push_back(chained_values);
                 }
             }
-            Queue(const Queue_Type& QueueTemp)
+            queue(const Queue_Type& QueueTemp)
             {
                 ContainerQueueTemp.push_back(QueueTemp);
             }
-            Queue() = default;
-            Queue& operator= (const Queue<Queue_Type>& QueueTemp)
+            queue() = default;
+            queue& operator= (const queue<Queue_Type>& QueueTemp)
             {
                 if(this != &QueueTemp)
                 {
@@ -1912,7 +1912,7 @@ namespace template_container
                 }
                 return *this;
             }
-            Queue& operator=(Queue<Queue_Type>&& QueueTemp) noexcept
+            queue& operator=(queue<Queue_Type>&& QueueTemp) noexcept
             {
                 if(this != &QueueTemp)
                 {
@@ -2156,7 +2156,7 @@ namespace template_container
                     //修改逻辑错误，先压右子树再压左子树，因为这是栈
                 }
             }
-            void Clear()
+            void clear()
             {
                 if(_ROOT == nullptr)
                 {
@@ -2185,7 +2185,7 @@ namespace template_container
         public:
             ~BSTree()
             {
-                Clear();
+                clear();
             }
             // 构造函数，使用初始化列表来初始化二叉搜索树
             BSTree(std::initializer_list<BSTreeType> lightweight_container)
@@ -2428,7 +2428,7 @@ namespace template_container
                 }
                 return _ROOT_Find;
             }
-            void Insert(const BSTreeType& FormerData,const BSTreeType& LatterData)
+            void insert(const BSTreeType& FormerData,const BSTreeType& LatterData)
             {
                 //在former_data后面插入latter_data
                 container_node* ROOTFormerData = find(FormerData);
@@ -2449,7 +2449,7 @@ namespace template_container
                 //赋值运算符重载
                 if(this != &BinarySearchTreeTemp)
                 {
-                    Clear();
+                    clear();
                     com = BinarySearchTreeTemp.com;
                     BSTree BinarySearchTreeTempCopy = BinarySearchTreeTemp;
                     template_container::algorithm::swap(BinarySearchTreeTempCopy._ROOT,_ROOT);
@@ -2461,7 +2461,7 @@ namespace template_container
                 //移动赋值运算符重载
                 if(this != &BinarySearchTreeTemp)
                 {
-                    Clear();
+                    clear();
                     com = BinarySearchTreeTemp.com;
                     _ROOT = std::move(BinarySearchTreeTemp._ROOT);
                     BinarySearchTreeTemp._ROOT = nullptr;
@@ -2803,7 +2803,7 @@ namespace template_container
                     SubLeftRightTemp->_BalanceFactor = 0;
                 }
             }
-            void Clear()
+            void clear()
             {
                 //清空所有资源
                 if(_ROOT == nullptr)
@@ -3073,7 +3073,7 @@ namespace template_container
             {
                 if(this != &AVLTreeTemp)
                 {
-                    Clear();
+                    clear();
                     _ROOT = std::move(AVLTreeTemp._ROOT);
                     com  = std::move(AVLTreeTemp.com);
                     AVLTreeTemp._ROOT = nullptr;
@@ -3081,7 +3081,7 @@ namespace template_container
             }
             AVLTree& operator=(const AVLTree AVLTreeTemp)
             {
-                Clear();
+                clear();
                 if(&AVLTreeTemp == this)
                 {
                     return *this;
@@ -3097,7 +3097,7 @@ namespace template_container
             ~AVLTree()
             {
                 //析构函数
-                Clear();
+                clear();
             }
             size_t size() const
             {
@@ -3778,7 +3778,7 @@ namespace template_container
                     SubLeftTemp->_parent = ParentParentTempNode;
                 }
             }
-            void Clear(container_node* _clear_Temp)
+            void clear(container_node* _clear_Temp)
             {
                 if(_clear_Temp == nullptr)
                 {
@@ -3919,7 +3919,7 @@ namespace template_container
             {
                 if(_ROOT != nullptr)
                 {
-                    Clear(_ROOT);
+                    clear(_ROOT);
                 }
                 else
                 {
@@ -3999,7 +3999,7 @@ namespace template_container
                 }
                 else
                 {
-                    Clear(_ROOT);
+                    clear(_ROOT);
                     template_container::algorithm::swap(RBTreeTemp._ROOT,_ROOT);
                     template_container::algorithm::swap(RBTreeTemp.Element,Element);
                     template_container::algorithm::swap(RBTreeTemp.com,com);
@@ -4010,7 +4010,7 @@ namespace template_container
             {
                 if(this != &RBTreeTemp)
                 {
-                    Clear();
+                    clear();
                     com = std::move(RBTreeTemp.com);
                     Element = std::move(RBTreeTemp.Element);
                     _ROOT = std::move(RBTreeTemp._ROOT);
@@ -4020,7 +4020,7 @@ namespace template_container
             }
             ~RBTree()
             {
-                Clear(_ROOT);
+                clear(_ROOT);
             }
             insert_result push(const RBTreeTypeVal& Val_Temp_)
             {
@@ -5251,3 +5251,30 @@ namespace template_container
 namespace tc = template_container;
 namespace sp = smart_pointer;
 namespace ex = custom_exception;
+namespace set
+{
+    using template_container::string_c::string;
+    using template_container::vector_c::vector;
+    using template_container::list_c::list;
+    using template_container::stack_a::stack;
+    using template_container::queue_a::queue;
+    using template_container::queue_a::priority_queue;
+    using template_container::base_class_c::RBTree;
+    using template_container::base_class_c::HashTable;
+    using template_container::map_c::tree_map;
+    using template_container::map_c::hash_map;
+    using template_container::set_c::tree_set;
+    using template_container::set_c::hash_set;
+    using template_container::base_class_c::BitSet;
+    using template_container::bloom_filter_c::BloomFilter;
+    using template_container::practicality::pair;
+    using template_container::practicality::make_pair;
+    using template_container::algorithm::copy;
+    using template_container::algorithm::find;
+    using template_container::algorithm::swap;
+    using smart_pointer::smart_ptr;
+    using smart_pointer::unique_ptr;
+    using smart_pointer::shared_ptr;
+    using smart_pointer::weak_ptr;
+    //待测试？
+}

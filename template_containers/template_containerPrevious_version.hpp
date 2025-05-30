@@ -1535,14 +1535,14 @@ namespace MyTemplate
                 }
                 return *this;
             }
-            template <typename ConstListOutputTemplates>
-            friend std::ostream& operator<< (std::ostream& ListOstream, const List<ConstListOutputTemplates>& DynamicArraysData);
+            template <typename const_list_output_templates>
+            friend std::ostream& operator<< (std::ostream& ListOstream, const List<const_list_output_templates>& DynamicArraysData);
         };
-        template <typename ConstListOutputTemplates>
-        std::ostream& operator<< (std::ostream& ListOstream, const List<ConstListOutputTemplates>& DynamicArraysData)
+        template <typename const_list_output_templates>
+        std::ostream& operator<< (std::ostream& ListOstream, const List<const_list_output_templates>& DynamicArraysData)
         {
             //typename声明这是一个类型而不是表达式
-            typename List<ConstListOutputTemplates>::const_iterator it = DynamicArraysData.cbegin();
+            typename List<const_list_output_templates>::const_iterator it = DynamicArraysData.cbegin();
             while (it != DynamicArraysData.cend()) 
             {
                 ListOstream << *it << " ";

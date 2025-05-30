@@ -376,17 +376,17 @@ namespace wa
             }
             return *this;
         }
-        template <typename ConstListOutputTemplates>
-        friend std::ostream& operator<< (std::ostream& list_ostream, const list<ConstListOutputTemplates>& Dynamic_arrays_data);
+        template <typename const_list_output_templates>
+        friend std::ostream& operator<< (std::ostream& list_ostream, const list<const_list_output_templates>& Dynamic_arrays_data);
         
         template <typename ListOutputTemplates>
         friend std::ostream& operator<< (std::ostream& list_ostream, list<ListOutputTemplates>& Dynamic_arrays_data);
     };
-    template <typename ConstListOutputTemplates>
-    std::ostream& operator<< (std::ostream& list_ostream, const list<ConstListOutputTemplates>& Dynamic_arrays_data)
+    template <typename const_list_output_templates>
+    std::ostream& operator<< (std::ostream& list_ostream, const list<const_list_output_templates>& Dynamic_arrays_data)
     {
         //typename声明这是一个类型而不是表达式
-        typename list<ConstListOutputTemplates>::const_iterator it = Dynamic_arrays_data.cbegin();
+        typename list<const_list_output_templates>::const_iterator it = Dynamic_arrays_data.cbegin();
         while (it != Dynamic_arrays_data.cend()) 
         {
             list_ostream << *it << " ";
