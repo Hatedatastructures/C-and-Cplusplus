@@ -1852,6 +1852,8 @@ namespace template_container
         public:
             ~stack()                                                {       ;       }
 
+            void push(stack_type&& stack_type_data)                 {       vector_object.push_back(std::forward<stack_type>(stack_type_data));                 }
+
             void push(const stack_type& stack_type_data)            {       vector_object.push_back(stack_type_data);                 }
 
             void pop()                                              {       vector_object.pop_back();                                 }
@@ -2110,8 +2112,8 @@ namespace template_container
                 binary_search_tree_type_node* _left;
                 binary_search_tree_type_node* _right;
                 binary_search_tree_type _data;
-                binary_search_tree_type_node(const binary_search_tree_type& vector_data = binary_search_tree_type())
-                :_left(nullptr),_right(nullptr),_data(vector_data)
+                binary_search_tree_type_node(const binary_search_tree_type& binary_search_tree_type_data = binary_search_tree_type())
+                :_left(nullptr),_right(nullptr),_data(binary_search_tree_type_data)
                 {
                     ;
                 }
@@ -2122,113 +2124,103 @@ namespace template_container
                 }
             };
             using container_node = binary_search_tree_type_node;
-            container_node* _ROOT;
+            container_node* _root;
             container_imitate_function function_policy;
-            void interior_middle_order_traversal(container_node* ROOT_Temp)
+            void interior_middle_order_traversal(container_node* root_subtree_node)
             {
-                //中序遍历函数
-                template_container::stack_adapter::stack<container_node*> stack_type_data;
-                while(ROOT_Temp != nullptr || !stack_type_data.empty())
+                //内调中序遍历函数
+                template_container::stack_adapter::stack<container_node*> interior_stack;
+                while(root_subtree_node != nullptr || !interior_stack.empty())
                 {
-                    while(ROOT_Temp!= nullptr)
+                    while(root_subtree_node!= nullptr)
                     {
-                        stack_type_data.push(ROOT_Temp);
+                        interior_stack.push(root_subtree_node);
                         //压栈
-                        ROOT_Temp = ROOT_Temp->_left;
+                        root_subtree_node = root_subtree_node->_left;
                     }
                     // 访问栈顶节点
-                    ROOT_Temp = stack_type_data.top();
+                    root_subtree_node = interior_stack.top();
                     //弹出栈顶元素，刷新栈顶元素，栈顶元素会变成之前压入栈的节点的父节点
                     
-                    stack_type_data.pop();
-                    std::cout <<  ROOT_Temp->_data << " ";
-                    // std::cout << &ROOT_Temp->_data << " ";
+                    interior_stack.pop();
+                    std::cout <<  root_subtree_node->_data << " ";
+                    // std::cout << &root_subtree_node->_data << " ";
                     //检查地址是不是值拷贝
                     // 转向右子树
-                    ROOT_Temp = ROOT_Temp->_right;
+                    root_subtree_node = root_subtree_node->_right;
                 }
             }
-            size_t interior_middle_order_traversal(container_node* ROOT_Temp,size_t& SizeTemp )
+            size_t interior_middle_order_traversal(container_node* root_subtree_node,size_t& node_counter)
             {
-                template_container::stack_adapter::stack<container_node*> stack_type_data;
-                while(ROOT_Temp != nullptr || !stack_type_data.empty())
+                template_container::stack_adapter::stack<container_node*> interior_stack;
+                while(root_subtree_node != nullptr || !interior_stack.empty())
                 {
-                    while(ROOT_Temp!= nullptr)
+                    while(root_subtree_node!= nullptr)
                     {
-                        stack_type_data.push(ROOT_Temp);
-                        //压栈
-                        ROOT_Temp = ROOT_Temp->_left;
+                        interior_stack.push(root_subtree_node);
+                        root_subtree_node = root_subtree_node->_left;
                     }
-                    // 访问栈顶节点
-                    ROOT_Temp = stack_type_data.top();
-                    //弹出栈顶元素，刷新栈顶元素，栈顶元素会变成之前压入栈的节点的父节点
-                    
-                    stack_type_data.pop();
-                    SizeTemp++;
-                    // 转向右子树
-                    ROOT_Temp = ROOT_Temp->_right;
+                    root_subtree_node = interior_stack.top();
+                    interior_stack.pop();
+                    node_counter++;
+                    root_subtree_node = root_subtree_node->_right;
                 }
-                return SizeTemp;
+                return node_counter;
             }
-            void _PreOrderTraversal(container_node* ROOT_Temp )
+            void interior_pre_order_traversal(container_node* root_subtree_node )
             {
                 //前序遍历，最外左子树全部压栈
-                if(ROOT_Temp == nullptr)
+                if(root_subtree_node == nullptr)
                 {
                     return;
                 }
-                container_node* _PreOrderTraversalTest = ROOT_Temp;
-                template_container::stack_adapter::stack<container_node*> stack_Temp;
-                stack_Temp.push(_PreOrderTraversalTest);
-                //不能添加|| _PreOrderTraversalTest != nullptr ，因为最后一层循环后_Pre_order_traversal_test还是为真后面循环无意义，反之还会破环性质
-                while( !stack_Temp.empty() )
+                container_node* reference_node = root_subtree_node;
+                template_container::stack_adapter::stack<container_node*> interior_stack;
+                interior_stack.push(reference_node);
+                //不能添加|| reference_node != nullptr ，因为最后一层循环后reference_node指针还是为真后面循环无意义，反之还会破环性质
+                while( !interior_stack.empty() )
                 {
-                    _PreOrderTraversalTest = stack_Temp.top();
-                    stack_Temp.pop();
+                    reference_node = interior_stack.top();
+                    interior_stack.pop();
 
-                    std::cout << _PreOrderTraversalTest->_data << " ";
-                    if(_PreOrderTraversalTest->_right != nullptr)
+                    std::cout << reference_node->_data << " ";
+                    if(reference_node->_right != nullptr)
                     {
-                        stack_Temp.push(_PreOrderTraversalTest->_right);
+                        interior_stack.push(reference_node->_right);
                     }
-                    if(_PreOrderTraversalTest->_left != nullptr)
+                    if(reference_node->_left != nullptr)
                     {
-                        stack_Temp.push(_PreOrderTraversalTest->_left);
-                    }
-                    //修改逻辑错误，先压右子树再压左子树，因为这是栈
+                        interior_stack.push(reference_node->_left);
+                    }    //修改逻辑错误，先压右子树再压左子树，因为这是栈
                 }
             }
             void clear()
             {
-                if(_ROOT == nullptr)
+                if(_root == nullptr)
                 {
                     return;
                 }
-                //循环释放资源
-                template_container::stack_adapter::stack<container_node*> StaicClearTemp;
-                StaicClearTemp.push(_ROOT);
-                while(StaicClearTemp.empty() == false)
+                template_container::stack_adapter::stack<container_node*> resource_release_stack;
+                resource_release_stack.push(_root);
+                while(resource_release_stack.empty() == false)
                 {
-                    container_node* ROOT_Temp = StaicClearTemp.top();
+                    container_node* pending_deletion_node = resource_release_stack.top();
                     //取出元素，把左右节点入进去
-                    StaicClearTemp.pop();
-                    if(ROOT_Temp->_left!= nullptr)
+                    resource_release_stack.pop();
+                    if(pending_deletion_node->_left!= nullptr)
                     {
-                        StaicClearTemp.push(ROOT_Temp->_left);
+                        resource_release_stack.push(pending_deletion_node->_left);
                     }
-                    if(ROOT_Temp->_right!= nullptr)
+                    if(pending_deletion_node->_right!= nullptr)
                     {
-                        StaicClearTemp.push(ROOT_Temp->_right);
+                        resource_release_stack.push(pending_deletion_node->_right);
                     }
-                    delete ROOT_Temp;
+                    delete pending_deletion_node;
                 }
-                _ROOT = nullptr;
+                _root = nullptr;
             }
         public:
-            ~binary_search_tree()
-            {
-                clear();
-            }
+            ~binary_search_tree()                       {           clear();                }
             // 构造函数，使用初始化列表来初始化二叉搜索树
             binary_search_tree(std::initializer_list<binary_search_tree_type> lightweight_container)
             {
@@ -2237,87 +2229,87 @@ namespace template_container
                     push(chained_values);
                 }
             }
-            binary_search_tree(const binary_search_tree_type& BST_Temp = binary_search_tree_type(),container_imitate_function com_temp = container_imitate_function())
-            :_ROOT(nullptr),function_policy(com_temp)
+            binary_search_tree(const binary_search_tree_type& bstt_node = binary_search_tree_type())
+            :_root(nullptr)
             {   
-                _ROOT = new container_node(BST_Temp);
+                _root = new container_node(bstt_node);
             }
-            binary_search_tree(binary_search_tree&& BinarySearchTreeTemp)
-            :function_policy(BinarySearchTreeTemp.function_policy),_ROOT(nullptr)
+            binary_search_tree(binary_search_tree&& binary_search_tree_object)
+            :function_policy(binary_search_tree_object.function_policy),_root(nullptr)
             {
-                _ROOT = std::move(BinarySearchTreeTemp._ROOT);
-                BinarySearchTreeTemp._ROOT = nullptr;
+                _root = std::move(binary_search_tree_object._root);
+                binary_search_tree_object._root = nullptr;
             }
-            binary_search_tree(const binary_search_tree& BinarySearchTreeTemp)
-            :_ROOT(nullptr),function_policy(BinarySearchTreeTemp.function_policy)
+            binary_search_tree(const binary_search_tree& binary_search_tree_object)
+            :_root(nullptr),function_policy(binary_search_tree_object.function_policy)
             //这个拷贝构造不需要传模板参数，因为模板参数是在编译时确定的，而不是在运行时确定的，对于仿函数，直接拿传进来的引用初始化就可以了
             {
                 //拷贝构造，时间复杂度为O(n)
-                container_node* BinarySearchTreeTempCopy = BinarySearchTreeTemp._ROOT;
+                container_node* BinarySearchTreeTempCopy = binary_search_tree_object._root;
                 if(BinarySearchTreeTempCopy == nullptr)
                 {
                     return;
                 }
-                template_container::stack_adapter::stack<template_container::practicality::pair<container_node*,container_node**> > stack_type_data;
-                //注意这里把本地_ROOT类型传过去，是因为要对本地的_ROOT进行操作，所以要传二级指针
+                template_container::stack_adapter::stack<template_container::practicality::pair<container_node*,container_node**> > interior_stack;
+                //注意这里把本地_root类型传过去，是因为要对本地的_root进行操作，所以要传二级指针
                 //这里传引用也不行，这里的对象是动态变化的，所以传引用也不行
                 //如果是对全局的_ROOT进行操作，就传一级指针
-                stack_type_data.push(template_container::practicality::pair<container_node*,container_node**>(BinarySearchTreeTempCopy,&_ROOT));
-                while( !stack_type_data.empty() )
+                interior_stack.push(template_container::practicality::pair<container_node*,container_node**>(BinarySearchTreeTempCopy,&_root));
+                while( !interior_stack.empty() )
                 {
-                    auto StacKTempPair = stack_type_data.top();
-                    stack_type_data.pop();
+                    auto StacKTempPair = interior_stack.top();
+                    interior_stack.pop();
                     *(StacKTempPair.second) = new container_node(StacKTempPair.first->_data);
                     // container_node* _staic_temp_pair_second = *(StacKTempPair.second);
                     // if(StacKTempPair.first->_left!= nullptr)
-                    // {
-                    //     stack_type_data.push(MY_Template::practicality::pair<container_node*,container_node**>(StacKTempPair.first->_left,&_staic_temp_pair_second->_left));
+                    // {   //远古版本
+                    //     interior_stack.push(MY_Template::practicality::pair<container_node*,container_node**>(StacKTempPair.first->_left,&_staic_temp_pair_second->_left));
                     // }
                     // if(StacKTempPair.first->_right!= nullptr)
                     // {
-                    //     stack_type_data.push(MY_Template::practicality::pair<container_node*,container_node**>(StacKTempPair.first->_right,&_staic_temp_pair_second->_right));
+                    //     interior_stack.push(MY_Template::practicality::pair<container_node*,container_node**>(StacKTempPair.first->_right,&_staic_temp_pair_second->_right));
                     // }
                     //移除临时变量，直接使用指针解引用
                     if(StacKTempPair.first->_right!= nullptr)
                     {
-                        stack_type_data.push(template_container::practicality::pair<container_node*,container_node**>(StacKTempPair.first->_right,&((*StacKTempPair.second)->_right)));
+                        interior_stack.push(template_container::practicality::pair<container_node*,container_node**>(StacKTempPair.first->_right,&((*StacKTempPair.second)->_right)));
                     }
                     if(StacKTempPair.first->_left!= nullptr)
                     {
-                        stack_type_data.push(template_container::practicality::pair<container_node*,container_node**>(StacKTempPair.first->_left,&((*StacKTempPair.second)->_left)));
+                        interior_stack.push(template_container::practicality::pair<container_node*,container_node**>(StacKTempPair.first->_left,&((*StacKTempPair.second)->_left)));
                     }
                 }
             }
             void MiddleOrderTraversal()
             {
                 //中序遍历函数
-                interior_middle_order_traversal(_ROOT);
+                interior_middle_order_traversal(_root);
             }
             void PreOrderTraversal()
             {
-                _PreOrderTraversal(_ROOT);
+                interior_pre_order_traversal(_root);
             }
-            bool push(const binary_search_tree_type& vector_data)
+            bool push(const binary_search_tree_type& binary_search_tree_type_data)
             {
                 //尾上插入函数
-                if(_ROOT == nullptr)
+                if(_root == nullptr)
                 {
-                    _ROOT = new container_node(vector_data);
+                    _root = new container_node(binary_search_tree_type_data);
                     return true;
                 }
                 else
                 {
-                    container_node* ROOT_Temp = _ROOT;
+                    container_node* ROOT_Temp = _root;
                     container_node* _ROOT_Temp_Parent = nullptr;
                     while(ROOT_Temp!= nullptr)
                     {
                         _ROOT_Temp_Parent = ROOT_Temp;
-                        if(!function_policy(vector_data, ROOT_Temp->_data) && !function_policy(ROOT_Temp->_data, vector_data))
+                        if(!function_policy(binary_search_tree_type_data, ROOT_Temp->_data) && !function_policy(ROOT_Temp->_data, binary_search_tree_type_data))
                         {
                             //改用仿函数特性，判断是否有重复元素,防止自定义类型没有重载==运算符
                             return false;
                         }
-                        else if(function_policy(vector_data , ROOT_Temp->_data))
+                        else if(function_policy(binary_search_tree_type_data , ROOT_Temp->_data))
                         {
                             ROOT_Temp = ROOT_Temp->_left;
                         }
@@ -2327,9 +2319,9 @@ namespace template_container
                         }
                     }
                     //新开节点链接
-                    container_node* _ROOT_Temp_Node = new container_node(vector_data);
+                    container_node* _ROOT_Temp_Node = new container_node(binary_search_tree_type_data);
                     //链接节点
-                    if(function_policy(vector_data , _ROOT_Temp_Parent->_data))
+                    if(function_policy(binary_search_tree_type_data , _ROOT_Temp_Parent->_data))
                     {
                         _ROOT_Temp_Parent->_left = _ROOT_Temp_Node;
                     }
@@ -2340,14 +2332,14 @@ namespace template_container
                     return true;
                 }
             }
-            binary_search_tree& pop(const binary_search_tree_type& vector_data)
+            binary_search_tree& pop(const binary_search_tree_type& binary_search_tree_type_data)
             {
                 //删除节点
-                container_node* ROOT_Temp = _ROOT;
+                container_node* ROOT_Temp = _root;
                 container_node* _ROOT_Temp_Parent = nullptr;
                 while( ROOT_Temp != nullptr )
                 {
-                    if(vector_data == ROOT_Temp->_data)
+                    if(binary_search_tree_type_data == ROOT_Temp->_data)
                     {
                         //找到节点
                         if(ROOT_Temp->_left == nullptr)
@@ -2355,8 +2347,8 @@ namespace template_container
                             //左子树为空,下面判断要删除的节点是父节点的左子树还是右子树，防止多删和误删
                             if (_ROOT_Temp_Parent == nullptr)
                             {
-                                // 当前节点是根节点，直接更新 _ROOT
-                                _ROOT = ROOT_Temp->_right;
+                                // 当前节点是根节点，直接更新 _root
+                                _root = ROOT_Temp->_right;
                             }
                             else
                             {
@@ -2379,8 +2371,8 @@ namespace template_container
                         {
                             if (_ROOT_Temp_Parent == nullptr)
                             {
-                                // 防止当前节点是根节点，无法解引用，直接更新 _ROOT
-                                _ROOT = ROOT_Temp->_left;
+                                // 防止当前节点是根节点，无法解引用，直接更新 _root
+                                _root = ROOT_Temp->_left;
                             }
                             else
                             {
@@ -2426,7 +2418,7 @@ namespace template_container
                             return *this;
                         }
                     }
-                    else if(function_policy(vector_data, ROOT_Temp->_data))
+                    else if(function_policy(binary_search_tree_type_data, ROOT_Temp->_data))
                     {
                         _ROOT_Temp_Parent = ROOT_Temp;
                         ROOT_Temp = ROOT_Temp->_left;
@@ -2442,24 +2434,24 @@ namespace template_container
             size_t size()
             {
                 size_t _size = 0;
-                return interior_middle_order_traversal(_ROOT,_size);
+                return interior_middle_order_traversal(_root,_size);
             }
             size_t size()const
             {
                 size_t _size = 0;
-                return interior_middle_order_traversal(_ROOT,_size);
+                return interior_middle_order_traversal(_root,_size);
             }
-            container_node* find(const binary_search_tree_type& vector_data)
+            container_node* find(const binary_search_tree_type& binary_search_tree_type_data)
             {
                 //查找函数
-                container_node* _ROOT_Find = _ROOT;
+                container_node* _ROOT_Find = _root;
                 while(_ROOT_Find!= nullptr)
                 {
-                    if(vector_data == _ROOT_Find->_data)
+                    if(binary_search_tree_type_data == _ROOT_Find->_data)
                     {
                         return _ROOT_Find;
                     }
-                    else if(function_policy(vector_data, _ROOT_Find->_data))
+                    else if(function_policy(binary_search_tree_type_data, _ROOT_Find->_data))
                     {
                         _ROOT_Find = _ROOT_Find->_left;
                     }
@@ -2486,27 +2478,27 @@ namespace template_container
                     ROOTFormerData->_right = _ROOT_latter_data;
                 }
             }
-            binary_search_tree& operator=(const binary_search_tree& BinarySearchTreeTemp)
+            binary_search_tree& operator=(const binary_search_tree& binary_search_tree_object)
             {
                 //赋值运算符重载
-                if(this != &BinarySearchTreeTemp)
+                if(this != &binary_search_tree_object)
                 {
                     clear();
-                    function_policy = BinarySearchTreeTemp.function_policy;
-                    binary_search_tree BinarySearchTreeTempCopy = BinarySearchTreeTemp;
-                    template_container::algorithm::swap(BinarySearchTreeTempCopy._ROOT,_ROOT);
+                    function_policy = binary_search_tree_object.function_policy;
+                    binary_search_tree BinarySearchTreeTempCopy = binary_search_tree_object;
+                    template_container::algorithm::swap(BinarySearchTreeTempCopy._root,_root);
                 }
                 return *this;
             }
-            binary_search_tree& operator=(binary_search_tree && BinarySearchTreeTemp)
+            binary_search_tree& operator=(binary_search_tree && binary_search_tree_object)
             {
                 //移动赋值运算符重载
-                if(this != &BinarySearchTreeTemp)
+                if(this != &binary_search_tree_object)
                 {
                     clear();
-                    function_policy = BinarySearchTreeTemp.function_policy;
-                    _ROOT = std::move(BinarySearchTreeTemp._ROOT);
-                    BinarySearchTreeTemp._ROOT = nullptr;
+                    function_policy = binary_search_tree_object.function_policy;
+                    _root = std::move(binary_search_tree_object._root);
+                    binary_search_tree_object._root = nullptr;
                 }
                 return *this;
             }
@@ -2678,7 +2670,7 @@ namespace template_container
                 
             };
             using container_node = AVLTreeTypeNode;
-            container_node* _ROOT;
+            container_node* _root;
 
             CompareImitationFunctionsAVL function_policy;
             void LeftRevolve(container_node*& ParentTempNode)
@@ -2715,10 +2707,10 @@ namespace template_container
                 ParentTempNode->_parent = SubRightTemp;
                 //更新parent_temp_Node节点指向正确的地址
 
-                if(_ROOT == ParentTempNode)
+                if(_root == ParentTempNode)
                 {
                     //如果要调整的节点是根根节点，直接把调整节点赋值给根节点，然后把调整节点的父亲节点置空
-                    _ROOT = SubRightTemp;
+                    _root = SubRightTemp;
                     SubRightTemp->_parent = nullptr;
                 }
                 else
@@ -2758,9 +2750,9 @@ namespace template_container
                 container_node* ParentParentTempNode = ParentTempNode->_parent;
                 ParentTempNode->_parent = SubLeftTemp;
 
-                if(_ROOT == ParentTempNode)
+                if(_root == ParentTempNode)
                 {
-                    _ROOT = SubLeftTemp;
+                    _root = SubLeftTemp;
                     SubLeftTemp->_parent = nullptr;
                 }
                 else
@@ -2848,79 +2840,79 @@ namespace template_container
             void clear()
             {
                 //清空所有资源
-                if(_ROOT == nullptr)
+                if(_root == nullptr)
                 {
                     return;
                 }
                 else
                 {
-                    template_container::stack_adapter::stack<container_node*> stack_type_data;
+                    template_container::stack_adapter::stack<container_node*> interior_stack;
                     //前序释放
-                    stack_type_data.push(_ROOT);
-                    while(!stack_type_data.empty())
+                    interior_stack.push(_root);
+                    while(!interior_stack.empty())
                     {
-                        container_node* temp = stack_type_data.top();
-                        stack_type_data.pop();
+                        container_node* temp = interior_stack.top();
+                        interior_stack.pop();
                         if(temp->_left != nullptr)
                         {
-                            stack_type_data.push(temp->_left);
+                            interior_stack.push(temp->_left);
                         }
                         if(temp->_right != nullptr)
                         {
-                            stack_type_data.push(temp->_right);
+                            interior_stack.push(temp->_right);
                         }
                         delete temp;
                         temp = nullptr;
                     }
-                    _ROOT = nullptr;
+                    _root = nullptr;
                 }
             }
             //测试函数
-            void _PreOrderTraversal(container_node* ROOT_Temp )
+            void interior_pre_order_traversal(container_node* ROOT_Temp )
             {
                 //前序遍历，最外左子树全部压栈
                 if(ROOT_Temp == nullptr)
                 {
                     return;
                 }
-                container_node* _PreOrderTraversalTest = ROOT_Temp;
-                template_container::stack_adapter::stack<container_node*> stack_Temp;
-                stack_Temp.push(_PreOrderTraversalTest);
-                //不能添加|| _PreOrderTraversalTest != nullptr ，因为最后一层循环后_Pre_order_traversal_test还是为真后面循环无意义，反之还会破环性质
-                while( !stack_Temp.empty() )
+                container_node* reference_node = ROOT_Temp;
+                template_container::stack_adapter::stack<container_node*> interior_stack;
+                interior_stack.push(reference_node);
+                //不能添加|| reference_node != nullptr ，因为最后一层循环后_Pre_order_traversal_test还是为真后面循环无意义，反之还会破环性质
+                while( !interior_stack.empty() )
                 {
-                    _PreOrderTraversalTest = stack_Temp.top();
-                    stack_Temp.pop();
+                    reference_node = interior_stack.top();
+                    interior_stack.pop();
 
-                    std::cout << _PreOrderTraversalTest->_data << " ";
+                    std::cout << reference_node->_data << " ";
                     //修改逻辑错误，先压右子树再压左子树，因为这是栈
-                    if(_PreOrderTraversalTest->_right != nullptr)
+                    if(reference_node->_right != nullptr)
                     {
-                        stack_Temp.push(_PreOrderTraversalTest->_right);
+                        interior_stack.push(reference_node->_right);
                     }
-                    if(_PreOrderTraversalTest->_left != nullptr)
+                    if(reference_node->_left != nullptr)
                     {
-                        stack_Temp.push(_PreOrderTraversalTest->_left);
+                        interior_stack.push(reference_node->_left);
                     }
                 }
             }
             void interior_middle_order_traversal(container_node* ROOT_Temp)
             {
                 //中序遍历函数
-                template_container::stack_adapter::stack<container_node*> stack_type_data;
-                while(ROOT_Temp != nullptr || !stack_type_data.empty())
+                template_container::stack_adapter::stack<container_node*> interior_stack;
+                while(ROOT_Temp != nullptr || !interior_stack.empty())
                 {
                     while(ROOT_Temp!= nullptr)
                     {
-                        stack_type_data.push(ROOT_Temp);
+                        interior_stack.push(ROOT_Temp);
                         //压栈
                         ROOT_Temp = ROOT_Temp->_left;
                     }
                     // 访问栈顶节点
-                    ROOT_Temp = stack_type_data.top();
+                    ROOT_Temp = interior_stack.top();
                     //弹出栈顶元素，刷新栈顶元素，栈顶元素会变成之前压入栈的节点的父节点
                     
-                    stack_type_data.pop();
+                    interior_stack.pop();
                     std::cout <<  ROOT_Temp->_data << " ";
                     // std::cout << &ROOT_Temp->_data << " ";
                     //检查地址是不是值拷贝
@@ -2931,29 +2923,29 @@ namespace template_container
             size_t _size()
             {
                 size_t temp = 0; 
-                if(_ROOT == nullptr)
+                if(_root == nullptr)
                 {
                     return temp;
                 }
                 else
                 {
-                    container_node* _PreOrderTraversalTest = _ROOT;
-                    template_container::stack_adapter::stack<container_node*> stack_Temp;
-                    stack_Temp.push(_PreOrderTraversalTest);
-                    while( !stack_Temp.empty() )
+                    container_node* reference_node = _root;
+                    template_container::stack_adapter::stack<container_node*> interior_stack;
+                    interior_stack.push(reference_node);
+                    while( !interior_stack.empty() )
                     {
-                        _PreOrderTraversalTest = stack_Temp.top();
-                        stack_Temp.pop();
+                        reference_node = interior_stack.top();
+                        interior_stack.pop();
 
                         temp++;
 
-                        if(_PreOrderTraversalTest->_right != nullptr)
+                        if(reference_node->_right != nullptr)
                         {
-                            stack_Temp.push(_PreOrderTraversalTest->_right);
+                            interior_stack.push(reference_node->_right);
                         }
-                        if(_PreOrderTraversalTest->_left != nullptr)
+                        if(reference_node->_left != nullptr)
                         {
-                            stack_Temp.push(_PreOrderTraversalTest->_left);
+                            interior_stack.push(reference_node->_left);
                         }
                     }
                 }
@@ -2968,7 +2960,7 @@ namespace template_container
 
             iterator begin()                    
             {
-                container_node* BeginTemp = _ROOT;
+                container_node* BeginTemp = _root;
                 while(BeginTemp != nullptr && BeginTemp->_left!= nullptr)
                 {
                     BeginTemp = BeginTemp->_left;
@@ -2981,7 +2973,7 @@ namespace template_container
             }
             const_iterator cbegin() const
             {
-                container_node* BeginTemp = _ROOT;
+                container_node* BeginTemp = _root;
                 while(BeginTemp != nullptr && BeginTemp->_left!= nullptr)
                 {
                     BeginTemp = BeginTemp->_left;
@@ -2994,7 +2986,7 @@ namespace template_container
             }
             reverse_iterator rbegin()
             {
-                container_node* RbeginTemp = _ROOT;
+                container_node* RbeginTemp = _root;
                 while(RbeginTemp!= nullptr && RbeginTemp->_right!= nullptr)
                 {
                     RbeginTemp = RbeginTemp->_right;
@@ -3007,7 +2999,7 @@ namespace template_container
             }
             const_reverse_iterator crbegin() const
             {
-                container_node* RbeginTemp = _ROOT;
+                container_node* RbeginTemp = _root;
                 while(RbeginTemp!= nullptr && RbeginTemp->_right!= nullptr)
                 {
                     RbeginTemp = RbeginTemp->_right;
@@ -3020,28 +3012,28 @@ namespace template_container
             }
             bool empty()
             {
-                return _ROOT == nullptr;
+                return _root == nullptr;
             }
             AVLTree()
             {
-                _ROOT = nullptr;
+                _root = nullptr;
             }
             AVLTree(const AVLTreeTypeK& KeyTemp,const AVLTreeTypeV& ValTemp = AVLTreeTypeV(),
             CompareImitationFunctionsAVL com_temp = CompareImitationFunctionsAVL())
-            :_ROOT(nullptr),function_policy(com_temp)
+            :_root(nullptr),function_policy(com_temp)
             {
-                _ROOT = new container_node(KeyTemp,ValTemp);
+                _root = new container_node(KeyTemp,ValTemp);
             }
             AVLTree(const AVLSyntheticClass& AVLTreePairTemp,
             CompareImitationFunctionsAVL com_temp = CompareImitationFunctionsAVL())
-            :_ROOT(nullptr),function_policy(com_temp)
+            :_root(nullptr),function_policy(com_temp)
             {
-                _ROOT = new container_node(AVLTreePairTemp.first,AVLTreePairTemp.second);
+                _root = new container_node(AVLTreePairTemp.first,AVLTreePairTemp.second);
             }
             AVLTree(const AVLTree& AVLTreeTemp)
-            : _ROOT(nullptr), function_policy(AVLTreeTemp.function_policy)
+            : _root(nullptr), function_policy(AVLTreeTemp.function_policy)
             {
-                if (AVLTreeTemp._ROOT == nullptr)
+                if (AVLTreeTemp._root == nullptr)
                 {
                     return;
                 }
@@ -3050,18 +3042,18 @@ namespace template_container
                 template_container::stack_adapter::stack<template_container::practicality::pair<container_node*, container_node*>> stack;
                 
                 // 创建根节点
-                _ROOT = new container_node(AVLTreeTemp._ROOT->_data);
-                _ROOT->_BalanceFactor = AVLTreeTemp._ROOT->_BalanceFactor;
-                _ROOT->_parent = nullptr; // 根节点的父节点为nullptr
+                _root = new container_node(AVLTreeTemp._root->_data);
+                _root->_BalanceFactor = AVLTreeTemp._root->_BalanceFactor;
+                _root->_parent = nullptr; // 根节点的父节点为nullptr
                 
                 // 初始化栈，将根节点的子节点压入（注意：这里父节点是 _ROOT，一级指针）
-                if (AVLTreeTemp._ROOT->_right != nullptr)
+                if (AVLTreeTemp._root->_right != nullptr)
                 {
-                    stack.push(template_container::practicality::pair<container_node*, container_node*>(AVLTreeTemp._ROOT->_right, _ROOT));
+                    stack.push(template_container::practicality::pair<container_node*, container_node*>(AVLTreeTemp._root->_right, _root));
                 }
-                if (AVLTreeTemp._ROOT->_left != nullptr)
+                if (AVLTreeTemp._root->_left != nullptr)
                 {
-                    stack.push(template_container::practicality::pair<container_node*, container_node*>(AVLTreeTemp._ROOT->_left, _ROOT));
+                    stack.push(template_container::practicality::pair<container_node*, container_node*>(AVLTreeTemp._root->_left, _root));
                 }
 
                 // 遍历并复制剩余节点
@@ -3106,19 +3098,19 @@ namespace template_container
                 }
             }
             AVLTree(AVLTree&& AVLTreeTemp)
-            : _ROOT(nullptr),function_policy(AVLTreeTemp.function_policy)
+            : _root(nullptr),function_policy(AVLTreeTemp.function_policy)
             {
-                _ROOT = std::move(AVLTreeTemp._ROOT);
-                AVLTreeTemp._ROOT = nullptr;
+                _root = std::move(AVLTreeTemp._root);
+                AVLTreeTemp._root = nullptr;
             }
             AVLTree& operator=(AVLTree&& AVLTreeTemp)
             {
                 if(this != &AVLTreeTemp)
                 {
                     clear();
-                    _ROOT = std::move(AVLTreeTemp._ROOT);
+                    _root = std::move(AVLTreeTemp._root);
                     function_policy  = std::move(AVLTreeTemp.function_policy);
-                    AVLTreeTemp._ROOT = nullptr;
+                    AVLTreeTemp._root = nullptr;
                 }
             }
             AVLTree& operator=(const AVLTree AVLTreeTemp)
@@ -3128,12 +3120,12 @@ namespace template_container
                 {
                     return *this;
                 }
-                if (AVLTreeTemp._ROOT == nullptr)
+                if (AVLTreeTemp._root == nullptr)
                 {
                     return *this;
                 }
                 template_container::algorithm::swap(function_policy,AVLTreeTemp.function_policy);
-                template_container::algorithm::swap(_ROOT,AVLTreeTemp._ROOT);
+                template_container::algorithm::swap(_root,AVLTreeTemp._root);
                 return *this;
             }
             ~AVLTree()
@@ -3151,23 +3143,23 @@ namespace template_container
             }
             void PreOrderTraversal()
             {
-                _PreOrderTraversal(_ROOT);
+                interior_pre_order_traversal(_root);
             }
             void MiddleOrderTraversal()
             {
-                interior_middle_order_traversal(_ROOT);
+                interior_middle_order_traversal(_root);
             }
             bool push(const AVLTreeTypeK& KeyTemp,const AVLTreeTypeV& ValTemp = AVLTreeTypeV())
             {
                 //插入
-                if(_ROOT == nullptr)
+                if(_root == nullptr)
                 {
-                    _ROOT = new container_node(KeyTemp,ValTemp);
+                    _root = new container_node(KeyTemp,ValTemp);
                     return true;
                 }
                 else
                 {
-                    container_node* _ROOT_temp = _ROOT;
+                    container_node* _ROOT_temp = _root;
                     container_node* ROOT_Temp_Parent = nullptr;
                     while(_ROOT_temp)
                     {
@@ -3253,14 +3245,14 @@ namespace template_container
             bool push(const AVLSyntheticClass& AVLTreePairTemp)
             {
                 //AVL树左子树比右子树高，则他俩的根节点的平衡因子为1，反之为-1，也就是说左加一，右减一，如果根节点为2和-2就要需要调整了
-                if(_ROOT == nullptr)
+                if(_root == nullptr)
                 {
-                    _ROOT = new container_node(AVLTreePairTemp.first,AVLTreePairTemp.second);
+                    _root = new container_node(AVLTreePairTemp.first,AVLTreePairTemp.second);
                     return true;
                 }
                 else
                 {
-                    container_node* ROOT_Temp = _ROOT;
+                    container_node* ROOT_Temp = _root;
                     container_node* ROOT_Temp_Parent = nullptr;
                     while(ROOT_Temp != nullptr)
                     {
@@ -3357,7 +3349,7 @@ namespace template_container
             }
             container_node* find(const AVLTreeTypeK& DataTemp)
             {
-                container_node* ROOT_Temp = _ROOT;
+                container_node* ROOT_Temp = _root;
                 while(ROOT_Temp != nullptr)
                 {
                     if(ROOT_Temp->_data == DataTemp)
@@ -3377,11 +3369,11 @@ namespace template_container
             }
             AVLTree& pop(const AVLTreeTypeK& DataTemp)
             {
-                if(_ROOT == nullptr)
+                if(_root == nullptr)
                 {
                     return *this;
                 }
-                container_node* ROOT_Temp = _ROOT;
+                container_node* ROOT_Temp = _root;
                 container_node* ROOT_Temp_Parent = nullptr;
                 while(ROOT_Temp != nullptr)
                 {
@@ -3413,7 +3405,7 @@ namespace template_container
                     }
                     if (ROOT_Temp_Parent == nullptr) 
                     {
-                        _ROOT = ROOT_Temp->_right;
+                        _root = ROOT_Temp->_right;
                     } 
                     else 
                     {
@@ -3437,7 +3429,7 @@ namespace template_container
                     }
                     if(ROOT_Temp_Parent == nullptr)
                     {
-                        _ROOT = ROOT_Temp->_left;
+                        _root = ROOT_Temp->_left;
                     }
                     else
                     {
@@ -3724,7 +3716,7 @@ namespace template_container
                 }
             };
             using container_node = RBTreeNode;
-            container_node* _ROOT;
+            container_node* _root;
             DataExtractionFunction Element;
             CompareImitationFunctionsRB function_policy;
             void LeftRevolve(container_node* ParentTempNode)
@@ -3761,10 +3753,10 @@ namespace template_container
                 ParentTempNode->_parent = SubRightTemp;
                 //更新parent_temp_Node节点指向正确的地址
 
-                if(_ROOT == ParentTempNode)
+                if(_root == ParentTempNode)
                 {
                     //如果要调整的节点是根根节点，直接把调整节点赋值给根节点，然后把调整节点的父亲节点置空
-                    _ROOT = SubRightTemp;
+                    _root = SubRightTemp;
                     SubRightTemp->_parent = nullptr;
                 }
                 else
@@ -3802,9 +3794,9 @@ namespace template_container
                 container_node* ParentParentTempNode = ParentTempNode->_parent;
                 ParentTempNode->_parent = SubLeftTemp;
 
-                if(_ROOT == ParentTempNode)
+                if(_root == ParentTempNode)
                 {
-                    _ROOT = SubLeftTemp;
+                    _root = SubLeftTemp;
                     SubLeftTemp->_parent = nullptr;
                 }
                 else
@@ -3844,52 +3836,52 @@ namespace template_container
                         }
                         delete _clear_Temp;
                     }
-                    _ROOT = nullptr;
+                    _root = nullptr;
                 }
             }
             void interior_middle_order_traversal(container_node* ROOT_Temp)
             {
                 //中序遍历函数
-                template_container::stack_adapter::stack<container_node*> stack_type_data;
-                while(ROOT_Temp != nullptr || !stack_type_data.empty())
+                template_container::stack_adapter::stack<container_node*> interior_stack;
+                while(ROOT_Temp != nullptr || !interior_stack.empty())
                 {
                     while(ROOT_Temp!= nullptr)
                     {
-                        stack_type_data.push(ROOT_Temp);
+                        interior_stack.push(ROOT_Temp);
                         ROOT_Temp = ROOT_Temp->_left;
                     }
-                    ROOT_Temp = stack_type_data.top();
-                    stack_type_data.pop();
+                    ROOT_Temp = interior_stack.top();
+                    interior_stack.pop();
                     std::cout <<  ROOT_Temp->_data << " ";
                     // std::cout << ROOT_Temp->_color <<" ";
                     ROOT_Temp = ROOT_Temp->_right;
                 }
             }
-            void _PreOrderTraversal(container_node* ROOT_Temp )
+            void interior_pre_order_traversal(container_node* ROOT_Temp )
             {
                 //前序遍历，最外左子树全部压栈
                 if(ROOT_Temp == nullptr)
                 {
                     return;
                 }
-                container_node* _PreOrderTraversalTest = ROOT_Temp;
-                template_container::stack_adapter::stack<container_node*> stack_Temp;
-                stack_Temp.push(_PreOrderTraversalTest);
-                while( !stack_Temp.empty() )
+                container_node* reference_node = ROOT_Temp;
+                template_container::stack_adapter::stack<container_node*> interior_stack;
+                interior_stack.push(reference_node);
+                while( !interior_stack.empty() )
                 {
-                    _PreOrderTraversalTest = stack_Temp.top();
-                    stack_Temp.pop();
+                    reference_node = interior_stack.top();
+                    interior_stack.pop();
 
-                    std::cout << _PreOrderTraversalTest->_data << " ";
-                    // std::cout << _PreOrderTraversalTest->_color <<" ";
+                    std::cout << reference_node->_data << " ";
+                    // std::cout << reference_node->_color <<" ";
                     //修改逻辑错误，先压右子树再压左子树，因为这是栈
-                    if(_PreOrderTraversalTest->_right != nullptr)
+                    if(reference_node->_right != nullptr)
                     {
-                        stack_Temp.push(_PreOrderTraversalTest->_right);
+                        interior_stack.push(reference_node->_right);
                     }
-                    if(_PreOrderTraversalTest->_left != nullptr)
+                    if(reference_node->_left != nullptr)
                     {
-                        stack_Temp.push(_PreOrderTraversalTest->_left);
+                        interior_stack.push(reference_node->_left);
                     }
                 }
             }
@@ -3908,27 +3900,27 @@ namespace template_container
             size_t _size() const 
             {
                 size_t size = 0;
-                container_node* ROOT_Temp = _ROOT;
+                container_node* ROOT_Temp = _root;
                 if(ROOT_Temp == nullptr)
                 {
                     return size;
                 }
-                container_node* _PreOrderTraversalTest = ROOT_Temp;
-                template_container::stack_adapter::stack<container_node*> stack_Temp;
-                stack_Temp.push(_PreOrderTraversalTest);
-                while( !stack_Temp.empty() )
+                container_node* reference_node = ROOT_Temp;
+                template_container::stack_adapter::stack<container_node*> interior_stack;
+                interior_stack.push(reference_node);
+                while( !interior_stack.empty() )
                 {
-                    _PreOrderTraversalTest = stack_Temp.top();
-                    stack_Temp.pop();
+                    reference_node = interior_stack.top();
+                    interior_stack.pop();
 
                     size++;
-                    if(_PreOrderTraversalTest->_right != nullptr)
+                    if(reference_node->_right != nullptr)
                     {
-                        stack_Temp.push(_PreOrderTraversalTest->_right);
+                        interior_stack.push(reference_node->_right);
                     }
-                    if(_PreOrderTraversalTest->_left != nullptr)
+                    if(reference_node->_left != nullptr)
                     {
-                        stack_Temp.push(_PreOrderTraversalTest->_left);
+                        interior_stack.push(reference_node->_left);
                     }
                 }
                 return size;
@@ -3943,32 +3935,32 @@ namespace template_container
             using insert_result = template_container::practicality::pair<iterator,bool>;
             RBTree()
             {
-                _ROOT = nullptr;
+                _root = nullptr;
             }
             RBTree(const RBTreeTypeVal& RBTreeTemp)
             {
-                _ROOT = new container_node(RBTreeTemp);
-                _ROOT->_color = BLACK;
+                _root = new container_node(RBTreeTemp);
+                _root->_color = BLACK;
             }
             RBTree(RBTree&& RBTreeTemp)
             :function_policy(RBTreeTemp.function_policy),Element(RBTreeTemp.Element)
             {
-                _ROOT = std::move(RBTreeTemp._ROOT);
-                RBTreeTemp._ROOT = nullptr;
+                _root = std::move(RBTreeTemp._root);
+                RBTreeTemp._root = nullptr;
             }
             RBTree(const RBTree& RBTreeTemp)
             :function_policy(RBTreeTemp.function_policy),Element(RBTreeTemp.Element)
             {
-                if(_ROOT != nullptr)
+                if(_root != nullptr)
                 {
-                    clear(_ROOT);
+                    clear(_root);
                 }
                 else
                 {
-                    _ROOT = nullptr;
-                    if(RBTreeTemp._ROOT == nullptr)
+                    _root = nullptr;
+                    if(RBTreeTemp._root == nullptr)
                     {
-                        _ROOT = nullptr;
+                        _root = nullptr;
                     }
                     else
                     {
@@ -3976,18 +3968,18 @@ namespace template_container
                         template_container::stack_adapter::stack<template_container::practicality::pair<container_node*, container_node*>> stack;
                         
                         // 创建根节点
-                        _ROOT = new container_node(RBTreeTemp._ROOT->_data);
-                        _ROOT->_color = RBTreeTemp._ROOT->_color;
-                        _ROOT->_parent = nullptr; // 根节点的父节点为nullptr
+                        _root = new container_node(RBTreeTemp._root->_data);
+                        _root->_color = RBTreeTemp._root->_color;
+                        _root->_parent = nullptr; // 根节点的父节点为nullptr
                         
                         // 初始化栈，将根节点的子节点压入（注意：这里父节点是 _ROOT，一级指针）
-                        if (RBTreeTemp._ROOT->_right != nullptr)
+                        if (RBTreeTemp._root->_right != nullptr)
                         {
-                            stack.push(template_container::practicality::pair<container_node*, container_node*>(RBTreeTemp._ROOT->_right, _ROOT));
+                            stack.push(template_container::practicality::pair<container_node*, container_node*>(RBTreeTemp._root->_right, _root));
                         }
-                        if (RBTreeTemp._ROOT->_left != nullptr)
+                        if (RBTreeTemp._root->_left != nullptr)
                         {
-                            stack.push(template_container::practicality::pair<container_node*, container_node*>(RBTreeTemp._ROOT->_left, _ROOT));
+                            stack.push(template_container::practicality::pair<container_node*, container_node*>(RBTreeTemp._root->_left, _root));
                         }
 
                         // 遍历并复制剩余节点
@@ -4041,8 +4033,8 @@ namespace template_container
                 }
                 else
                 {
-                    clear(_ROOT);
-                    template_container::algorithm::swap(RBTreeTemp._ROOT,_ROOT);
+                    clear(_root);
+                    template_container::algorithm::swap(RBTreeTemp._root,_root);
                     template_container::algorithm::swap(RBTreeTemp.Element,Element);
                     template_container::algorithm::swap(RBTreeTemp.function_policy,function_policy);
                     return *this;
@@ -4055,26 +4047,26 @@ namespace template_container
                     clear();
                     function_policy = std::move(RBTreeTemp.function_policy);
                     Element = std::move(RBTreeTemp.Element);
-                    _ROOT = std::move(RBTreeTemp._ROOT);
-                    RBTreeTemp._ROOT = nullptr;
+                    _root = std::move(RBTreeTemp._root);
+                    RBTreeTemp._root = nullptr;
                 }
                 return *this;
             }
             ~RBTree()
             {
-                clear(_ROOT);
+                clear(_root);
             }
             insert_result push(const RBTreeTypeVal& Val_Temp_)
             {
-                if(_ROOT == nullptr)
+                if(_root == nullptr)
                 {
-                    _ROOT = new container_node(Val_Temp_);
-                    _ROOT->_color = BLACK;
-                    return insert_result(iterator(_ROOT),true);
+                    _root = new container_node(Val_Temp_);
+                    _root->_color = BLACK;
+                    return insert_result(iterator(_root),true);
                 }
                 else
                 {
-                    container_node* ROOT_Temp = _ROOT;
+                    container_node* ROOT_Temp = _root;
                     container_node* ROOT_Temp_Parent = nullptr;
                     while(ROOT_Temp != nullptr)
                     {
@@ -4175,7 +4167,7 @@ namespace template_container
                             }
                         }
                     }
-                    _ROOT->_color = BLACK;
+                    _root->_color = BLACK;
                     return insert_result(iterator(Return_Node_Push),true);
                 }
             }
@@ -4210,9 +4202,9 @@ namespace template_container
                 {
                     return;
                 }
-                while(current_node != _ROOT && (current_node == nullptr || BLACK_Get(current_node)))
+                while(current_node != _root && (current_node == nullptr || BLACK_Get(current_node)))
                 {
-                    if(current_node == _ROOT)
+                    if(current_node == _root)
                     {
                         break;
                     }
@@ -4260,7 +4252,7 @@ namespace template_container
                             parent->_color = BLACK;
                             brother->_right->_color = BLACK;
                             LeftRevolve(parent);
-                            current_node = _ROOT;
+                            current_node = _root;
                             parent = current_node->_parent;
                         }
                     }
@@ -4307,7 +4299,7 @@ namespace template_container
                             parent->_color = BLACK;
                             brother->_left->_color = BLACK;
                             RightRevolve(parent);
-                            current_node = _ROOT;
+                            current_node = _root;
                             parent = current_node->_parent;
                         }
                     }
@@ -4320,13 +4312,13 @@ namespace template_container
             insert_result pop(const RBTreeTypeVal& RBTreeTemp)
             {
                 RBTreeColor DeleteColor;
-                if(_ROOT == nullptr)
+                if(_root == nullptr)
                 {
                     return insert_result(iterator(nullptr),false);
                 }
                 else
                 {
-                    container_node* ROOT_Temp = _ROOT;
+                    container_node* ROOT_Temp = _root;
                     container_node* ROOT_Temp_Parent = nullptr;
                     container_node* AdjustNode = nullptr;
                     container_node* AdjustNodeParent = nullptr;
@@ -4363,7 +4355,7 @@ namespace template_container
                         if(ROOT_Temp_Parent == nullptr)
                         {
                             //根节点
-                            _ROOT = ROOT_Temp->_right;
+                            _root = ROOT_Temp->_right;
                         }
                         else
                         {
@@ -4392,7 +4384,7 @@ namespace template_container
                         if(ROOT_Temp_Parent == nullptr)
                         {
                             //与上同理
-                            _ROOT = ROOT_Temp->_left;
+                            _root = ROOT_Temp->_left;
                         }
                         else
                         {
@@ -4451,22 +4443,22 @@ namespace template_container
                         //删除红色节点不影响性质
                         DeleteAdjust(AdjustNode,AdjustNodeParent);
                     }
-                    if(_ROOT != nullptr)
+                    if(_root != nullptr)
                     {
-                        _ROOT->_color = BLACK;
+                        _root->_color = BLACK;
                     }
                     return insert_result(iterator(nullptr),false);
                 }
             }
             iterator find(const RBTreeTypeVal& RB_Tree_Temp_)
             {
-                if(_ROOT == nullptr)
+                if(_root == nullptr)
                 {
                     return iterator(nullptr);
                 }
                 else
                 {
-                    container_node* iterator_ROOT = _ROOT;
+                    container_node* iterator_ROOT = _root;
                     while(iterator_ROOT != nullptr)
                     {
                        if(!function_policy(Element(iterator_ROOT->_data),Element(RB_Tree_Temp_)))
@@ -4495,19 +4487,19 @@ namespace template_container
             }
             bool empty()
             {
-                return _ROOT == nullptr;
+                return _root == nullptr;
             }
             void MiddleOrderTraversal()
             {
-                interior_middle_order_traversal(_ROOT);
+                interior_middle_order_traversal(_root);
             }
             void PreOrderTraversal()
             {
-                _PreOrderTraversal(_ROOT);
+                interior_pre_order_traversal(_root);
             }
             iterator begin()
             {
-                container_node* iterator_ROOT = _ROOT;
+                container_node* iterator_ROOT = _root;
                 while(iterator_ROOT != nullptr &&  iterator_ROOT->_left != nullptr)
                 {
                     iterator_ROOT = iterator_ROOT->_left;
@@ -4520,7 +4512,7 @@ namespace template_container
             }
             const_iterator cbegin() const
             {
-                container_node* iterator_ROOT = _ROOT;
+                container_node* iterator_ROOT = _root;
                 while(iterator_ROOT != nullptr &&  iterator_ROOT->_left != nullptr)
                 {
                     iterator_ROOT = iterator_ROOT->_left;
@@ -4533,7 +4525,7 @@ namespace template_container
             }
             reverse_iterator rbegin()
             {
-                container_node* iterator_Node = _ROOT;
+                container_node* iterator_Node = _root;
                 while(iterator_Node != nullptr && iterator_Node->_right != nullptr)
                 {
                     iterator_Node = iterator_Node->_right;
@@ -4546,7 +4538,7 @@ namespace template_container
             }
             const_reverse_iterator crbegin() const
             {
-                container_node* iterator_Node = _ROOT;
+                container_node* iterator_Node = _root;
                 while(iterator_Node!= nullptr && iterator_Node->_right!= nullptr)
                 {
                     iterator_Node = iterator_Node->_right;

@@ -1914,7 +1914,7 @@ namespace MyTemplate
                 }
                 return SizeTemp;
             }
-            void _PreOrderTraversal(Node* ROOT_Temp )
+            void interior_pre_order_traversal(Node* ROOT_Temp )
             {
                 //前序遍历，最外左子树全部压栈
                 if(ROOT_Temp == nullptr)
@@ -2039,7 +2039,7 @@ namespace MyTemplate
             }
             void PreOrderTraversal()
             {
-                _PreOrderTraversal(_ROOT);
+                interior_pre_order_traversal(_ROOT);
             }
             bool Push(const binary_search_tree_type& Data)
             {
@@ -2620,7 +2620,7 @@ namespace MyTemplate
                 }
             }
             //测试函数
-            void _PreOrderTraversal(Node* ROOT_Temp )
+            void interior_pre_order_traversal(Node* ROOT_Temp )
             {
                 //前序遍历，最外左子树全部压栈
                 if(ROOT_Temp == nullptr)
@@ -2895,7 +2895,7 @@ namespace MyTemplate
             }
             void PreOrderTraversal()
             {
-                _PreOrderTraversal(_ROOT);
+                interior_pre_order_traversal(_ROOT);
             }
             void MiddleOrderTraversal()
             {
@@ -3609,7 +3609,7 @@ namespace MyTemplate
                     ROOT_Temp = ROOT_Temp->_right;
                 }
             }
-            void _PreOrderTraversal(Node* ROOT_Temp )
+            void interior_pre_order_traversal(Node* ROOT_Temp )
             {
                 //前序遍历，最外左子树全部压栈
                 if(ROOT_Temp == nullptr)
@@ -4247,7 +4247,7 @@ namespace MyTemplate
             }
             void PreOrderTraversal()
             {
-                _PreOrderTraversal(_ROOT);
+                interior_pre_order_traversal(_ROOT);
             }
             iterator begin()
             {

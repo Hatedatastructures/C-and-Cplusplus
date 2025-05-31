@@ -245,160 +245,161 @@ int main()
     }
 
     /*            priority_queue测试             */
-    // {
-    //     std::cout << " priority_queue 测试 " << std::endl << std::endl;
-    //     template_container::queue_adapter::priority_queue<int> priority_queue_test;
-    //     int size = 10000000;
-    //     time_t num1 = clock();
-    //     for(int i = 0; i < size ; i++)
-    //     {
-    //         priority_queue_test.push(std::move(i));
-    //     }
-    //     time_t num2 = clock();
-    //     std::cout << priority_queue_test.size() << std::endl;
-    //     for(int i = 0; i < size; i++)
-    //     {
-    //         // std::cout << priority_queue_test.top() << " ";
-    //         priority_queue_test.pop();
-    //     }
-    //     std::cout << std::endl;
-    //     std::cout << "priority_queue 测试插入 " << size << " 个数时间： " << num2-num1 << std::endl;
-    // }
+    {
+        std::cout << " priority_queue 测试 " << std::endl << std::endl;
+        template_container::queue_adapter::priority_queue<int> priority_queue_test;
+        int size = 10000;
+        time_t num1 = clock();
+        for(int i = 0; i < size ; i++)
+        {
+            priority_queue_test.push(std::move(i));
+        }
+        time_t num2 = clock();
+        std::cout << priority_queue_test.size() << std::endl;
+        for(int i = 0; i < size; i++)
+        {
+            // std::cout << priority_queue_test.top() << " ";
+            priority_queue_test.pop();
+        }
+        std::cout << std::endl;
+        std::cout << "priority_queue 测试插入 " << size << " 个数时间： " << num2-num1 << "毫秒" << std::endl;
+    }
 
-    // /*            binary_search_tree 测试             */
-    // {
-    //     time_t Binary_search_tree_num1 = clock();
-    //     template_container::tree_container::binary_search_tree<int,template_container::imitation_functions::Greater<int>> Binary_search_tree_test;
-    //     for(size_t i = 100; i > 0; i--)
-    //     {
-    //         //相对来说这算是有序插入导致二叉树相乘时间复杂度为O(N)的链表
-    //         Binary_search_tree_test.push(i);
-    //     }
-    //     time_t Binary_search_tree_num2 = clock();
+    /*            binary_search_tree 测试             */
+    {
+        //栈拷贝1855行
+        time_t Binary_search_tree_num1 = clock();
+        template_container::tree_container::binary_search_tree<int,template_container::imitation_functions::Greater<int>> Binary_search_tree_test;
+        for(size_t i = 100; i > 0; i--)
+        {
+            //相对来说这算是有序插入导致二叉树相乘时间复杂度为O(N)的链表
+            Binary_search_tree_test.push(i);
+        }
+        time_t Binary_search_tree_num2 = clock();
 
-    //     time_t Binary_search_tree_num3 = clock();
-    //     std::cout << Binary_search_tree_test.find(58) << std::endl;
-    //     time_t Binary_search_tree_num4 = clock();
-    //     // Binary_search_tree_test.MiddleOrderTraversal();
-    //     std::cout << "退化链表插入时间" << Binary_search_tree_num2-Binary_search_tree_num1 << std::endl;
-    //     std::cout << "退化链表查找时间" << Binary_search_tree_num4-Binary_search_tree_num3 << std::endl;
-    //     std::cout << std::endl << std::endl;
-    // }
+        time_t Binary_search_tree_num3 = clock();
+        std::cout << Binary_search_tree_test.find(58) << std::endl;
+        time_t Binary_search_tree_num4 = clock();
+        // Binary_search_tree_test.MiddleOrderTraversal();
+        std::cout << "退化链表插入时间" << Binary_search_tree_num2-Binary_search_tree_num1 << std::endl;
+        std::cout << "退化链表查找时间" << Binary_search_tree_num4-Binary_search_tree_num3 << std::endl;
+        std::cout << std::endl << std::endl;
+    }
 
-    // {
-    //     template_container::tree_container::binary_search_tree<int, template_container::imitation_functions::Greater<int>> bst;
-    //     bst.push(5);
-    //     bst.push(4);
-    //     bst.push(3);
-    //     bst.push(2);
-    //     bst.push(1);
-    //     bst.MiddleOrderTraversal(); 
-    //     std::cout << std::endl << std::endl;
-    // }
+    {
+        template_container::tree_container::binary_search_tree<int, template_container::imitation_functions::Greater<int>> bst;
+        bst.push(5);
+        bst.push(4);
+        bst.push(3);
+        bst.push(2);
+        bst.push(1);
+        bst.MiddleOrderTraversal(); 
+        std::cout << std::endl << std::endl;
+    }
 
-    // {
-    //     const size_t Binary_search_tree_arraySize = 10;
-    //     template_container::vector_container::vector<int> Binary_search_tree_array(Binary_search_tree_arraySize);
-    //     for (size_t i = 0; i < Binary_search_tree_arraySize; ++i) 
-    //     {
-    //         Binary_search_tree_array[i] = i;
-    //     }
+    {
+        const size_t Binary_search_tree_arraySize = 10;
+        template_container::vector_container::vector<int> Binary_search_tree_array(Binary_search_tree_arraySize);
+        for (size_t i = 0; i < Binary_search_tree_arraySize; ++i) 
+        {
+            Binary_search_tree_array[i] = i;
+        }
 
-    //     // 创建随机数引擎和分布
-    //     std::random_device rd;
-    //     std::mt19937 g(rd());
-    //     std::shuffle(Binary_search_tree_array.begin(), Binary_search_tree_array.end(), g);
-    //     //输出打乱后的数组
-    //     // for(auto& i : Binary_search_tree_array)
-    //     // {
-    //     //     std::cout << i << " ";
-    //     // }
+        // 创建随机数引擎和分布
+        std::random_device rd;
+        std::mt19937 g(rd());
+        std::shuffle(Binary_search_tree_array.begin(), Binary_search_tree_array.end(), g);
+        //输出打乱后的数组
+        // for(auto& i : Binary_search_tree_array)
+        // {
+        //     std::cout << i << " ";
+        // }
 
-    //     //打乱数组元素顺序
-    //     size_t size = 0;
-    //     time_t Binary_search_tree_num1 = clock();
-    //     template_container::tree_container::binary_search_tree<int,template_container::imitation_functions::Greater<int>> Binary_search_tree_test;
-    //     for(const auto& Binary_search_tree_for_test: Binary_search_tree_array)
-    //     {
-    //         if(Binary_search_tree_test.push(Binary_search_tree_for_test))
-    //         {
-    //             size++;
-    //         }
-    //     }
-    //     time_t Binary_search_tree_num2 = clock();
+        //打乱数组元素顺序
+        size_t size = 0;
+        time_t Binary_search_tree_num1 = clock();
+        template_container::tree_container::binary_search_tree<int,template_container::imitation_functions::Greater<int>> Binary_search_tree_test;
+        for(const auto& Binary_search_tree_for_test: Binary_search_tree_array)
+        {
+            if(Binary_search_tree_test.push(Binary_search_tree_for_test))
+            {
+                size++;
+            }
+        }
+        time_t Binary_search_tree_num2 = clock();
 
-    //     const int Binary_search_tree_find = Binary_search_tree_array[Binary_search_tree_arraySize/2];
+        const int Binary_search_tree_find = Binary_search_tree_array[Binary_search_tree_arraySize/2];
 
-    //     time_t Binary_search_tree_num3 = clock();
-    //     Binary_search_tree_test.find(Binary_search_tree_find);
-    //     time_t Binary_search_tree_num4 = clock();
-    //     // Binary_search_tree_test.MiddleOrderTraversal();
-    //     std::cout << "插入个数" << size << std::endl;
-    //     std::cout << "插入时间" << Binary_search_tree_num2-Binary_search_tree_num1 << std::endl;
-    //     std::cout << "查找时间" << Binary_search_tree_num4-Binary_search_tree_num3 << std::endl;
-    //     /*              查找数据时间不稳定时间复杂度是O(logN)        */
-    //     std::cout << std::endl << std::endl;
-    // }
+        time_t Binary_search_tree_num3 = clock();
+        Binary_search_tree_test.find(Binary_search_tree_find);
+        time_t Binary_search_tree_num4 = clock();
+        // Binary_search_tree_test.MiddleOrderTraversal();
+        std::cout << "插入个数" << size << std::endl;
+        std::cout << "插入时间" << Binary_search_tree_num2-Binary_search_tree_num1 << std::endl;
+        std::cout << "查找时间" << Binary_search_tree_num4-Binary_search_tree_num3 << std::endl;
+        /*              查找数据时间不稳定时间复杂度是O(logN)        */
+        std::cout << std::endl << std::endl;
+    }
 
-    // {
-    //     const size_t Binary_search_tree_arraySize = 20;
-    //     template_container::vector_container::vector<int> Binary_search_tree_array(Binary_search_tree_arraySize);
-    //     for (size_t i = 0; i < Binary_search_tree_arraySize; ++i) 
-    //     {
-    //         Binary_search_tree_array[i] = i;
-    //     }
+    {
+        const size_t Binary_search_tree_arraySize = 20;
+        template_container::vector_container::vector<int> Binary_search_tree_array(Binary_search_tree_arraySize);
+        for (size_t i = 0; i < Binary_search_tree_arraySize; ++i) 
+        {
+            Binary_search_tree_array[i] = i;
+        }
 
-    //     // 创建随机数引擎和分布
-    //     std::random_device rd;
-    //     std::mt19937 g(rd());
-    //     std::shuffle(Binary_search_tree_array.begin(), Binary_search_tree_array.end(), g);
-    //     //输出打乱后的数组
-    //     // for(auto& i : Binary_search_tree_array)
-    //     // {
-    //     //     std::cout << i << " ";
-    //     // }
+        // 创建随机数引擎和分布
+        std::random_device rd;
+        std::mt19937 g(rd());
+        std::shuffle(Binary_search_tree_array.begin(), Binary_search_tree_array.end(), g);
+        //输出打乱后的数组
+        // for(auto& i : Binary_search_tree_array)
+        // {
+        //     std::cout << i << " ";
+        // }
 
-    //     //打乱数组元素顺序
-    //     size_t size = 0;
-    //     time_t Binary_search_tree_num1 = clock();
-    //     template_container::tree_container::binary_search_tree<int,template_container::imitation_functions::Greater<int>> Binary_search_tree_test;
-    //     for(const auto& Binary_search_tree_for_test: Binary_search_tree_array)
-    //     {
-    //         if(Binary_search_tree_test.push(Binary_search_tree_for_test))
-    //         {
-    //             size++;
-    //             std::cout << size << " ";
-    //         }
-    //     }
-    //     std::cout << std::endl;
-    //     time_t Binary_search_tree_num2 = clock();
-    //     template_container::tree_container::binary_search_tree<int,template_container::imitation_functions::Greater<int>> Binary_search_tree_test1 = Binary_search_tree_test;
-    //     time_t Binary_search_tree_num3 = clock();
-    //     std::cout << "拷贝构造没问题 " << std::endl;
+        //打乱数组元素顺序
+        size_t size = 0;
+        time_t Binary_search_tree_num1 = clock();
+        template_container::tree_container::binary_search_tree<int,template_container::imitation_functions::Greater<int>> Binary_search_tree_test;
+        for(const auto& Binary_search_tree_for_test: Binary_search_tree_array)
+        {
+            if(Binary_search_tree_test.push(Binary_search_tree_for_test))
+            {
+                size++;
+                std::cout << size << " ";
+            }
+        }
+        std::cout << std::endl;
+        time_t Binary_search_tree_num2 = clock();
+        template_container::tree_container::binary_search_tree<int,template_container::imitation_functions::Greater<int>> Binary_search_tree_test1 = Binary_search_tree_test;
+        time_t Binary_search_tree_num3 = clock();
+        std::cout << "拷贝构造没问题 " << std::endl;
 
-    //     Binary_search_tree_test.pop(Binary_search_tree_array[2]);
-    //     std::cout << "pop(1)函数没问题 " << std::endl;
-    //     Binary_search_tree_test.pop(Binary_search_tree_array[0]);
-    //     std::cout << "pop(2)函数没问题 " << std::endl;
-    //     Binary_search_tree_test.pop(Binary_search_tree_array[1]);
-    //     std::cout << "pop(3)函数没问题 " << std::endl;
-    //     Binary_search_tree_test.pop(Binary_search_tree_array[3]);
-    //     std::cout << "pop(4)函数没问题 " << std::endl;
+        Binary_search_tree_test.pop(Binary_search_tree_array[2]);
+        std::cout << "pop(1)函数没问题 " << std::endl;
+        Binary_search_tree_test.pop(Binary_search_tree_array[0]);
+        std::cout << "pop(2)函数没问题 " << std::endl;
+        Binary_search_tree_test.pop(Binary_search_tree_array[1]);
+        std::cout << "pop(3)函数没问题 " << std::endl;
+        Binary_search_tree_test.pop(Binary_search_tree_array[3]);
+        std::cout << "pop(4)函数没问题 " << std::endl;
 
 
-    //     Binary_search_tree_test.MiddleOrderTraversal();
-    //     std::cout << std::endl;
-    //     Binary_search_tree_test1.MiddleOrderTraversal();
+        Binary_search_tree_test.MiddleOrderTraversal();
+        std::cout << std::endl;
+        Binary_search_tree_test1.MiddleOrderTraversal();
 
-    //     std::cout << "前序遍历 "<< std::endl;
-    //     Binary_search_tree_test.PreOrderTraversal();
-    //     std::cout << std::endl;
-    //     Binary_search_tree_test1.PreOrderTraversal();
-    //     std::cout << std::endl;
-    //     std::cout << "插入个数" << size << std::endl;
-    //     std::cout << "插入时间" << Binary_search_tree_num2-Binary_search_tree_num1 << std::endl;
-    //     std::cout << "拷贝时间" << Binary_search_tree_num3-Binary_search_tree_num2 << std::endl;
-    // }
+        std::cout << "前序遍历 "<< std::endl;
+        Binary_search_tree_test.PreOrderTraversal();
+        std::cout << std::endl;
+        Binary_search_tree_test1.PreOrderTraversal();
+        std::cout << std::endl;
+        std::cout << "插入个数" << size << std::endl;
+        std::cout << "插入时间" << Binary_search_tree_num2-Binary_search_tree_num1 << std::endl;
+        std::cout << "拷贝时间" << Binary_search_tree_num3-Binary_search_tree_num2 << std::endl;
+    }
 
     // {
     //     template_container::string_container::string str1 = {'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'};
