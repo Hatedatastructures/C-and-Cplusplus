@@ -1719,7 +1719,7 @@ namespace template_container
                     throw;
                 }
             }
-            iterator erase(iterator iterator_position) noexcept
+            iterator erase(iterator iterator_position) 
             {
                 try
                 {
@@ -1744,7 +1744,6 @@ namespace template_container
             }
             void resize(size_t new_container_size, const list_type& list_type_data = list_type())
             {
-                //将data插入到链表中
                 size_t container_size = size();
                 if (new_container_size <= container_size)
                 {
@@ -1851,34 +1850,18 @@ namespace template_container
         private:
             container_stack cm_stack;
         public:
-            ~stack()
-            {
-                ;
-            }
-            void push(const stack_type& stack_type_data)
-            {
-                cm_stack.push_back(stack_type_data);                 //插入尾
-            }
-            void pop()
-            {
-                cm_stack.pop_back();                                 //删除尾
-            }
-            size_t size() noexcept
-            {
-                return cm_stack.size();
-            }
-            bool empty() noexcept
-            {
-                return cm_stack.empty();
-            } 
-            stack_type& top() noexcept
-            {
-                return cm_stack.back();
-            }
-            stack(const stack<stack_type>& stack_data)
-            {
-                cm_stack = stack_data.cm_stack;
-            }
+            ~stack()                                                {       ;       }
+
+            void push(const stack_type& stack_type_data)            {       cm_stack.push_back(stack_type_data);                 }
+
+            void pop()                                              {       cm_stack.pop_back();                                 }
+
+            size_t size() noexcept                                  {       return cm_stack.size();                              }
+
+            bool empty() noexcept                                   {       return cm_stack.empty();                             }
+
+            stack(const stack<stack_type>& stack_data)              {       cm_stack = stack_data.cm_stack;                      }
+
             stack( stack<stack_type>&& stack_data) noexcept
             {
                 cm_stack = std::move(stack_data.cm_stack); //std::move将对象转换为右值引用
@@ -1916,82 +1899,61 @@ namespace template_container
     /*############################     queue适配器     ############################*/
     namespace queue_a
     {
-        template <typename Queue_Type ,typename ContainerQueue = template_container::list_c::list<Queue_Type> >
+        template <typename queue_type ,typename container_queue = template_container::list_c::list<queue_type> >
         class queue
         {
             //注意队列适配器不会自动检测队列有没有元素，为学异常，注意空间元素
-            ContainerQueue ContainerQueueTemp;
+            container_queue cm_queue;
         public:
-            ~queue()
-            {
-                ;
-            }
-            void push(const Queue_Type& QueueTemp)
-            {
-                ContainerQueueTemp.push_back(QueueTemp);
-            }
-            void pop()
-            {
-                ContainerQueueTemp.pop_front();
-                //list返回的是指向下一个位置的正向迭代器
-                //vector返回的是整个容器
-            }
-            size_t size() noexcept
-            {
-                //返回元素个数
-                return ContainerQueueTemp.size();
-            }
-            bool empty() noexcept
-            {
-                //判断容器是否为空
-                return ContainerQueueTemp.empty();
-            }
-            Queue_Type& front() noexcept
-            {
-                //查看头数据
-                return ContainerQueueTemp.front();
-            }
-            Queue_Type& back() noexcept
-            {
-                //查看尾数据
-                return ContainerQueueTemp.back();
-            }
-            queue(const queue<Queue_Type>& QueueTemp)
-            {
-                //拷贝构造
-                ContainerQueueTemp = QueueTemp.ContainerQueueTemp;
-            }
-            queue(queue<Queue_Type>&& QueueTemp) noexcept
+            ~queue()                                        {    ;       }
+            
+            void push(queue_type&& queue_type_data)         {   cm_queue.push_back(std::forward<queue_type>(queue_type_data));    }
+
+            void push(const queue_type& queue_type_data)    {   cm_queue.push_back(queue_type_data);    }
+
+            void pop()                                      {   cm_queue.pop_front();                   }
+
+            size_t size() noexcept                          {   return cm_queue.size();                 }
+
+            bool empty() noexcept                           {   return cm_queue.empty();                }
+
+            queue_type& front() noexcept                    {   return cm_queue.front();                }
+
+            queue_type& back() noexcept                     {   return cm_queue.back();                 }
+
+            queue(const queue<queue_type>& queue_data)      {   cm_queue = queue_data.cm_queue;         }
+
+            queue(queue<queue_type>&& queue_type_data) noexcept
             {
                 //移动构造
-                ContainerQueueTemp = std::move(QueueTemp.ContainerQueueTemp);
+                cm_queue = std::forward<container_queue>(queue_type_data.cm_queue);
             }
-            queue(std::initializer_list<Queue_Type> QueueTemp)
+            queue(std::initializer_list<queue_type> queue_type_data)
             {
                 //链式构造
-                for(auto& chained_values:QueueTemp)
+                for(auto& chained_values:queue_type_data)
                 {
-                    ContainerQueueTemp.push_back(chained_values);
+                    cm_queue.push_back(std::move(chained_values));
                 }
             }
-            queue(const Queue_Type& QueueTemp)
+            queue(const queue_type& queue_type_data)
             {
-                ContainerQueueTemp.push_back(QueueTemp);
+                cm_queue.push_back(queue_type_data);
             }
             queue() = default;
-            queue& operator= (const queue<Queue_Type>& QueueTemp)
+            queue& operator= (const queue<queue_type>& queue_data)
             {
-                if(this != &QueueTemp)
+                if(this != &queue_data)
                 {
-                    ContainerQueueTemp = QueueTemp.ContainerQueueTemp;
+                    cm_queue = queue_data.cm_queue;
                 }
                 return *this;
             }
-            queue& operator=(queue<Queue_Type>&& QueueTemp) noexcept
+            queue& operator=(queue<queue_type>&& queue_data) noexcept
             {
-                if(this != &QueueTemp)
+                if(this != &queue_data)
                 {
-                    ContainerQueueTemp = std::move(QueueTemp.ContainerQueueTemp);
+                    cm_queue = std::forward<container_queue>(queue_data.cm_queue);
                 }
                 return *this;
             }

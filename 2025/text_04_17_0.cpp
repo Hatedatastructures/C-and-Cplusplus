@@ -1627,17 +1627,17 @@ namespace my_template
     /*############################     queue适配器     ############################*/
     namespace QueueAdapter
     {
-        template <typename Queue_Type ,typename ContainerQueue = my_template::ListContainer::list<Queue_Type> >
+        template <typename queue_type ,typename container_queue = my_template::ListContainer::list<queue_type> >
         class Queue
         {
             //注意队列适配器不会自动检测队列有没有元素，为学异常，注意空间元素
-            ContainerQueue ContainerQueueTemp;
+            container_queue ContainerQueueTemp;
         public:
             ~Queue()
             {
                 ;
             }
-            void push(const Queue_Type& _queue_temp)
+            void push(const queue_type& _queue_temp)
             {
                 ContainerQueueTemp.push_back(_queue_temp);
             }
@@ -1657,27 +1657,27 @@ namespace my_template
                 //判断容器是否为空
                 return ContainerQueueTemp.empty();
             }
-            Queue_Type& front()
+            queue_type& front()
             {
                 //查看头数据
                 return ContainerQueueTemp.front();
             }
-            Queue_Type& back()
+            queue_type& back()
             {
                 //查看尾数据
                 return ContainerQueueTemp.back();
             }
-            Queue(const Queue<Queue_Type>& _queue_temp)
+            Queue(const Queue<queue_type>& _queue_temp)
             {
                 //拷贝构造
                 ContainerQueueTemp = _queue_temp.ContainerQueueTemp;
             }
-            Queue(Queue<Queue_Type>&& _queue_temp)
+            Queue(Queue<queue_type>&& _queue_temp)
             {
                 //移动构造
                 ContainerQueueTemp = std::move(_queue_temp.ContainerQueueTemp);
             }
-            Queue(std::initializer_list<Queue_Type> _queue_temp)
+            Queue(std::initializer_list<queue_type> _queue_temp)
             {
                 //链式构造
                 for(auto& e:_queue_temp)
@@ -1685,12 +1685,12 @@ namespace my_template
                     ContainerQueueTemp.push_back(e);
                 }
             }
-            Queue(const Queue_Type& _queue_temp)
+            Queue(const queue_type& _queue_temp)
             {
                 ContainerQueueTemp.push_back(_queue_temp);
             }
             Queue() = default;
-            Queue& operator= (const Queue<Queue_Type>& _queue_temp)
+            Queue& operator= (const Queue<queue_type>& _queue_temp)
             {
                 if(this != &_queue_temp)
                 {
@@ -1698,7 +1698,7 @@ namespace my_template
                 }
                 return *this;
             }
-            Queue& operator=(Queue<Queue_Type>&& _queue_temp)
+            Queue& operator=(Queue<queue_type>&& _queue_temp)
             {
                 if(this != &_queue_temp)
                 {

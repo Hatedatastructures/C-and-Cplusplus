@@ -1625,82 +1625,82 @@ namespace template_container
     /*############################     queue适配器     ############################*/
     namespace queue_a
     {
-        template <typename Queue_Type ,typename ContainerQueue = template_container::list_c::list<Queue_Type> >
+        template <typename queue_type ,typename container_queue = template_container::list_c::list<queue_type> >
         class queue
         {
             //注意队列适配器不会自动检测队列有没有元素，为学异常，注意空间元素
-            ContainerQueue ContainerQueueTemp;
+            container_queue cm_queue;
         public:
             ~queue()
             {
                 ;
             }
-            void push(const Queue_Type& _queue_temp)
+            void push(const queue_type& _queue_temp)
             {
-                ContainerQueueTemp.push_back(_queue_temp);
+                cm_queue.push_back(_queue_temp);
             }
             void pop ()
             {
-                ContainerQueueTemp.pop_front();
+                cm_queue.pop_front();
                 //list返回的是指向下一个位置的正向迭代器
                 //vector返回的是整个容器
             }
             size_t size()
             {
                 //返回元素个数
-                return ContainerQueueTemp.size();
+                return cm_queue.size();
             }
             bool empty()
             {
                 //判断容器是否为空
-                return ContainerQueueTemp.empty();
+                return cm_queue.empty();
             }
-            Queue_Type& Front()
+            queue_type& Front()
             {
                 //查看头数据
-                return ContainerQueueTemp.Front();
+                return cm_queue.Front();
             }
-            Queue_Type& back()
+            queue_type& back()
             {
                 //查看尾数据
-                return ContainerQueueTemp.back();
+                return cm_queue.back();
             }
-            queue(const queue<Queue_Type>& _queue_temp)
+            queue(const queue<queue_type>& _queue_temp)
             {
                 //拷贝构造
-                ContainerQueueTemp = _queue_temp.ContainerQueueTemp;
+                cm_queue = _queue_temp.cm_queue;
             }
-            queue(queue<Queue_Type>&& _queue_temp)
+            queue(queue<queue_type>&& _queue_temp)
             {
                 //移动构造
-                ContainerQueueTemp = std::move(_queue_temp.ContainerQueueTemp);
+                cm_queue = std::move(_queue_temp.cm_queue);
             }
-            queue(std::initializer_list<Queue_Type> _queue_temp)
+            queue(std::initializer_list<queue_type> _queue_temp)
             {
                 //链式构造
                 for(auto& e:_queue_temp)
                 {
-                    ContainerQueueTemp.push_back(e);
+                    cm_queue.push_back(e);
                 }
             }
-            queue(const Queue_Type& _queue_temp)
+            queue(const queue_type& _queue_temp)
             {
-                ContainerQueueTemp.push_back(_queue_temp);
+                cm_queue.push_back(_queue_temp);
             }
             queue() = default;
-            queue& operator= (const queue<Queue_Type>& _queue_temp)
+            queue& operator= (const queue<queue_type>& _queue_temp)
             {
                 if(this != &_queue_temp)
                 {
-                    ContainerQueueTemp = _queue_temp.ContainerQueueTemp;
+                    cm_queue = _queue_temp.cm_queue;
                 }
                 return *this;
             }
-            queue& operator=(queue<Queue_Type>&& _queue_temp)
+            queue& operator=(queue<queue_type>&& _queue_temp)
             {
                 if(this != &_queue_temp)
                 {
-                    ContainerQueueTemp = std::move(_queue_temp.ContainerQueueTemp);
+                    cm_queue = std::move(_queue_temp.cm_queue);
                 }
                 return *this;
             }

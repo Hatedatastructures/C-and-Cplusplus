@@ -221,28 +221,28 @@ int main()
         staic_test1.pop();
     }
 
-    // /*            queue测试             */
-    // {
-    //     std::cout << " queue 测试 " << std::endl << std::endl;
-    //     template_container::string_c::string queue_test_str1 = "hello";
-    //     template_container::string_c::string queue_test_str2 = "word";
-    //     template_container::string_c::string queue_test_str3 = "  ";
-    //     template_container::queue_a::queue< template_container::string_c::string,template_container::list_c::list< template_container::string_c::string>> queue_test1;
+    /*            queue测试             */
+    {
+        std::cout << " queue 测试 " << std::endl << std::endl;
+        template_container::string_c::string queue_test_str1 = "hello";
+        template_container::string_c::string queue_test_str2 = "word";
+        template_container::string_c::string queue_test_str3 = "  ";
+        template_container::queue_a::queue< template_container::string_c::string,template_container::list_c::list< template_container::string_c::string>> queue_test1;
 
-    //     queue_test1.push(queue_test_str1);
-    //     queue_test1.push(queue_test_str3);
-    //     queue_test1.push(queue_test_str2);
+        queue_test1.push(queue_test_str1);
+        queue_test1.push(queue_test_str3);
+        queue_test1.push(queue_test_str2);
 
-    //     std::cout << queue_test1.front() << std::endl;
-    //     std::cout << queue_test1.back()  << std::endl;
+        std::cout << queue_test1.front() << std::endl;
+        std::cout << queue_test1.back()  << std::endl;
 
-    //     std::cout << queue_test1.front() << " ";
-    //     queue_test1.pop();
-    //     std::cout << queue_test1.front() << " ";
-    //     queue_test1.pop();
-    //     std::cout << queue_test1.front() << " ";
-    //     queue_test1.pop();
-    // }
+        std::cout << queue_test1.front() << " ";
+        queue_test1.pop();
+        std::cout << queue_test1.front() << " ";
+        queue_test1.pop();
+        std::cout << queue_test1.front() << " ";
+        queue_test1.pop();
+    }
 
     /*            priority_queue测试             */
     // {

@@ -1627,17 +1627,17 @@ namespace MyTemplate
     /*############################     queue适配器     ############################*/
     namespace QueueAdapter
     {
-        template <typename Queue_Type ,typename ContainerQueue = MyTemplate::list_c::List<Queue_Type> >
+        template <typename queue_type ,typename container_queue = MyTemplate::list_c::List<queue_type> >
         class Queue
         {
             //注意队列适配器不会自动检测队列有没有元素，为学异常，注意空间元素
-            ContainerQueue ContainerQueueTemp;
+            container_queue ContainerQueueTemp;
         public:
             ~Queue()
             {
                 ;
             }
-            void Push(const Queue_Type& QueueTemp)
+            void Push(const queue_type& QueueTemp)
             {
                 ContainerQueueTemp.PushBack(QueueTemp);
             }
@@ -1657,27 +1657,27 @@ namespace MyTemplate
                 //判断容器是否为空
                 return ContainerQueueTemp.Empty();
             }
-            Queue_Type& Front() noexcept
+            queue_type& Front() noexcept
             {
                 //查看头数据
                 return ContainerQueueTemp.Front();
             }
-            Queue_Type& Back() noexcept
+            queue_type& Back() noexcept
             {
                 //查看尾数据
                 return ContainerQueueTemp.Back();
             }
-            Queue(const Queue<Queue_Type>& QueueTemp)
+            Queue(const Queue<queue_type>& QueueTemp)
             {
                 //拷贝构造
                 ContainerQueueTemp = QueueTemp.ContainerQueueTemp;
             }
-            Queue(Queue<Queue_Type>&& QueueTemp) noexcept
+            Queue(Queue<queue_type>&& QueueTemp) noexcept
             {
                 //移动构造
                 ContainerQueueTemp = std::move(QueueTemp.ContainerQueueTemp);
             }
-            Queue(std::initializer_list<Queue_Type> QueueTemp)
+            Queue(std::initializer_list<queue_type> QueueTemp)
             {
                 //链式构造
                 for(auto& e:QueueTemp)
@@ -1685,12 +1685,12 @@ namespace MyTemplate
                     ContainerQueueTemp.PushBack(e);
                 }
             }
-            Queue(const Queue_Type& QueueTemp)
+            Queue(const queue_type& QueueTemp)
             {
                 ContainerQueueTemp.PushBack(QueueTemp);
             }
             Queue() = default;
-            Queue& operator= (const Queue<Queue_Type>& QueueTemp)
+            Queue& operator= (const Queue<queue_type>& QueueTemp)
             {
                 if(this != &QueueTemp)
                 {
@@ -1698,7 +1698,7 @@ namespace MyTemplate
                 }
                 return *this;
             }
-            Queue& operator=(Queue<Queue_Type>&& QueueTemp) noexcept
+            Queue& operator=(Queue<queue_type>&& QueueTemp) noexcept
             {
                 if(this != &QueueTemp)
                 {
