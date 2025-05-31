@@ -39,7 +39,7 @@ namespace MyTemplate
     {
         //仿函数命名空间
         template<typename imitation_functions_less>
-        class Less
+        class less
         {
         public:
             bool operator()(const imitation_functions_less& _test1 ,const imitation_functions_less& _test2) noexcept
@@ -1158,7 +1158,7 @@ namespace MyTemplate
     }
 
     /*############################     list容器     ############################*/
-    namespace list_c
+    namespace list_container
     {
         template <typename list_type>
         class List
@@ -1361,7 +1361,7 @@ namespace MyTemplate
                 _head = std::move(ListData._head);
                 ListData._head = nullptr;
             }
-            void Swap(MyTemplate::list_c::List<list_type>& SwapTemp)
+            void Swap(MyTemplate::list_container::List<list_type>& SwapTemp)
             {
                 MyTemplate::Algorithm::Swap(_head,SwapTemp._head);
             }
@@ -1554,11 +1554,11 @@ namespace MyTemplate
     /*############################     stack适配器     ############################*/
     namespace StackAdapter
     {
-        template <typename stack_type,typename container_stack = MyTemplate::VectorContainer::Vector<stack_type>>
+        template <typename stack_type,typename vector_based_stack = MyTemplate::VectorContainer::Vector<stack_type>>
         class Stack
         {
         private:
-            container_stack ContainerStackTemp;
+            vector_based_stack ContainerStackTemp;
         public:
             ~Stack()
             {
@@ -1627,11 +1627,11 @@ namespace MyTemplate
     /*############################     queue适配器     ############################*/
     namespace QueueAdapter
     {
-        template <typename queue_type ,typename container_queue = MyTemplate::list_c::List<queue_type> >
+        template <typename queue_type ,typename list_based_queue = MyTemplate::list_container::List<queue_type> >
         class Queue
         {
             //注意队列适配器不会自动检测队列有没有元素，为学异常，注意空间元素
-            container_queue ContainerQueueTemp;
+            list_based_queue ContainerQueueTemp;
         public:
             ~Queue()
             {
@@ -1708,13 +1708,13 @@ namespace MyTemplate
             }
         };
         /*############################     PriorityQueue 适配器     ############################*/
-        template <typename priority_queue_type,typename imitation_function_parameter = MyTemplate::ImitationFunctions::Less<priority_queue_type>,
-        typename container_priority_queue = MyTemplate::VectorContainer::Vector<priority_queue_type>>
+        template <typename priority_queue_type,typename container_imitate_function = MyTemplate::ImitationFunctions::less<priority_queue_type>,
+        typename vector_based_priority_queue = MyTemplate::VectorContainer::Vector<priority_queue_type>>
         class PriorityQueue
         {
             //创建容器对象
-            container_priority_queue ContainerPriorityQueueTemp;
-            imitation_function_parameter com;
+            vector_based_priority_queue ContainerPriorityQueueTemp;
+            container_imitate_function com;
             //仿函数对象
 
             void PriorityQueueAdjustUpwards(int AdjustUpwardsChild) noexcept
@@ -1842,9 +1842,9 @@ namespace MyTemplate
     }
     namespace tree_c
     {
-        /*############################     BSTree 容器     ############################*/
-        template <typename BSTreeType,typename CompareImitationFunctionsBS = MyTemplate::ImitationFunctions::Less <BSTreeType> >
-        class BSTree
+        /*############################     binary_search_tree 容器     ############################*/
+        template <typename binary_search_tree_type,typename container_imitate_function = MyTemplate::ImitationFunctions::less <binary_search_tree_type> >
+        class binary_search_tree
         {
         private:
             class BSTreeTypeNode
@@ -1853,8 +1853,8 @@ namespace MyTemplate
                 //节点类
                 BSTreeTypeNode* _left;
                 BSTreeTypeNode* _right;
-                BSTreeType _data;
-                BSTreeTypeNode(const BSTreeType& Data = BSTreeType())
+                binary_search_tree_type _data;
+                BSTreeTypeNode(const binary_search_tree_type& Data = binary_search_tree_type())
                 :_left(nullptr),_right(nullptr),_data(Data)
                 {
                     ;
@@ -1867,8 +1867,8 @@ namespace MyTemplate
             };
             using Node = BSTreeTypeNode;
             Node* _ROOT;
-            CompareImitationFunctionsBS com;
-            void _MiddleOrderTraversal(Node* ROOT_Temp)
+            container_imitate_function com;
+            void interior_middle_order_traversal(Node* ROOT_Temp)
             {
                 //中序遍历函数
                 MyTemplate::StackAdapter::Stack<Node*> StackTemp;
@@ -1892,7 +1892,7 @@ namespace MyTemplate
                     ROOT_Temp = ROOT_Temp->_right;
                 }
             }
-            size_t _MiddleOrderTraversal(Node* ROOT_Temp,size_t& SizeTemp )
+            size_t interior_middle_order_traversal(Node* ROOT_Temp,size_t& SizeTemp )
             {
                 MyTemplate::StackAdapter::Stack<Node*> StackTemp;
                 while(ROOT_Temp != nullptr || !StackTemp.Empty())
@@ -1969,30 +1969,30 @@ namespace MyTemplate
                 _ROOT = nullptr;
             }
         public:
-            ~BSTree()
+            ~binary_search_tree()
             {
                 Clear();
             }
             // 构造函数，使用初始化列表来初始化二叉搜索树
-            BSTree(std::initializer_list<BSTreeType> ListTemp)
+            binary_search_tree(std::initializer_list<binary_search_tree_type> ListTemp)
             {
                 for(auto& e:ListTemp)
                 {
                     Push(e);
                 }
             }
-            BSTree(const BSTreeType& BST_Temp = BSTreeType(),CompareImitationFunctionsBS com_temp = CompareImitationFunctionsBS())
+            binary_search_tree(const binary_search_tree_type& BST_Temp = binary_search_tree_type(),container_imitate_function com_temp = container_imitate_function())
             :_ROOT(nullptr),com(com_temp)
             {   
                 _ROOT = new Node(BST_Temp);
             }
-            BSTree(BSTree&& BinarySearchTreeTemp)
+            binary_search_tree(binary_search_tree&& BinarySearchTreeTemp)
             :com(BinarySearchTreeTemp.com),_ROOT(nullptr)
             {
                 _ROOT = std::move(BinarySearchTreeTemp._ROOT);
                 BinarySearchTreeTemp._ROOT = nullptr;
             }
-            BSTree(const BSTree& BinarySearchTreeTemp)
+            binary_search_tree(const binary_search_tree& BinarySearchTreeTemp)
             :_ROOT(nullptr),com(BinarySearchTreeTemp.com)
             //这个拷贝构造不需要传模板参数，因为模板参数是在编译时确定的，而不是在运行时确定的，对于仿函数，直接拿传进来的引用初始化就可以了
             {
@@ -2035,13 +2035,13 @@ namespace MyTemplate
             void MiddleOrderTraversal()
             {
                 //中序遍历函数
-                _MiddleOrderTraversal(_ROOT);
+                interior_middle_order_traversal(_ROOT);
             }
             void PreOrderTraversal()
             {
                 _PreOrderTraversal(_ROOT);
             }
-            bool Push(const BSTreeType& Data)
+            bool Push(const binary_search_tree_type& Data)
             {
                 //尾上插入函数
                 if(_ROOT == nullptr)
@@ -2084,7 +2084,7 @@ namespace MyTemplate
                     return true;
                 }
             }
-            BSTree& Pop(const BSTreeType& Data)
+            binary_search_tree& Pop(const binary_search_tree_type& Data)
             {
                 //删除节点
                 Node* ROOT_Temp = _ROOT;
@@ -2186,14 +2186,14 @@ namespace MyTemplate
             size_t size()
             {
                 size_t _size = 0;
-                return _MiddleOrderTraversal(_ROOT,_size);
+                return interior_middle_order_traversal(_ROOT,_size);
             }
             size_t size()const
             {
                 size_t _size = 0;
-                return _MiddleOrderTraversal(_ROOT,_size);
+                return interior_middle_order_traversal(_ROOT,_size);
             }
-            Node* Find(const BSTreeType& Data)
+            Node* Find(const binary_search_tree_type& Data)
             {
                 //查找函数
                 Node* _ROOT_Find = _ROOT;
@@ -2214,7 +2214,7 @@ namespace MyTemplate
                 }
                 return _ROOT_Find;
             }
-            void Insert(const BSTreeType& FormerData,const BSTreeType& LatterData)
+            void Insert(const binary_search_tree_type& FormerData,const binary_search_tree_type& LatterData)
             {
                 //在former_data后面插入latter_data
                 Node* ROOTFormerData = Find(FormerData);
@@ -2230,19 +2230,19 @@ namespace MyTemplate
                     ROOTFormerData->_right = _ROOT_latter_data;
                 }
             }
-            BSTree& operator=(const BSTree& BinarySearchTreeTemp)
+            binary_search_tree& operator=(const binary_search_tree& BinarySearchTreeTemp)
             {
                 //赋值运算符重载
                 if(this != &BinarySearchTreeTemp)
                 {
                     Clear();
                     com = BinarySearchTreeTemp.com;
-                    BSTree BinarySearchTreeTempCopy = BinarySearchTreeTemp;
+                    binary_search_tree BinarySearchTreeTempCopy = BinarySearchTreeTemp;
                     MyTemplate::Algorithm::Swap(BinarySearchTreeTempCopy._ROOT,_ROOT);
                 }
                 return *this;
             }
-            BSTree& operator=(BSTree && BinarySearchTreeTemp)
+            binary_search_tree& operator=(binary_search_tree && BinarySearchTreeTemp)
             {
                 //移动赋值运算符重载
                 if(this != &BinarySearchTreeTemp)
@@ -2257,7 +2257,7 @@ namespace MyTemplate
 
         };
         /*############################     AVLTree 容器     ############################*/
-        template <typename AVLTreeTypeK,typename AVLTreeTypeV,typename CompareImitationFunctionsAVL = MyTemplate::ImitationFunctions::Less <AVLTreeTypeK>,
+        template <typename AVLTreeTypeK,typename AVLTreeTypeV,typename CompareImitationFunctionsAVL = MyTemplate::ImitationFunctions::less <AVLTreeTypeK>,
         typename AVLSyntheticClass = MyTemplate::Practicality::Pair<AVLTreeTypeK,AVLTreeTypeV> >
         class AVLTree
         {
@@ -2648,7 +2648,7 @@ namespace MyTemplate
                     }
                 }
             }
-            void _MiddleOrderTraversal(Node* ROOT_Temp)
+            void interior_middle_order_traversal(Node* ROOT_Temp)
             {
                 //中序遍历函数
                 MyTemplate::StackAdapter::Stack<Node*> StackTemp;
@@ -2899,7 +2899,7 @@ namespace MyTemplate
             }
             void MiddleOrderTraversal()
             {
-                _MiddleOrderTraversal(_ROOT);
+                interior_middle_order_traversal(_ROOT);
             }
             bool Push(const AVLTreeTypeK& KeyTemp,const AVLTreeTypeV& ValTemp = AVLTreeTypeV())
             {
@@ -3287,7 +3287,7 @@ namespace MyTemplate
     {
         /*############################     RBTree 容器     ############################*/
         template <typename RBTreeTypeKey, typename RBTreeTypeVal, typename DataExtractionFunction,
-        typename CompareImitationFunctionsRB = MyTemplate::ImitationFunctions::Less<RBTreeTypeKey> >
+        typename CompareImitationFunctionsRB = MyTemplate::ImitationFunctions::less<RBTreeTypeKey> >
         class RBTree
         {
         private:
@@ -3591,7 +3591,7 @@ namespace MyTemplate
                     _ROOT = nullptr;
                 }
             }
-            void _MiddleOrderTraversal(Node* ROOT_Temp)
+            void interior_middle_order_traversal(Node* ROOT_Temp)
             {
                 //中序遍历函数
                 MyTemplate::StackAdapter::Stack<Node*> StackTemp;
@@ -4243,7 +4243,7 @@ namespace MyTemplate
             }
             void MiddleOrderTraversal()
             {
-                _MiddleOrderTraversal(_ROOT);
+                interior_middle_order_traversal(_ROOT);
             }
             void PreOrderTraversal()
             {

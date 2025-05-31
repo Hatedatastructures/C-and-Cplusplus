@@ -8,7 +8,7 @@ namespace template_container
     {
         //仿函数命名空间
         template<typename imitation_functions_less>
-        class Less
+        class less
         {
         public:
             bool operator()(const imitation_functions_less& _test1 ,const imitation_functions_less& _test2)
@@ -41,7 +41,7 @@ namespace template_container
             size_t operator()(const unsigned short data_unsigned_short)         {       return data_unsigned_short;     }
             
   
-            // size_t operator()(const MY_Template::string_c::string& data_string)
+            // size_t operator()(const MY_Template::string_container::string& data_string)
             // {
             //     size_t hash_value = 0;
             //     for(size_t i = 0; i < data_string._size; ++i)
@@ -194,7 +194,7 @@ namespace template_container
     }
 
     /*############################     string容器     ############################*/
-    namespace string_c
+    namespace string_container
     {
         class string
         {
@@ -819,7 +819,7 @@ namespace template_container
         std::ostream& operator<<(std::ostream& string_ostream,string &data_str) 
         {
             //当前没实现【】访问.可以用迭代器
-            for(template_container::string_c::string::const_iterator originate = data_str.begin();originate != data_str.end();originate++)
+            for(template_container::string_container::string::const_iterator originate = data_str.begin();originate != data_str.end();originate++)
             {
                 string_ostream << *originate;
             }
@@ -827,7 +827,7 @@ namespace template_container
         }
     }
     /*############################     vector容器     ############################*/
-    namespace vector_c
+    namespace vector_container
     {
         template <typename vector_type>
         class vector
@@ -1125,7 +1125,7 @@ namespace template_container
     }
 
     /*############################     list容器     ############################*/
-    namespace list_c
+    namespace list_container
     {
         template <typename list_type>
         class list
@@ -1327,7 +1327,7 @@ namespace template_container
                 _head = std::move(_list_data._head);
                 _list_data._head = nullptr;
             }
-            void swap(template_container::list_c::list<list_type>& _swap_temp)
+            void swap(template_container::list_container::list<list_type>& _swap_temp)
             {
                 template_container::algorithm::swap(_head,_swap_temp._head);
             }
@@ -1550,13 +1550,13 @@ namespace template_container
         }
     }
     /*############################     stack适配器     ############################*/
-    namespace stack_a
+    namespace stack_adapter
     {
-        template <typename stack_type,typename container_stack = template_container::vector_c::vector<stack_type>>
+        template <typename stack_type,typename vector_based_stack = template_container::vector_container::vector<stack_type>>
         class stack
         {
         private:
-            container_stack ContainerStackTemp;
+            vector_based_stack ContainerStackTemp;
         public:
             ~stack()
             {
@@ -1623,13 +1623,13 @@ namespace template_container
         };
     }
     /*############################     queue适配器     ############################*/
-    namespace queue_a
+    namespace queue_adapter
     {
-        template <typename queue_type ,typename container_queue = template_container::list_c::list<queue_type> >
+        template <typename queue_type ,typename list_based_queue = template_container::list_container::list<queue_type> >
         class queue
         {
             //注意队列适配器不会自动检测队列有没有元素，为学异常，注意空间元素
-            container_queue cm_queue;
+            list_based_queue list_object;
         public:
             ~queue()
             {
@@ -1637,62 +1637,62 @@ namespace template_container
             }
             void push(const queue_type& _queue_temp)
             {
-                cm_queue.push_back(_queue_temp);
+                list_object.push_back(_queue_temp);
             }
             void pop ()
             {
-                cm_queue.pop_front();
+                list_object.pop_front();
                 //list返回的是指向下一个位置的正向迭代器
                 //vector返回的是整个容器
             }
             size_t size()
             {
                 //返回元素个数
-                return cm_queue.size();
+                return list_object.size();
             }
             bool empty()
             {
                 //判断容器是否为空
-                return cm_queue.empty();
+                return list_object.empty();
             }
             queue_type& Front()
             {
                 //查看头数据
-                return cm_queue.Front();
+                return list_object.Front();
             }
             queue_type& back()
             {
                 //查看尾数据
-                return cm_queue.back();
+                return list_object.back();
             }
             queue(const queue<queue_type>& _queue_temp)
             {
                 //拷贝构造
-                cm_queue = _queue_temp.cm_queue;
+                list_object = _queue_temp.list_object;
             }
             queue(queue<queue_type>&& _queue_temp)
             {
                 //移动构造
-                cm_queue = std::move(_queue_temp.cm_queue);
+                list_object = std::move(_queue_temp.list_object);
             }
             queue(std::initializer_list<queue_type> _queue_temp)
             {
                 //链式构造
                 for(auto& e:_queue_temp)
                 {
-                    cm_queue.push_back(e);
+                    list_object.push_back(e);
                 }
             }
             queue(const queue_type& _queue_temp)
             {
-                cm_queue.push_back(_queue_temp);
+                list_object.push_back(_queue_temp);
             }
             queue() = default;
             queue& operator= (const queue<queue_type>& _queue_temp)
             {
                 if(this != &_queue_temp)
                 {
-                    cm_queue = _queue_temp.cm_queue;
+                    list_object = _queue_temp.list_object;
                 }
                 return *this;
             }
@@ -1700,20 +1700,20 @@ namespace template_container
             {
                 if(this != &_queue_temp)
                 {
-                    cm_queue = std::move(_queue_temp.cm_queue);
+                    list_object = std::move(_queue_temp.list_object);
                 }
                 return *this;
             }
         };
         /*############################     priority_queue 适配器     ############################*/
         template <typename priority_queue_type,
-        typename imitation_function_parameter = template_container::imitation_functions::Less<priority_queue_type>,
-        typename container_priority_queue = template_container::vector_c::vector<priority_queue_type>>
+        typename container_imitate_function = template_container::imitation_functions::less<priority_queue_type>,
+        typename vector_based_priority_queue = template_container::vector_container::vector<priority_queue_type>>
         class priority_queue
         {
             //创建容器对象
-            container_priority_queue cm_priority_queue;
-            imitation_function_parameter com;
+            vector_based_priority_queue vector_container_object;
+            container_imitate_function function_policy;
             //仿函数对象
 
             void PriorityQueueAdjustUpwards(int Adjust_upwards_child)
@@ -1722,9 +1722,9 @@ namespace template_container
                 int parent = (Adjust_upwards_child-1)/2;
                 while(Adjust_upwards_child > 0)
                 {
-                    if(com(cm_priority_queue[parent],cm_priority_queue[Adjust_upwards_child]))
+                    if(function_policy(vector_container_object[parent],vector_container_object[Adjust_upwards_child]))
                     {
-                        template_container::algorithm::swap(cm_priority_queue[parent],cm_priority_queue[Adjust_upwards_child]);
+                        template_container::algorithm::swap(vector_container_object[parent],vector_container_object[Adjust_upwards_child]);
                         Adjust_upwards_child = parent;
                         parent = (Adjust_upwards_child-1)/2;
                     }
@@ -1737,19 +1737,19 @@ namespace template_container
             void PriorityQueueAdjustDownwards(int parent = 0)
             {
                 int priority_queue_Adjust_downwards_child = (parent*2)+1;
-                while(priority_queue_Adjust_downwards_child < (int)cm_priority_queue.size())
+                while(priority_queue_Adjust_downwards_child < (int)vector_container_object.size())
                 {
                     int left = priority_queue_Adjust_downwards_child;
                     int right =left+1;
-                    if( right < (int)cm_priority_queue.size() && com(cm_priority_queue[left],cm_priority_queue[right]))
+                    if( right < (int)vector_container_object.size() && function_policy(vector_container_object[left],vector_container_object[right]))
                     {
                         //大堆找出左右节点哪个孩子大
                         priority_queue_Adjust_downwards_child = right;
                     }
-                    if(com(cm_priority_queue[parent],cm_priority_queue[priority_queue_Adjust_downwards_child]))
+                    if(function_policy(vector_container_object[parent],vector_container_object[priority_queue_Adjust_downwards_child]))
                     {
                         //建大堆把小的换下去，建小堆把大的换下去
-                        template_container::algorithm::swap( cm_priority_queue[parent] , cm_priority_queue[priority_queue_Adjust_downwards_child]);
+                        template_container::algorithm::swap( vector_container_object[parent] , vector_container_object[priority_queue_Adjust_downwards_child]);
 
                         //换完之后如果是大堆，则父亲节点是较大的值，需要更新孩子节点继续向下找比孩子节点大的值，如果有继续交换
                         parent = priority_queue_Adjust_downwards_child;
@@ -1765,25 +1765,25 @@ namespace template_container
             ~priority_queue()  = default;
             void push(const priority_queue_type& Function_templates_priority_queue_push_back)
             {
-                cm_priority_queue.push_back(Function_templates_priority_queue_push_back);
-                PriorityQueueAdjustUpwards((int)cm_priority_queue.size()-1);
+                vector_container_object.push_back(Function_templates_priority_queue_push_back);
+                PriorityQueueAdjustUpwards((int)vector_container_object.size()-1);
             }
             priority_queue_type& top()
             {
-                return cm_priority_queue.Front();
+                return vector_container_object.Front();
             }
             bool empty()
             {
-                return cm_priority_queue.empty();
+                return vector_container_object.empty();
             }
             size_t size()
             {
-                return cm_priority_queue.size();
+                return vector_container_object.size();
             }
             void pop()
             {
-                template_container::algorithm::swap(cm_priority_queue[0],cm_priority_queue[cm_priority_queue.size()-(size_t)1]);
-                cm_priority_queue.pop_back();
+                template_container::algorithm::swap(vector_container_object[0],vector_container_object[vector_container_object.size()-(size_t)1]);
+                vector_container_object.pop_back();
                 PriorityQueueAdjustDownwards();
             }
             priority_queue()
@@ -1801,26 +1801,26 @@ namespace template_container
             priority_queue(const priority_queue& _priority_queue_temp)
             {
                 //拷贝构造
-                cm_priority_queue = _priority_queue_temp.cm_priority_queue;
+                vector_container_object = _priority_queue_temp.vector_container_object;
             }
             priority_queue(priority_queue&& _priority_queue_temp)
-            :com(_priority_queue_temp.com)
+            :function_policy(_priority_queue_temp.function_policy)
             {
                 //移动构造
-                cm_priority_queue = std::move(_priority_queue_temp.cm_priority_queue);
+                vector_container_object = std::move(_priority_queue_temp.vector_container_object);
             }
             priority_queue(const priority_queue_type& _priority_queue_temp)
             {
-                cm_priority_queue.push_back(_priority_queue_temp);
-                PriorityQueueAdjustUpwards((int)cm_priority_queue.size()-1);
+                vector_container_object.push_back(_priority_queue_temp);
+                PriorityQueueAdjustUpwards((int)vector_container_object.size()-1);
             }
             priority_queue& operator=(priority_queue&& _priority_queue_temp)
             {
                 //移动赋值
                 if(this != &_priority_queue_temp)
                 {
-                    cm_priority_queue = std::move(_priority_queue_temp.cm_priority_queue);
-                    com = _priority_queue_temp.com;
+                    vector_container_object = std::move(_priority_queue_temp.vector_container_object);
+                    function_policy = _priority_queue_temp.function_policy;
                 }
                 return *this;
             }
@@ -1829,45 +1829,45 @@ namespace template_container
                 //拷贝赋值
                 if(this != &_priority_queue_temp)
                 {
-                    cm_priority_queue = _priority_queue_temp.cm_priority_queue;
-                    com = _priority_queue_temp.com;
+                    vector_container_object = _priority_queue_temp.vector_container_object;
+                    function_policy = _priority_queue_temp.function_policy;
                 }
                 return *this;
             }
         };
     }
-    namespace tree_c
+    namespace tree_container
     {
-        /*############################     BSTree 容器     ############################*/
-        template <typename BSTreeType,typename CompareImitationFunctionsBS = template_container::imitation_functions::Less <BSTreeType> >
-        class BSTree
+        /*############################     binary_search_tree 容器     ############################*/
+        template <typename binary_search_tree_type,typename container_imitate_function = template_container::imitation_functions::less <binary_search_tree_type> >
+        class binary_search_tree
         {
         private:
-            class BSTreeTypeNode
+            class binary_search_tree_type_node
             {
             public:
                 //节点类
-                BSTreeTypeNode* _left;
-                BSTreeTypeNode* _right;
-                BSTreeType _data;
-                BSTreeTypeNode(const BSTreeType& data = BSTreeType())
+                binary_search_tree_type_node* _left;
+                binary_search_tree_type_node* _right;
+                binary_search_tree_type _data;
+                binary_search_tree_type_node(const binary_search_tree_type& data = binary_search_tree_type())
                 :_left(nullptr),_right(nullptr),_data(data)
                 {
                     ;
                 }
-                ~BSTreeTypeNode()
+                ~binary_search_tree_type_node()
                 {
                     _left  = nullptr;
                     _right = nullptr;
                 }
             };
-            using container_node = BSTreeTypeNode;
+            using container_node = binary_search_tree_type_node;
             container_node* _ROOT;
-            CompareImitationFunctionsBS com;
-            void _MiddleOrderTraversal(container_node* _ROOT_Temp)
+            container_imitate_function function_policy;
+            void interior_middle_order_traversal(container_node* _ROOT_Temp)
             {
                 //中序遍历函数
-                template_container::stack_a::stack<container_node*> _staic_temp_;
+                template_container::stack_adapter::stack<container_node*> _staic_temp_;
                 while(_ROOT_Temp != nullptr || !_staic_temp_.empty())
                 {
                     while(_ROOT_Temp!= nullptr)
@@ -1888,9 +1888,9 @@ namespace template_container
                     _ROOT_Temp = _ROOT_Temp->_right;
                 }
             }
-            size_t _MiddleOrderTraversal(container_node* _ROOT_Temp,size_t& _size_temp_ )
+            size_t interior_middle_order_traversal(container_node* _ROOT_Temp,size_t& _size_temp_ )
             {
-                template_container::stack_a::stack<container_node*> _staic_temp_;
+                template_container::stack_adapter::stack<container_node*> _staic_temp_;
                 while(_ROOT_Temp != nullptr || !_staic_temp_.empty())
                 {
                     while(_ROOT_Temp!= nullptr)
@@ -1918,7 +1918,7 @@ namespace template_container
                     return;
                 }
                 container_node* _Pre_order_traversal_test = _ROOT_Temp;
-                template_container::stack_a::stack<container_node*> stack_Temp;
+                template_container::stack_adapter::stack<container_node*> stack_Temp;
                 stack_Temp.push(_Pre_order_traversal_test);
                 //不能添加|| _Pre_order_traversal_test != nullptr ，因为最后一层循环后_Pre_order_traversal_test还是为真后面循环无意义，反之还会破环性质
                 while( !stack_Temp.empty() )
@@ -1945,7 +1945,7 @@ namespace template_container
                     return;
                 }
                 //循环释放资源
-                template_container::stack_a::stack<container_node*> _staic_clear_temp_;
+                template_container::stack_adapter::stack<container_node*> _staic_clear_temp_;
                 _staic_clear_temp_.push(_ROOT);
                 while(_staic_clear_temp_.empty() == false)
                 {
@@ -1965,31 +1965,31 @@ namespace template_container
                 _ROOT = nullptr;
             }
         public:
-            ~BSTree()
+            ~binary_search_tree()
             {
                 Clear();
             }
             // 构造函数，使用初始化列表来初始化二叉搜索树
-            BSTree(std::initializer_list<BSTreeType> list_temp)
+            binary_search_tree(std::initializer_list<binary_search_tree_type> list_temp)
             {
                 for(auto& e:list_temp)
                 {
                     push(e);
                 }
             }
-            BSTree(const BSTreeType& BST_Temp = BSTreeType(),CompareImitationFunctionsBS com_temp = CompareImitationFunctionsBS())
-            :_ROOT(nullptr),com(com_temp)
+            binary_search_tree(const binary_search_tree_type& BST_Temp = binary_search_tree_type(),container_imitate_function com_temp = container_imitate_function())
+            :_ROOT(nullptr),function_policy(com_temp)
             {   
                 _ROOT = new container_node(BST_Temp);
             }
-            BSTree(BSTree&& _Binary_search_tree_temp)
-            :com(_Binary_search_tree_temp.com),_ROOT(nullptr)
+            binary_search_tree(binary_search_tree&& _Binary_search_tree_temp)
+            :function_policy(_Binary_search_tree_temp.function_policy),_ROOT(nullptr)
             {
                 _ROOT = std::move(_Binary_search_tree_temp._ROOT);
                 _Binary_search_tree_temp._ROOT = nullptr;
             }
-            BSTree(const BSTree& _Binary_search_tree_temp)
-            :_ROOT(nullptr),com(_Binary_search_tree_temp.com)
+            binary_search_tree(const binary_search_tree& _Binary_search_tree_temp)
+            :_ROOT(nullptr),function_policy(_Binary_search_tree_temp.function_policy)
             //这个拷贝构造不需要传模板参数，因为模板参数是在编译时确定的，而不是在运行时确定的，对于仿函数，直接拿传进来的引用初始化就可以了
             {
                 //拷贝构造，时间复杂度为O(n)
@@ -1998,7 +1998,7 @@ namespace template_container
                 {
                     return;
                 }
-                template_container::stack_a::stack<template_container::practicality::pair<container_node*,container_node**> > _staic_temp_;
+                template_container::stack_adapter::stack<template_container::practicality::pair<container_node*,container_node**> > _staic_temp_;
                 //注意这里把本地_ROOT类型传过去，是因为要对本地的_ROOT进行操作，所以要传二级指针
                 //这里传引用也不行，这里的对象是动态变化的，所以传引用也不行
                 //如果是对全局的_ROOT进行操作，就传一级指针
@@ -2031,13 +2031,13 @@ namespace template_container
             void MiddleOrderTraversal()
             {
                 //中序遍历函数
-                _MiddleOrderTraversal(_ROOT);
+                interior_middle_order_traversal(_ROOT);
             }
             void PreOrderTraversal()
             {
                 _PreOrderTraversal(_ROOT);
             }
-            bool push(const BSTreeType& data)
+            bool push(const binary_search_tree_type& data)
             {
                 //尾上插入函数
                 if(_ROOT == nullptr)
@@ -2052,12 +2052,12 @@ namespace template_container
                     while(_ROOT_Temp!= nullptr)
                     {
                         _ROOT_Temp_Parent = _ROOT_Temp;
-                        if(!com(data, _ROOT_Temp->_data) && !com(_ROOT_Temp->_data, data))
+                        if(!function_policy(data, _ROOT_Temp->_data) && !function_policy(_ROOT_Temp->_data, data))
                         {
                             //改用仿函数特性，判断是否有重复元素,防止自定义类型没有重载==运算符
                             return false;
                         }
-                        else if(com(data , _ROOT_Temp->_data))
+                        else if(function_policy(data , _ROOT_Temp->_data))
                         {
                             _ROOT_Temp = _ROOT_Temp->_left;
                         }
@@ -2069,7 +2069,7 @@ namespace template_container
                     //新开节点链接
                     container_node* _ROOT_Temp_Node = new container_node(data);
                     //链接节点
-                    if(com(data , _ROOT_Temp_Parent->_data))
+                    if(function_policy(data , _ROOT_Temp_Parent->_data))
                     {
                         _ROOT_Temp_Parent->_left = _ROOT_Temp_Node;
                     }
@@ -2080,7 +2080,7 @@ namespace template_container
                     return true;
                 }
             }
-            BSTree& Pop(const BSTreeType& data)
+            binary_search_tree& Pop(const binary_search_tree_type& data)
             {
                 //删除节点
                 container_node* _ROOT_Temp = _ROOT;
@@ -2166,7 +2166,7 @@ namespace template_container
                             return *this;
                         }
                     }
-                    else if(com(data, _ROOT_Temp->_data))
+                    else if(function_policy(data, _ROOT_Temp->_data))
                     {
                         _ROOT_Temp_Parent = _ROOT_Temp;
                         _ROOT_Temp = _ROOT_Temp->_left;
@@ -2182,14 +2182,14 @@ namespace template_container
             size_t size()
             {
                 size_t _size = 0;
-                return _MiddleOrderTraversal(_ROOT,_size);
+                return interior_middle_order_traversal(_ROOT,_size);
             }
             size_t size()const
             {
                 size_t _size = 0;
-                return _MiddleOrderTraversal(_ROOT,_size);
+                return interior_middle_order_traversal(_ROOT,_size);
             }
-            container_node* find(const BSTreeType& data)
+            container_node* find(const binary_search_tree_type& data)
             {
                 //查找函数
                 container_node* _ROOT_Find = _ROOT;
@@ -2199,7 +2199,7 @@ namespace template_container
                     {
                         return _ROOT_Find;
                     }
-                    else if(com(data, _ROOT_Find->_data))
+                    else if(function_policy(data, _ROOT_Find->_data))
                     {
                         _ROOT_Find = _ROOT_Find->_left;
                     }
@@ -2210,7 +2210,7 @@ namespace template_container
                 }
                 return _ROOT_Find;
             }
-            void insert(const BSTreeType& former_data,const BSTreeType& latter_data)
+            void insert(const binary_search_tree_type& former_data,const binary_search_tree_type& latter_data)
             {
                 //在former_data后面插入latter_data
                 container_node* _ROOT_former_data = find(former_data);
@@ -2226,25 +2226,25 @@ namespace template_container
                     _ROOT_former_data->_right = _ROOT_latter_data;
                 }
             }
-            BSTree& operator=(const BSTree& _Binary_search_tree_temp)
+            binary_search_tree& operator=(const binary_search_tree& _Binary_search_tree_temp)
             {
                 //赋值运算符重载
                 if(this != &_Binary_search_tree_temp)
                 {
                     Clear();
-                    com = _Binary_search_tree_temp.com;
-                    BSTree _Binary_search_tree_temp_copy = _Binary_search_tree_temp;
+                    function_policy = _Binary_search_tree_temp.function_policy;
+                    binary_search_tree _Binary_search_tree_temp_copy = _Binary_search_tree_temp;
                     template_container::algorithm::swap(_Binary_search_tree_temp_copy._ROOT,_ROOT);
                 }
                 return *this;
             }
-            BSTree& operator=(BSTree && _Binary_search_tree_temp)
+            binary_search_tree& operator=(binary_search_tree && _Binary_search_tree_temp)
             {
                 //移动赋值运算符重载
                 if(this != &_Binary_search_tree_temp)
                 {
                     Clear();
-                    com = _Binary_search_tree_temp.com;
+                    function_policy = _Binary_search_tree_temp.function_policy;
                     _ROOT = std::move(_Binary_search_tree_temp._ROOT);
                     _Binary_search_tree_temp._ROOT = nullptr;
                 }
@@ -2254,7 +2254,7 @@ namespace template_container
         };
         /*############################     AVLTree 容器     ############################*/
         template <typename AVLTreeTypeK,     typename AVLTreeTypeV,
-        typename CompareImitationFunctionsAVL = template_container::imitation_functions::Less < AVLTreeTypeK >,
+        typename CompareImitationFunctionsAVL = template_container::imitation_functions::less < AVLTreeTypeK >,
         typename AVLSyntheticClass = template_container::practicality::pair<AVLTreeTypeK,AVLTreeTypeV> >
         class AVLTree
         {
@@ -2421,7 +2421,7 @@ namespace template_container
             using container_node = AVLTreeTypeNode;
             container_node* _ROOT;
 
-            CompareImitationFunctionsAVL com;
+            CompareImitationFunctionsAVL function_policy;
             void LeftRevolve(container_node*& parent_temp_Node)
             {
                 //传进来的值是发现该树平衡性被破坏的节点地址
@@ -2595,7 +2595,7 @@ namespace template_container
                 }
                 else
                 {
-                    template_container::stack_a::stack<container_node*> _stack_temp;
+                    template_container::stack_adapter::stack<container_node*> _stack_temp;
                     //前序释放
                     _stack_temp.push(_ROOT);
                     while(!_stack_temp.empty())
@@ -2625,7 +2625,7 @@ namespace template_container
                     return;
                 }
                 container_node* _Pre_order_traversal_test = _ROOT_Temp;
-                template_container::stack_a::stack<container_node*> stack_Temp;
+                template_container::stack_adapter::stack<container_node*> stack_Temp;
                 stack_Temp.push(_Pre_order_traversal_test);
                 //不能添加|| _Pre_order_traversal_test != nullptr ，因为最后一层循环后_Pre_order_traversal_test还是为真后面循环无意义，反之还会破环性质
                 while( !stack_Temp.empty() )
@@ -2645,10 +2645,10 @@ namespace template_container
                     }
                 }
             }
-            void _MiddleOrderTraversal(container_node* _ROOT_Temp)
+            void interior_middle_order_traversal(container_node* _ROOT_Temp)
             {
                 //中序遍历函数
-                template_container::stack_a::stack<container_node*> _staic_temp_;
+                template_container::stack_adapter::stack<container_node*> _staic_temp_;
                 while(_ROOT_Temp != nullptr || !_staic_temp_.empty())
                 {
                     while(_ROOT_Temp!= nullptr)
@@ -2679,7 +2679,7 @@ namespace template_container
                 else
                 {
                     container_node* _Pre_order_traversal_test = _ROOT;
-                    template_container::stack_a::stack<container_node*> stack_Temp;
+                    template_container::stack_adapter::stack<container_node*> stack_Temp;
                     stack_Temp.push(_Pre_order_traversal_test);
                     while( !stack_Temp.empty() )
                     {
@@ -2769,18 +2769,18 @@ namespace template_container
             }
             AVLTree(const AVLTreeTypeK& Key_temp,const AVLTreeTypeV& val_temp = AVLTreeTypeV(),
             CompareImitationFunctionsAVL com_temp = CompareImitationFunctionsAVL())
-            :_ROOT(nullptr),com(com_temp)
+            :_ROOT(nullptr),function_policy(com_temp)
             {
                 _ROOT = new container_node(Key_temp,val_temp);
             }
             AVLTree(const AVLSyntheticClass& AVL_Tree_Pair_Temp,
             CompareImitationFunctionsAVL com_temp = CompareImitationFunctionsAVL())
-            :_ROOT(nullptr),com(com_temp)
+            :_ROOT(nullptr),function_policy(com_temp)
             {
                 _ROOT = new container_node(AVL_Tree_Pair_Temp.first,AVL_Tree_Pair_Temp.second);
             }
             AVLTree(const AVLTree& AVL_Tree_temp_)
-            : _ROOT(nullptr), com(AVL_Tree_temp_.com)
+            : _ROOT(nullptr), function_policy(AVL_Tree_temp_.function_policy)
             {
                 if (AVL_Tree_temp_._ROOT == nullptr)
                 {
@@ -2788,7 +2788,7 @@ namespace template_container
                 }
 
                 // 使用单栈，存储源节点和目标父节点（均为一级指针）
-                template_container::stack_a::stack<template_container::practicality::pair<container_node*, container_node*>> stack;
+                template_container::stack_adapter::stack<template_container::practicality::pair<container_node*, container_node*>> stack;
                 
                 // 创建根节点
                 _ROOT = new container_node(AVL_Tree_temp_._ROOT->_data);
@@ -2847,7 +2847,7 @@ namespace template_container
                 }
             }
             AVLTree(AVLTree&& _AVL_Tree_temp_)
-            : _ROOT(nullptr),com(_AVL_Tree_temp_.com)
+            : _ROOT(nullptr),function_policy(_AVL_Tree_temp_.function_policy)
             {
                 _ROOT = std::move(_AVL_Tree_temp_._ROOT);
                 _AVL_Tree_temp_._ROOT = nullptr;
@@ -2858,7 +2858,7 @@ namespace template_container
                 {
                     Clear();
                     _ROOT = std::move(_AVL_Tree_temp_._ROOT);
-                    com  = std::move(_AVL_Tree_temp_.com);
+                    function_policy  = std::move(_AVL_Tree_temp_.function_policy);
                     _AVL_Tree_temp_._ROOT = nullptr;
                 }
             }
@@ -2873,7 +2873,7 @@ namespace template_container
                 {
                     return *this;
                 }
-                template_container::algorithm::swap(com,AVL_Tree_temp_.com);
+                template_container::algorithm::swap(function_policy,AVL_Tree_temp_.function_policy);
                 template_container::algorithm::swap(_ROOT,AVL_Tree_temp_._ROOT);
                 return *this;
             }
@@ -2896,7 +2896,7 @@ namespace template_container
             }
             void MiddleOrderTraversal()
             {
-                _MiddleOrderTraversal(_ROOT);
+                interior_middle_order_traversal(_ROOT);
             }
             bool push(const AVLTreeTypeK& Key_temp,const AVLTreeTypeV& val_temp = AVLTreeTypeV())
             {
@@ -2913,11 +2913,11 @@ namespace template_container
                     while(_ROOT_temp)
                     {
                         _ROOT_temp_parent = _ROOT_temp;
-                        if(!com(Key_temp,_ROOT_temp->_data.first) && !com(_ROOT_temp->_data.first,Key_temp))
+                        if(!function_policy(Key_temp,_ROOT_temp->_data.first) && !function_policy(_ROOT_temp->_data.first,Key_temp))
                         {
                             return false;
                         }
-                        else if(com(Key_temp,_ROOT_temp->_data.first))
+                        else if(function_policy(Key_temp,_ROOT_temp->_data.first))
                         {
                             _ROOT_temp = _ROOT_temp->_left;
                         }
@@ -2927,7 +2927,7 @@ namespace template_container
                         }
                     }
                     _ROOT_temp = new container_node(Key_temp,val_temp);
-                    if(com(Key_temp,_ROOT_temp_parent->_data.first))
+                    if(function_policy(Key_temp,_ROOT_temp_parent->_data.first))
                     {
                         _ROOT_temp_parent->_left = _ROOT_temp;
                     }
@@ -3007,12 +3007,12 @@ namespace template_container
                     {
                         _ROOT_Temp_parent = _ROOT_Temp;
                         //找到first该在的节点
-                        if(!com(AVL_Tree_Pair_Temp.first,_ROOT_Temp->_data.first) && !com(_ROOT_Temp->_data.first,AVL_Tree_Pair_Temp.first))
+                        if(!function_policy(AVL_Tree_Pair_Temp.first,_ROOT_Temp->_data.first) && !function_policy(_ROOT_Temp->_data.first,AVL_Tree_Pair_Temp.first))
                         {
                             //不允许重复插入
                             return false;
                         } 
-                        else if(com(AVL_Tree_Pair_Temp.first,_ROOT_Temp->_data.first))
+                        else if(function_policy(AVL_Tree_Pair_Temp.first,_ROOT_Temp->_data.first))
                         {
                             _ROOT_Temp = _ROOT_Temp->_left;
                         }
@@ -3022,7 +3022,7 @@ namespace template_container
                         }
                     }
                     _ROOT_Temp = new container_node(AVL_Tree_Pair_Temp);
-                    if(com(AVL_Tree_Pair_Temp.first,_ROOT_Temp_parent->_data.first))
+                    if(function_policy(AVL_Tree_Pair_Temp.first,_ROOT_Temp_parent->_data.first))
                     {
                         _ROOT_Temp_parent->_left = _ROOT_Temp;
                         //三叉链表，注意父亲节点指向
@@ -3105,7 +3105,7 @@ namespace template_container
                     {
                         break;
                     }
-                    else if (com(_ROOT_Temp->_data,_data_temp))
+                    else if (function_policy(_ROOT_Temp->_data,_data_temp))
                     {
                         _ROOT_Temp = _ROOT_Temp->_right;
                     }
@@ -3126,12 +3126,12 @@ namespace template_container
                 container_node* _ROOT_Temp_parent = nullptr;
                 while(_ROOT_Temp != nullptr)
                 {
-                    if(!com(_data_Temp,_ROOT_Temp->_data.first) && !com(_ROOT_Temp->_data.first,_data_Temp))
+                    if(!function_policy(_data_Temp,_ROOT_Temp->_data.first) && !function_policy(_ROOT_Temp->_data.first,_data_Temp))
                     {
                         break;
                     }
                     _ROOT_Temp_parent = _ROOT_Temp;
-                    if (com(_ROOT_Temp->_data.first,_data_Temp))
+                    if (function_policy(_ROOT_Temp->_data.first,_data_Temp))
                     {
                         _ROOT_Temp = _ROOT_Temp->_right;
                     }
@@ -3284,7 +3284,7 @@ namespace template_container
     {
         /*############################     RBTree 容器     ############################*/
         template <typename RBTreeTypeKey, typename RBTreeTypeVal, typename DataExtractionFunction,
-        typename CompareImitationFunctionsRB = template_container::imitation_functions::Less<RBTreeTypeKey> >
+        typename CompareImitationFunctionsRB = template_container::imitation_functions::less<RBTreeTypeKey> >
         class RBTree
         {
         private:
@@ -3463,7 +3463,7 @@ namespace template_container
             using container_node = RBTreeNode;
             container_node* _ROOT;
             DataExtractionFunction Element;
-            CompareImitationFunctionsRB com;
+            CompareImitationFunctionsRB function_policy;
             void LeftRevolve(container_node* parent_temp_Node)
             {
                 //传进来的值是发现该树平衡性被破坏的节点地址
@@ -3565,7 +3565,7 @@ namespace template_container
                 }
                 else
                 {
-                    template_container::stack_a::stack<container_node*> _stack;
+                    template_container::stack_adapter::stack<container_node*> _stack;
                     _stack.push(_clear_Temp);
                     while ( !_stack.empty() )
                     {
@@ -3584,10 +3584,10 @@ namespace template_container
                     _ROOT = nullptr;
                 }
             }
-            void _MiddleOrderTraversal(container_node* _ROOT_Temp)
+            void interior_middle_order_traversal(container_node* _ROOT_Temp)
             {
                 //中序遍历函数
-                template_container::stack_a::stack<container_node*> _staic_temp_;
+                template_container::stack_adapter::stack<container_node*> _staic_temp_;
                 while(_ROOT_Temp != nullptr || !_staic_temp_.empty())
                 {
                     while(_ROOT_Temp!= nullptr)
@@ -3610,7 +3610,7 @@ namespace template_container
                     return;
                 }
                 container_node* _Pre_order_traversal_test = _ROOT_Temp;
-                template_container::stack_a::stack<container_node*> stack_Temp;
+                template_container::stack_adapter::stack<container_node*> stack_Temp;
                 stack_Temp.push(_Pre_order_traversal_test);
                 while( !stack_Temp.empty() )
                 {
@@ -3651,7 +3651,7 @@ namespace template_container
                     return size;
                 }
                 container_node* _Pre_order_traversal_test = _ROOT_Temp;
-                template_container::stack_a::stack<container_node*> stack_Temp;
+                template_container::stack_adapter::stack<container_node*> stack_Temp;
                 stack_Temp.push(_Pre_order_traversal_test);
                 while( !stack_Temp.empty() )
                 {
@@ -3688,13 +3688,13 @@ namespace template_container
                 _ROOT->_color = BLACK;
             }
             RBTree(RBTree&& RB_Tree_Temp)
-            :com(RB_Tree_Temp.com),Element(RB_Tree_Temp.Element)
+            :function_policy(RB_Tree_Temp.function_policy),Element(RB_Tree_Temp.Element)
             {
                 _ROOT = std::move(RB_Tree_Temp._ROOT);
                 RB_Tree_Temp._ROOT = nullptr;
             }
             RBTree(const RBTree& RB_Tree_Temp)
-            :com(RB_Tree_Temp.com),Element(RB_Tree_Temp.Element)
+            :function_policy(RB_Tree_Temp.function_policy),Element(RB_Tree_Temp.Element)
             {
                 if(_ROOT != nullptr)
                 {
@@ -3710,7 +3710,7 @@ namespace template_container
                     else
                     {
                         // 使用单栈，存储源节点和目标父节点（均为一级指针）
-                        template_container::stack_a::stack<template_container::practicality::pair<container_node*, container_node*>> stack;
+                        template_container::stack_adapter::stack<template_container::practicality::pair<container_node*, container_node*>> stack;
                         
                         // 创建根节点
                         _ROOT = new container_node(RB_Tree_Temp._ROOT->_data);
@@ -3781,7 +3781,7 @@ namespace template_container
                     Clear(_ROOT);
                     template_container::algorithm::swap(RB_Tree_Temp._ROOT,_ROOT);
                     template_container::algorithm::swap(RB_Tree_Temp.Element,Element);
-                    template_container::algorithm::swap(RB_Tree_Temp.com,com);
+                    template_container::algorithm::swap(RB_Tree_Temp.function_policy,function_policy);
                     return *this;
                 }
             }
@@ -3790,7 +3790,7 @@ namespace template_container
                 if(this != &RB_Tree_Temp)
                 {
                     Clear();
-                    com = std::move(RB_Tree_Temp.com);
+                    function_policy = std::move(RB_Tree_Temp.function_policy);
                     Element = std::move(RB_Tree_Temp.Element);
                     _ROOT = std::move(RB_Tree_Temp._ROOT);
                     RB_Tree_Temp._ROOT = nullptr;
@@ -3816,12 +3816,12 @@ namespace template_container
                     while(_ROOT_Temp != nullptr)
                     {
                         _ROOT_Temp_parent = _ROOT_Temp;
-                        if(!com(Element(_ROOT_Temp->_data),Element(Val_Temp_)) && !com(Element(Val_Temp_),Element(_ROOT_Temp->_data)))
+                        if(!function_policy(Element(_ROOT_Temp->_data),Element(Val_Temp_)) && !function_policy(Element(Val_Temp_),Element(_ROOT_Temp->_data)))
                         {
                             //插入失败，找到相同的值，开始返回
                             return insert_result(iterator(_ROOT_Temp),false);
                         }
-                        else if(com(Element(_ROOT_Temp->_data),Element(Val_Temp_)))
+                        else if(function_policy(Element(_ROOT_Temp->_data),Element(Val_Temp_)))
                         {
                             _ROOT_Temp = _ROOT_Temp->_right;
                         }
@@ -3832,7 +3832,7 @@ namespace template_container
                     }
                     //找到插入位置
                     _ROOT_Temp = new container_node(Val_Temp_);
-                    if(com(Element(_ROOT_Temp_parent->_data),Element(_ROOT_Temp->_data)))
+                    if(function_policy(Element(_ROOT_Temp_parent->_data),Element(_ROOT_Temp->_data)))
                     {
                         _ROOT_Temp_parent->_right = _ROOT_Temp;
                     }
@@ -4069,13 +4069,13 @@ namespace template_container
                     container_node* _Adjust_Node_parent = nullptr;
                     while(_ROOT_Temp != nullptr)
                     {
-                        if(!com(Element(_ROOT_Temp->_data),Element(RB_Tree_Temp)) && !com(Element(RB_Tree_Temp),Element(_ROOT_Temp->_data)))
+                        if(!function_policy(Element(_ROOT_Temp->_data),Element(RB_Tree_Temp)) && !function_policy(Element(RB_Tree_Temp),Element(_ROOT_Temp->_data)))
                         {
                             break;
                         }
                         //防止父亲自赋值
                         _ROOT_Temp_parent = _ROOT_Temp;
-                        if(com(Element(_ROOT_Temp->_data),Element(RB_Tree_Temp)))
+                        if(function_policy(Element(_ROOT_Temp->_data),Element(RB_Tree_Temp)))
                         {
                             _ROOT_Temp = _ROOT_Temp->_right;
                         }
@@ -4206,11 +4206,11 @@ namespace template_container
                     container_node* _iterator_ROOT = _ROOT;
                     while(_iterator_ROOT != nullptr)
                     {
-                       if(!com(Element(_iterator_ROOT->_data),Element(RB_Tree_Temp_)))
+                       if(!function_policy(Element(_iterator_ROOT->_data),Element(RB_Tree_Temp_)))
                        {
                            return iterator(_iterator_ROOT);
                        }
-                       else if(com(Element(_iterator_ROOT->_data),Element(RB_Tree_Temp_)))
+                       else if(function_policy(Element(_iterator_ROOT->_data),Element(RB_Tree_Temp_)))
                        {
                            _iterator_ROOT = _iterator_ROOT->_right;
                        }
@@ -4236,7 +4236,7 @@ namespace template_container
             }
             void MiddleOrderTraversal()
             {
-                _MiddleOrderTraversal(_ROOT);
+                interior_middle_order_traversal(_ROOT);
             }
             void Pre_order_traversal()
             {
@@ -4324,7 +4324,7 @@ namespace template_container
             size_t _size;                                               //哈希表大小
             size_t LoadFactor;                                         //负载因子   
             size_t Capacity;                                            //哈希表容量
-            template_container::vector_c::vector<container_node*> _HashTable;   //哈希表
+            template_container::vector_container::vector<container_node*> _HashTable;   //哈希表
             DataExtractionFunction DataExtractionFunction;           //哈希函数
             container_node* PreviousData = nullptr;                             //上一个数据
             container_node* HeadData = nullptr;                                 //插入头数据
@@ -4515,7 +4515,7 @@ namespace template_container
                     //扩容
                     size_t NewCapacity = (Capacity == 0 && _HashTable.size() == 0) ? 10 : Capacity * 2;
                     //新容量
-                    template_container::vector_c::vector<container_node*> _New_Hash_Table;
+                    template_container::vector_container::vector<container_node*> _New_Hash_Table;
                     _New_Hash_Table.resize(NewCapacity,nullptr);
                     size_t _New_size = 0;
                     //重新映射,按照插入链表顺序
@@ -4693,7 +4693,7 @@ namespace template_container
         /*############################     BitSet 容器     ############################*/
         class BitSet
         {
-            template_container::vector_c::vector<int> _BitSet;
+            template_container::vector_container::vector<int> _BitSet;
             size_t _size;
         public:
             BitSet() {  ;  }

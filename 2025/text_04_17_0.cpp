@@ -1554,11 +1554,11 @@ namespace my_template
     /*############################     stack适配器     ############################*/
     namespace StackAdapter
     {
-        template <typename stack_type,typename container_stack = my_template::vector_container::vector<stack_type>>
+        template <typename stack_type,typename vector_based_stack = my_template::vector_container::vector<stack_type>>
         class Stack
         {
         private:
-            container_stack ContainerStackTemp;
+            vector_based_stack ContainerStackTemp;
         public:
             ~Stack()
             {
@@ -1627,11 +1627,11 @@ namespace my_template
     /*############################     queue适配器     ############################*/
     namespace QueueAdapter
     {
-        template <typename queue_type ,typename container_queue = my_template::ListContainer::list<queue_type> >
+        template <typename queue_type ,typename list_based_queue = my_template::ListContainer::list<queue_type> >
         class Queue
         {
             //注意队列适配器不会自动检测队列有没有元素，为学异常，注意空间元素
-            container_queue ContainerQueueTemp;
+            list_based_queue ContainerQueueTemp;
         public:
             ~Queue()
             {
@@ -1709,13 +1709,13 @@ namespace my_template
         };
         /*############################     PriorityQueue 适配器     ############################*/
         template <typename priority_queue_type,
-        typename imitation_function_parameter = my_template::imitation_functions::Less<priority_queue_type>,
-        typename container_priority_queue = my_template::vector_container::vector<priority_queue_type>>
+        typename container_imitate_function = my_template::imitation_functions::Less<priority_queue_type>,
+        typename vector_based_priority_queue = my_template::vector_container::vector<priority_queue_type>>
         class PriorityQueue
         {
             //创建容器对象
-            container_priority_queue ContainerPriorityQueueTemp;
-            imitation_function_parameter com;
+            vector_based_priority_queue ContainerPriorityQueueTemp;
+            container_imitate_function com;
             //仿函数对象
 
             void PriorityQueueAdjustUpwards(int Adjust_upwards_child)
@@ -1841,7 +1841,7 @@ namespace my_template
     namespace TreeContainer
     {
         /*############################     BSTree 容器     ############################*/
-        template <typename BSTreeType,typename CompareImitationFunctionsBS = my_template::imitation_functions::Less <BSTreeType> >
+        template <typename binary_search_tree_type,typename container_imitate_function = my_template::imitation_functions::Less <binary_search_tree_type> >
         class BSTree
         {
         private:
@@ -1851,8 +1851,8 @@ namespace my_template
                 //节点类
                 BSTreeTypeNode* _left;
                 BSTreeTypeNode* _right;
-                BSTreeType _data;
-                BSTreeTypeNode(const BSTreeType& data = BSTreeType())
+                binary_search_tree_type _data;
+                BSTreeTypeNode(const binary_search_tree_type& data = binary_search_tree_type())
                 :_left(nullptr),_right(nullptr),_data(data)
                 {
                     ;
@@ -1865,7 +1865,7 @@ namespace my_template
             };
             using Node = BSTreeTypeNode;
             Node* _ROOT;
-            CompareImitationFunctionsBS com;
+            container_imitate_function com;
             void _MiddleOrderTraversal(Node* _ROOT_Temp)
             {
                 //中序遍历函数
@@ -1972,14 +1972,14 @@ namespace my_template
                 clear();
             }
             // 构造函数，使用初始化列表来初始化二叉搜索树
-            BSTree(std::initializer_list<BSTreeType> list_temp)
+            BSTree(std::initializer_list<binary_search_tree_type> list_temp)
             {
                 for(auto& e:list_temp)
                 {
                     push(e);
                 }
             }
-            BSTree(const BSTreeType& BST_Temp = BSTreeType(),CompareImitationFunctionsBS com_temp = CompareImitationFunctionsBS())
+            BSTree(const binary_search_tree_type& BST_Temp = binary_search_tree_type(),container_imitate_function com_temp = container_imitate_function())
             :_ROOT(nullptr),com(com_temp)
             {   
                 _ROOT = new Node(BST_Temp);
@@ -2039,7 +2039,7 @@ namespace my_template
             {
                 _PreOrderTraversal(_ROOT);
             }
-            bool push(const BSTreeType& data)
+            bool push(const binary_search_tree_type& data)
             {
                 //尾上插入函数
                 if(_ROOT == nullptr)
@@ -2082,7 +2082,7 @@ namespace my_template
                     return true;
                 }
             }
-            BSTree& Pop(const BSTreeType& data)
+            BSTree& Pop(const binary_search_tree_type& data)
             {
                 //删除节点
                 Node* _ROOT_Temp = _ROOT;
@@ -2191,7 +2191,7 @@ namespace my_template
                 size_t _size = 0;
                 return _MiddleOrderTraversal(_ROOT,_size);
             }
-            Node* Find(const BSTreeType& data)
+            Node* Find(const binary_search_tree_type& data)
             {
                 //查找函数
                 Node* _ROOT_Find = _ROOT;
@@ -2212,7 +2212,7 @@ namespace my_template
                 }
                 return _ROOT_Find;
             }
-            void insert(const BSTreeType& former_data,const BSTreeType& latter_data)
+            void insert(const binary_search_tree_type& former_data,const binary_search_tree_type& latter_data)
             {
                 //在former_data后面插入latter_data
                 Node* _ROOT_former_data = Find(former_data);
