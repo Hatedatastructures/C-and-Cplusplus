@@ -621,7 +621,7 @@ namespace template_container
                 catch(const custom_exception::customize_exception& process)
                 {
                     std::cerr << process.what() << " " << process.function_name_get() << " " << process.line_number_get() << std::endl;
-                    return *this; 
+                    throw;
                 }
             }
             string sub_string(const size_t& start_position)
@@ -637,7 +637,7 @@ namespace template_container
                 catch(const custom_exception::customize_exception& process)
                 {
                     std::cerr << process.what() << " " << process.function_name_get() << " " << process.line_number_get() << std::endl;
-                    return *this;                
+                    throw;                
                 }
                 string result;
                 size_t sub_len = _size - start_position;
@@ -660,7 +660,7 @@ namespace template_container
                 catch(const custom_exception::customize_exception& process)
                 {
                     std::cerr << process.what() << " " << process.function_name_get() << " " << process.line_number_get() << std::endl;
-                    return *this;
+                    throw;
                 }
                 string result;
                 size_t sub_len = _size - start_position;
@@ -683,7 +683,7 @@ namespace template_container
                 catch(const custom_exception::customize_exception& process)
                 {
                     std::cerr << process.what() << " " << process.function_name_get() << " " << process.line_number_get() << std::endl;
-                    return *this;
+                    throw;
                 }
                 string result;
                 size_t sub_len = terminate_position - start_position;
@@ -765,6 +765,7 @@ namespace template_container
                     catch(const std::bad_alloc& new_charptr_abnormal)
                     {
                         std::cerr << new_charptr_abnormal.what() << std::endl;
+                        throw;
                     }
                     for(string::iterator start_position = _data + _size; start_position != _data + inaugurate_size; start_position++)
                     {
@@ -789,7 +790,8 @@ namespace template_container
                 }
                 catch(const std::bad_alloc& new_charptr_abnormal)
                 {
-                    std::cerr << new_charptr_abnormal.what() << std::endl;;
+                    std::cerr << new_charptr_abnormal.what() << std::endl;
+                    throw;
                 }
                 return _data;
                 //返回首地址迭代器
@@ -813,7 +815,7 @@ namespace template_container
                 catch(const custom_exception::customize_exception& process)
                 {
                     std::cerr << process.what() << " " << process.function_name_get() << " " << process.line_number_get() << std::endl;
-                    return *this;
+                    throw;
                 }
                 string reversed_string;
                 for(string::const_reverse_iterator reverse = rbegin();reverse != rend();reverse--)
@@ -834,7 +836,7 @@ namespace template_container
                 catch(const custom_exception::customize_exception& process)
                 {
                     std::cerr << process.what() << " " << process.function_name_get() << " " << process.line_number_get() << std::endl;
-                    return *this;
+                    throw;
                 } 
                 string reversed_result;
                 for(string::const_reverse_iterator reverse = _data + terminate_position - 1;reverse != _data + start_position - 1;reverse--)
@@ -879,6 +881,7 @@ namespace template_container
                 catch(const std::bad_alloc& process)
                 {
                     std::cerr << process.what() << std::endl;
+                    throw;
                 }
                 return *this;
             }
@@ -897,6 +900,7 @@ namespace template_container
                 catch(const std::bad_alloc& process)
                 {
                     std::cerr << process.what() << std::endl;
+                    throw;
                 }
                 return *this;
             } 
@@ -976,7 +980,7 @@ namespace template_container
                 catch(const custom_exception::customize_exception& access_exception)
                 {
                     std::cerr << access_exception.what() << " " << access_exception.function_name_get() << " " << access_exception.line_number_get() << std::endl;
-                    return _data[0];
+                    throw;
                 }
                 //就像_data在外面就能访问它以及它的成员，所以这种就可以理解成出了函数作用域还在，进函数之前也能访问的就是引用
             }
@@ -996,7 +1000,7 @@ namespace template_container
                 catch(const custom_exception::customize_exception& access_exception)
                 {
                     std::cerr << access_exception.what() << " " << access_exception.function_name_get() << " " << access_exception.line_number_get() << std::endl;
-                    return _data[0];
+                    throw;
                 }
             }
             string operator+(const string& string_array)
@@ -1113,7 +1117,7 @@ namespace template_container
                 catch(const custom_exception::customize_exception& process)
                 {
                     std::cerr << process.what() << " " << process.function_name_get() << " " << process.line_number_get() << std::endl;
-                    return _data_pointer[0];
+                    throw;
                 }
             }
             vector<vector_type>& size_adjust(const size_t& data_size , const vector_type& padding_temp_data = vector_type())
@@ -1209,9 +1213,10 @@ namespace template_container
                 }
                 catch(const std::bad_alloc& process)
                 {
-                    std::cerr << process.what() << std::endl;
                     delete [] _data_pointer;
                     _data_pointer = _size_pointer = _capacity_pointer = nullptr;
+                    std::cerr << process.what() << std::endl;
+                    throw;
                 }
                 return *this;
             }
@@ -1292,7 +1297,7 @@ namespace template_container
                 catch(const custom_exception::customize_exception& process)
                 {
                     std::cerr << process.what() << " " << process.function_name_get() << " " << process.line_number_get() << std::endl;
-                    return _data_pointer[0];
+                    throw;
                 }
             }
             const vector_type& operator[](const size_t& access_location) const 
@@ -1312,7 +1317,7 @@ namespace template_container
                 catch(const custom_exception::customize_exception& process)
                 {
                     std::cerr << process.what() << " " << process.function_name_get() << " " << process.line_number_get() << std::endl;
-                    return _data_pointer[0];
+                    throw;
                 }
             }
             vector<vector_type>& operator=(const vector<vector_type>& vector_data)
@@ -1384,15 +1389,15 @@ namespace template_container
                 list_container_node<list_type_function_node>* _next;
                 list_type_function_node _data;
 
-                list_container_node(const list_type_function_node& list_type_data = list_type_function_node()) noexcept
+                list_container_node(const list_type_function_node& list_type_data = list_type_function_node()) 
                 :_prev(nullptr), _next(nullptr), _data(list_type_data)
                 {
                     //列表初始化
                 }
-                list_container_node(const list_type_function_node&& data) noexcept
+                list_container_node(const list_type_function_node&& data) 
                 :_prev(nullptr), _next(nullptr)
                 {
-                    _data = std::move(data);
+                    _data = data;
                 }
             };
             template <typename listNodeTypeIterator ,typename Ref ,typename Ptr >
@@ -1511,9 +1516,18 @@ namespace template_container
             //_head为哨兵位
             void create_head()
             {
-                _head = new container_node;
-                _head -> _prev = _head;
-                _head -> _next = _head;
+                try
+                {
+                    _head = new container_node;
+                    _head -> _prev = _head;
+                    _head -> _next = _head;
+                }
+                catch(const std::bad_alloc& process)
+                {
+                    _head = nullptr;
+                    std::cerr << process.what() << std::endl;
+                    throw;
+                }
             }
         public:
             using iterator = list_iterator<list_type,list_type& ,list_type*>;
@@ -1531,6 +1545,22 @@ namespace template_container
             }
             list(iterator first , iterator last)
             {
+                try
+                {
+                    if(first._node == nullptr || last._node == nullptr)
+                    {
+                        throw custom_exception::customize_exception("传入迭代器参数为空","list::list",__LINE__);
+                    }
+                    if(first == last)
+                    {
+                        throw custom_exception::customize_exception("传入迭代器参函数相同","list::list",__LINE__);
+                    }
+                }
+                catch(const custom_exception::customize_exception& process)
+                {
+                    std::cerr << process.what() << " " << process.function_name_get() << " " << process.line_number_get() << std::endl;
+                    throw;
+                }
                 create_head();       //通过另一个list对象构建一个list
                 //已经创建一个哨兵节点
                 while (first != last)
@@ -1594,12 +1624,12 @@ namespace template_container
 
             size_t size()const noexcept
             {
-                container_node* cur = _head->_next;
+                container_node* current_node = _head->_next;
                 size_t count = 0;
-                while (cur != _head)
+                while (current_node != _head)
                 {
                     count++;
-                    cur = cur->_next;
+                    current_node = current_node->_next;
                 }
                 return count;
             }
@@ -1633,79 +1663,123 @@ namespace template_container
 
             iterator pop_front()                               {       return erase(begin());  }
 
-            iterator insert(iterator Pos ,const list_type& Val)
+            iterator insert(iterator iterator_position ,const list_type& list_type_data)
             {
-                container_node* new_container_node = new container_node(Val);
-                //开辟新节点
-                container_node* PCur = Pos._node;
-                //保存pos位置的值
-                new_container_node->_prev = PCur->_prev;
-                new_container_node->_next = PCur;
-                new_container_node->_prev->_next = new_container_node;
-                PCur->_prev = new_container_node;
-                return iterator(new_container_node);
+                try 
+                {
+                    if(iterator_position._node == nullptr)
+                    {
+                        throw custom_exception::customize_exception("传入迭代器参数为空","list::insert",__LINE__);
+                    }
+                    container_node* new_container_node = new container_node(list_type_data);
+                    //开辟新节点
+                    container_node* iterator_current_node = iterator_position._node;
+                    //保存pos位置的值
+                    new_container_node->_prev = iterator_current_node->_prev;
+                    new_container_node->_next = iterator_current_node;
+                    new_container_node->_prev->_next = new_container_node;
+                    iterator_current_node->_prev = new_container_node;
+                    return iterator(new_container_node);
+                }
+                catch(const std::bad_alloc& process)
+                {
+                    std::cerr << process.what() << std::endl;
+                    throw;
+                }
+                catch(const custom_exception::customize_exception& process)
+                {
+                    std::cerr << process.what() << " " << process.function_name_get() << " " << process.line_number_get() << std::endl;
+                    throw;
+                }
             }
-            iterator insert(iterator Pos ,list_type&& Val)
+            iterator insert(iterator iterator_position ,list_type&& list_type_data)
             {
-                container_node* new_container_node = new container_node(std::forward<list_type>(Val));
-                container_node* PCur = Pos._node;
-                new_container_node->_prev = PCur->_prev;
-                new_container_node->_next = PCur;
-                new_container_node->_prev->_next = new_container_node;
-                PCur->_prev = new_container_node;
-                return iterator(new_container_node);
+                try 
+                {
+                    if(iterator_position._node == nullptr)
+                    {
+                        throw custom_exception::customize_exception("传入迭代器参数为空","list::insert移动语义版本",__LINE__);
+                    }
+                    container_node* new_container_node = new container_node(std::forward<list_type>(list_type_data));
+                    container_node* iterator_current_node = iterator_position._node;
+                    new_container_node->_prev = iterator_current_node->_prev;
+                    new_container_node->_next = iterator_current_node;
+                    new_container_node->_prev->_next = new_container_node;
+                    iterator_current_node->_prev = new_container_node;
+                    return iterator(new_container_node);
+                }
+                catch(const std::bad_alloc& process)
+                {
+                    std::cerr << process.what() << "插入时内存不足" << std::endl;
+                    throw;
+                }
+                catch(const custom_exception::customize_exception& process)
+                {
+                    std::cerr << process.what() << " " << process.function_name_get() << " " << process.line_number_get() << std::endl;
+                    throw;
+                }
             }
-            iterator erase(iterator Pos) noexcept
+            iterator erase(iterator iterator_position) noexcept
             {
-                // 找到待删除的节点
-                container_node* pDel = Pos._node;
-                container_node* pRet = pDel->_next;
+                try
+                {
+                    if(iterator_position._node == nullptr)
+                    {
+                        throw custom_exception::customize_exception("传入迭代器参数为空","list::erase",__LINE__);
+                    }
+                    container_node* iterator_delete_node = iterator_position._node;   // 找到待删除的节点
+                    container_node* next_element_node = iterator_delete_node->_next;  // 保存下一个节点的位置
 
-                // 将该节点从链表中拆下来并删除
-                pDel->_prev->_next = pDel->_next;
-                pDel->_next->_prev = pDel->_prev;
-                delete pDel;
+                    iterator_delete_node->_prev->_next = iterator_delete_node->_next; // 将该节点从链表中拆下来并删除
+                    iterator_delete_node->_next->_prev = iterator_delete_node->_prev;
+                    delete iterator_delete_node;
 
-                return iterator(pRet);
+                    return iterator(next_element_node); 
+                }
+                catch(const custom_exception::customize_exception& process)
+                {
+                    std::cerr << process.what() << " " << process.function_name_get() << " " << process.line_number_get() << std::endl;
+                    throw;
+                }
             }
-            void resize(size_t newsize, const list_type& list_type_data = list_type())
+            void resize(size_t new_container_size, const list_type& list_type_data = list_type())
             {
                 //将data插入到链表中
-                size_t OldSize = size();
-                if (newsize <= OldSize)
+                size_t container_size = size();
+                if (new_container_size <= container_size)
                 {
-                    // 有效元素个数减少到newsize
-                    while (newsize < OldSize)
+                    // 有效元素个数减少到new_container_size
+                    while (new_container_size < container_size)
                     {
                         pop_back();
-                        OldSize--;
+                        container_size--;
                     }
                 }
                 else
                 {
-                    while (OldSize < newsize)
+                    while (container_size < new_container_size)
                     {
                         push_back(list_type_data);
-                        OldSize++;
+                        container_size++;
                     }
                 }
             }
             void clear() noexcept
             {
                 //循环释放资源
-                container_node* cur = _head->_next;
+                container_node* current_node = _head->_next;
                 // 采用头删除
-                while (cur != _head)
+                while (current_node != _head)
                 {
-                    _head->_next = cur->_next;
-                    delete cur;
-                    cur = _head->_next;
+                    _head->_next = current_node->_next;
+                    delete current_node;
+                    current_node = _head->_next;
                 }
                 _head->_next = _head->_prev = _head;
             }
             list& operator=(list<list_type> list_data) noexcept
             {
-                //运算符重载
+                //拷贝赋值
                 if( this != &list_data)
                 {
                     swap(list_data);
@@ -1726,29 +1800,30 @@ namespace template_container
                 if( this != &list_data)
                 {
                     _head = std::move(list_data._head);
+                    list_data._head = nullptr;
                 }
                 return *this;
             }
             list operator+(const list<list_type>& list_data)
             {
                 list<list_type> return_list_object (cbegin(),cend());
-                const_iterator _begin = list_data.cbegin();
-                const_iterator _end   = list_data.cend();
-                while(_begin != _end)
+                const_iterator start_position_iterator = list_data.cbegin();
+                const_iterator end_position_iterator   = list_data.cend();
+                while(start_position_iterator != end_position_iterator)
                 {
-                    return_list_object.push_back(*_begin);
-                    ++_begin;
+                    return_list_object.push_back(*start_position_iterator);
+                    ++start_position_iterator;
                 }
                 return return_list_object;
             }
             list& operator+=(const list<list_type>& list_data)
             {
-                const_iterator _begin = list_data.cbegin();
-                const_iterator _end  = list_data.cend();
-                while(_begin != _end)
+                const_iterator start_position_iterator = list_data.cbegin();
+                const_iterator end_position_iterator  = list_data.cend();
+                while(start_position_iterator != end_position_iterator)
                 {
-                    push_back(*_begin);
-                    ++_begin;
+                    push_back(*start_position_iterator);
+                    ++start_position_iterator;
                 }
                 return *this;
             }
@@ -3851,17 +3926,17 @@ namespace template_container
                     }
                 }
             }
-            static inline RBTreeColor Get_color(container_node* cur)
+            static inline RBTreeColor Get_color(container_node* current_node)
             {
-                return cur == nullptr ? BLACK : cur->_color;
+                return current_node == nullptr ? BLACK : current_node->_color;
             }
-            static inline bool RED_Get(container_node* cur)
+            static inline bool RED_Get(container_node* current_node)
             {
-                return Get_color(cur) == RED;
+                return Get_color(current_node) == RED;
             }
-            static inline bool BLACK_Get(container_node* cur)
+            static inline bool BLACK_Get(container_node* current_node)
             {
-                return Get_color(cur) == BLACK;
+                return Get_color(current_node) == BLACK;
             }
             size_t _size() const 
             {
@@ -4161,20 +4236,20 @@ namespace template_container
                     对父节点进行旋转（左子树删除则右旋，右子树删除则左旋）。
                     结束调整。
             */
-            void DeleteAdjust(container_node* cur ,container_node* parent)
+            void DeleteAdjust(container_node* current_node ,container_node* parent)
             {
                 //cur为被删节点的替代节点
-                if(cur == nullptr && parent == nullptr)
+                if(current_node == nullptr && parent == nullptr)
                 {
                     return;
                 }
-                while(cur != _ROOT && (cur == nullptr || BLACK_Get(cur)))
+                while(current_node != _ROOT && (current_node == nullptr || BLACK_Get(current_node)))
                 {
-                    if(cur == _ROOT)
+                    if(current_node == _ROOT)
                     {
                         break;
                     }
-                    if(parent->_left == cur)
+                    if(parent->_left == current_node)
                     {
                         container_node* brother = parent->_right;
                         if(RED_Get(brother))
@@ -4192,11 +4267,11 @@ namespace template_container
                         {
                             //情况2：兄弟节点为黑，且兄弟节点两个子节点都为黑
                             brother->_color = RED;
-                            cur = parent;
-                            parent = cur->_parent;
-                            if(cur->_color == RED)
+                            current_node = parent;
+                            parent = current_node->_parent;
+                            if(current_node->_color == RED)
                             {
-                                cur->_color = BLACK;
+                                current_node->_color = BLACK;
                                 break;
                             }
                         }
@@ -4218,8 +4293,8 @@ namespace template_container
                             parent->_color = BLACK;
                             brother->_right->_color = BLACK;
                             LeftRevolve(parent);
-                            cur = _ROOT;
-                            parent = cur->_parent;
+                            current_node = _ROOT;
+                            parent = current_node->_parent;
                         }
                     }
                     else
@@ -4239,11 +4314,11 @@ namespace template_container
                         {
                             //情况2：兄弟节点为黑，且兄弟节点两个子节点都为黑
                             brother->_color = RED;
-                            cur = parent;
-                            parent = cur->_parent;
-                            if(cur->_color == RED)
+                            current_node = parent;
+                            parent = current_node->_parent;
+                            if(current_node->_color == RED)
                             {
-                                cur->_color = BLACK;
+                                current_node->_color = BLACK;
                                 break;
                             }
                         }
@@ -4265,14 +4340,14 @@ namespace template_container
                             parent->_color = BLACK;
                             brother->_left->_color = BLACK;
                             RightRevolve(parent);
-                            cur = _ROOT;
-                            parent = cur->_parent;
+                            current_node = _ROOT;
+                            parent = current_node->_parent;
                         }
                     }
                 }
-                if(cur != nullptr)
+                if(current_node != nullptr)
                 {
-                    cur->_color = BLACK;
+                    current_node->_color = BLACK;
                 }
             }
             insert_result pop(const RBTreeTypeVal& RBTreeTemp)
