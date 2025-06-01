@@ -280,7 +280,7 @@ int main()
         time_t Binary_search_tree_num3 = clock();
         std::cout << Binary_search_tree_test.find(58) << std::endl;
         time_t Binary_search_tree_num4 = clock();
-        // Binary_search_tree_test.MiddleOrderTraversal();
+        // Binary_search_tree_test.middle_order_traversal();
         std::cout << "退化链表插入时间" << Binary_search_tree_num2-Binary_search_tree_num1 << std::endl;
         std::cout << "退化链表查找时间" << Binary_search_tree_num4-Binary_search_tree_num3 << std::endl;
         std::cout << std::endl << std::endl;
@@ -293,7 +293,7 @@ int main()
         bst.push(3);
         bst.push(2);
         bst.push(1);
-        bst.MiddleOrderTraversal(); 
+        bst.middle_order_traversal(); 
         std::cout << std::endl << std::endl;
     }
 
@@ -333,7 +333,7 @@ int main()
         time_t Binary_search_tree_num3 = clock();
         Binary_search_tree_test.find(Binary_search_tree_find);
         time_t Binary_search_tree_num4 = clock();
-        // Binary_search_tree_test.MiddleOrderTraversal();
+        // Binary_search_tree_test.middle_order_traversal();
         std::cout << "插入个数" << size << std::endl;
         std::cout << "插入时间" << Binary_search_tree_num2-Binary_search_tree_num1 << std::endl;
         std::cout << "查找时间" << Binary_search_tree_num4-Binary_search_tree_num3 << std::endl;
@@ -387,49 +387,49 @@ int main()
         std::cout << "pop(4)函数没问题 " << std::endl;
 
 
-        Binary_search_tree_test.MiddleOrderTraversal();
+        Binary_search_tree_test.middle_order_traversal();
         std::cout << std::endl;
-        Binary_search_tree_test1.MiddleOrderTraversal();
+        Binary_search_tree_test1.middle_order_traversal();
 
         std::cout << "前序遍历 "<< std::endl;
-        Binary_search_tree_test.PreOrderTraversal();
+        Binary_search_tree_test.pre_order_traversal();
         std::cout << std::endl;
-        Binary_search_tree_test1.PreOrderTraversal();
+        Binary_search_tree_test1.pre_order_traversal();
         std::cout << std::endl;
         std::cout << "插入个数" << size << std::endl;
         std::cout << "插入时间" << Binary_search_tree_num2-Binary_search_tree_num1 << std::endl;
         std::cout << "拷贝时间" << Binary_search_tree_num3-Binary_search_tree_num2 << std::endl;
     }
 
-    // {
-    //     template_container::string_container::string str1 = {'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'};
-    //     std::cout << str1 << std::endl;
-    //     template_container::vector_container::vector< template_container::string_container::string> vector_str = 
-    //     {"西瓜","樱桃","苹果","西瓜","樱桃","苹果","樱桃","西瓜","樱桃","西瓜","樱桃","苹果","樱桃","苹果","樱桃"};
+    {
+        template_container::string_container::string str1 = {'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'};
+        std::cout << str1 << std::endl;
+        template_container::vector_container::vector< template_container::string_container::string> vector_str = 
+        {"西瓜","樱桃","苹果","西瓜","樱桃","苹果","樱桃","西瓜","樱桃","西瓜","樱桃","苹果","樱桃","苹果","樱桃"};
 
-    //     template_container::tree_container::binary_search_tree< template_container::string_container::string> BST_temp;
-    //     size_t _BST_size = vector_str.size();
-    //     for(size_t i = 0 ; i < _BST_size;i++)
-    //     {
-    //         if(BST_temp.push(vector_str[i]))
-    //         {
-    //             std::cout << "插入成功" << std::endl;
-    //         }
-    //         else
-    //         {
-    //             //当前未实现累加功能
-    //             std::cout << "插入失败" << std::endl;
-    //         }
-    //     }
-    //     BST_temp.MiddleOrderTraversal();
-    //     std::cout << BST_temp.size() << std::endl;
-    // }
-    // /*            pair类 测试             */
-    // {
-    //     const int i = 31; const int j = 28;
-    //     template_container::practicality::pair<int,int> pair_test =template_container::practicality::make_pair(i,j);
-    //     std::cout << pair_test << std::endl;
-    // }
+        template_container::tree_container::binary_search_tree< template_container::string_container::string> BST_temp;
+        size_t _BST_size = vector_str.size();
+        for(size_t i = 0 ; i < _BST_size;i++)
+        {
+            if(BST_temp.push(vector_str[i]))
+            {
+                std::cout << "插入成功" << std::endl;
+            }
+            else
+            {
+                //当前未实现累加功能
+                std::cout << "插入失败" << std::endl;
+            }
+        }
+        BST_temp.middle_order_traversal();
+        std::cout << BST_temp.size() << std::endl;
+    }
+    /*            pair类 测试             */
+    {
+        const int i = 31; const int j = 28;
+        template_container::practicality::pair<int,int> pair_test =template_container::practicality::make_pair(i,j);
+        std::cout << pair_test << std::endl;
+    }
     // /*            AVLTree 测试             */
     // {
     //     template_container::tree_container::AVLTree <template_container::practicality::pair<int,int>,int> AVL_Tree_test_pair(template_container::practicality::pair(9,0), 10);
@@ -448,10 +448,10 @@ int main()
     //         AVL_Tree_test_pair.push(i);
     //     }
     //     std::cout << "前序遍历 "<< std::endl;
-    //     AVL_Tree_test_pair.PreOrderTraversal();
+    //     AVL_Tree_test_pair.pre_order_traversal();
     //     std::cout << std::endl;
     //     std::cout << "中序遍历 "<< std::endl;
-    //     AVL_Tree_test_pair.MiddleOrderTraversal();
+    //     AVL_Tree_test_pair.middle_order_traversal();
     //     std::cout << std::endl;
     // }
     // {
@@ -464,17 +464,17 @@ int main()
     //         AVL_Tree_test_pair.push(i);
     //     }
     //     std::cout << "前序遍历 "<< std::endl;
-    //     AVL_Tree_test_pair.PreOrderTraversal();
+    //     AVL_Tree_test_pair.pre_order_traversal();
     //     std::cout << std::endl;
     //     std::cout << "中序遍历 "<< std::endl;
-    //     AVL_Tree_test_pair.MiddleOrderTraversal();
+    //     AVL_Tree_test_pair.middle_order_traversal();
     //     std::cout << std::endl; 
     //     template_container::tree_container::AVLTree<int,int>AVL_Tree_test_pair1(AVL_Tree_test_pair);
     //     std::cout << "前序遍历 "<< std::endl;
-    //     AVL_Tree_test_pair1.PreOrderTraversal();
+    //     AVL_Tree_test_pair1.pre_order_traversal();
     //     std::cout << std::endl;
     //     std::cout << "中序遍历 "<< std::endl;
-    //     AVL_Tree_test_pair1.MiddleOrderTraversal();
+    //     AVL_Tree_test_pair1.middle_order_traversal();
     //     std::cout << std::endl; 
 
     //     template_container::tree_container::binary_search_tree<char> BS_Tr;
@@ -483,10 +483,10 @@ int main()
     //     {
     //         BS_Tr.push(i);
     //     }
-    //     BS_Tr.MiddleOrderTraversal();
+    //     BS_Tr.middle_order_traversal();
     //     std::cout << std::endl;
     //     template_container::tree_container::binary_search_tree<char> BS_TREE(BS_Tr);
-    //     BS_TREE.MiddleOrderTraversal();
+    //     BS_TREE.middle_order_traversal();
     //     std::cout << std::endl;
     // }
     // {
@@ -527,13 +527,13 @@ int main()
     //         AVL_Tree_test_pair.push(i);
     //     }
     //     std::cout << "前序遍历 "<< std::endl;
-    //     AVL_Tree_test_pair.PreOrderTraversal();
+    //     AVL_Tree_test_pair.pre_order_traversal();
     //     std::cout << std::endl;
     //     std::cout << "开始删除 "<< std::endl;
     //     for(auto& i : AVL_Tree_array_pair)
     //     {
     //         AVL_Tree_test_pair.pop(i.first);
-    //         AVL_Tree_test_pair.PreOrderTraversal();
+    //         AVL_Tree_test_pair.pre_order_traversal();
     //         std::cout << std::endl;
     //     }
     //     std::cout << std::endl;
@@ -586,9 +586,9 @@ int main()
     //     {
     //         Map_Test.push(j);
     //         std::cout << "前序" << " ";
-    //         Map_Test.PreOrderTraversal();
+    //         Map_Test.pre_order_traversal();
     //         std::cout << "   " << "中序:"<< Map_Test.size() << " " << Map_Test.empty() << " ";
-    //         Map_Test.MiddleOrderTraversal();
+    //         Map_Test.middle_order_traversal();
     //         std::cout << std::endl;
     //     }
     //     std::cout << Map_Test.empty() << " ";
@@ -606,9 +606,9 @@ int main()
     //     {
     //         Map_Test.pop(j);
     //         // std::cout << "前序" << " ";
-    //         // Map_Test.PreOrderTraversal();
+    //         // Map_Test.pre_order_traversal();
     //         std::cout << "   " << "中序:"<< Map_Test.size() << " " << Map_Test.empty() << " ";
-    //         Map_Test.MiddleOrderTraversal();
+    //         Map_Test.middle_order_traversal();
     //         std::cout << std::endl;
     //     }
     // }
@@ -626,9 +626,9 @@ int main()
     //     {
     //         Set_test.push(j);
     //         std::cout << "前序" << " ";
-    //         Set_test.PreOrderTraversal();
+    //         Set_test.pre_order_traversal();
     //         std::cout << "   " << "中序" << " ";
-    //         Set_test.MiddleOrderTraversal();
+    //         Set_test.middle_order_traversal();
     //         std::cout << std::endl;
     //     }
     //     std::cout << "正向"<< std::endl;
@@ -716,14 +716,14 @@ int main()
     //     }
 
     //     std::cout << "移动前：" ;
-    //     AVL_Tree_test_pair.MiddleOrderTraversal();
+    //     AVL_Tree_test_pair.middle_order_traversal();
     //     template_container::tree_container::AVLTree<int,int> AVL_Tree_test = std::move(AVL_Tree_test_pair);
     //     std::cout << std::endl;
     //     std::cout << "移动构造：";
-    //     AVL_Tree_test.MiddleOrderTraversal();
+    //     AVL_Tree_test.middle_order_traversal();
     //     std::cout << std::endl;
     //     std::cout << "移动后：" ;
-    //     AVL_Tree_test_pair.MiddleOrderTraversal();
+    //     AVL_Tree_test_pair.middle_order_traversal();
     //     //移动构造就是窃取资源
     //     std::cout << std::endl;
     // }
@@ -739,14 +739,14 @@ int main()
     //     }
 
     //     std::cout << "拷贝前：" ;
-    //     AVL_Tree_test_pair.MiddleOrderTraversal();
+    //     AVL_Tree_test_pair.middle_order_traversal();
     //     template_container::tree_container::AVLTree<int,int> AVL_Tree_test = AVL_Tree_test_pair;
     //     std::cout << std::endl;
     //     std::cout << "移动构造：";
-    //     AVL_Tree_test.MiddleOrderTraversal();
+    //     AVL_Tree_test.middle_order_traversal();
     //     std::cout << std::endl;
     //     std::cout << "拷贝后：" ;
-    //     AVL_Tree_test_pair.MiddleOrderTraversal();
+    //     AVL_Tree_test_pair.middle_order_traversal();
     //     std::cout << std::endl;
     // }
     // {
@@ -813,6 +813,9 @@ int main()
         std::cout << "计算哈希值： " << hash.Hash_PJWHash(test_size)  << std::endl;
         std::cout << "计算哈希值： " << hash.Hash_DJBHash(test_size)  << std::endl;
         std::cout << "计算哈希值： " << hash.Hash_SDBMHash(test_size) << std::endl;
+        {
+            // collections::BloomFilter<size_t> BloomFilter_test(3000000000);
+        }
     }
     {
         system("pause");

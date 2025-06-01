@@ -2032,12 +2032,12 @@ namespace MyTemplate
                     }
                 }
             }
-            void MiddleOrderTraversal()
+            void middle_order_traversal()
             {
                 //中序遍历函数
                 interior_middle_order_traversal(_ROOT);
             }
-            void PreOrderTraversal()
+            void pre_order_traversal()
             {
                 interior_pre_order_traversal(_ROOT);
             }
@@ -2893,11 +2893,11 @@ namespace MyTemplate
             {
                 return _size();
             }
-            void PreOrderTraversal()
+            void pre_order_traversal()
             {
                 interior_pre_order_traversal(_ROOT);
             }
-            void MiddleOrderTraversal()
+            void middle_order_traversal()
             {
                 interior_middle_order_traversal(_ROOT);
             }
@@ -4241,11 +4241,11 @@ namespace MyTemplate
             {
                 return _ROOT == nullptr;
             }
-            void MiddleOrderTraversal()
+            void middle_order_traversal()
             {
                 interior_middle_order_traversal(_ROOT);
             }
-            void PreOrderTraversal()
+            void pre_order_traversal()
             {
                 interior_pre_order_traversal(_ROOT);
             }
@@ -4817,8 +4817,8 @@ namespace MyTemplate
             Map_iterator Push(const KeyValType& Map_Temp)           {  return ROOTMap.Push(Map_Temp);      }
             Map_iterator Pop(const KeyValType& Map_Temp)            {  return ROOTMap.Pop(Map_Temp);       }
             iterator Find(const KeyValType& Map_Temp)               {  return ROOTMap.Find(Map_Temp);     }
-            void MiddleOrderTraversal()                             {  ROOTMap.MiddleOrderTraversal();     }
-            void PreOrderTraversal()                                {  ROOTMap.PreOrderTraversal();        }
+            void middle_order_traversal()                             {  ROOTMap.middle_order_traversal();     }
+            void pre_order_traversal()                                {  ROOTMap.pre_order_traversal();        }
             size_t size() const                                     {  return ROOTMap.size();              }
             bool Empty()                                            {  return ROOTMap.Empty();             }
             iterator begin()                                        {  return ROOTMap.begin();             }
@@ -4924,8 +4924,8 @@ namespace MyTemplate
             Set_iterator Push(const KeyValType& SetTemp)        {  return ROOTSet.Push(SetTemp);          }
             Set_iterator Pop(const KeyValType& SetTemp)         {  return ROOTSet.Pop(SetTemp);           }
             iterator Find(const KeyValType& SetTemp)            {  return ROOTSet.Find(SetTemp);          }
-            void MiddleOrderTraversal()                         {  ROOTSet.MiddleOrderTraversal();        }    
-            void PreOrderTraversal()                            {  ROOTSet.PreOrderTraversal();           }  
+            void middle_order_traversal()                         {  ROOTSet.middle_order_traversal();        }    
+            void pre_order_traversal()                            {  ROOTSet.pre_order_traversal();           }  
             size_t size() const                                 {  return ROOTSet.size();                 }
             bool Empty()                                        {  return ROOTSet.Empty();                }  
             iterator begin()                                    {  return ROOTSet.begin();                }

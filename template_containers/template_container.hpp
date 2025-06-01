@@ -367,10 +367,10 @@ namespace template_container
                 second = K();
             } 
 
-            pair(const T& _First,const K& _Second) noexcept
+            pair(const T& _first,const K& _second) noexcept
             {
-                first  = _First;
-                second = _Second;
+                first  = _first;
+                second = _second;
             }
             pair(const pair& other) noexcept
             {
@@ -378,15 +378,15 @@ namespace template_container
                 second = other.second;
             }
 
-            pair(T&& _First,K&& _Second) noexcept
+            pair(T&& _first,K&& _second) noexcept
+            :first(std::forward<T>(_first)),second(std::forward<K>(_second))
             {
-                first  = std::move(_First);
-                second = std::move(_Second);
+                ;
             }
             pair(pair&& other) noexcept
+            :first(std::move(other.first)),second(std::move(other.second))
             {
-                first  = std::move(other.first);
-                second = std::move(other.second);
+                ;
             }
             pair& operator=(const pair& other) noexcept
             {
@@ -431,9 +431,9 @@ namespace template_container
         }
         /*                               类分隔                                   */
         template<typename make_pair_t,typename make_pair_k>
-        pair<make_pair_t,make_pair_k> make_pair (const make_pair_t& _First,const make_pair_k& _Second)
+        pair<make_pair_t,make_pair_k> make_pair (const make_pair_t& _first,const make_pair_k& _second)
         {
-            return pair<make_pair_t,make_pair_k>(_First,_Second);
+            return pair<make_pair_t,make_pair_k>(_first,_second);
         }
     }
 
@@ -2124,8 +2124,8 @@ namespace template_container
                 }
             };
             using container_node = binary_search_tree_type_node;
-            container_node* _root;
-            container_imitate_function function_policy;
+            container_node* _root;                       //根节点
+            container_imitate_function function_policy;  //仿函数对象
             void interior_middle_order_traversal(container_node* root_subtree_node)
             {
                 //内调中序遍历函数
@@ -2245,53 +2245,51 @@ namespace template_container
             //这个拷贝构造不需要传模板参数，因为模板参数是在编译时确定的，而不是在运行时确定的，对于仿函数，直接拿传进来的引用初始化就可以了
             {
                 //拷贝构造，时间复杂度为O(n)
-                container_node* BinarySearchTreeTempCopy = binary_search_tree_object._root;
-                if(BinarySearchTreeTempCopy == nullptr)
+                container_node* root_node_reference = binary_search_tree_object._root;
+                if(root_node_reference == nullptr)
                 {
-                    return;
+                    throw custom_exception::customize_exception("拷贝构造失败二叉搜索树为空","binary_search_tree",__LINE__);
                 }
                 template_container::stack_adapter::stack<template_container::practicality::pair<container_node*,container_node**> > interior_stack;
                 //注意这里把本地_root类型传过去，是因为要对本地的_root进行操作，所以要传二级指针
                 //这里传引用也不行，这里的对象是动态变化的，所以传引用也不行
                 //如果是对全局的_ROOT进行操作，就传一级指针
-                interior_stack.push(template_container::practicality::pair<container_node*,container_node**>(BinarySearchTreeTempCopy,&_root));
+                interior_stack.push(template_container::practicality::pair<container_node*,container_node**>(root_node_reference,&_root));
                 while( !interior_stack.empty() )
                 {
-                    auto StacKTempPair = interior_stack.top();
+                    auto pair_node = interior_stack.top();
                     interior_stack.pop();
-                    *(StacKTempPair.second) = new container_node(StacKTempPair.first->_data);
-                    // container_node* _staic_temp_pair_second = *(StacKTempPair.second);
-                    // if(StacKTempPair.first->_left!= nullptr)
+                    *(pair_node.second) = new container_node(pair_node.first->_data);
+                    // container_node* _staic_temp_pair_second = *(pair_node.second);
+                    // if(pair_node.first->_left!= nullptr)
                     // {   //远古版本
-                    //     interior_stack.push(MY_Template::practicality::pair<container_node*,container_node**>(StacKTempPair.first->_left,&_staic_temp_pair_second->_left));
+                    //     interior_stack.push(MY_Template::practicality::pair<container_node*,container_node**>(pair_node.first->_left,&_staic_temp_pair_second->_left));
                     // }
-                    // if(StacKTempPair.first->_right!= nullptr)
+                    // if(pair_node.first->_right!= nullptr)
                     // {
-                    //     interior_stack.push(MY_Template::practicality::pair<container_node*,container_node**>(StacKTempPair.first->_right,&_staic_temp_pair_second->_right));
+                    //     interior_stack.push(MY_Template::practicality::pair<container_node*,container_node**>(pair_node.first->_right,&_staic_temp_pair_second->_right));
                     // }
                     //移除临时变量，直接使用指针解引用
-                    if(StacKTempPair.first->_right!= nullptr)
+                    if(pair_node.first->_right!= nullptr)
                     {
-                        interior_stack.push(template_container::practicality::pair<container_node*,container_node**>(StacKTempPair.first->_right,&((*StacKTempPair.second)->_right)));
+                        interior_stack.push(template_container::practicality::pair<container_node*,container_node**>(pair_node.first->_right,&((*pair_node.second)->_right)));
                     }
-                    if(StacKTempPair.first->_left!= nullptr)
+                    if(pair_node.first->_left!= nullptr)
                     {
-                        interior_stack.push(template_container::practicality::pair<container_node*,container_node**>(StacKTempPair.first->_left,&((*StacKTempPair.second)->_left)));
+                        interior_stack.push(template_container::practicality::pair<container_node*,container_node**>(pair_node.first->_left,&((*pair_node.second)->_left)));
                     }
                 }
             }
-            void MiddleOrderTraversal()
+            void middle_order_traversal()
             {
-                //中序遍历函数
                 interior_middle_order_traversal(_root);
             }
-            void PreOrderTraversal()
+            void pre_order_traversal()
             {
                 interior_pre_order_traversal(_root);
             }
             bool push(const binary_search_tree_type& binary_search_tree_type_data)
             {
-                //尾上插入函数
                 if(_root == nullptr)
                 {
                     _root = new container_node(binary_search_tree_type_data);
@@ -2299,35 +2297,35 @@ namespace template_container
                 }
                 else
                 {
-                    container_node* ROOT_Temp = _root;
-                    container_node* _ROOT_Temp_Parent = nullptr;
-                    while(ROOT_Temp!= nullptr)
+                    container_node* root_node_reference = _root;
+                    container_node* parent_node = nullptr;
+                    while(root_node_reference!= nullptr)
                     {
-                        _ROOT_Temp_Parent = ROOT_Temp;
-                        if(!function_policy(binary_search_tree_type_data, ROOT_Temp->_data) && !function_policy(ROOT_Temp->_data, binary_search_tree_type_data))
+                        parent_node = root_node_reference;
+                        if(!function_policy(binary_search_tree_type_data, root_node_reference->_data) && !function_policy(root_node_reference->_data, binary_search_tree_type_data))
                         {
                             //改用仿函数特性，判断是否有重复元素,防止自定义类型没有重载==运算符
                             return false;
                         }
-                        else if(function_policy(binary_search_tree_type_data , ROOT_Temp->_data))
+                        else if(function_policy(binary_search_tree_type_data , root_node_reference->_data))
                         {
-                            ROOT_Temp = ROOT_Temp->_left;
+                            root_node_reference = root_node_reference->_left;
                         }
                         else
                         {
-                            ROOT_Temp = ROOT_Temp->_right;
+                            root_node_reference = root_node_reference->_right;
                         }
                     }
                     //新开节点链接
-                    container_node* _ROOT_Temp_Node = new container_node(binary_search_tree_type_data);
+                    container_node* new_element_node = new container_node(binary_search_tree_type_data);
                     //链接节点
-                    if(function_policy(binary_search_tree_type_data , _ROOT_Temp_Parent->_data))
+                    if(function_policy(binary_search_tree_type_data , parent_node->_data))
                     {
-                        _ROOT_Temp_Parent->_left = _ROOT_Temp_Node;
+                        parent_node->_left = new_element_node;
                     }
                     else
                     {
-                        _ROOT_Temp_Parent->_right = _ROOT_Temp_Node;
+                        parent_node->_right = new_element_node;
                     }
                     return true;
                 }
@@ -2335,98 +2333,98 @@ namespace template_container
             binary_search_tree& pop(const binary_search_tree_type& binary_search_tree_type_data)
             {
                 //删除节点
-                container_node* ROOT_Temp = _root;
-                container_node* _ROOT_Temp_Parent = nullptr;
-                while( ROOT_Temp != nullptr )
+                container_node* root_node_reference = _root;
+                container_node* parent_node = nullptr;
+                while( root_node_reference != nullptr )
                 {
-                    if(binary_search_tree_type_data == ROOT_Temp->_data)
+                    if(binary_search_tree_type_data == root_node_reference->_data)
                     {
                         //找到节点
-                        if(ROOT_Temp->_left == nullptr)
+                        if(root_node_reference->_left == nullptr)
                         {
                             //左子树为空,下面判断要删除的节点是父节点的左子树还是右子树，防止多删和误删
-                            if (_ROOT_Temp_Parent == nullptr)
+                            if (parent_node == nullptr)
                             {
                                 // 当前节点是根节点，直接更新 _root
-                                _root = ROOT_Temp->_right;
+                                _root = root_node_reference->_right;
                             }
                             else
                             {
-                                if(_ROOT_Temp_Parent->_left == ROOT_Temp)
+                                if(parent_node->_left == root_node_reference)
                                 {
                                     //根节点
-                                    _ROOT_Temp_Parent->_left = ROOT_Temp->_right;
+                                    parent_node->_left = root_node_reference->_right;
                                 }   
                                 else
                                 {
                                     //非根节点
-                                    _ROOT_Temp_Parent->_right = ROOT_Temp->_right;
+                                    parent_node->_right = root_node_reference->_right;
                                 }
                             }
-                            delete ROOT_Temp;
-                            ROOT_Temp = nullptr;
+                            delete root_node_reference;
+                            root_node_reference = nullptr;
                             return *this;
                         }
-                        else if(ROOT_Temp->_right == nullptr)
+                        else if(root_node_reference->_right == nullptr)
                         {
-                            if (_ROOT_Temp_Parent == nullptr)
+                            if (parent_node == nullptr)
                             {
                                 // 防止当前节点是根节点，无法解引用，直接更新 _root
-                                _root = ROOT_Temp->_left;
+                                _root = root_node_reference->_left;
                             }
                             else
                             {
-                                if(_ROOT_Temp_Parent->_left == ROOT_Temp)
+                                if(parent_node->_left == root_node_reference)
                                 {
-                                    _ROOT_Temp_Parent->_left = ROOT_Temp->_left;
+                                    parent_node->_left = root_node_reference->_left;
                                 }
                                 else
                                 {
-                                    _ROOT_Temp_Parent->_right = ROOT_Temp->_left;
+                                    parent_node->_right = root_node_reference->_left;
                                 }
                             }
-                            delete ROOT_Temp;
-                            ROOT_Temp = nullptr;
+                            delete root_node_reference;
+                            root_node_reference = nullptr;
                             return *this;	
                         }
                         else
                         {
                             //左右子树都不为空，找右子树的最左节点
-                            container_node* _ROOT_Temp_right_min = ROOT_Temp->_right;
-                            container_node* _ROOT_Temp_test_Parent = ROOT_Temp;
-                            while(_ROOT_Temp_right_min->_left != nullptr)
+                            container_node* right_subtree_least_node = root_node_reference->_right;
+                            container_node* subtree_parent_node = root_node_reference;
+                            while(right_subtree_least_node->_left != nullptr)
                             {
-                                _ROOT_Temp_test_Parent = _ROOT_Temp_right_min;
-                                _ROOT_Temp_right_min = _ROOT_Temp_right_min->_left;
+                                subtree_parent_node = right_subtree_least_node;
+                                right_subtree_least_node = right_subtree_least_node->_left;
                             }
                             //找到最左节点	
-                            template_container::algorithm::swap(ROOT_Temp->_data,_ROOT_Temp_right_min->_data);
+                            template_container::algorithm::swap(root_node_reference->_data,right_subtree_least_node->_data);
                             //因为右树最左节点已经被删，但是还需要把被删的上一节点的左子树指向被删节点的右子树，不管右子树有没有节点都要连接上
-                            if(_ROOT_Temp_test_Parent == ROOT_Temp)
+                            if(subtree_parent_node == root_node_reference)
                             {
                                 //说明右子树没有左子树最小节点就是右子树的第一个根，如同上面判断条件：要删除的根节点等于右子树最小节点的父亲节点
-                                _ROOT_Temp_test_Parent->_right = _ROOT_Temp_right_min->_right;
+                                subtree_parent_node->_right = right_subtree_least_node->_right;
                                 //这俩交换指针指向位置就行，上面已经完成值的替换
                             }
                             else
                             {
                                 //情况2：说明要删除的数据的右子树的最左节点如果有数据，就把数据连接到右子树的最左节点的父亲节点的左子树指向最左子树的右子树
-                                _ROOT_Temp_test_Parent->_left = _ROOT_Temp_right_min->_right;
+                                subtree_parent_node->_left = right_subtree_least_node->_right;
                             }
-                            delete _ROOT_Temp_right_min;
-                            _ROOT_Temp_right_min = nullptr;
+                            delete right_subtree_least_node;
+                            right_subtree_least_node = nullptr;
                             return *this;
                         }
                     }
-                    else if(function_policy(binary_search_tree_type_data, ROOT_Temp->_data))
+                    else if(function_policy(binary_search_tree_type_data, root_node_reference->_data))
                     {
-                        _ROOT_Temp_Parent = ROOT_Temp;
-                        ROOT_Temp = ROOT_Temp->_left;
+                        parent_node = root_node_reference;
+                        root_node_reference = root_node_reference->_left;
                     }
                     else
                     {
-                        _ROOT_Temp_Parent = ROOT_Temp;
-                        ROOT_Temp = ROOT_Temp->_right;
+                        parent_node = root_node_reference;
+                        root_node_reference = root_node_reference->_right;
                     }
                 }
                 return *this;
@@ -2438,44 +2436,44 @@ namespace template_container
             }
             size_t size()const
             {
-                size_t _size = 0;
-                return interior_middle_order_traversal(_root,_size);
+                size_t node_number_counter = 0;
+                return interior_middle_order_traversal(_root,node_number_counter);
             }
-            container_node* find(const binary_search_tree_type& binary_search_tree_type_data)
+            container_node* find(const binary_search_tree_type& find_node)
             {
                 //查找函数
-                container_node* _ROOT_Find = _root;
-                while(_ROOT_Find!= nullptr)
+                container_node* root_node_reference = _root;
+                while(root_node_reference != nullptr)
                 {
-                    if(binary_search_tree_type_data == _ROOT_Find->_data)
+                    if(find_node == root_node_reference->_data)
                     {
-                        return _ROOT_Find;
+                        return root_node_reference;
                     }
-                    else if(function_policy(binary_search_tree_type_data, _ROOT_Find->_data))
+                    else if(function_policy(find_node, root_node_reference->_data))
                     {
-                        _ROOT_Find = _ROOT_Find->_left;
+                        root_node_reference = root_node_reference->_left;
                     }
                     else
                     {
-                        _ROOT_Find = _ROOT_Find->_right;
+                        root_node_reference = root_node_reference->_right;
                     }
                 }
-                return _ROOT_Find;
+                return nullptr;
             }
-            void insert(const binary_search_tree_type& FormerData,const binary_search_tree_type& LatterData)
+            void insert(const binary_search_tree_type& existing_value,const binary_search_tree_type& new_value)
             {
-                //在former_data后面插入latter_data
-                container_node* ROOTFormerData = find(FormerData);
+                //在existing_value后面插入new_value
+                container_node* existing_value_node = find(existing_value);
                 //插入节点
-                if(ROOTFormerData == nullptr)
+                if(existing_value_node == nullptr)
                 {
-                    return;
+                    throw custom_exception::customize_exception("传入值未找到！","insert::find",__FILE__);
                 }
                 else
                 {
-                    container_node* _ROOT_latter_data = new container_node(LatterData);
-                    _ROOT_latter_data->_left = ROOTFormerData->_right;
-                    ROOTFormerData->_right = _ROOT_latter_data;
+                    container_node* new_value_node = new container_node(new_value);
+                    new_value_node->_left = existing_value_node->_right;
+                    existing_value_node->_right = new_value_node;
                 }
             }
             binary_search_tree& operator=(const binary_search_tree& binary_search_tree_object)
@@ -2485,8 +2483,8 @@ namespace template_container
                 {
                     clear();
                     function_policy = binary_search_tree_object.function_policy;
-                    binary_search_tree BinarySearchTreeTempCopy = binary_search_tree_object;
-                    template_container::algorithm::swap(BinarySearchTreeTempCopy._root,_root);
+                    binary_search_tree root_node_reference = binary_search_tree_object;
+                    template_container::algorithm::swap(root_node_reference._root,_root);
                 }
                 return *this;
             }
@@ -3141,11 +3139,11 @@ namespace template_container
             {
                 return _size();
             }
-            void PreOrderTraversal()
+            void pre_order_traversal()
             {
                 interior_pre_order_traversal(_root);
             }
-            void MiddleOrderTraversal()
+            void middle_order_traversal()
             {
                 interior_middle_order_traversal(_root);
             }
@@ -4489,11 +4487,11 @@ namespace template_container
             {
                 return _root == nullptr;
             }
-            void MiddleOrderTraversal()
+            void middle_order_traversal()
             {
                 interior_middle_order_traversal(_root);
             }
-            void PreOrderTraversal()
+            void pre_order_traversal()
             {
                 interior_pre_order_traversal(_root);
             }
@@ -5065,8 +5063,8 @@ namespace template_container
             Map_iterator push(const KeyValType& tree_map_temp)           {  return ROOTMap.push(tree_map_temp);      }
             Map_iterator pop(const KeyValType& tree_map_temp)            {  return ROOTMap.pop(tree_map_temp);       }
             iterator find(const KeyValType& tree_map_temp)               {  return ROOTMap.find(tree_map_temp);     }
-            void MiddleOrderTraversal()                             {  ROOTMap.MiddleOrderTraversal();     }
-            void PreOrderTraversal()                                {  ROOTMap.PreOrderTraversal();        }
+            void middle_order_traversal()                             {  ROOTMap.middle_order_traversal();     }
+            void pre_order_traversal()                                {  ROOTMap.pre_order_traversal();        }
             size_t size() const                                     {  return ROOTMap.size();              }
             bool empty()                                            {  return ROOTMap.empty();             }
             iterator begin()                                        {  return ROOTMap.begin();             }
@@ -5172,8 +5170,8 @@ namespace template_container
             Set_iterator push(const KeyValType& SetTemp)        {  return ROOTSet.push(SetTemp);          }
             Set_iterator pop(const KeyValType& SetTemp)         {  return ROOTSet.pop(SetTemp);           }
             iterator find(const KeyValType& SetTemp)            {  return ROOTSet.find(SetTemp);          }
-            void MiddleOrderTraversal()                         {  ROOTSet.MiddleOrderTraversal();        }    
-            void PreOrderTraversal()                            {  ROOTSet.PreOrderTraversal();           }  
+            void middle_order_traversal()                       {  ROOTSet.middle_order_traversal();      }    
+            void pre_order_traversal()                          {  ROOTSet.pre_order_traversal();         }  
             size_t size() const                                 {  return ROOTSet.size();                 }
             bool empty()                                        {  return ROOTSet.empty();                }  
             iterator begin()                                    {  return ROOTSet.begin();                }

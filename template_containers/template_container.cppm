@@ -2028,12 +2028,12 @@ namespace template_container
                     }
                 }
             }
-            void MiddleOrderTraversal()
+            void middle_order_traversal()
             {
                 //中序遍历函数
                 interior_middle_order_traversal(_root);
             }
-            void PreOrderTraversal()
+            void pre_order_traversal()
             {
                 interior_pre_order_traversal(_root);
             }
@@ -2894,7 +2894,7 @@ namespace template_container
             {
                 interior_pre_order_traversal(_root);
             }
-            void MiddleOrderTraversal()
+            void middle_order_traversal()
             {
                 interior_middle_order_traversal(_root);
             }
@@ -4234,7 +4234,7 @@ namespace template_container
             {
                 return _root == nullptr;
             }
-            void MiddleOrderTraversal()
+            void middle_order_traversal()
             {
                 interior_middle_order_traversal(_root);
             }
@@ -4809,7 +4809,7 @@ namespace template_container
             Map_iterator push(const KeyValType& Map_Temp)         {  return ROOTMap.push(Map_Temp);      }
             Map_iterator pop(const KeyValType& Map_Temp)          {  return ROOTMap.pop(Map_Temp);       }
             iterator find(const KeyValType& Map_Temp)             {  return ROOTMap.find(Map_Temp);      }
-            void MiddleOrderTraversal()                           {  ROOTMap.MiddleOrderTraversal();   }
+            void middle_order_traversal()                           {  ROOTMap.middle_order_traversal();   }
             void Pre_order_traversal()                              {  ROOTMap.Pre_order_traversal();      }
             size_t size() const                                     {  return ROOTMap.size();              }
             bool empty()                                            {  return ROOTMap.empty();             }
@@ -4916,7 +4916,7 @@ namespace template_container
             Set_iterator push(const KeyValType& Set_Temp)     {  return ROOTSet.push(Set_Temp);         }
             Set_iterator pop(const KeyValType& Set_Temp)      {  return ROOTSet.pop(Set_Temp);          }
             iterator find(const KeyValType& Set_Temp)         {  return ROOTSet.find(Set_Temp);         }
-            void MiddleOrderTraversal()                       {  ROOTSet.MiddleOrderTraversal();      }    
+            void middle_order_traversal()                       {  ROOTSet.middle_order_traversal();      }    
             void Pre_order_traversal()                          {  ROOTSet.Pre_order_traversal();         }  
             size_t size() const                                 {  return ROOTSet.size();                 }
             bool empty()                                        {  return ROOTSet.empty();                }  
