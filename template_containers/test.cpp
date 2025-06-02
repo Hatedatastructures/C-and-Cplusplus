@@ -430,118 +430,118 @@ int main()
         template_container::practicality::pair<int,int> pair_test =template_container::practicality::make_pair(i,j);
         std::cout << pair_test << std::endl;
     }
-    // /*            AVLTree 测试             */
-    // {
-    //     template_container::tree_container::AVLTree <template_container::practicality::pair<int,int>,int> AVL_Tree_test_pair(template_container::practicality::pair(9,0), 10);
-    //     template_container::practicality::pair<template_container::practicality::pair<int,int>,int> pair_test_ (template_container::practicality::pair(9,0), 10);
-    //     template_container::tree_container::AVLTree <template_container::practicality::pair<int,int>,int> AVL_Tree_test(pair_test_);
-    //     //两个构造函数，根据传值调用来查看调用情况
-    //     template_container::tree_container::AVLTree<template_container::string_container::string,int> AVL_Tree_test2;
-    //     AVL_Tree_test2.~AVLTree();
-    // }
-    // {
-    //     template_container::tree_container::AVLTree<int,int> AVL_Tree_test_pair;
-    //     template_container::vector_container::vector<template_container::practicality::pair<int,int>> AVL_Tree_array_pair = 
-    //     {{22,0},{16,0},{13,0},{15,0},{11,0},{12,0},{14,0},{10,0},{2,0},{10,0}};
-    //     for(auto& i : AVL_Tree_array_pair)
-    //     {
-    //         AVL_Tree_test_pair.push(i);
-    //     }
-    //     std::cout << "前序遍历 "<< std::endl;
-    //     AVL_Tree_test_pair.pre_order_traversal();
-    //     std::cout << std::endl;
-    //     std::cout << "中序遍历 "<< std::endl;
-    //     AVL_Tree_test_pair.middle_order_traversal();
-    //     std::cout << std::endl;
-    // }
-    // {
-    //     template_container::tree_container::AVLTree<int,int> AVL_Tree_test_pair;
-    //     template_container::vector_container::vector<template_container::practicality::pair<int,int>> AVL_Tree_array_pair = 
-    //     {{22,0},{16,0},{13,0},{15,0},{11,0},{12,0},{14,0},{10,0},{2,0},{10,0}};
+    /*            avl_tree 测试             */
+    {
+        template_container::tree_container::avl_tree <template_container::practicality::pair<int,int>,int> AVL_Tree_test_pair(template_container::practicality::pair(9,0), 10);
+        template_container::practicality::pair<template_container::practicality::pair<int,int>,int> pair_test_ (template_container::practicality::pair(9,0), 10);
+        template_container::tree_container::avl_tree <template_container::practicality::pair<int,int>,int> AVL_Tree_test(pair_test_);
+        //两个构造函数，根据传值调用来查看调用情况
+        template_container::tree_container::avl_tree<template_container::string_container::string,int> AVL_Tree_test2;
+        AVL_Tree_test2.~avl_tree();
+    }
+    {
+        template_container::tree_container::avl_tree<int,int> AVL_Tree_test_pair;
+        template_container::vector_container::vector<template_container::practicality::pair<int,int>> AVL_Tree_array_pair = 
+        {{22,0},{16,0},{13,0},{15,0},{11,0},{12,0},{14,0},{10,0},{2,0},{10,0}};
+        for(auto& i : AVL_Tree_array_pair)
+        {
+            AVL_Tree_test_pair.push(i);
+        }
+        std::cout << "前序遍历 "<< std::endl;
+        AVL_Tree_test_pair.pre_order_traversal();
+        std::cout << std::endl;
+        std::cout << "中序遍历 "<< std::endl;
+        AVL_Tree_test_pair.middle_order_traversal();
+        std::cout << std::endl;
+    }
+    {
+        template_container::tree_container::avl_tree<int,int> AVL_Tree_test_pair;
+        template_container::vector_container::vector<template_container::practicality::pair<int,int>> AVL_Tree_array_pair = 
+        {{22,0},{16,0},{13,0},{15,0},{11,0},{12,0},{14,0},{10,0},{2,0},{10,0}};
 
-    //     for(auto& i : AVL_Tree_array_pair)
-    //     {
-    //         AVL_Tree_test_pair.push(i);
-    //     }
-    //     std::cout << "前序遍历 "<< std::endl;
-    //     AVL_Tree_test_pair.pre_order_traversal();
-    //     std::cout << std::endl;
-    //     std::cout << "中序遍历 "<< std::endl;
-    //     AVL_Tree_test_pair.middle_order_traversal();
-    //     std::cout << std::endl; 
-    //     template_container::tree_container::AVLTree<int,int>AVL_Tree_test_pair1(AVL_Tree_test_pair);
-    //     std::cout << "前序遍历 "<< std::endl;
-    //     AVL_Tree_test_pair1.pre_order_traversal();
-    //     std::cout << std::endl;
-    //     std::cout << "中序遍历 "<< std::endl;
-    //     AVL_Tree_test_pair1.middle_order_traversal();
-    //     std::cout << std::endl; 
+        for(auto& i : AVL_Tree_array_pair)
+        {
+            AVL_Tree_test_pair.push(i);
+        }
+        std::cout << "前序遍历 "<< std::endl;
+        AVL_Tree_test_pair.pre_order_traversal();
+        std::cout << std::endl;
+        std::cout << "中序遍历 "<< std::endl;
+        AVL_Tree_test_pair.middle_order_traversal();
+        std::cout << std::endl; 
+        template_container::tree_container::avl_tree<int,int>AVL_Tree_test_pair1(AVL_Tree_test_pair);
+        std::cout << "前序遍历 "<< std::endl;
+        AVL_Tree_test_pair1.pre_order_traversal();
+        std::cout << std::endl;
+        std::cout << "中序遍历 "<< std::endl;
+        AVL_Tree_test_pair1.middle_order_traversal();
+        std::cout << std::endl; 
 
-    //     template_container::tree_container::binary_search_tree<char> BS_Tr;
-    //     template_container::string_container::string str1 = {'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'};
-    //     for(auto& i :str1)
-    //     {
-    //         BS_Tr.push(i);
-    //     }
-    //     BS_Tr.middle_order_traversal();
-    //     std::cout << std::endl;
-    //     template_container::tree_container::binary_search_tree<char> BS_TREE(BS_Tr);
-    //     BS_TREE.middle_order_traversal();
-    //     std::cout << std::endl;
-    // }
-    // {
-    //     template_container::tree_container::AVLTree<int,int> AVL_Tree_test_pair;
-    //     template_container::vector_container::vector<template_container::practicality::pair<int,int>> AVL_Tree_array_pair = 
-    //     {{22,0},{16,0},{13,0},{15,0},{11,0},{12,0},{14,0},{10,0},{2,0},{10,0}};
+        template_container::tree_container::binary_search_tree<char> BS_Tr;
+        template_container::string_container::string str1 = {'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'};
+        for(auto& i :str1)
+        {
+            BS_Tr.push(i);
+        }
+        BS_Tr.middle_order_traversal();
+        std::cout << std::endl;
+        template_container::tree_container::binary_search_tree<char> BS_TREE(BS_Tr);
+        BS_TREE.middle_order_traversal();
+        std::cout << std::endl;
+    }
+    {
+        template_container::tree_container::avl_tree<int,int> AVL_Tree_test_pair;
+        template_container::vector_container::vector<template_container::practicality::pair<int,int>> AVL_Tree_array_pair = 
+        {{22,0},{16,0},{13,0},{15,0},{11,0},{12,0},{14,0},{10,0},{2,0},{10,0}};
 
-    //     for(auto& i : AVL_Tree_array_pair)
-    //     {
-    //         AVL_Tree_test_pair.push(i);
-    //     }
-    //     std::cout << std::endl;
-    //     for ( auto i : AVL_Tree_test_pair)
-    //     {
-    //         std::cout << i << " ";
-    //         // 该行会被推断为pair<int,int>类型
-    //         //C++11的新特性,存在疑问？，Map容器是如何推导的？
-    //     }
-    //     std::cout << std::endl;
-    //     for (auto it = AVL_Tree_test_pair.begin(); it != AVL_Tree_test_pair.end(); ++it)
-    //     {
-    //         std::cout << *it << " ";
-    //     }
-    //     std::cout << std::endl;
-    //     for (auto const &p : AVL_Tree_test_pair) 
-    //     {
-    //         std::cout << p << " ";
-    //     }
+        for(auto& i : AVL_Tree_array_pair)
+        {
+            AVL_Tree_test_pair.push(i);
+        }
+        std::cout << std::endl;
+        for ( auto i : AVL_Tree_test_pair)
+        {
+            std::cout << i << " ";
+            // 该行会被推断为pair<int,int>类型
+            //C++11的新特性,存在疑问？，Map容器是如何推导的？
+        }
+        std::cout << std::endl;
+        for (auto it = AVL_Tree_test_pair.begin(); it != AVL_Tree_test_pair.end(); ++it)
+        {
+            std::cout << *it << " ";
+        }
+        std::cout << std::endl;
+        for (auto const &p : AVL_Tree_test_pair) 
+        {
+            std::cout << p << " ";
+        }
         
-    // }
-    // {
-    //     //删除测试
-    //     template_container::tree_container::AVLTree<int,int> AVL_Tree_test_pair;
-    //     template_container::vector_container::vector<template_container::practicality::pair<int,int>> AVL_Tree_array_pair = 
-    //     {{22,0},{16,0},{13,0},{15,0},{11,0},{12,0},{14,0},{10,0},{2,0},{10,0}};
-    //     for(auto& i : AVL_Tree_array_pair)
-    //     {
-    //         AVL_Tree_test_pair.push(i);
-    //     }
-    //     std::cout << "前序遍历 "<< std::endl;
-    //     AVL_Tree_test_pair.pre_order_traversal();
-    //     std::cout << std::endl;
-    //     std::cout << "开始删除 "<< std::endl;
-    //     for(auto& i : AVL_Tree_array_pair)
-    //     {
-    //         AVL_Tree_test_pair.pop(i.first);
-    //         AVL_Tree_test_pair.pre_order_traversal();
-    //         std::cout << std::endl;
-    //     }
-    //     std::cout << std::endl;
-    // }
+    }
+    {
+        //删除测试
+        template_container::tree_container::avl_tree<int,int> AVL_Tree_test_pair;
+        template_container::vector_container::vector<template_container::practicality::pair<int,int>> AVL_Tree_array_pair = 
+        {{22,0},{16,0},{13,0},{15,0},{11,0},{12,0},{14,0},{10,0},{2,0},{10,0}};
+        for(auto& i : AVL_Tree_array_pair)
+        {
+            AVL_Tree_test_pair.push(i);
+        }
+        std::cout << "前序遍历 "<< std::endl;
+        AVL_Tree_test_pair.pre_order_traversal();
+        std::cout << std::endl;
+        std::cout << "开始删除 "<< std::endl;
+        for(auto& i : AVL_Tree_array_pair)
+        {
+            AVL_Tree_test_pair.pop(i.first);
+            AVL_Tree_test_pair.pre_order_traversal();
+            std::cout << std::endl;
+        }
+        std::cout << std::endl;
+    }
     // {
     //     //性能测试
     //     /*                   pair 类型                */
-    //     template_container::tree_container::AVLTree<size_t,int> AVL_Tree_test_pair;
+    //     template_container::tree_container::avl_tree<size_t,int> AVL_Tree_test_pair;
     //     template_container::vector_container::vector<template_container::practicality::pair<size_t,int>> AVL_Tree_array_pair;
     //     size_t size = 100000;
     //     for(size_t i = 0; i < size; i++)
@@ -557,7 +557,7 @@ int main()
     //     std::cout << "插入个数:" << AVL_Tree_test_pair.size()  << " " << " 插入时间:" << AVL_Tree_num2 - AVL_Tree_num1 << std::endl;
 
     //     /*                  非pair 类型               */
-    //     template_container::tree_container::AVLTree<size_t,int> AVL_Tree_test;
+    //     template_container::tree_container::avl_tree<size_t,int> AVL_Tree_test;
     //     template_container::vector_container::vector<size_t> AVL_Tree_array;
     //     for(size_t j = 0; j < size ; j++)
     //     {
@@ -706,7 +706,7 @@ int main()
     // }
     // {
     //     std::cout << "AVL_Tree移动构造测试" <<std::endl;
-    //     template_container::tree_container::AVLTree<int,int> AVL_Tree_test_pair;
+    //     template_container::tree_container::avl_tree<int,int> AVL_Tree_test_pair;
     //     template_container::vector_container::vector<template_container::practicality::pair<int,int>> AVL_Tree_array_pair = 
     //     {{22,0},{16,0},{13,0},{15,0},{11,0},{12,0},{14,0},{10,0},{2,0},{10,0}};
 
@@ -717,7 +717,7 @@ int main()
 
     //     std::cout << "移动前：" ;
     //     AVL_Tree_test_pair.middle_order_traversal();
-    //     template_container::tree_container::AVLTree<int,int> AVL_Tree_test = std::move(AVL_Tree_test_pair);
+    //     template_container::tree_container::avl_tree<int,int> AVL_Tree_test = std::move(AVL_Tree_test_pair);
     //     std::cout << std::endl;
     //     std::cout << "移动构造：";
     //     AVL_Tree_test.middle_order_traversal();
@@ -729,7 +729,7 @@ int main()
     // }
     // {
     //     std::cout << "AVL_Tree拷贝构造测试" <<std::endl;
-    //     template_container::tree_container::AVLTree<int,int> AVL_Tree_test_pair;
+    //     template_container::tree_container::avl_tree<int,int> AVL_Tree_test_pair;
     //     template_container::vector_container::vector<template_container::practicality::pair<int,int>> AVL_Tree_array_pair = 
     //     {{22,0},{16,0},{13,0},{15,0},{11,0},{12,0},{14,0},{10,0},{2,0},{10,0}};
 
@@ -740,7 +740,7 @@ int main()
 
     //     std::cout << "拷贝前：" ;
     //     AVL_Tree_test_pair.middle_order_traversal();
-    //     template_container::tree_container::AVLTree<int,int> AVL_Tree_test = AVL_Tree_test_pair;
+    //     template_container::tree_container::avl_tree<int,int> AVL_Tree_test = AVL_Tree_test_pair;
     //     std::cout << std::endl;
     //     std::cout << "移动构造：";
     //     AVL_Tree_test.middle_order_traversal();

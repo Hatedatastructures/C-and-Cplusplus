@@ -2255,28 +2255,28 @@ namespace my_template
 
         };
         /*############################     AVLTree 容器     ############################*/
-        template <typename AVLTreeTypeK,     typename AVLTreeTypeV,
-        typename CompareImitationFunctionsAVL = my_template::imitation_functions::Less < AVLTreeTypeK >,
-        typename AVLSyntheticClass = my_template::practicality::pair<AVLTreeTypeK,AVLTreeTypeV> >
+        template <typename avl_tree_type_k,     typename avl_tree_type_v,
+        typename container_imitate_function = my_template::imitation_functions::Less < avl_tree_type_k >,
+        typename avl_tree_node_pair = my_template::practicality::pair<avl_tree_type_k,avl_tree_type_v> >
         class AVLTree
         {
         private:
             class AVLTreeTypeNode
             {
             public:
-                AVLSyntheticClass _data;
+                avl_tree_node_pair _data;
 
                 AVLTreeTypeNode* _left;
                 AVLTreeTypeNode* _right;
                 AVLTreeTypeNode* _parent;
                 //平衡因子
                 int _BalanceFactor;
-                AVLTreeTypeNode(const AVLTreeTypeK& Tree_Node_temp_ = AVLTreeTypeK(),const AVLTreeTypeV& Tree_Node_temp_2 = AVLTreeTypeV())
+                AVLTreeTypeNode(const avl_tree_type_k& Tree_Node_temp_ = AVLTreeTypeK(),const avl_tree_type_v& Tree_Node_temp_2 = avl_tree_type_v())
                 :_data(Tree_Node_temp_,Tree_Node_temp_2),_left(nullptr),_right(nullptr),_parent(nullptr),_BalanceFactor(0)
                 {
                     ;
                 }
-                AVLTreeTypeNode(const AVLSyntheticClass& AVL_Tree_pair_temp)
+                AVLTreeTypeNode(const avl_tree_node_pair& AVL_Tree_pair_temp)
                 :_data(AVL_Tree_pair_temp),_left(nullptr),_right(nullptr),_parent(nullptr),_BalanceFactor(0)
                 {
                     ;
@@ -2286,12 +2286,12 @@ namespace my_template
             class AVLTreeIterator
             {
             public:
-                using iterator_Node = AVLTreeTypeNode;
-                using Self = AVLTreeIterator<T,Ref,Ptr>;
+                using iterator_node = AVLTreeTypeNode;
+                using self = AVLTreeIterator<T,Ref,Ptr>;
                 using pointer = Ptr;
                 using reference = Ref;
-                iterator_Node* _Node;
-                AVLTreeIterator(iterator_Node* _Node_Temp)
+                iterator_node* _Node;
+                AVLTreeIterator(iterator_node* _Node_Temp)
                 :_Node(_Node_Temp)
                 {
                     ;
@@ -2304,15 +2304,15 @@ namespace my_template
                 {
                     return _Node->_data;
                 }
-                bool operator!=(const Self& Self_temp)
+                bool operator!=(const self& Self_temp)
                 {
                     return _Node != Self_temp._Node;
                 }
-                bool operator==(const Self& Self_temp) 
+                bool operator==(const self& Self_temp) 
                 {
                     return _Node == Self_temp._Node;
                 }
-                Self& operator++()
+                self& operator++()
                 {
                     if(_Node->_right != nullptr)
                     {
@@ -2333,13 +2333,13 @@ namespace my_template
                     }
                     return *this;
                 }
-                Self operator++(int)
+                self operator++(int)
                 {
-                    Self temp = *this;
+                    self temp = *this;
                     ++(*this);
                     return temp;
                 }
-                Self& operator--()
+                self& operator--()
                 {
                     if(_Node->_left != nullptr)
                     {
@@ -2360,9 +2360,9 @@ namespace my_template
                     }
                     return *this;
                 }
-                Self operator--(int)
+                self operator--(int)
                 {
-                    Self temp = *this;
+                    self temp = *this;
                     --(*this);
                     return temp;
                 }
@@ -2371,7 +2371,7 @@ namespace my_template
             class AVLTreeReverseIterator
             {
             public:
-                using Self = AVLTreeReverseIterator<iterator>;
+                using self = AVLTreeReverseIterator<iterator>;
                 iterator _it;
                 using Ptr = typename iterator::pointer;
                 using Ref = typename iterator::reference;
@@ -2388,33 +2388,33 @@ namespace my_template
                 {
                     return *_it;
                 }
-                bool operator!=(const Self& Self_temp)
+                bool operator!=(const self& Self_temp)
                 {
                     return _it != Self_temp._it;
                 }
-                bool operator==(const Self& Self_temp)
+                bool operator==(const self& Self_temp)
                 {
                     return _it == Self_temp._it;
                 }
-                Self& operator++()
+                self& operator++()
                 {
                     --_it;
                     return *this;
                 }
-                Self operator++(int)
+                self operator++(int)
                 {
-                    Self temp = *this;
+                    self temp = *this;
                     --(*this);
                     return temp;
                 }
-                Self& operator--()
+                self& operator--()
                 {
                     ++_it;
                     return *this;
                 }
-                Self operator--(int)
+                self operator--(int)
                 {
-                    Self temp = *this;
+                    self temp = *this;
                     ++(*this);
                     return temp;
                 }
@@ -2423,8 +2423,8 @@ namespace my_template
             using Node = AVLTreeTypeNode;
             Node* _ROOT;
 
-            CompareImitationFunctionsAVL com;
-            void LeftRevolve(Node*& parent_temp_Node)
+            container_imitate_function com;
+            void left_revolve(Node*& parent_temp_Node)
             {
                 //传进来的值是发现该树平衡性被破坏的节点地址
                 //大致思想：因为这是左单旋，所以找传进来的父亲节点的右根节点来当调整节点
@@ -2533,7 +2533,7 @@ namespace my_template
 
                 RightRevolve(parent_temp_Node->_right);
                 //右旋
-                LeftRevolve(parent_temp_Node);
+                left_revolve(parent_temp_Node);
                 //左旋
                 if(Balance_factor_temp == -1)
                 {
@@ -2565,7 +2565,7 @@ namespace my_template
                 Node* Sub_left_right_temp = Sub_left_temp->_right;
                 int Balance_factor_temp = Sub_left_right_temp->_BalanceFactor;
 
-                LeftRevolve(parent_temp_Node->_left);
+                left_revolve(parent_temp_Node->_left);
                 //左旋
                 RightRevolve(parent_temp_Node);
                 //右旋
@@ -2703,8 +2703,8 @@ namespace my_template
                 return temp;
             }
         public:
-            using iterator = AVLTreeIterator<AVLSyntheticClass,AVLSyntheticClass&,AVLSyntheticClass*>;
-            using const_iterator = AVLTreeIterator<AVLSyntheticClass,const AVLSyntheticClass&,const AVLSyntheticClass*>;
+            using iterator = AVLTreeIterator<avl_tree_node_pair,avl_tree_node_pair&,avl_tree_node_pair*>;
+            using const_iterator = AVLTreeIterator<avl_tree_node_pair,const avl_tree_node_pair&,const avl_tree_node_pair*>;
 
             using reverse_iterator = AVLTreeReverseIterator<iterator>;
             using const_reverse_iterator = AVLTreeReverseIterator<const_iterator>;
@@ -2769,14 +2769,14 @@ namespace my_template
             {
                 _ROOT = nullptr;
             }
-            AVLTree(const AVLTreeTypeK& Key_temp,const AVLTreeTypeV& val_temp = AVLTreeTypeV(),
-            CompareImitationFunctionsAVL com_temp = CompareImitationFunctionsAVL())
+            AVLTree(const avl_tree_type_k& Key_temp,const avl_tree_type_v& val_temp = avl_tree_type_v(),
+            container_imitate_function com_temp = container_imitate_function())
             :_ROOT(nullptr),com(com_temp)
             {
                 _ROOT = new Node(Key_temp,val_temp);
             }
-            AVLTree(const AVLSyntheticClass& AVL_Tree_Pair_Temp,
-            CompareImitationFunctionsAVL com_temp = CompareImitationFunctionsAVL())
+            AVLTree(const avl_tree_node_pair& AVL_Tree_Pair_Temp,
+            container_imitate_function com_temp = container_imitate_function())
             :_ROOT(nullptr),com(com_temp)
             {
                 _ROOT = new Node(AVL_Tree_Pair_Temp.first,AVL_Tree_Pair_Temp.second);
@@ -2900,7 +2900,7 @@ namespace my_template
             {
                 _MiddleOrderTraversal(_ROOT);
             }
-            bool push(const AVLTreeTypeK& Key_temp,const AVLTreeTypeV& val_temp = AVLTreeTypeV())
+            bool push(const avl_tree_type_k& Key_temp,const avl_tree_type_v& val_temp = avl_tree_type_v())
             {
                 //插入
                 if(_ROOT == nullptr)
@@ -2968,7 +2968,7 @@ namespace my_template
                             {
                                 if(_ROOT_temp_test->_BalanceFactor == 1)
                                 {
-                                    LeftRevolve(_ROOT_temp_test_parent);
+                                    left_revolve(_ROOT_temp_test_parent);
                                 }
                                 else
                                 {
@@ -2993,7 +2993,7 @@ namespace my_template
                 }
                 return true;
             }
-            bool push(const AVLSyntheticClass& AVL_Tree_Pair_Temp)
+            bool push(const avl_tree_node_pair& AVL_Tree_Pair_Temp)
             {
                 //AVL树左子树比右子树高，则他俩的根节点的平衡因子为1，反之为-1，也就是说左加一，右减一，如果根节点为2和-2就要需要调整了
                 if(_ROOT == nullptr)
@@ -3068,7 +3068,7 @@ namespace my_template
                                 if(_ROOT_Temp_test->_BalanceFactor == 1)
                                 {
                                     //L，说明_ROOT_Temp_test是_ROOT_Temp_test_parent的左子节点，线形
-                                    LeftRevolve(_ROOT_Temp_test_parent);
+                                    left_revolve(_ROOT_Temp_test_parent);
                                 }
                                 else
                                 {
@@ -3098,7 +3098,7 @@ namespace my_template
                 }
                 return true;
             }
-            Node* find(const AVLTreeTypeK& _data_temp)
+            Node* find(const avl_tree_type_k& _data_temp)
             {
                 Node* _ROOT_Temp = _ROOT;
                 while(_ROOT_Temp != nullptr)
@@ -3118,7 +3118,7 @@ namespace my_template
                 }
                 return _ROOT_Temp;
             }
-            AVLTree& pop(const AVLTreeTypeK& _data_Temp)
+            AVLTree& pop(const avl_tree_type_k& _data_Temp)
             {
                 if(_ROOT == nullptr)
                 {
@@ -3254,7 +3254,7 @@ namespace my_template
                         {
                             if(_ROOT_Temp->_BalanceFactor == 1)
                             {
-                                LeftRevolve(parent_BF);
+                                left_revolve(parent_BF);
                             }
                             else
                             {
@@ -3312,7 +3312,7 @@ namespace my_template
             template<typename T, typename Ref, typename Ptr>
             class RBTreeiterator
             { 
-                using Self = RBTreeiterator<T,Ref,Ptr>;
+                using self = RBTreeiterator<T,Ref,Ptr>;
                 using Node_iterator = RBTreeNode;
                 Node_iterator* _Node;
             public:
@@ -3331,7 +3331,7 @@ namespace my_template
                 {
                     return &(_Node->_data);
                 }
-                Self& operator++()
+                self& operator++()
                 {
                     if(_Node == nullptr)
                     {
@@ -3361,13 +3361,13 @@ namespace my_template
                     }
                     return *this;
                 }
-                Self operator++(int)
+                self operator++(int)
                 {
-                    Self Temp = *this;
+                    self Temp = *this;
                     ++(*this);
                     return Temp;
                 }
-                Self& operator--()
+                self& operator--()
                 {
                     if(_Node->_left != nullptr)
                     {
@@ -3391,17 +3391,17 @@ namespace my_template
                     }
                     return *this;
                 }
-                Self operator--(int)
+                self operator--(int)
                 {
-                    Self Temp = *this;
+                    self Temp = *this;
                     --(*this);
                     return Temp;
                 }
-                bool operator==(const Self& it_temp) const
+                bool operator==(const self& it_temp) const
                 {
                     return _Node == it_temp._Node;
                 }
-                bool operator!=(const Self& it_temp) const
+                bool operator!=(const self& it_temp) const
                 {
                     return _Node != it_temp._Node;
                 }
@@ -3409,7 +3409,7 @@ namespace my_template
             template <typename iterator>
             class RBTreeReverseIterator
             {
-                using Self = RBTreeReverseIterator<iterator>;
+                using self = RBTreeReverseIterator<iterator>;
                 using Ref  = typename iterator::reference;
                 using Ptr  = typename iterator::pointer;
                 iterator _it;
@@ -3466,7 +3466,7 @@ namespace my_template
             Node* _ROOT;
             DataExtractionFunction Element;
             CompareImitationFunctionsRB com;
-            void LeftRevolve(Node* parent_temp_Node)
+            void left_revolve(Node* parent_temp_Node)
             {
                 //传进来的值是发现该树平衡性被破坏的节点地址
                 //大致思想：因为这是左单旋，所以找传进来的父亲节点的右根节点来当调整节点
@@ -3873,7 +3873,7 @@ namespace my_template
                                 //情况3：该情况双旋转单旋
                                 if(_ROOT_Temp == _ROOT_Temp_parent->_right)
                                 {
-                                    LeftRevolve(_ROOT_Temp_parent);
+                                    left_revolve(_ROOT_Temp_parent);
                                     my_template::algorithm::swap(_ROOT_Temp,_ROOT_Temp_parent);
                                     // _ROOT_Temp = _ROOT_Temp_parent;
                                     //折线调整，交换位置调整为情况2
@@ -3908,7 +3908,7 @@ namespace my_template
                                     //交换指针转换为单旋
                                 }
                                 //情况2：单旋
-                                LeftRevolve(_ROOT_Temp_Grandfther);
+                                left_revolve(_ROOT_Temp_Grandfther);
                                 _ROOT_Temp_Grandfther->_color = RED;
                                 _ROOT_Temp_parent->_color = BLACK;
                             }
@@ -3963,7 +3963,7 @@ namespace my_template
                             //情况1：兄弟节点为红
                             brother->_color = BLACK;
                             parent->_color = RED;
-                            LeftRevolve(parent);
+                            left_revolve(parent);
                             //调整后，兄弟节点为黑
                             //继续向下调整
                             brother = parent->_right;
@@ -3998,7 +3998,7 @@ namespace my_template
                             brother->_color = parent->_color;
                             parent->_color = BLACK;
                             brother->_right->_color = BLACK;
-                            LeftRevolve(parent);
+                            left_revolve(parent);
                             cur = _ROOT;
                             parent = cur->_parent;
                         }
@@ -4034,7 +4034,7 @@ namespace my_template
                             //情况3：兄弟节点为黑，兄弟节点左节点为红，右节点为黑
                             brother->_right->_color = BLACK;
                             brother->_color = RED;
-                            LeftRevolve(brother);
+                            left_revolve(brother);
                             //调整后，兄弟节点为黑，兄弟节点右节点为红
                             //继续向下调整
                             brother = parent->_left;
@@ -4333,21 +4333,21 @@ namespace my_template
             template <typename Hash_Table_iterator_Key, typename Hash_Table_iterator_Val>
             class Hash_iterator
             {
-                using iterator_Node = Node;
+                using iterator_node = Node;
                 using Ref  = Hash_Table_iterator_Val&;
                 using Ptr  = Hash_Table_iterator_Val*;
-                using Self = Hash_iterator<Hash_Table_iterator_Key,Hash_Table_iterator_Val>;
-                iterator_Node* HashTableIteratorNode;
+                using self = Hash_iterator<Hash_Table_iterator_Key,Hash_Table_iterator_Val>;
+                iterator_node* HashTableIteratorNode;
             public:
-                Hash_iterator(iterator_Node* Temp_Node)      {      HashTableIteratorNode = Temp_Node;        }
+                Hash_iterator(iterator_node* Temp_Node)      {      HashTableIteratorNode = Temp_Node;        }
                 Ref operator*()                              {      return HashTableIteratorNode->_data;      }
                 Ptr operator->()                             {      return &HashTableIteratorNode->_data;     }
-                Self operator++()                            {       HashTableIteratorNode = HashTableIteratorNode->LinkNext;     return *this;     }
-                bool operator!=(const Self& Temp_Self)       {   return HashTableIteratorNode != Temp_Self.HashTableIteratorNode;     }
-                bool operator==(const Self& Temp_Self)       {   return HashTableIteratorNode == Temp_Self.HashTableIteratorNode;     }
-                Self operator++(int)                         
+                self operator++()                            {       HashTableIteratorNode = HashTableIteratorNode->LinkNext;     return *this;     }
+                bool operator!=(const self& Temp_Self)       {   return HashTableIteratorNode != Temp_Self.HashTableIteratorNode;     }
+                bool operator==(const self& Temp_Self)       {   return HashTableIteratorNode == Temp_Self.HashTableIteratorNode;     }
+                self operator++(int)                         
                 {       
-                    Self Temp_Self = *this;
+                    self Temp_Self = *this;
                     HashTableIteratorNode = HashTableIteratorNode->LinkNext;
                     return Temp_Self;
                 }

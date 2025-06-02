@@ -34,7 +34,7 @@ namespace test_list
 	class ListIterator
 	{
 		typedef ListNode<T> Node;
-		typedef ListIterator<T, Ref, Ptr> Self;
+		typedef ListIterator<T, Ref, Ptr> self;
 
 		// Ref 和 Ptr 类型需要重定义下，实现反向迭代器时需要用到
 	public:
@@ -61,40 +61,40 @@ namespace test_list
 
 		//////////////////////////////////////////////
 		// 迭代器支持移动
-		Self& operator++()
+		self& operator++()
 		{
 			_node = _node->_next;
 			return *this;
 		}
 
-		Self operator++(int)
+		self operator++(int)
 		{
-			Self temp(*this);
+			self temp(*this);
 			_node = _node->_next;
 			return temp;
 		}
 
-		Self& operator--()
+		self& operator--()
 		{
 			_node = _node->_prev;
 			return *this;
 		}
 
-		Self operator--(int)
+		self operator--(int)
 		{
-			Self temp(*this);
+			self temp(*this);
 			_node = _node->_prev;
 			return temp;
 		}
 
 		//////////////////////////////////////////////
 		// 迭代器支持比较
-		bool operator!=(const Self& l)const
+		bool operator!=(const self& l)const
 		{ 
 			return _node != l._node;
 		}
 
-		bool operator==(const Self& l)const
+		bool operator==(const self& l)const
 		{ 
 			return _node != l._node;
 		}
@@ -111,7 +111,7 @@ namespace test_list
 	public:
 		typedef typename Iterator::Ref Ref;
 		typedef typename Iterator::Ptr Ptr;
-		typedef ReverseListIterator<Iterator> Self;
+		typedef ReverseListIterator<Iterator> self;
 	public:
 		//////////////////////////////////////////////
 		// 构造
@@ -135,40 +135,40 @@ namespace test_list
 
 		//////////////////////////////////////////////
 		// 迭代器支持移动
-		Self& operator++()
+		self& operator++()
 		{
 			--_it;
 			return *this;
 		}
 
-		Self operator++(int)
+		self operator++(int)
 		{
-			Self temp(*this);
+			self temp(*this);
 			--_it;
 			return temp;
 		}
 
-		Self& operator--()
+		self& operator--()
 		{
 			++_it;
 			return *this;
 		}
 
-		Self operator--(int)
+		self operator--(int)
 		{
-			Self temp(*this);
+			self temp(*this);
 			++_it;
 			return temp;
 		}
 
 		//////////////////////////////////////////////
 		// 迭代器支持比较
-		bool operator!=(const Self& l)const
+		bool operator!=(const self& l)const
 		{
 			return _it != l._it;
 		}
 
-		bool operator==(const Self& l)const
+		bool operator==(const self& l)const
 		{
 			return _it != l._it;
 		}
