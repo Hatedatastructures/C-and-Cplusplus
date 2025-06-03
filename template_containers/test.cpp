@@ -269,7 +269,7 @@ int main()
     {
         //栈拷贝1855行
         time_t Binary_search_tree_num1 = clock();
-        template_container::tree_container::binary_search_tree<int,template_container::imitation_functions::Greater<int>> Binary_search_tree_test;
+        template_container::tree_container::binary_search_tree<int,template_container::imitation_functions::greater<int>> Binary_search_tree_test;
         for(size_t i = 100; i > 0; i--)
         {
             //相对来说这算是有序插入导致二叉树相乘时间复杂度为O(N)的链表
@@ -287,7 +287,7 @@ int main()
     }
 
     {
-        template_container::tree_container::binary_search_tree<int, template_container::imitation_functions::Greater<int>> bst;
+        template_container::tree_container::binary_search_tree<int, template_container::imitation_functions::greater<int>> bst;
         bst.push(5);
         bst.push(4);
         bst.push(3);
@@ -318,7 +318,7 @@ int main()
         //打乱数组元素顺序
         size_t size = 0;
         time_t Binary_search_tree_num1 = clock();
-        template_container::tree_container::binary_search_tree<int,template_container::imitation_functions::Greater<int>> Binary_search_tree_test;
+        template_container::tree_container::binary_search_tree<int,template_container::imitation_functions::greater<int>> Binary_search_tree_test;
         for(const auto& Binary_search_tree_for_test: Binary_search_tree_array)
         {
             if(Binary_search_tree_test.push(Binary_search_tree_for_test))
@@ -362,7 +362,7 @@ int main()
         //打乱数组元素顺序
         size_t size = 0;
         time_t Binary_search_tree_num1 = clock();
-        template_container::tree_container::binary_search_tree<int,template_container::imitation_functions::Greater<int>> Binary_search_tree_test;
+        template_container::tree_container::binary_search_tree<int,template_container::imitation_functions::greater<int>> Binary_search_tree_test;
         for(const auto& Binary_search_tree_for_test: Binary_search_tree_array)
         {
             if(Binary_search_tree_test.push(Binary_search_tree_for_test))
@@ -373,7 +373,7 @@ int main()
         }
         std::cout << std::endl;
         time_t Binary_search_tree_num2 = clock();
-        template_container::tree_container::binary_search_tree<int,template_container::imitation_functions::Greater<int>> Binary_search_tree_test1 = Binary_search_tree_test;
+        template_container::tree_container::binary_search_tree<int,template_container::imitation_functions::greater<int>> Binary_search_tree_test1 = Binary_search_tree_test;
         time_t Binary_search_tree_num3 = clock();
         std::cout << "拷贝构造没问题 " << std::endl;
 

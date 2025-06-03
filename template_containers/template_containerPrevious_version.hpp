@@ -239,7 +239,7 @@ namespace template_container
             }
         };
         template<typename imitation_functions_greater>
-        class Greater
+        class greater
         {
         public:
             bool operator()(const imitation_functions_greater& _test1 ,const imitation_functions_greater& _test2) noexcept

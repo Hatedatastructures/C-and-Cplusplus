@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <algorithm>
 template<typename T>
 class vector 
 {
@@ -129,5 +130,6 @@ void testVector() {
 int main()
 {
     testVector();
+    std::swap(1,2);
     return 0;
 }
