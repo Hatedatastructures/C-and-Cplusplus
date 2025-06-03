@@ -9,6 +9,7 @@
 // std::terminate() 异常抛出函数
 int main()
 {
+    SetConsoleOutputCP(CP_UTF8);
     /*            string测试             */
     {
         //异常测试
@@ -227,7 +228,8 @@ int main()
         template_container::string_container::string queue_test_str1 = "hello";
         template_container::string_container::string queue_test_str2 = "word";
         template_container::string_container::string queue_test_str3 = "  ";
-        template_container::queue_adapter::queue< template_container::string_container::string,template_container::list_container::list< template_container::string_container::string>> queue_test1;
+        template_container::queue_adapter::queue< template_container::string_container::string,template_container::list_container::list< template_container::string_container::string>>
+        queue_test1;
 
         queue_test1.push(queue_test_str1);
         queue_test1.push(queue_test_str3);
@@ -538,39 +540,39 @@ int main()
         }
         std::cout << std::endl;
     }
-    // {
-    //     //性能测试
-    //     /*                   pair 类型                */
-    //     template_container::tree_container::avl_tree<size_t,int> AVL_Tree_test_pair;
-    //     template_container::vector_container::vector<template_container::practicality::pair<size_t,int>> AVL_Tree_array_pair;
-    //     size_t size = 100000;
-    //     for(size_t i = 0; i < size; i++)
-    //     {
-    //         AVL_Tree_array_pair.push_back(template_container::practicality::pair<size_t,int>(i,0));
-    //     }
-    //     time_t AVL_Tree_num1 = clock();
-    //     for(auto& i : AVL_Tree_array_pair)
-    //     {
-    //         AVL_Tree_test_pair.push(i);
-    //     }
-    //     time_t AVL_Tree_num2 = clock();
-    //     std::cout << "插入个数:" << AVL_Tree_test_pair.size()  << " " << " 插入时间:" << AVL_Tree_num2 - AVL_Tree_num1 << std::endl;
+    {
+        //性能测试
+        /*                   pair 类型                */
+        template_container::tree_container::avl_tree<size_t,int> AVL_Tree_test_pair;
+        template_container::vector_container::vector<template_container::practicality::pair<size_t,int>> AVL_Tree_array_pair;
+        size_t size = 100000;
+        for(size_t i = 0; i < size; i++)
+        {
+            AVL_Tree_array_pair.push_back(template_container::practicality::pair<size_t,int>(std::move(i),std::move(0)));
+        }
+        time_t AVL_Tree_num1 = clock();
+        for(auto& i : AVL_Tree_array_pair)
+        {
+            AVL_Tree_test_pair.push(i);
+        }
+        time_t AVL_Tree_num2 = clock();
+        std::cout << "插入个数:" << AVL_Tree_test_pair.size()  << " " << " 插入时间:" << AVL_Tree_num2 - AVL_Tree_num1 << std::endl;
 
-    //     /*                  非pair 类型               */
-    //     template_container::tree_container::avl_tree<size_t,int> AVL_Tree_test;
-    //     template_container::vector_container::vector<size_t> AVL_Tree_array;
-    //     for(size_t j = 0; j < size ; j++)
-    //     {
-    //         AVL_Tree_array.push_back(j);
-    //     }
-    //     time_t AVL_Tree_num3 = clock();
-    //     for(auto& j : AVL_Tree_array)
-    //     {
-    //         AVL_Tree_test.push(j);
-    //     }
-    //     time_t AVL_Tree_num4 = clock();
-    //     std::cout << "插入个数:" << AVL_Tree_test.size()  << " " << " 插入时间:" << AVL_Tree_num4 - AVL_Tree_num3 << std::endl;
-    // }
+        /*                  非pair 类型               */
+        template_container::tree_container::avl_tree<size_t,int> AVL_Tree_test;
+        template_container::vector_container::vector<size_t> AVL_Tree_array;
+        for(size_t j = 0; j < size ; j++)
+        {
+            AVL_Tree_array.push_back(j);
+        }
+        time_t AVL_Tree_num3 = clock();
+        for(auto& j : AVL_Tree_array)
+        {
+            AVL_Tree_test.push(j);
+        }
+        time_t AVL_Tree_num4 = clock();
+        std::cout << "插入个数:" << AVL_Tree_test.size()  << " " << " 插入时间:" << AVL_Tree_num4 - AVL_Tree_num3 << std::endl;
+    }
     // /*            tree_map 测试             */
     // {
     //     template_container::map_c::tree_map<size_t,size_t> Map_Test;
@@ -786,33 +788,36 @@ int main()
     //     std::cout << sum << std::endl;
     // }
     //问题vector容器resize函数问题啊大大。
-    // {
-    //     //尝试构建线程池来测试给个容器性能开销
-    //     using Vector_pair =  template_container::vector_container::vector<template_container::practicality::pair<size_t,size_t>>;
-    //     template_container::vector_container::vector<Vector_pair> array_vector;
-    //     size_t size = 20000;
-    //     size_t sum = clock();
-    //     for(size_t i = 0; i < size; i++)
-    //     {
-    //         Vector_pair temp;
-    //         for(size_t j = 0; j < size; j++)
-    //         {
-    //             temp.push_back(template_container::practicality::pair<size_t,size_t>(j,j));
-    //         }
-    //         array_vector.push_back(std::move(temp));
-    //     }
-    //     size_t num2 = clock();
-    //     std::cout << "push_back函数时间：" << num2 - sum << std::endl;
-    // }
+    {
+        //尝试构建线程池来测试给个容器性能开销
+        using Vector_pair =  template_container::vector_container::vector<template_container::practicality::pair<size_t,size_t>>;
+        template_container::vector_container::vector<Vector_pair> array_vector;
+        size_t size = 20000;
+        auto t1 = std::chrono::high_resolution_clock::now();
+        for(size_t i = 0; i < size; i++)
+        {
+            Vector_pair temp;
+            for(size_t j = 0; j < size; j++)
+            {
+                temp.push_back(template_container::practicality::pair<size_t,size_t>(j,j));
+            }
+            array_vector.push_back(std::move(temp));
+        }
+        auto t2 = std::chrono::high_resolution_clock::now();
+        std::cout << "push_back函数时间：" << std::chrono::duration<double, std::milli>(t2 - t1).count() << std::endl;
+    }
     {
         // set::vector<set::pair<set::list,set::queue>> array_list_stack;
         template_container::algorithm::hash_algorithm::hash_function <int,template_container::imitation_functions::hash_imitation_functions> hash;
         int test_size = 792;
+        auto t1 = std::chrono::high_resolution_clock::now();
         std::cout << "计算哈希值： " << hash.Hash_APHash(test_size)   << std::endl; 
         std::cout << "计算哈希值： " << hash.Hash_BKDRHash(test_size) << std::endl;
         std::cout << "计算哈希值： " << hash.Hash_PJWHash(test_size)  << std::endl;
         std::cout << "计算哈希值： " << hash.Hash_DJBHash(test_size)  << std::endl;
         std::cout << "计算哈希值： " << hash.Hash_SDBMHash(test_size) << std::endl;
+        auto t2 = std::chrono::high_resolution_clock::now();
+        std::cout << std::chrono::duration<double, std::milli>(t2 - t1).count() << std::endl;
         {
             // collections::BloomFilter<size_t> BloomFilter_test(3000000000);
         }

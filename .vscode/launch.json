@@ -1,5 +1,6 @@
 {
   "configurations": [
+    
       {
           "name": "(gdb) 启动",
           "type": "cppdbg",
