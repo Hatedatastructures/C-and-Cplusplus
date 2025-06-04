@@ -38,13 +38,13 @@ int main()
     }
     {
         //尝试构建线程池来测试给个容器性能开销
-        using Vector_pair =  template_container::vector_container::vector<template_container::practicality::pair<size_t,size_t>>;
-        template_container::vector_container::vector<Vector_pair> array_vector;
+        using vector_pair =  template_container::vector_container::vector<template_container::practicality::pair<size_t,size_t>>;
+        template_container::vector_container::vector<vector_pair> array_vector;
         size_t size = 20000;
         auto t1 = std::chrono::high_resolution_clock::now();
         for(size_t i = 0; i < size; i++)
         {
-            Vector_pair temp;
+            vector_pair temp;
             for(size_t j = 0; j < size; j++)
             {
                 temp.push_back(template_container::practicality::pair<size_t,size_t>(j,j));

@@ -3280,43 +3280,43 @@ namespace template_container
         };
     }
     /*############################     基类容器命名空间     ############################*/
-    namespace base_class_c
+    namespace base_class_container
     {
-        /*############################     RBTree 容器     ############################*/
-        template <typename RBTreeTypeKey, typename RBTreeTypeVal, typename DataExtractionFunction,
-        typename CompareImitationFunctionsRB = template_container::imitation_functions::less<RBTreeTypeKey> >
-        class RBTree
+        /*############################     rb_tree 容器     ############################*/
+        template <typename rb_tree_type_key, typename rb_tree_type_val, typename key_value_functions,
+        typename container_imitate_function = template_container::imitation_functions::less<rb_tree_type_key> >
+        class rb_tree
         {
         private:
-            enum RBTreeColor
+            enum rb_tree_color
             {
-                RED,
-                BLACK,
+                red,
+                black,
             };
-            class RBTreeNode
+            class rb_tree_node
             {
             public:
-                RBTreeTypeVal _data;
-                RBTreeNode* _left;
-                RBTreeNode* _right;
-                RBTreeNode* _parent;
-                RBTreeColor _color;
-                RBTreeNode(const RBTreeTypeVal& val_temp = RBTreeTypeVal())
-                :_data(val_temp),_left(nullptr),_right(nullptr),_parent(nullptr),_color(RED)
+                rb_tree_type_val _data;
+                rb_tree_node* _left;
+                rb_tree_node* _right;
+                rb_tree_node* _parent;
+                rb_tree_color _color;
+                rb_tree_node(const rb_tree_type_val& val_temp = rb_tree_type_val())
+                :_data(val_temp),_left(nullptr),_right(nullptr),_parent(nullptr),_color(red)
                 {
                     ;
                 }
             };
             template<typename T, typename Ref, typename Ptr>
-            class RBTreeiterator
+            class rb_tree_iterator
             { 
-                using self = RBTreeiterator<T,Ref,Ptr>;
-                using Node_iterator = RBTreeNode;
-                Node_iterator* _node_iterator_ptr;
+                using self = rb_tree_iterator<T,Ref,Ptr>;
+                using iterator_node = rb_tree_node;
+                iterator_node* _node_iterator_ptr;
             public:
                 using reference = Ref;
                 using pointer = Ptr;
-                RBTreeiterator(Node_iterator* Node_temp_)
+                rb_tree_iterator(iterator_node* Node_temp_)
                 :_node_iterator_ptr(Node_temp_)
                 {
                     ;
@@ -3347,8 +3347,8 @@ namespace template_container
                     else
                     {
                         //代表右子树已经走完，需要向上遍历，继续向上找右子树，如果停下来，说明走完整棵树或者是走到根节点
-                        Node_iterator* parent_temp = _node_iterator_ptr->_parent;
-                        Node_iterator* Sub_temp = _node_iterator_ptr;
+                        iterator_node* parent_temp = _node_iterator_ptr->_parent;
+                        iterator_node* Sub_temp = _node_iterator_ptr;
                         while(parent_temp != nullptr && Sub_temp == parent_temp->_right)
                         {
                             Sub_temp = parent_temp;
@@ -3369,7 +3369,7 @@ namespace template_container
                 {
                     if(_node_iterator_ptr->_left != nullptr)
                     {
-                        Node_iterator* Sub = _node_iterator_ptr->_left;
+                        iterator_node* Sub = _node_iterator_ptr->_left;
                         while(Sub->_right != nullptr)
                         {
                             Sub = Sub->_right;
@@ -3378,8 +3378,8 @@ namespace template_container
                     }
                     else
                     {
-                        Node_iterator* parent_temp = _node_iterator_ptr->_parent;
-                        Node_iterator* Sub_temp = _node_iterator_ptr;
+                        iterator_node* parent_temp = _node_iterator_ptr->_parent;
+                        iterator_node* Sub_temp = _node_iterator_ptr;
                         while(parent_temp != nullptr && Sub_temp == parent_temp->_left)
                         {
                             Sub_temp = parent_temp;
@@ -3405,14 +3405,14 @@ namespace template_container
                 }
             };
             template <typename iterator>
-            class RBTreeReverseIterator
+            class rb_tree_reverse_iterator
             {
-                using self = RBTreeReverseIterator<iterator>;
+                using self = rb_tree_reverse_iterator<iterator>;
                 using Ref  = typename iterator::reference;
                 using Ptr  = typename iterator::pointer;
                 iterator _it;
             public:
-                RBTreeReverseIterator(iterator it_temp)
+                rb_tree_reverse_iterator(iterator it_temp)
                 :_it(it_temp)
                 {
                     ;
@@ -3426,12 +3426,12 @@ namespace template_container
                     return &(*this);
                 }
                 // 前置自增：对应正向迭代器的自减
-                RBTreeReverseIterator& operator++() 
+                rb_tree_reverse_iterator& operator++() 
                 { 
                     --_it; 
                     return *this; 
                 }
-                RBTreeReverseIterator operator++(int) 
+                rb_tree_reverse_iterator operator++(int) 
                 { 
                     auto tmp = *this; 
                     --_it; 
@@ -3439,31 +3439,31 @@ namespace template_container
                 }
 
                 // 前置自减：对应正向迭代器的自增
-                RBTreeReverseIterator& operator--() 
+                rb_tree_reverse_iterator& operator--() 
                 { 
                     ++_it; 
                     return *this; 
                 }
-                RBTreeReverseIterator operator--(int) 
+                rb_tree_reverse_iterator operator--(int) 
                 { 
                     auto tmp = *this; 
                     ++_it; return tmp; 
                 }
 
                 // 比较运算符
-                bool operator==(const RBTreeReverseIterator& other) const 
+                bool operator==(const rb_tree_reverse_iterator& other) const 
                 { 
                     return _it == other._it; 
                 }
-                bool operator!=(const RBTreeReverseIterator& other) const 
+                bool operator!=(const rb_tree_reverse_iterator& other) const 
                 { 
                     return _it != other._it; 
                 }
             };
-            using container_node = RBTreeNode;
+            using container_node = rb_tree_node;
             container_node* _root;
-            DataExtractionFunction Element;
-            CompareImitationFunctionsRB function_policy;
+            key_value_functions element;
+            container_imitate_function function_policy;
             void left_revolve(container_node* parent_temp_Node)
             {
                 //传进来的值是发现该树平衡性被破坏的节点地址
@@ -3630,17 +3630,17 @@ namespace template_container
                     }
                 }
             }
-            static inline RBTreeColor Get_color(container_node* cur)
+            static inline rb_tree_color get_color(container_node* cur)
             {
-                return cur == nullptr ? BLACK : cur->_color;
+                return cur == nullptr ? black : cur->_color;
             }
-            static inline bool RED_Get(container_node* cur)
+            static inline bool red_get(container_node* cur)
             {
-                return Get_color(cur) == RED;
+                return get_color(cur) == red;
             }
-            static inline bool BLACK_Get(container_node* cur)
+            static inline bool black_get(container_node* cur)
             {
-                return Get_color(cur) == BLACK;
+                return get_color(cur) == black;
             }
             size_t _size() const 
             {
@@ -3671,30 +3671,30 @@ namespace template_container
                 return size;
             }
         public:
-            using iterator = RBTreeiterator<RBTreeTypeVal,RBTreeTypeVal&,RBTreeTypeVal*>; 
-            using const_iterator =  RBTreeiterator<RBTreeTypeVal const,RBTreeTypeVal const&,RBTreeTypeVal const*>;
+            using iterator = rb_tree_iterator<rb_tree_type_val,rb_tree_type_val&,rb_tree_type_val*>; 
+            using const_iterator =  rb_tree_iterator<rb_tree_type_val const,rb_tree_type_val const&,rb_tree_type_val const*>;
 
-            using reverse_iterator = RBTreeReverseIterator<iterator>;
-            using const_reverse_iterator = RBTreeReverseIterator<const_iterator>;
+            using reverse_iterator = rb_tree_reverse_iterator<iterator>;
+            using const_reverse_iterator = rb_tree_reverse_iterator<const_iterator>;
 
             using insert_result = template_container::practicality::pair<iterator,bool>;
-            RBTree()
+            rb_tree()
             {
                 _root = nullptr;
             }
-            RBTree(const RBTreeTypeVal& RB_Tree_Temp)
+            rb_tree(const rb_tree_type_val& RB_Tree_Temp)
             {
                 _root = new container_node(RB_Tree_Temp);
-                _root->_color = BLACK;
+                _root->_color = black;
             }
-            RBTree(RBTree&& RB_Tree_Temp)
-            :function_policy(RB_Tree_Temp.function_policy),Element(RB_Tree_Temp.Element)
+            rb_tree(rb_tree&& RB_Tree_Temp)
+            :function_policy(RB_Tree_Temp.function_policy),element(RB_Tree_Temp.element)
             {
                 _root = std::move(RB_Tree_Temp._root);
                 RB_Tree_Temp._root = nullptr;
             }
-            RBTree(const RBTree& RB_Tree_Temp)
-            :function_policy(RB_Tree_Temp.function_policy),Element(RB_Tree_Temp.Element)
+            rb_tree(const rb_tree& RB_Tree_Temp)
+            :function_policy(RB_Tree_Temp.function_policy),element(RB_Tree_Temp.element)
             {
                 if(_root != nullptr)
                 {
@@ -3770,7 +3770,7 @@ namespace template_container
                     }
                 }
             }
-            RBTree& operator=(const RBTree RB_Tree_Temp)
+            rb_tree& operator=(const rb_tree RB_Tree_Temp)
             {
                 if(this == &RB_Tree_Temp)
                 {
@@ -3780,33 +3780,33 @@ namespace template_container
                 {
                     Clear(_root);
                     template_container::algorithm::swap(RB_Tree_Temp._root,_root);
-                    template_container::algorithm::swap(RB_Tree_Temp.Element,Element);
+                    template_container::algorithm::swap(RB_Tree_Temp.element,element);
                     template_container::algorithm::swap(RB_Tree_Temp.function_policy,function_policy);
                     return *this;
                 }
             }
-            RBTree& operator=(RBTree&& RB_Tree_Temp)
+            rb_tree& operator=(rb_tree&& RB_Tree_Temp)
             {
                 if(this != &RB_Tree_Temp)
                 {
                     Clear();
                     function_policy = std::move(RB_Tree_Temp.function_policy);
-                    Element = std::move(RB_Tree_Temp.Element);
+                    element = std::move(RB_Tree_Temp.element);
                     _root = std::move(RB_Tree_Temp._root);
                     RB_Tree_Temp._root = nullptr;
                 }
                 return *this;
             }
-            ~RBTree()
+            ~rb_tree()
             {
                 Clear(_root);
             }
-            insert_result push(const RBTreeTypeVal& Val_Temp_)
+            insert_result push(const rb_tree_type_val& Val_Temp_)
             {
                 if(_root == nullptr)
                 {
                     _root = new container_node(Val_Temp_);
-                    _root->_color = BLACK;
+                    _root->_color = black;
                     return insert_result(iterator(_root),true);
                 }
                 else
@@ -3816,12 +3816,12 @@ namespace template_container
                     while(_ROOT_Temp != nullptr)
                     {
                         _ROOT_Temp_parent = _ROOT_Temp;
-                        if(!function_policy(Element(_ROOT_Temp->_data),Element(Val_Temp_)) && !function_policy(Element(Val_Temp_),Element(_ROOT_Temp->_data)))
+                        if(!function_policy(element(_ROOT_Temp->_data),element(Val_Temp_)) && !function_policy(element(Val_Temp_),element(_ROOT_Temp->_data)))
                         {
                             //插入失败，找到相同的值，开始返回
                             return insert_result(iterator(_ROOT_Temp),false);
                         }
-                        else if(function_policy(Element(_ROOT_Temp->_data),Element(Val_Temp_)))
+                        else if(function_policy(element(_ROOT_Temp->_data),element(Val_Temp_)))
                         {
                             _ROOT_Temp = _ROOT_Temp->_right;
                         }
@@ -3832,7 +3832,7 @@ namespace template_container
                     }
                     //找到插入位置
                     _ROOT_Temp = new container_node(Val_Temp_);
-                    if(function_policy(Element(_ROOT_Temp_parent->_data),Element(_ROOT_Temp->_data)))
+                    if(function_policy(element(_ROOT_Temp_parent->_data),element(_ROOT_Temp->_data)))
                     {
                         _ROOT_Temp_parent->_right = _ROOT_Temp;
                     }
@@ -3840,12 +3840,12 @@ namespace template_container
                     {
                         _ROOT_Temp_parent->_left = _ROOT_Temp;
                     }
-                    _ROOT_Temp->_color = RED;
+                    _ROOT_Temp->_color = red;
                     _ROOT_Temp->_parent = _ROOT_Temp_parent;
                     container_node* Return_Node_Push = _ROOT_Temp;
                     //保存节点
                     //开始调整，向上调整颜色节点
-                    while(_ROOT_Temp_parent != nullptr && _ROOT_Temp_parent->_color == RED )
+                    while(_ROOT_Temp_parent != nullptr && _ROOT_Temp_parent->_color == red )
                     {
                         container_node* _ROOT_Temp_Grandfther = _ROOT_Temp_parent->_parent;
                         if(_ROOT_Temp_Grandfther->_left == _ROOT_Temp_parent)
@@ -3856,11 +3856,11 @@ namespace template_container
                             //情况1：uncle存在，且为红
                             //情况2: uncle不存在，那么_ROOT_Temp就是新增节点
                             //情况3：uncle存在且为黑，说明_ROOT_Temp不是新增节点
-                            if(uncle && uncle->_color == RED)
+                            if(uncle && uncle->_color == red)
                             {
                                 //情况1：
-                                _ROOT_Temp_parent->_color = uncle->_color = BLACK;
-                                _ROOT_Temp_Grandfther->_color = RED;
+                                _ROOT_Temp_parent->_color = uncle->_color = black;
+                                _ROOT_Temp_Grandfther->_color = red;
                                 //颜色反转完成
                                 _ROOT_Temp = _ROOT_Temp_Grandfther;
                                 _ROOT_Temp_parent = _ROOT_Temp->_parent;
@@ -3878,19 +3878,19 @@ namespace template_container
                                 }
                                 //情况2：直接单旋
                                 right_revolve(_ROOT_Temp_Grandfther);
-                                _ROOT_Temp_Grandfther->_color = RED;
-                                _ROOT_Temp_parent->_color = BLACK;
+                                _ROOT_Temp_Grandfther->_color = red;
+                                _ROOT_Temp_parent->_color = black;
                             }
                         }
                         else
                         {
                             container_node* uncle = _ROOT_Temp_Grandfther->_left;
                             //与上面相反
-                            if(uncle && uncle->_color == RED)
+                            if(uncle && uncle->_color == red)
                             {
                                 //情况1：
-                                _ROOT_Temp_parent->_color = uncle->_color = BLACK;
-                                _ROOT_Temp_Grandfther->_color = RED;
+                                _ROOT_Temp_parent->_color = uncle->_color = black;
+                                _ROOT_Temp_Grandfther->_color = red;
                                 //颜色反转完成
                                 _ROOT_Temp = _ROOT_Temp_Grandfther;
                                 _ROOT_Temp_parent = _ROOT_Temp->_parent;
@@ -3907,12 +3907,12 @@ namespace template_container
                                 }
                                 //情况2：单旋
                                 left_revolve(_ROOT_Temp_Grandfther);
-                                _ROOT_Temp_Grandfther->_color = RED;
-                                _ROOT_Temp_parent->_color = BLACK;
+                                _ROOT_Temp_Grandfther->_color = red;
+                                _ROOT_Temp_parent->_color = black;
                             }
                         }
                     }
-                    _root->_color = BLACK;
+                    _root->_color = black;
                     return insert_result(iterator(Return_Node_Push),true);
                 }
             }
@@ -3947,7 +3947,7 @@ namespace template_container
                 {
                     return;
                 }
-                while(cur != _root && (cur == nullptr || BLACK_Get(cur)))
+                while(cur != _root && (cur == nullptr || black_get(cur)))
                 {
                     if(cur == _root)
                     {
@@ -3956,46 +3956,46 @@ namespace template_container
                     if(parent->_left == cur)
                     {
                         container_node* brother = parent->_right;
-                        if(RED_Get(brother))
+                        if(red_get(brother))
                         {
                             //情况1：兄弟节点为红
-                            brother->_color = BLACK;
-                            parent->_color = RED;
+                            brother->_color = black;
+                            parent->_color = red;
                             left_revolve(parent);
                             //调整后，兄弟节点为黑
                             //继续向下调整
                             brother = parent->_right;
                         }
-                        if( (brother != nullptr && BLACK_Get(brother))  && ( brother->_left == nullptr || (brother->_left)) && 
-                        (brother->_right == nullptr || BLACK_Get(brother->_right)))
+                        if( (brother != nullptr && black_get(brother))  && ( brother->_left == nullptr || (brother->_left)) && 
+                        (brother->_right == nullptr || black_get(brother->_right)))
                         {
                             //情况2：兄弟节点为黑，且兄弟节点两个子节点都为黑
-                            brother->_color = RED;
+                            brother->_color = red;
                             cur = parent;
                             parent = cur->_parent;
-                            if(cur->_color == RED)
+                            if(cur->_color == red)
                             {
-                                cur->_color = BLACK;
+                                cur->_color = black;
                                 break;
                             }
                         }
-                        else if( (brother != nullptr && BLACK_Get(brother)) &&  (brother->_right == nullptr || BLACK_Get(brother->_right)) && 
-                        (brother->_left != nullptr && RED_Get(brother->_left)) )
+                        else if( (brother != nullptr && black_get(brother)) &&  (brother->_right == nullptr || black_get(brother->_right)) && 
+                        (brother->_left != nullptr && red_get(brother->_left)) )
                         {
                             //情况3：兄弟节点为黑，兄弟节点左节点为红，右节点为黑
-                            brother->_left->_color = BLACK;
-                            brother->_color = RED;
+                            brother->_left->_color = black;
+                            brother->_color = red;
                             right_revolve(brother);
                             //调整后，兄弟节点为黑，兄弟节点右节点为红
                             //继续向下调整
                             brother = parent->_right;
                         }
-                        else if( (brother != nullptr ||BLACK_Get(brother))  && (brother->_right != nullptr && RED_Get(brother->_right)) )
+                        else if( (brother != nullptr ||black_get(brother))  && (brother->_right != nullptr && red_get(brother->_right)) )
                         {
                             //情况4：兄弟节点为黑，兄弟节点右节点为红
                             brother->_color = parent->_color;
-                            parent->_color = BLACK;
-                            brother->_right->_color = BLACK;
+                            parent->_color = black;
+                            brother->_right->_color = black;
                             left_revolve(parent);
                             cur = _root;
                             parent = cur->_parent;
@@ -4004,45 +4004,45 @@ namespace template_container
                     else
                     {
                         container_node* brother = parent->_left;
-                        if(RED_Get(brother))
+                        if(red_get(brother))
                         {
                             //情况1：兄弟节点为红
-                            brother->_color = BLACK;
-                            parent->_color = RED;
+                            brother->_color = black;
+                            parent->_color = red;
                             right_revolve(parent);
                             //调整后，兄弟节点为黑
                             brother = parent->_left;
                         }
-                        if( brother != nullptr && BLACK_Get(brother) && (brother->_left == nullptr || BLACK_Get(brother->_left)) &&
-                        (brother->_right == nullptr || BLACK_Get(brother->_right)) )
+                        if( brother != nullptr && black_get(brother) && (brother->_left == nullptr || black_get(brother->_left)) &&
+                        (brother->_right == nullptr || black_get(brother->_right)) )
                         {
                             //情况2：兄弟节点为黑，且兄弟节点两个子节点都为黑
-                            brother->_color = RED;
+                            brother->_color = red;
                             cur = parent;
                             parent = cur->_parent;
-                            if(cur->_color == RED)
+                            if(cur->_color == red)
                             {
-                                cur->_color = BLACK;
+                                cur->_color = black;
                                 break;
                             }
                         }
-                        else if (brother != nullptr && BLACK_Get(brother) && (brother->_right != nullptr && RED_Get(brother->_right)) &&
-                        (brother->_left == nullptr || BLACK_Get(brother->_left)) )
+                        else if (brother != nullptr && black_get(brother) && (brother->_right != nullptr && red_get(brother->_right)) &&
+                        (brother->_left == nullptr || black_get(brother->_left)) )
                         {
                             //情况3：兄弟节点为黑，兄弟节点左节点为红，右节点为黑
-                            brother->_right->_color = BLACK;
-                            brother->_color = RED;
+                            brother->_right->_color = black;
+                            brother->_color = red;
                             left_revolve(brother);
                             //调整后，兄弟节点为黑，兄弟节点右节点为红
                             //继续向下调整
                             brother = parent->_left;
                         }
-                        else if(brother != nullptr && BLACK_Get(brother) && brother->_left != nullptr && RED_Get(brother->_left))
+                        else if(brother != nullptr && black_get(brother) && brother->_left != nullptr && red_get(brother->_left))
                         {
                             //情况4：兄弟节点为黑，兄弟节点右节点为红
                             brother->_color = parent->_color;
-                            parent->_color = BLACK;
-                            brother->_left->_color = BLACK;
+                            parent->_color = black;
+                            brother->_left->_color = black;
                             right_revolve(parent);
                             cur = _root;
                             parent = cur->_parent;
@@ -4051,12 +4051,12 @@ namespace template_container
                 }
                 if(cur != nullptr)
                 {
-                    cur->_color = BLACK;
+                    cur->_color = black;
                 }
             }
-            insert_result pop(const RBTreeTypeVal& RB_Tree_Temp)
+            insert_result pop(const rb_tree_type_val& RB_Tree_Temp)
             {
-                RBTreeColor Delete_color;
+                rb_tree_color Delete_color;
                 if(_root == nullptr)
                 {
                     return insert_result(iterator(nullptr),false);
@@ -4069,13 +4069,13 @@ namespace template_container
                     container_node* _Adjust_Node_parent = nullptr;
                     while(_ROOT_Temp != nullptr)
                     {
-                        if(!function_policy(Element(_ROOT_Temp->_data),Element(RB_Tree_Temp)) && !function_policy(Element(RB_Tree_Temp),Element(_ROOT_Temp->_data)))
+                        if(!function_policy(element(_ROOT_Temp->_data),element(RB_Tree_Temp)) && !function_policy(element(RB_Tree_Temp),element(_ROOT_Temp->_data)))
                         {
                             break;
                         }
                         //防止父亲自赋值
                         _ROOT_Temp_parent = _ROOT_Temp;
-                        if(function_policy(Element(_ROOT_Temp->_data),Element(RB_Tree_Temp)))
+                        if(function_policy(element(_ROOT_Temp->_data),element(RB_Tree_Temp)))
                         {
                             _ROOT_Temp = _ROOT_Temp->_right;
                         }
@@ -4183,19 +4183,19 @@ namespace template_container
                         _right_min = nullptr;
                     }
                     //更新颜色
-                    if( Delete_color == BLACK )
+                    if( Delete_color == black )
                     {
                         //删除红色节点不影响性质
                         DeleteAdjust(_Adjust_Node,_Adjust_Node_parent);
                     }
                     if(_root != nullptr)
                     {
-                        _root->_color = BLACK;
+                        _root->_color = black;
                     }
                     return insert_result(iterator(nullptr),false);
                 }
             }
-            iterator find(const RBTreeTypeVal& RB_Tree_Temp_)
+            iterator find(const rb_tree_type_val& RB_Tree_Temp_)
             {
                 if(_root == nullptr)
                 {
@@ -4206,11 +4206,11 @@ namespace template_container
                     container_node* _iterator_ROOT = _root;
                     while(_iterator_ROOT != nullptr)
                     {
-                       if(!function_policy(Element(_iterator_ROOT->_data),Element(RB_Tree_Temp_)))
+                       if(!function_policy(element(_iterator_ROOT->_data),element(RB_Tree_Temp_)))
                        {
                            return iterator(_iterator_ROOT);
                        }
-                       else if(function_policy(Element(_iterator_ROOT->_data),Element(RB_Tree_Temp_)))
+                       else if(function_policy(element(_iterator_ROOT->_data),element(RB_Tree_Temp_)))
                        {
                            _iterator_ROOT = _iterator_ROOT->_right;
                        }
@@ -4294,13 +4294,13 @@ namespace template_container
             {
                 return const_reverse_iterator(nullptr);
             }
-            iterator operator[](const RBTreeTypeVal& RB_Tree_Temp)
+            iterator operator[](const rb_tree_type_val& RB_Tree_Temp)
             {
                 return find(RB_Tree_Temp);
             }
         };
         /*############################     hash 容器     ############################*/
-        template <typename HashTableTypeKey, typename HashTableTypeVal,typename HashTableFunctor,typename DataExtractionFunction = std::hash<HashTableTypeVal> >
+        template <typename HashTableTypeKey, typename HashTableTypeVal,typename HashTableFunctor,typename key_value_functions = std::hash<HashTableTypeVal> >
         class HashTable
         {
             class HashTableNode
@@ -4325,7 +4325,7 @@ namespace template_container
             size_t LoadFactor;                                         //负载因子   
             size_t Capacity;                                            //哈希表容量
             template_container::vector_container::vector<container_node*> _HashTable;   //哈希表
-            DataExtractionFunction DataExtractionFunction;           //哈希函数
+            key_value_functions key_value_functions;           //哈希函数
             container_node* PreviousData = nullptr;                             //上一个数据
             container_node* HeadData = nullptr;                                 //插入头数据
             template <typename Hash_Table_iterator_Key, typename Hash_Table_iterator_Val>
@@ -4382,7 +4382,7 @@ namespace template_container
             }
             HashTable(const HashTable& Temp_Hash_Table)
             : HashDataFunctor(Temp_Hash_Table.HashDataFunctor),_size(Temp_Hash_Table._size),LoadFactor(Temp_Hash_Table.LoadFactor),Capacity(Temp_Hash_Table.Capacity),
-            DataExtractionFunction(Temp_Hash_Table.DataExtractionFunction),PreviousData(nullptr),   HeadData(nullptr)
+            key_value_functions(Temp_Hash_Table.key_value_functions),PreviousData(nullptr),   HeadData(nullptr)
             {
                 if (Capacity == 0) 
                 {
@@ -4442,7 +4442,7 @@ namespace template_container
                 _size = std::move(Temp_Hash_Table._size);
                 LoadFactor = std::move(Temp_Hash_Table.LoadFactor);
                 Capacity = std::move(Temp_Hash_Table.Capacity);
-                DataExtractionFunction = std::move(Temp_Hash_Table.DataExtractionFunction);
+                key_value_functions = std::move(Temp_Hash_Table.key_value_functions);
                 PreviousData = std::move(Temp_Hash_Table.PreviousData);
                 HeadData = std::move(Temp_Hash_Table.HeadData);
                 HashDataFunctor = std::move(Temp_Hash_Table.HashDataFunctor);
@@ -4478,7 +4478,7 @@ namespace template_container
                 }
                 else
                 {
-                    size_t Temp_Hash = DataExtractionFunction(Temp_Key);
+                    size_t Temp_Hash = key_value_functions(Temp_Key);
                     size_t Hash_Location_data = Temp_Hash % Capacity;
                     //找到映射位置
                     container_node* _Temp_Node = _HashTable[Hash_Location_data];
@@ -4524,7 +4524,7 @@ namespace template_container
                     container_node* _Temp_Node = HeadData;
                     while( _Temp_Node != nullptr)
                     {
-                        size_t Temp_Hash = DataExtractionFunction(_Temp_Node->_data) % NewCapacity;
+                        size_t Temp_Hash = key_value_functions(_Temp_Node->_data) % NewCapacity;
                         //重新计算映射值
                         container_node* New_Mapping_location = _New_Hash_Table[Temp_Hash];
                         if(New_Mapping_location == nullptr)
@@ -4585,7 +4585,7 @@ namespace template_container
                     PreviousData = _Temp_previous_data;
                     //重新映射,按照插入链表顺序
                 }
-                size_t Temp_Hash = DataExtractionFunction(Temp_Val);
+                size_t Temp_Hash = key_value_functions(Temp_Val);
                 size_t Hash_Location_data = Temp_Hash % Capacity;
                 //找到映射位置
                 container_node* _Temp_Node = _HashTable[Hash_Location_data];
@@ -4614,7 +4614,7 @@ namespace template_container
                 {
                     return false;
                 }
-                size_t Temp_Hash = DataExtractionFunction(Temp_Val);
+                size_t Temp_Hash = key_value_functions(Temp_Val);
                 size_t Hash_Location_data = Temp_Hash % Capacity;
                 //找到映射位置
                 container_node* _Temp_Node = _HashTable[Hash_Location_data];
@@ -4674,7 +4674,7 @@ namespace template_container
                 }
                 else
                 {
-                    size_t Temp_Hash = DataExtractionFunction(Temp_Val);
+                    size_t Temp_Hash = key_value_functions(Temp_Val);
                     size_t Hash_Location_data = Temp_Hash % Capacity;
                     //找到映射位置
                     container_node* _Temp_Node = _HashTable[Hash_Location_data];
@@ -4773,7 +4773,7 @@ namespace template_container
                     return Temp_Key_.first;
                 }
             };
-            using RBTREE = base_class_c::RBTree <MapTypeK,KeyValType,Key_Val>;
+            using RBTREE = base_class_container::rb_tree <MapTypeK,KeyValType,Key_Val>;
             RBTREE ROOTMap;
         public:
             using iterator = typename RBTREE::iterator;
@@ -4784,7 +4784,7 @@ namespace template_container
             using Map_iterator = template_container::practicality::pair<iterator,bool>;
             ~tree_map()
             {
-                ROOTMap.~RBTree();
+                ROOTMap.~rb_tree();
             }
             tree_map& operator=(const tree_map& Map_Temp)
             {
@@ -4846,7 +4846,7 @@ namespace template_container
                     return (num_One + num_Two);
                 }
             };
-            using HashTable = base_class_c::HashTable<UnorderedMapTypeK,KeyValType,Key_Val,Hash_Functor>;
+            using HashTable = base_class_container::HashTable<UnorderedMapTypeK,KeyValType,Key_Val,Hash_Functor>;
             HashTable HashMap;
         public:
             using iterator = typename HashTable::iterator;
@@ -4883,7 +4883,7 @@ namespace template_container
                     return Temp_Key_;
                 }
             };
-            using RBTREE = base_class_c::RBTree<SetTypeK,KeyValType,Key_Val>;
+            using RBTREE = base_class_container::rb_tree<SetTypeK,KeyValType,Key_Val>;
             RBTREE ROOTSet;
         public:
             using iterator = typename RBTREE::iterator;
@@ -4909,7 +4909,7 @@ namespace template_container
                 return *this;
             }
             tree_set()                                               {  ;                                        }
-            ~tree_set()                                              {  ROOTSet.~RBTree();                    }
+            ~tree_set()                                              {  ROOTSet.~rb_tree();                    }
             tree_set(const tree_set& Set_Temp)                            {  ROOTSet = Set_Temp.ROOTSet;          }
             tree_set(tree_set&& Set_Temp)                                 {  ROOTSet=std::move(Set_Temp.ROOTSet); }
             tree_set(const KeyValType& Set_Temp)                   {  ROOTSet.push(Set_Temp);                }
@@ -4950,7 +4950,7 @@ namespace template_container
                     return Temp_Key_;
                 }
             };
-            using HashTable = template_container::base_class_c::HashTable<UnorderedSetTypeK,KeyValType,Key_Val,Hash_Functor>;
+            using HashTable = template_container::base_class_container::HashTable<UnorderedSetTypeK,KeyValType,Key_Val,Hash_Functor>;
             HashTable HashSet;
         public:
             using iterator = typename HashTable::iterator;
@@ -4979,7 +4979,7 @@ namespace template_container
         class BloomFilter
         {
             HashFunctorBloomFilter   _Hash;
-            using BitSet = template_container::base_class_c::BitSet;
+            using BitSet = template_container::base_class_container::BitSet;
             BitSet VectorBitSet;
             size_t _Capacity;
         public:
