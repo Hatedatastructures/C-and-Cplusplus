@@ -16,7 +16,7 @@ int main()
         auto t1 = std::chrono::high_resolution_clock::now();
         for(auto& i : AVL_Tree_array_pair)
         {
-            AVL_Tree_test_pair.push(i); //性能大头
+            AVL_Tree_test_pair.push(i); //性能大头,优化？
         }
         auto t2 = std::chrono::high_resolution_clock::now();
         std::cout << "插入个数:" << AVL_Tree_test_pair.size()  << " " << " 插入时间:" << std::chrono::duration<double, std::milli>(t2 - t1).count() << std::endl;

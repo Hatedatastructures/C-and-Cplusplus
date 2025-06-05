@@ -3940,7 +3940,7 @@ namespace template_container
                     对父节点进行旋转（左子树删除则右旋，右子树删除则左旋）。
                     结束调整。
             */
-            void DeleteAdjust(container_node* cur ,container_node* parent)
+            void delete_adjust(container_node* cur ,container_node* parent)
             {
                 //cur为被删节点的替代节点
                 if(cur == nullptr && parent == nullptr)
@@ -4186,7 +4186,7 @@ namespace template_container
                     if( Delete_color == black )
                     {
                         //删除红色节点不影响性质
-                        DeleteAdjust(_Adjust_Node,_Adjust_Node_parent);
+                        delete_adjust(_Adjust_Node,_Adjust_Node_parent);
                     }
                     if(_root != nullptr)
                     {
@@ -4760,76 +4760,76 @@ namespace template_container
         };
     }
     /*############################     tree_map 容器     ############################*/
-    namespace map_c
+    namespace map_container
     {
-        template <typename MapTypeK,typename MapTypeV>
+        template <typename map_type_k,typename map_type_v>
         class tree_map
         {
-            using KeyValType = template_container::practicality::pair<MapTypeK,MapTypeV>;
+            using key_val_type = template_container::practicality::pair<map_type_k,map_type_v>;
             struct Key_Val
             {
-                const MapTypeK& operator()(const KeyValType& Temp_Key_)
+                const map_type_k& operator()(const key_val_type& Temp_Key_)
                 {
                     return Temp_Key_.first;
                 }
             };
-            using RBTREE = base_class_container::rb_tree <MapTypeK,KeyValType,Key_Val>;
-            RBTREE ROOTMap;
+            using instance_rb = base_class_container::rb_tree <map_type_k,key_val_type,Key_Val>;
+            instance_rb instance_tree_map;
         public:
-            using iterator = typename RBTREE::iterator;
-            using const_iterator = typename RBTREE::const_iterator;
-            using reverse_iterator = typename RBTREE::reverse_iterator;
-            using const_reverse_iterator = typename RBTREE::const_reverse_iterator;
+            using iterator = typename instance_rb::iterator;
+            using const_iterator = typename instance_rb::const_iterator;
+            using reverse_iterator = typename instance_rb::reverse_iterator;
+            using const_reverse_iterator = typename instance_rb::const_reverse_iterator;
             
-            using Map_iterator = template_container::practicality::pair<iterator,bool>;
+            using map_iterator = template_container::practicality::pair<iterator,bool>;
             ~tree_map()
             {
-                ROOTMap.~rb_tree();
+                instance_tree_map.~rb_tree();
             }
-            tree_map& operator=(const tree_map& Map_Temp)
+            instance_tree_map& operator=(const instance_tree_map& Map_Temp)
             {
                 if(this != &Map_Temp)
                 {
-                    ROOTMap = Map_Temp.ROOTMap;
+                    instance_tree_map = Map_Temp.tree_map;
                 }
                 return *this;
             }
-            tree_map& operator=(tree_map&& Map_Temp)
+            instance_tree_map& operator=(instance_tree_map&& Map_Temp)
             {
                 if(this != &Map_Temp)
                 {
-                    ROOTMap = std::move(Map_Temp.ROOTMap);
+                    instance_tree_map = std::move(Map_Temp.tree_map);
                 }
                 return *this;
             }
             tree_map()                                                   {  ;                                     }
-            tree_map(const tree_map& Map_Temp)                                {  ROOTMap = Map_Temp.ROOTMap;       }
-            tree_map(tree_map&& Map_Temp)                                     {  ROOTMap=std::move(Map_Temp.ROOTMap);}
-            tree_map(const KeyValType& Map_Temp)                       {  ROOTMap.push(Map_Temp);             }
-            Map_iterator push(const KeyValType& Map_Temp)         {  return ROOTMap.push(Map_Temp);      }
-            Map_iterator pop(const KeyValType& Map_Temp)          {  return ROOTMap.pop(Map_Temp);       }
-            iterator find(const KeyValType& Map_Temp)             {  return ROOTMap.find(Map_Temp);      }
-            void middle_order_traversal()                           {  ROOTMap.middle_order_traversal();   }
-            void Pre_order_traversal()                              {  ROOTMap.Pre_order_traversal();      }
-            size_t size() const                                     {  return ROOTMap.size();              }
-            bool empty()                                            {  return ROOTMap.empty();             }
-            iterator begin()                                        {  return ROOTMap.begin();             }
-            iterator end()                                          {  return ROOTMap.end();               }
-            const_iterator cbegin()                                 {  return ROOTMap.cbegin();            }
-            const_iterator cend()                                   {  return ROOTMap.cend();              }
-            reverse_iterator rbegin()                               {  return ROOTMap.rbegin();            }
-            reverse_iterator rend()                                 {  return ROOTMap.rend();              }
-            const_reverse_iterator crbegin()                        {  return ROOTMap.crbegin();           }
-            const_reverse_iterator crend()                          {  return ROOTMap.crend();             }
-            iterator operator[](const KeyValType& Map_Temp)       {  return ROOTMap[Map_Temp];           }
+            tree_map(const instance_tree_map& Map_Temp)                                {  instance_tree_map = Map_Temp.tree_map;       }
+            tree_map(instance_tree_map&& Map_Temp)                                     {  tree_map=std::move(Map_Temp.tree_map);}
+            tree_map(const key_val_type& Map_Temp)                       {  instance_tree_map.push(Map_Temp);             }
+            map_iterator push(const key_val_type& Map_Temp)         {  return instance_tree_map.push(Map_Temp);      }
+            map_iterator pop(const key_val_type& Map_Temp)          {  return instance_tree_map.pop(Map_Temp);       }
+            iterator find(const key_val_type& Map_Temp)             {  return instance_tree_map.find(Map_Temp);      }
+            void middle_order_traversal()                           {  instance_tree_map.middle_order_traversal();   }
+            void Pre_order_traversal()                              {  instance_tree_map.Pre_order_traversal();      }
+            size_t size() const                                     {  return instance_tree_map.size();              }
+            bool empty()                                            {  return instance_tree_map.empty();             }
+            iterator begin()                                        {  return instance_tree_map.begin();             }
+            iterator end()                                          {  return instance_tree_map.end();               }
+            const_iterator cbegin()                                 {  return instance_tree_map.cbegin();            }
+            const_iterator cend()                                   {  return instance_tree_map.cend();              }
+            reverse_iterator rbegin()                               {  return instance_tree_map.rbegin();            }
+            reverse_iterator rend()                                 {  return instance_tree_map.rend();              }
+            const_reverse_iterator crbegin()                        {  return instance_tree_map.crbegin();           }
+            const_reverse_iterator crend()                          {  return instance_tree_map.crend();             }
+            iterator operator[](const key_val_type& Map_Temp)       {  return instance_tree_map[Map_Temp];           }
         };
         template <typename UnorderedMapTypeK,typename UnorderedMapTypeV>
         class hash_map
         {
-            using KeyValType = template_container::practicality::pair<UnorderedMapTypeK,UnorderedMapTypeV>;
+            using key_val_type = template_container::practicality::pair<UnorderedMapTypeK,UnorderedMapTypeV>;
             struct Key_Val
             {
-                const UnorderedMapTypeK& operator()(const KeyValType& Temp_Key_)
+                const UnorderedMapTypeK& operator()(const key_val_type& Temp_Key_)
                 {
                     return Temp_Key_.first;
                 }
@@ -4837,7 +4837,7 @@ namespace template_container
             class Hash_Functor
             {
             public:
-                size_t operator()(const KeyValType& Temp_Key_)
+                size_t operator()(const key_val_type& Temp_Key_)
                 {
                     size_t num_One =  template_container::imitation_functions::hash_imitation_functions()(Temp_Key_.first);
                     num_One = num_One * 31;
@@ -4846,17 +4846,17 @@ namespace template_container
                     return (num_One + num_Two);
                 }
             };
-            using HashTable = base_class_container::HashTable<UnorderedMapTypeK,KeyValType,Key_Val,Hash_Functor>;
+            using HashTable = base_class_container::HashTable<UnorderedMapTypeK,key_val_type,Key_Val,Hash_Functor>;
             HashTable HashMap;
         public:
             using iterator = typename HashTable::iterator;
             using const_iterator = typename HashTable::const_iterator;
             hash_map()                                     {   ;                                 }  
             ~hash_map()                                    {  HashMap.~HashTable();           }
-            hash_map(const KeyValType& Temp_Key_)        {  HashMap.push(Temp_Key_);         }
-            bool push(const KeyValType& Temp_Key_)            {  return HashMap.push(Temp_Key_);  }
-            bool pop(const KeyValType& Temp_Key_)             {  return HashMap.pop(Temp_Key_);   }
-            iterator find(const KeyValType& Temp_Key_)        {  return HashMap.find(Temp_Key_);  }
+            hash_map(const key_val_type& Temp_Key_)        {  HashMap.push(Temp_Key_);         }
+            bool push(const key_val_type& Temp_Key_)            {  return HashMap.push(Temp_Key_);  }
+            bool pop(const key_val_type& Temp_Key_)             {  return HashMap.pop(Temp_Key_);   }
+            iterator find(const key_val_type& Temp_Key_)        {  return HashMap.find(Temp_Key_);  }
             size_t size()                                       {  return HashMap.size();           }
             size_t size() const                                 {  return HashMap.size();           }
             size_t capacity() const                             {  return HashMap.capacity();       } 
@@ -4865,7 +4865,7 @@ namespace template_container
             iterator end()                                      {  return HashMap.end();            }
             const_iterator cbegin()                             {  return HashMap.cbegin();         }
             const_iterator cend()                               {  return HashMap.cend();           }
-            iterator operator[](const KeyValType& Temp_Key_)  {  return HashMap[Temp_Key_];       }
+            iterator operator[](const key_val_type& Temp_Key_)  {  return HashMap[Temp_Key_];       }
         };
     }
     /*############################     tree_set 容器     ############################*/
@@ -4874,22 +4874,22 @@ namespace template_container
         template <typename SetTypeK>
         class tree_set
         {
-            using KeyValType = SetTypeK;
+            using key_val_type = SetTypeK;
             struct Key_Val
             {
                 /* 仿函数，返回比较的值 */
-                const SetTypeK& operator()(const KeyValType& Temp_Key_)
+                const SetTypeK& operator()(const key_val_type& Temp_Key_)
                 {
                     return Temp_Key_;
                 }
             };
-            using RBTREE = base_class_container::rb_tree<SetTypeK,KeyValType,Key_Val>;
-            RBTREE ROOTSet;
+            using instance_rb = base_class_container::rb_tree<SetTypeK,key_val_type,Key_Val>;
+            instance_rb ROOTSet;
         public:
-            using iterator = typename RBTREE::iterator;
-            using const_iterator = typename RBTREE::const_iterator;
-            using reverse_iterator = typename RBTREE::reverse_iterator;
-            using const_reverse_iterator = typename RBTREE::const_reverse_iterator;
+            using iterator = typename instance_rb::iterator;
+            using const_iterator = typename instance_rb::const_iterator;
+            using reverse_iterator = typename instance_rb::reverse_iterator;
+            using const_reverse_iterator = typename instance_rb::const_reverse_iterator;
             
             using Set_iterator = template_container::practicality::pair<iterator,bool>;
             tree_set& operator=(const tree_set& Set_Temp)             
@@ -4912,10 +4912,10 @@ namespace template_container
             ~tree_set()                                              {  ROOTSet.~rb_tree();                    }
             tree_set(const tree_set& Set_Temp)                            {  ROOTSet = Set_Temp.ROOTSet;          }
             tree_set(tree_set&& Set_Temp)                                 {  ROOTSet=std::move(Set_Temp.ROOTSet); }
-            tree_set(const KeyValType& Set_Temp)                   {  ROOTSet.push(Set_Temp);                }
-            Set_iterator push(const KeyValType& Set_Temp)     {  return ROOTSet.push(Set_Temp);         }
-            Set_iterator pop(const KeyValType& Set_Temp)      {  return ROOTSet.pop(Set_Temp);          }
-            iterator find(const KeyValType& Set_Temp)         {  return ROOTSet.find(Set_Temp);         }
+            tree_set(const key_val_type& Set_Temp)                   {  ROOTSet.push(Set_Temp);                }
+            Set_iterator push(const key_val_type& Set_Temp)     {  return ROOTSet.push(Set_Temp);         }
+            Set_iterator pop(const key_val_type& Set_Temp)      {  return ROOTSet.pop(Set_Temp);          }
+            iterator find(const key_val_type& Set_Temp)         {  return ROOTSet.find(Set_Temp);         }
             void middle_order_traversal()                       {  ROOTSet.middle_order_traversal();      }    
             void Pre_order_traversal()                          {  ROOTSet.Pre_order_traversal();         }  
             size_t size() const                                 {  return ROOTSet.size();                 }
@@ -4928,16 +4928,16 @@ namespace template_container
             reverse_iterator rend()                             {  return ROOTSet.rend();                 }
             const_reverse_iterator crbegin()                    {  return ROOTSet.crbegin();              }
             const_reverse_iterator crend()                      {  return ROOTSet.crend();                }
-            iterator operator[](const KeyValType& Set_Temp)   {  return ROOTSet[Set_Temp];              }
+            iterator operator[](const key_val_type& Set_Temp)   {  return ROOTSet[Set_Temp];              }
         };
         template <typename UnorderedSetTypeK>
         class hash_set
         {
-            using KeyValType = UnorderedSetTypeK;
+            using key_val_type = UnorderedSetTypeK;
             class Hash_Functor
             {
             public:
-                size_t operator()(const KeyValType& Temp_Key_)
+                size_t operator()(const key_val_type& Temp_Key_)
                 {
                     return template_container::imitation_functions::hash_imitation_functions()(Temp_Key_)* 131;
                 }
@@ -4945,21 +4945,21 @@ namespace template_container
             class Key_Val
             {
             public:
-                const KeyValType& operator()(const KeyValType& Temp_Key_)
+                const key_val_type& operator()(const key_val_type& Temp_Key_)
                 {
                     return Temp_Key_;
                 }
             };
-            using HashTable = template_container::base_class_container::HashTable<UnorderedSetTypeK,KeyValType,Key_Val,Hash_Functor>;
+            using HashTable = template_container::base_class_container::HashTable<UnorderedSetTypeK,key_val_type,Key_Val,Hash_Functor>;
             HashTable HashSet;
         public:
             using iterator = typename HashTable::iterator;
             using const_iterator = typename HashTable::const_iterator;
             hash_set()                                     {  ;                                        }
             ~hash_set()                                    {   HashSet.~HashTable();                }
-            bool push(const KeyValType& Set_Temp)             {  return HashSet.push(Set_Temp);         }
-            bool pop(const KeyValType& Set_Temp)              {  return HashSet.pop(Set_Temp);          }            
-            iterator find(const KeyValType& Set_Temp)         {  return HashSet.find(Set_Temp);         }
+            bool push(const key_val_type& Set_Temp)             {  return HashSet.push(Set_Temp);         }
+            bool pop(const key_val_type& Set_Temp)              {  return HashSet.pop(Set_Temp);          }            
+            iterator find(const key_val_type& Set_Temp)         {  return HashSet.find(Set_Temp);         }
             size_t size()                                       {  return HashSet.size();                 }
             bool empty()                                        {  return HashSet.empty();                }
             size_t capacity()                                   {  return HashSet.capacity();             }
@@ -4969,7 +4969,7 @@ namespace template_container
             iterator end()                                      {  return HashSet.end();                  }
             const_iterator cbegin()                             {  return HashSet.cbegin();               }
             const_iterator cend()                               {  return HashSet.cend();                 }
-            iterator operator[](const KeyValType& Set_Temp)   {  return HashSet[Set_Temp];              }
+            iterator operator[](const key_val_type& Set_Temp)   {  return HashSet[Set_Temp];              }
         };
     }
     /*############################     BloomFilter 容器     ############################*/

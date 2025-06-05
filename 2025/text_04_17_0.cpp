@@ -4764,24 +4764,24 @@ namespace my_template
     /*############################     tree_map 容器     ############################*/
     namespace MapContainer
     {
-        template <typename MapTypeK,typename MapTypeV>
+        template <typename map_type_k,typename map_type_v>
         class tree_map
         {
-            using KeyValType = my_template::practicality::pair<MapTypeK,MapTypeV>;
+            using KeyValType = my_template::practicality::pair<map_type_k,map_type_v>;
             struct Key_Val
             {
-                const MapTypeK& operator()(const KeyValType& Temp_Key_)
+                const map_type_k& operator()(const KeyValType& Temp_Key_)
                 {
                     return Temp_Key_.first;
                 }
             };
-            using RBTREE = BaseClassContainer::rb_tree <MapTypeK,KeyValType,Key_Val>;
-            RBTREE ROOTMap;
+            using instance_rb = BaseClassContainer::rb_tree <map_type_k,KeyValType,Key_Val>;
+            instance_rb ROOTMap;
         public:
-            using iterator = typename RBTREE::iterator;
-            using const_iterator = typename RBTREE::const_iterator;
-            using reverse_iterator = typename RBTREE::reverse_iterator;
-            using const_reverse_iterator = typename RBTREE::const_reverse_iterator;
+            using iterator = typename instance_rb::iterator;
+            using const_iterator = typename instance_rb::const_iterator;
+            using reverse_iterator = typename instance_rb::reverse_iterator;
+            using const_reverse_iterator = typename instance_rb::const_reverse_iterator;
             
             using Map_iterator = my_template::practicality::pair<iterator,bool>;
             ~tree_map()
@@ -4885,13 +4885,13 @@ namespace my_template
                     return Temp_Key_;
                 }
             };
-            using RBTREE = BaseClassContainer::rb_tree<SetTypeK,KeyValType,Key_Val>;
-            RBTREE ROOTSet;
+            using instance_rb = BaseClassContainer::rb_tree<SetTypeK,KeyValType,Key_Val>;
+            instance_rb ROOTSet;
         public:
-            using iterator = typename RBTREE::iterator;
-            using const_iterator = typename RBTREE::const_iterator;
-            using reverse_iterator = typename RBTREE::reverse_iterator;
-            using const_reverse_iterator = typename RBTREE::const_reverse_iterator;
+            using iterator = typename instance_rb::iterator;
+            using const_iterator = typename instance_rb::const_iterator;
+            using reverse_iterator = typename instance_rb::reverse_iterator;
+            using const_reverse_iterator = typename instance_rb::const_reverse_iterator;
             
             using Set_iterator = my_template::practicality::pair<iterator,bool>;
             tree_set& operator=(const tree_set& Set_Temp)             

@@ -573,47 +573,47 @@ int main()
         time_t AVL_Tree_num4 = clock();
         std::cout << "插入个数:" << AVL_Tree_test.size()  << " " << " 插入时间:" << AVL_Tree_num4 - AVL_Tree_num3 << std::endl;
     }
-    // /*            tree_map 测试             */
-    // {
-    //     template_container::map_c::tree_map<size_t,size_t> Map_Test;
-    //     size_t size = 10;
-    //     template_container::vector_container::vector<template_container::practicality::pair<size_t,size_t>> arr;
-    //     size_t l = 0;
-    //     for(size_t i = 0 ; i < size; i++ ,l = i)
-    //     {
-    //         arr.push_back(template_container::practicality::pair<size_t,size_t>(i,l));
-    //     }
-    //     std::cout << arr << std::endl;
-    //     for(auto& j : arr)
-    //     {
-    //         Map_Test.push(j);
-    //         std::cout << "前序" << " ";
-    //         Map_Test.pre_order_traversal();
-    //         std::cout << "   " << "中序:"<< Map_Test.size() << " " << Map_Test.empty() << " ";
-    //         Map_Test.middle_order_traversal();
-    //         std::cout << std::endl;
-    //     }
-    //     std::cout << Map_Test.empty() << " ";
-    //     std::cout << "正向" << std::endl;
-    //     for(const auto& tree_map : Map_Test)
-    //     {
-    //         std::cout << tree_map << " ";
-    //     }
-    //     std::cout << "反向" << std::endl;
-    //     for(auto it = Map_Test.crbegin(); it != Map_Test.crend(); it++)
-    //     {
-    //         std::cout << *it << " ";
-    //     }
-    //     for(auto& j : arr)
-    //     {
-    //         Map_Test.pop(j);
-    //         // std::cout << "前序" << " ";
-    //         // Map_Test.pre_order_traversal();
-    //         std::cout << "   " << "中序:"<< Map_Test.size() << " " << Map_Test.empty() << " ";
-    //         Map_Test.middle_order_traversal();
-    //         std::cout << std::endl;
-    //     }
-    // }
+    /*            tree_map 测试             */
+    {
+        template_container::map_container::tree_map<size_t,size_t> Map_Test;
+        size_t size = 10;
+        template_container::vector_container::vector<template_container::practicality::pair<size_t,size_t>> arr;
+        size_t l = 0;
+        for(size_t i = 0 ; i < size; i++ ,l = i)
+        {
+            arr.push_back(template_container::practicality::pair<size_t,size_t>(i,l));
+        }
+        std::cout << arr << std::endl;
+        for(auto& j : arr)
+        {
+            Map_Test.push(j);
+            std::cout << "前序" << " ";
+            Map_Test.pre_order_traversal();
+            std::cout << "   " << "中序:"<< Map_Test.size() << " " << Map_Test.empty() << " ";
+            Map_Test.middle_order_traversal();
+            std::cout << std::endl;
+        }
+        std::cout << Map_Test.empty() << " ";
+        std::cout << "正向" << std::endl;
+        for(const auto& tree_map : Map_Test)
+        {
+            std::cout << tree_map << " ";
+        }
+        std::cout << "反向" << std::endl;
+        for(auto it = Map_Test.crbegin(); it != Map_Test.crend(); it++)
+        {
+            std::cout << *it << " ";
+        }
+        for(auto& j : arr)
+        {
+            Map_Test.pop(j);
+            // std::cout << "前序" << " ";
+            // Map_Test.pre_order_traversal();
+            std::cout << "   " << "中序:"<< Map_Test.size() << " " << Map_Test.empty() << " ";
+            Map_Test.middle_order_traversal();
+            std::cout << std::endl;
+        }
+    }
     // /*            tree_set 测试             */
     // {
     //     template_container::set_c::tree_set<size_t> Set_test;
@@ -646,7 +646,7 @@ int main()
     // }
     // /*            hash_map 测试             */
     // {
-    //     template_container::map_c::hash_map<size_t,size_t> unordered_Map_test;
+    //     template_container::map_container::hash_map<size_t,size_t> unordered_Map_test;
     //     size_t size = 23;
     //     template_container::vector_container::vector<template_container::practicality::pair<size_t,size_t>> arr;
     //     size_t l = 0;
@@ -788,24 +788,24 @@ int main()
     //     std::cout << sum << std::endl;
     // }
     //问题vector容器resize函数问题啊大大。
-    {
-        //尝试构建线程池来测试给个容器性能开销
-        using Vector_pair =  template_container::vector_container::vector<template_container::practicality::pair<size_t,size_t>>;
-        template_container::vector_container::vector<Vector_pair> array_vector;
-        size_t size = 20000;
-        auto t1 = std::chrono::high_resolution_clock::now();
-        for(size_t i = 0; i < size; i++)
-        {
-            Vector_pair temp;
-            for(size_t j = 0; j < size; j++)
-            {
-                temp.push_back(template_container::practicality::pair<size_t,size_t>(j,j));
-            }
-            array_vector.push_back(std::move(temp));
-        }
-        auto t2 = std::chrono::high_resolution_clock::now();
-        std::cout << "push_back函数时间：" << std::chrono::duration<double, std::milli>(t2 - t1).count() << std::endl;
-    }
+    // {
+    //     //尝试构建线程池来测试给个容器性能开销
+    //     using Vector_pair =  template_container::vector_container::vector<template_container::practicality::pair<size_t,size_t>>;
+    //     template_container::vector_container::vector<Vector_pair> array_vector;
+    //     size_t size = 20000;
+    //     auto t1 = std::chrono::high_resolution_clock::now();
+    //     for(size_t i = 0; i < size; i++)
+    //     {
+    //         Vector_pair temp;
+    //         for(size_t j = 0; j < size; j++)
+    //         {
+    //             temp.push_back(template_container::practicality::pair<size_t,size_t>(j,j));
+    //         }
+    //         array_vector.push_back(std::move(temp));
+    //     }
+    //     auto t2 = std::chrono::high_resolution_clock::now();
+    //     std::cout << "push_back函数时间：" << std::chrono::duration<double, std::milli>(t2 - t1).count() << std::endl;
+    // }
     {
         // set::vector<set::pair<set::list,set::queue>> array_list_stack;
         template_container::algorithm::hash_algorithm::hash_function <int,template_container::imitation_functions::hash_imitation_functions> hash;
