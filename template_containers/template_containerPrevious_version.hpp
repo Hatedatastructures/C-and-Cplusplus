@@ -316,31 +316,31 @@ namespace template_container
             {
             public:
                 hash_if hash_imitation_functions_object;
-                size_t Hash_SDBMHash(const hash_algorithm_type& data_hash) noexcept
+                size_t hash_sdmmhash(const hash_algorithm_type& data_hash) noexcept
                 {
                     size_t return_value = hash_imitation_functions_object(data_hash);
                     return_value = 65599 * return_value;
                     return return_value;
                 }
-                size_t Hash_BKDRHash(const hash_algorithm_type& data_hash) noexcept
+                size_t hash_bkdrhash(const hash_algorithm_type& data_hash) noexcept
                 {
                     size_t return_value = hash_imitation_functions_object(data_hash);
                     return_value = 131 * return_value;
                     return return_value;
                 }
-                size_t Hash_DJBHash(const hash_algorithm_type& data_hash) noexcept
+                size_t hash_djbhash(const hash_algorithm_type& data_hash) noexcept
                 {
                     size_t return_value = hash_imitation_functions_object(data_hash);
                     return_value = 33 * return_value;
                     return return_value;
                 }
-                size_t Hash_APHash(const hash_algorithm_type& data_hash) noexcept
+                size_t hash_aphash(const hash_algorithm_type& data_hash) noexcept
                 {
                     size_t return_value = hash_imitation_functions_object(data_hash);
                     return_value = return_value * 1031;
                     return return_value;
                 }
-                size_t Hash_PJWHash(const hash_algorithm_type& data_hash) noexcept
+                size_t hash_pjwhash(const hash_algorithm_type& data_hash) noexcept
                 {
                     size_t return_value = hash_imitation_functions_object(data_hash);
                     return_value = (return_value << 2) + return_value;
@@ -3532,8 +3532,8 @@ namespace template_container
     namespace base_class_container
     {
         /*############################     rb_tree 容器     ############################*/
-        template <typename rb_tree_type_key, typename rb_tree_type_val, typename key_value_functions,
-        typename container_imitate_function = template_container::imitation_functions::less<rb_tree_type_key> >
+        template <typename key_type, typename val_type, typename key_value_functions,
+        typename container_imitate_function = template_container::imitation_functions::less<key_type> >
         class rb_tree
         {
         private:
@@ -3545,12 +3545,12 @@ namespace template_container
             class rb_tree_node
             {
             public:
-                rb_tree_type_val _data;
+                val_type _data;
                 rb_tree_node* _left;
                 rb_tree_node* _right;
                 rb_tree_node* _parent;
                 rb_tree_color _color;
-                rb_tree_node(const rb_tree_type_val& ValTemp = rb_tree_type_val())
+                rb_tree_node(const val_type& ValTemp = val_type())
                 :_data(ValTemp),_left(nullptr),_right(nullptr),_parent(nullptr),_color(red)
                 {
                     ;
@@ -3924,18 +3924,18 @@ namespace template_container
                 return size;
             }
         public:
-            using iterator = rb_tree_iterator<rb_tree_type_val,rb_tree_type_val&,rb_tree_type_val*>; 
-            using const_iterator =  rb_tree_iterator<rb_tree_type_val const,rb_tree_type_val const&,rb_tree_type_val const*>;
+            using iterator = rb_tree_iterator<val_type,val_type&,val_type*>; 
+            using const_iterator =  rb_tree_iterator<val_type const,val_type const&,val_type const*>;
 
             using reverse_iterator = rb_tree_reverse_iterator<iterator>;
             using const_reverse_iterator = rb_tree_reverse_iterator<const_iterator>;
 
-            using insert_result = template_container::practicality::pair<iterator,bool>;
+            using return_pair_value = template_container::practicality::pair<iterator,bool>;
             rb_tree()
             {
                 _root = nullptr;
             }
-            rb_tree(const rb_tree_type_val& RBTreeTemp)
+            rb_tree(const val_type& RBTreeTemp)
             {
                 _root = new container_node(RBTreeTemp);
                 _root->_color = black;
@@ -4054,13 +4054,13 @@ namespace template_container
             {
                 clear(_root);
             }
-            insert_result push(const rb_tree_type_val& Val_Temp_)
+            return_pair_value push(const val_type& Val_Temp_)
             {
                 if(_root == nullptr)
                 {
                     _root = new container_node(Val_Temp_);
                     _root->_color = black;
-                    return insert_result(iterator(_root),true);
+                    return return_pair_value(iterator(_root),true);
                 }
                 else
                 {
@@ -4072,7 +4072,7 @@ namespace template_container
                         if(!function_policy(element(ROOT_Temp->_data),element(Val_Temp_)) && !function_policy(element(Val_Temp_),element(ROOT_Temp->_data)))
                         {
                             //插入失败，找到相同的值，开始返回
-                            return insert_result(iterator(ROOT_Temp),false);
+                            return return_pair_value(iterator(ROOT_Temp),false);
                         }
                         else if(function_policy(element(ROOT_Temp->_data),element(Val_Temp_)))
                         {
@@ -4166,7 +4166,7 @@ namespace template_container
                         }
                     }
                     _root->_color = black;
-                    return insert_result(iterator(Return_Node_Push),true);
+                    return return_pair_value(iterator(Return_Node_Push),true);
                 }
             }
             /*
@@ -4307,12 +4307,12 @@ namespace template_container
                     current_node->_color = black;
                 }
             }
-            insert_result pop(const rb_tree_type_val& RBTreeTemp)
+            return_pair_value pop(const val_type& RBTreeTemp)
             {
                 rb_tree_color DeleteColor;
                 if(_root == nullptr)
                 {
-                    return insert_result(iterator(nullptr),false);
+                    return return_pair_value(iterator(nullptr),false);
                 }
                 else
                 {
@@ -4339,7 +4339,7 @@ namespace template_container
                     }
                     if(ROOT_Temp == nullptr )
                     {
-                        return insert_result(iterator(nullptr),false);
+                        return return_pair_value(iterator(nullptr),false);
                     }
                     //找到位置开始删除
                     DeleteColor = ROOT_Temp->_color;
@@ -4445,10 +4445,10 @@ namespace template_container
                     {
                         _root->_color = black;
                     }
-                    return insert_result(iterator(nullptr),false);
+                    return return_pair_value(iterator(nullptr),false);
                 }
             }
-            iterator find(const rb_tree_type_val& RB_Tree_Temp_)
+            iterator find(const val_type& RB_Tree_Temp_)
             {
                 if(_root == nullptr)
                 {
@@ -4547,7 +4547,7 @@ namespace template_container
             {
                 return const_reverse_iterator(nullptr);
             }
-            iterator operator[](const rb_tree_type_val& RBTreeTemp)
+            iterator operator[](const val_type& RBTreeTemp)
             {
                 return find(RBTreeTemp);
             }
@@ -5020,14 +5020,14 @@ namespace template_container
         class tree_map
         {
             using key_val_type = template_container::practicality::pair<map_type_k,map_type_v>;
-            struct Key_Val
+            struct key_val
             {
                 const map_type_k& operator()(const key_val_type& TempKey)
                 {
                     return TempKey.first;
                 }
             };
-            using instance_rb = base_class_container::rb_tree <map_type_k,key_val_type,Key_Val>;
+            using instance_rb = base_class_container::rb_tree <map_type_k,key_val_type,key_val>;
             instance_rb instance_tree_map;
         public:
             using iterator = typename instance_rb::iterator;
@@ -5081,7 +5081,7 @@ namespace template_container
         class hash_map
         {
             using key_val_type = template_container::practicality::pair<UnorderedMapTypeK,UnorderedMapTypeV>;
-            struct Key_Val
+            struct key_val
             {
                 const UnorderedMapTypeK& operator()(const key_val_type& TempKey)
                 {
@@ -5100,7 +5100,7 @@ namespace template_container
                     return (num_One + num_Two);
                 }
             };
-            using HashTable = base_class_container::HashTable<UnorderedMapTypeK,key_val_type,Key_Val,Hash_Functor>;
+            using HashTable = base_class_container::HashTable<UnorderedMapTypeK,key_val_type,key_val,Hash_Functor>;
             HashTable HashMap;
         public:
             using iterator = typename HashTable::iterator;
@@ -5123,34 +5123,34 @@ namespace template_container
         };
     }
     /*############################     tree_set 容器     ############################*/
-    namespace set_c
+    namespace set_container
     {
-        template <typename SetTypeK>
+        template <typename set_type>
         class tree_set
         {
-            using key_val_type = SetTypeK;
-            struct Key_Val
+            using key_val_type = set_type;
+            struct key_val
             {
                 /* 仿函数，返回比较的值 */
-                const SetTypeK& operator()(const key_val_type& TempKey)
+                const set_type& operator()(const key_val_type& TempKey)
                 {
                     return TempKey;
                 }
             };
-            using instance_rb = base_class_container::rb_tree<SetTypeK,key_val_type,Key_Val>;
-            instance_rb ROOTSet;
+            using instance_rb = base_class_container::rb_tree<set_type,key_val_type,key_val>;
+            instance_rb instance_tree_set;
         public:
             using iterator = typename instance_rb::iterator;
             using const_iterator = typename instance_rb::const_iterator;
             using reverse_iterator = typename instance_rb::reverse_iterator;
             using const_reverse_iterator = typename instance_rb::const_reverse_iterator;
             
-            using Set_iterator = template_container::practicality::pair<iterator,bool>;
+            using set_iterator = template_container::practicality::pair<iterator,bool>;
             tree_set& operator=(const tree_set& SetTemp)             
             {  
                 if(this!= &SetTemp)                     
                 {  
-                    ROOTSet = SetTemp.ROOTSet;      
+                    instance_tree_set = SetTemp.instance_tree_set;      
                 }  
                 return *this; 
             }
@@ -5158,31 +5158,31 @@ namespace template_container
             {
                 if(this!= &SetTemp)                     
                 {  
-                    ROOTSet = std::move(SetTemp.ROOTSet);
+                    instance_tree_set = std::move(SetTemp.instance_tree_set);
                 }
                 return *this;
             }
             tree_set()                                               {  ;                                      }
-            ~tree_set()                                              {  ROOTSet.~rb_tree();                     }
-            tree_set(const tree_set& SetTemp)                             {  ROOTSet = SetTemp.ROOTSet;             }
-            tree_set(tree_set&& SetTemp)                                  {  ROOTSet=std::move(SetTemp.ROOTSet);    }
-            tree_set(const key_val_type& SetTemp)                 {  ROOTSet.push(SetTemp);                 }
-            Set_iterator push(const key_val_type& SetTemp)        {  return ROOTSet.push(SetTemp);          }
-            Set_iterator pop(const key_val_type& SetTemp)         {  return ROOTSet.pop(SetTemp);           }
-            iterator find(const key_val_type& SetTemp)            {  return ROOTSet.find(SetTemp);          }
-            void middle_order_traversal()                       {  ROOTSet.middle_order_traversal();      }    
-            void pre_order_traversal()                          {  ROOTSet.pre_order_traversal();         }  
-            size_t size() const                                 {  return ROOTSet.size();                 }
-            bool empty()                                        {  return ROOTSet.empty();                }  
-            iterator begin()                                    {  return ROOTSet.begin();                }
-            iterator end()                                      {  return ROOTSet.end();                  }
-            const_iterator cbegin()                             {  return ROOTSet.cbegin();               }
-            const_iterator cend()                               {  return ROOTSet.cend();                 }
-            reverse_iterator rbegin()                           {  return ROOTSet.rbegin();               }
-            reverse_iterator rend()                             {  return ROOTSet.rend();                 }
-            const_reverse_iterator crbegin()                    {  return ROOTSet.crbegin();              }
-            const_reverse_iterator crend()                      {  return ROOTSet.crend();                }
-            iterator operator[](const key_val_type& SetTemp)      {  return ROOTSet[SetTemp];               }
+            ~tree_set()                                              {  instance_tree_set.~rb_tree();                     }
+            tree_set(const tree_set& SetTemp)                             {  instance_tree_set = SetTemp.instance_tree_set;             }
+            tree_set(tree_set&& SetTemp)                                  {  instance_tree_set=std::move(SetTemp.instance_tree_set);    }
+            tree_set(const key_val_type& SetTemp)                 {  instance_tree_set.push(SetTemp);                 }
+            set_iterator push(const key_val_type& SetTemp)        {  return instance_tree_set.push(SetTemp);          }
+            set_iterator pop(const key_val_type& SetTemp)         {  return instance_tree_set.pop(SetTemp);           }
+            iterator find(const key_val_type& SetTemp)            {  return instance_tree_set.find(SetTemp);          }
+            void middle_order_traversal()                       {  instance_tree_set.middle_order_traversal();      }    
+            void pre_order_traversal()                          {  instance_tree_set.pre_order_traversal();         }  
+            size_t size() const                                 {  return instance_tree_set.size();                 }
+            bool empty()                                        {  return instance_tree_set.empty();                }  
+            iterator begin()                                    {  return instance_tree_set.begin();                }
+            iterator end()                                      {  return instance_tree_set.end();                  }
+            const_iterator cbegin()                             {  return instance_tree_set.cbegin();               }
+            const_iterator cend()                               {  return instance_tree_set.cend();                 }
+            reverse_iterator rbegin()                           {  return instance_tree_set.rbegin();               }
+            reverse_iterator rend()                             {  return instance_tree_set.rend();                 }
+            const_reverse_iterator crbegin()                    {  return instance_tree_set.crbegin();              }
+            const_reverse_iterator crend()                      {  return instance_tree_set.crend();                }
+            iterator operator[](const key_val_type& SetTemp)      {  return instance_tree_set[SetTemp];               }
         };
         template <typename UnorderedSetTypeK>
         class hash_set
@@ -5196,7 +5196,7 @@ namespace template_container
                     return template_container::imitation_functions::hash_imitation_functions()(TempKey)* 131;
                 }
             };
-            class Key_Val
+            class key_val
             {
             public:
                 const key_val_type& operator()(const key_val_type& TempKey)
@@ -5204,7 +5204,7 @@ namespace template_container
                     return TempKey;
                 }
             };
-            using HashTable = template_container::base_class_container::HashTable<UnorderedSetTypeK,key_val_type,Key_Val,Hash_Functor>;
+            using HashTable = template_container::base_class_container::HashTable<UnorderedSetTypeK,key_val_type,key_val,Hash_Functor>;
             HashTable HashSet;
         public:
             using iterator = typename HashTable::iterator;
@@ -5257,9 +5257,9 @@ namespace template_container
             }
             bool test(const BloomFilterTypeVal& TempVal)
             {
-                size_t num_One   = _Hash.Hash_SDBMHash(TempVal) % _Capacity;
-                size_t num_Two   = _Hash.Hash_DJBHash (TempVal) % _Capacity;
-                size_t num_Three = _Hash.Hash_PJWHash (TempVal) % _Capacity;
+                size_t num_One   = _Hash.hash_sdmmhash(TempVal) % _Capacity;
+                size_t num_Two   = _Hash.hash_djbhash (TempVal) % _Capacity;
+                size_t num_Three = _Hash.hash_pjwhash (TempVal) % _Capacity;
                 if(VectorBitSet.test(num_One) == true && VectorBitSet.test(num_Two) == true && VectorBitSet.test(num_Three) && true)
                 {
                     return true;
@@ -5269,9 +5269,9 @@ namespace template_container
             }
             void set(const BloomFilterTypeVal& TempVal)
             {
-                size_t num_One   = _Hash.Hash_SDBMHash(TempVal) % _Capacity;
-                size_t num_Two   = _Hash.Hash_DJBHash (TempVal) % _Capacity;
-                size_t num_Three = _Hash.Hash_PJWHash (TempVal) % _Capacity;
+                size_t num_One   = _Hash.hash_sdmmhash(TempVal) % _Capacity;
+                size_t num_Two   = _Hash.hash_djbhash (TempVal) % _Capacity;
+                size_t num_Three = _Hash.hash_pjwhash (TempVal) % _Capacity;
                 VectorBitSet.set(num_One);
                 VectorBitSet.set(num_Two);
                 VectorBitSet.set(num_Three);
@@ -5295,8 +5295,8 @@ namespace collections
     using template_container::base_class_container::HashTable;
     using template_container::map_container::tree_map;
     using template_container::map_container::hash_map;
-    using template_container::set_c::tree_set;
-    using template_container::set_c::hash_set;
+    using template_container::set_container::tree_set;
+    using template_container::set_container::hash_set;
     using template_container::base_class_container::BitSet;
     using template_container::bloom_filter_c::BloomFilter;
     using template_container::practicality::pair;

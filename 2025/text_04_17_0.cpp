@@ -102,7 +102,7 @@ namespace my_template
                     return_value = 65599 * return_value;
                     return return_value;
                 }
-                size_t Hash_BKDRHash(const hash_algorithm_type& data_Hahs)
+                size_t hash_bkdrhash(const hash_algorithm_type& data_Hahs)
                 {
                     size_t return_value = hash_imitation_functions_object(data_Hahs);
                     return_value = 131 * return_value;
@@ -3285,8 +3285,8 @@ namespace my_template
     namespace BaseClassContainer
     {
         /*############################     rb_tree 容器     ############################*/
-        template <typename rb_tree_type_key, typename rb_tree_type_val, typename key_value_functions,
-        typename container_imitate_function = my_template::imitation_functions::Less<rb_tree_type_key> >
+        template <typename key_type, typename val_type, typename key_value_functions,
+        typename container_imitate_function = my_template::imitation_functions::Less<key_type> >
         class rb_tree
         {
         private:
@@ -3298,12 +3298,12 @@ namespace my_template
             class rb_tree_node
             {
             public:
-                rb_tree_type_val _data;
+                val_type _data;
                 rb_tree_node* _left;
                 rb_tree_node* _right;
                 rb_tree_node* _parent;
                 rb_tree_color _color;
-                rb_tree_node(const rb_tree_type_val& val_temp = rb_tree_type_val())
+                rb_tree_node(const val_type& val_temp = val_type())
                 :_data(val_temp),_left(nullptr),_right(nullptr),_parent(nullptr),_color(red)
                 {
                     ;
@@ -3673,8 +3673,8 @@ namespace my_template
                 return size;
             }
         public:
-            using iterator = RBTreeiterator<rb_tree_type_val,rb_tree_type_val&,rb_tree_type_val*>; 
-            using const_iterator =  RBTreeiterator<rb_tree_type_val const,rb_tree_type_val const&,rb_tree_type_val const*>;
+            using iterator = RBTreeiterator<val_type,val_type&,val_type*>; 
+            using const_iterator =  RBTreeiterator<val_type const,val_type const&,val_type const*>;
 
             using reverse_iterator = rb_tree_reverse_iterator<iterator>;
             using const_reverse_iterator = rb_tree_reverse_iterator<const_iterator>;
@@ -3684,7 +3684,7 @@ namespace my_template
             {
                 _ROOT = nullptr;
             }
-            rb_tree(const rb_tree_type_val& RB_Tree_Temp)
+            rb_tree(const val_type& RB_Tree_Temp)
             {
                 _ROOT = new Node(RB_Tree_Temp);
                 _ROOT->_color = black;
@@ -3803,7 +3803,7 @@ namespace my_template
             {
                 clear(_ROOT);
             }
-            insert_result push(const rb_tree_type_val& Val_Temp_)
+            insert_result push(const val_type& Val_Temp_)
             {
                 if(_ROOT == nullptr)
                 {
@@ -4056,7 +4056,7 @@ namespace my_template
                     cur->_color = black;
                 }
             }
-            insert_result pop(const rb_tree_type_val& RB_Tree_Temp)
+            insert_result pop(const val_type& RB_Tree_Temp)
             {
                 rb_tree_color Delete_color;
                 if(_ROOT == nullptr)
@@ -4197,7 +4197,7 @@ namespace my_template
                     return insert_result(iterator(nullptr),false);
                 }
             }
-            iterator find(const rb_tree_type_val& RB_Tree_Temp_)
+            iterator find(const val_type& RB_Tree_Temp_)
             {
                 if(_ROOT == nullptr)
                 {
@@ -4296,7 +4296,7 @@ namespace my_template
             {
                 return const_reverse_iterator(nullptr);
             }
-            iterator operator[](const rb_tree_type_val& RB_Tree_Temp)
+            iterator operator[](const val_type& RB_Tree_Temp)
             {
                 return find(RB_Tree_Temp);
             }
@@ -4873,19 +4873,19 @@ namespace my_template
     /*############################     tree_set 容器     ############################*/
     namespace SetContainer
     {
-        template <typename SetTypeK>
+        template <typename set_type>
         class tree_set
         {
-            using KeyValType = SetTypeK;
+            using KeyValType = set_type;
             struct Key_Val
             {
                 /* 仿函数，返回比较的值 */
-                const SetTypeK& operator()(const KeyValType& Temp_Key_)
+                const set_type& operator()(const KeyValType& Temp_Key_)
                 {
                     return Temp_Key_;
                 }
             };
-            using instance_rb = BaseClassContainer::rb_tree<SetTypeK,KeyValType,Key_Val>;
+            using instance_rb = BaseClassContainer::rb_tree<set_type,KeyValType,Key_Val>;
             instance_rb ROOTSet;
         public:
             using iterator = typename instance_rb::iterator;

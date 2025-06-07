@@ -614,36 +614,36 @@ int main()
             std::cout << std::endl;
         }
     }
-    // /*            tree_set 测试             */
-    // {
-    //     template_container::set_c::tree_set<size_t> Set_test;
-    //     size_t size = 20;
-    //     template_container::vector_container::vector<size_t> arr;
-    //     for(size_t i = 0; i < size; i++ )
-    //     {
-    //         arr.push_back(i);
-    //     }
-    //      std::cout << arr << std::endl;
-    //     for(auto& j : arr)
-    //     {
-    //         Set_test.push(j);
-    //         std::cout << "前序" << " ";
-    //         Set_test.pre_order_traversal();
-    //         std::cout << "   " << "中序" << " ";
-    //         Set_test.middle_order_traversal();
-    //         std::cout << std::endl;
-    //     }
-    //     std::cout << "正向"<< std::endl;
-    //     for(auto& j : Set_test)
-    //     {
-    //         std::cout << j << " ";
-    //     }
-    //     std::cout << std::endl << "反向"<< std::endl;
-    //     for(auto j = Set_test.crbegin(); j != Set_test.crend(); j++)
-    //     {
-    //         std::cout << *j << " ";
-    //     }
-    // }
+    /*            tree_set 测试             */
+    {
+        template_container::set_container::tree_set<size_t> Set_test;
+        size_t size = 20;
+        template_container::vector_container::vector<size_t> arr;
+        for(size_t i = 0; i < size; i++ )
+        {
+            arr.push_back(i);
+        }
+         std::cout << arr << std::endl;
+        for(auto& j : arr)
+        {
+            Set_test.push(j);
+            std::cout << "前序" << " ";
+            Set_test.pre_order_traversal();
+            std::cout << "   " << "中序" << " ";
+            Set_test.middle_order_traversal();
+            std::cout << std::endl;
+        }
+        std::cout << "正向"<< std::endl;
+        for(auto& j : Set_test)
+        {
+            std::cout << j << " ";
+        }
+        std::cout << std::endl << "反向"<< std::endl;
+        for(auto j = Set_test.crbegin(); j != Set_test.crend(); j++)
+        {
+            std::cout << *j << " ";
+        }
+    }
     // /*            hash_map 测试             */
     // {
     //     template_container::map_container::hash_map<size_t,size_t> unordered_Map_test;
@@ -788,34 +788,34 @@ int main()
     //     std::cout << sum << std::endl;
     // }
     //问题vector容器resize函数问题啊大大。
-    // {
-    //     //尝试构建线程池来测试给个容器性能开销
-    //     using Vector_pair =  template_container::vector_container::vector<template_container::practicality::pair<size_t,size_t>>;
-    //     template_container::vector_container::vector<Vector_pair> array_vector;
-    //     size_t size = 20000;
-    //     auto t1 = std::chrono::high_resolution_clock::now();
-    //     for(size_t i = 0; i < size; i++)
-    //     {
-    //         Vector_pair temp;
-    //         for(size_t j = 0; j < size; j++)
-    //         {
-    //             temp.push_back(template_container::practicality::pair<size_t,size_t>(j,j));
-    //         }
-    //         array_vector.push_back(std::move(temp));
-    //     }
-    //     auto t2 = std::chrono::high_resolution_clock::now();
-    //     std::cout << "push_back函数时间：" << std::chrono::duration<double, std::milli>(t2 - t1).count() << std::endl;
-    // }
+    {
+        //尝试构建线程池来测试给个容器性能开销
+        using Vector_pair =  template_container::vector_container::vector<template_container::practicality::pair<size_t,size_t>>;
+        template_container::vector_container::vector<Vector_pair> array_vector;
+        size_t size = 20000;
+        auto t1 = std::chrono::high_resolution_clock::now();
+        for(size_t i = 0; i < size; i++)
+        {
+            Vector_pair temp;
+            for(size_t j = 0; j < size; j++)
+            {
+                temp.push_back(template_container::practicality::pair<size_t,size_t>(j,j));
+            }
+            array_vector.push_back(std::move(temp));
+        }
+        auto t2 = std::chrono::high_resolution_clock::now();
+        std::cout << "push_back函数时间：" << std::chrono::duration<double, std::milli>(t2 - t1).count() << std::endl;
+    }
     {
         // set::vector<set::pair<set::list,set::queue>> array_list_stack;
         template_container::algorithm::hash_algorithm::hash_function <int,template_container::imitation_functions::hash_imitation_functions> hash;
         int test_size = 792;
         auto t1 = std::chrono::high_resolution_clock::now();
-        std::cout << "计算哈希值： " << hash.Hash_APHash(test_size)   << std::endl; 
-        std::cout << "计算哈希值： " << hash.Hash_BKDRHash(test_size) << std::endl;
-        std::cout << "计算哈希值： " << hash.Hash_PJWHash(test_size)  << std::endl;
-        std::cout << "计算哈希值： " << hash.Hash_DJBHash(test_size)  << std::endl;
-        std::cout << "计算哈希值： " << hash.Hash_SDBMHash(test_size) << std::endl;
+        std::cout << "计算哈希值： " << hash.hash_aphash(test_size)   << std::endl; 
+        std::cout << "计算哈希值： " << hash.hash_bkdrhash(test_size) << std::endl;
+        std::cout << "计算哈希值： " << hash.hash_pjwhash(test_size)  << std::endl;
+        std::cout << "计算哈希值： " << hash.hash_djbhash(test_size)  << std::endl;
+        std::cout << "计算哈希值： " << hash.hash_sdmmhash(test_size) << std::endl;
         auto t2 = std::chrono::high_resolution_clock::now();
         std::cout << std::chrono::duration<double, std::milli>(t2 - t1).count() << std::endl;
         {
@@ -824,6 +824,14 @@ int main()
     }
     {
         system("pause");
+    }
+    {
+        template_container::map_container::tree_map<size_t,size_t> Map_Test = {{1,1},{2,2},{3,3},{4,4},{5,5}};
+        Map_Test.middle_order_traversal();
+        std::cout << std::endl;
+        Map_Test.pop({1,1});
+        std::cout << std::endl;
+        Map_Test.middle_order_traversal();
     }
     return 0;
 }
