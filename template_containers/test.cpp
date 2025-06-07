@@ -833,5 +833,13 @@ int main()
         std::cout << std::endl;
         Map_Test.middle_order_traversal();
     }
+    {
+        //结构化绑定测试
+        template_container::map_container::tree_map<size_t,size_t> test_map;
+        test_map.push(imitation_functions::map_pair(1,1));
+        auto& [ key , value ] = *test_map.begin();
+        std::cout << key << " " << value << std::endl;
+
+    }
     return 0;
 }

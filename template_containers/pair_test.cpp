@@ -15,14 +15,6 @@ namespace imitation_functions
 int main()
 {
     {
-        //结构化绑定测试
-        template_container::map_container::tree_map<size_t,size_t> test_map;
-        test_map.push(imitation_functions::map_pair(1,1));
-        auto& [ key , value ] = *test_map.begin();
-        std::cout << key << " " << value << std::endl;
-
-    }
-    {
         //性能测试
         SetConsoleOutputCP(CP_UTF8);
         /*                   pair 类型                */
@@ -72,10 +64,10 @@ int main()
             array_vector.push_back(std::move(temp));
         }
         auto t2 = std::chrono::high_resolution_clock::now();
-        std::cout << "push_back函数时间：" << std::chrono::duration<double, std::milli>(t2 - t1).count() << std::endl;
+        std::cout << "push_back优化函数时间：" << std::chrono::duration<double, std::milli>(t2 - t1).count() << std::endl;
     }
     {
-        //map性能测试
+        //map性能测试 优化；
         using map_pair = template_container::practicality::pair<size_t,size_t>;
         using map_string = template_container::string_container::string;
         using map_data = template_container::practicality::pair<map_pair,map_string>;
@@ -96,7 +88,17 @@ int main()
             map_pair_test.push(std::move(map_data_array[j]));
         }
         auto t1 = std::chrono::high_resolution_clock::now();
-        std::cout << "插入个数:" << map_pair_test.size() << " " << "插入时间:" << std::chrono::duration<double, std::milli>(t1 - t0).count() << std::endl;
+        std::cout << "插入个数:" << map_pair_test.size() << " " << "优化插入时间:" << std::chrono::duration<double, std::milli>(t1 - t0).count() << std::endl;
+        //未优化；
+        template_container::map_container::tree_map<map_pair,map_string,imitation_functions::comparators>  no_optimized_map;
+        auto t2 = std::chrono::high_resolution_clock::now();
+        for(size_t k = 0; k < size; k++)
+        {
+            no_optimized_map.push(map_data_array[k]);
+        }
+        auto t3 = std::chrono::high_resolution_clock::now();
+        std::cout << "插入个数:" << no_optimized_map.size() << " " << "未优化插入时间:" << std::chrono::duration<double, std::milli>(t3 - t2).count() << std::endl;
+        //时间为什么一样？
     }
     return 0;
 }

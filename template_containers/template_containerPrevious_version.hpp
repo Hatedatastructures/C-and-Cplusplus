@@ -3532,8 +3532,8 @@ namespace template_container
     namespace base_class_container
     {
         /*############################     rb_tree 容器     ############################*/
-        template <typename key_type, typename val_type, typename key_value_functions,
-        typename container_imitate_function = template_container::imitation_functions::less<key_type> >
+        template <typename rb_tree_type_key, typename rb_tree_type_value, typename container_imitate_function,
+        typename container_imitate_function = template_container::imitation_functions::less<rb_tree_type_key> >
         class rb_tree
         {
         private:
@@ -3545,12 +3545,12 @@ namespace template_container
             class rb_tree_node
             {
             public:
-                val_type _data;
+                rb_tree_type_value _data;
                 rb_tree_node* _left;
                 rb_tree_node* _right;
                 rb_tree_node* _parent;
                 rb_tree_color _color;
-                rb_tree_node(const val_type& ValTemp = val_type())
+                rb_tree_node(const rb_tree_type_value& ValTemp = rb_tree_type_value())
                 :_data(ValTemp),_left(nullptr),_right(nullptr),_parent(nullptr),_color(red)
                 {
                     ;
@@ -3715,7 +3715,7 @@ namespace template_container
             };
             using container_node = rb_tree_node;
             container_node* _root;
-            key_value_functions element;
+            container_imitate_function element;
             container_imitate_function function_policy;
             void left_revolve(container_node* ParentTempNode)
             {
@@ -3924,8 +3924,8 @@ namespace template_container
                 return size;
             }
         public:
-            using iterator = rb_tree_iterator<val_type,val_type&,val_type*>; 
-            using const_iterator =  rb_tree_iterator<val_type const,val_type const&,val_type const*>;
+            using iterator = rb_tree_iterator<rb_tree_type_value,rb_tree_type_value&,rb_tree_type_value*>; 
+            using const_iterator =  rb_tree_iterator<rb_tree_type_value const,rb_tree_type_value const&,rb_tree_type_value const*>;
 
             using reverse_iterator = rb_tree_reverse_iterator<iterator>;
             using const_reverse_iterator = rb_tree_reverse_iterator<const_iterator>;
@@ -3935,7 +3935,7 @@ namespace template_container
             {
                 _root = nullptr;
             }
-            rb_tree(const val_type& RBTreeTemp)
+            rb_tree(const rb_tree_type_value& RBTreeTemp)
             {
                 _root = new container_node(RBTreeTemp);
                 _root->_color = black;
@@ -4054,7 +4054,7 @@ namespace template_container
             {
                 clear(_root);
             }
-            return_pair_value push(const val_type& Val_Temp_)
+            return_pair_value push(const rb_tree_type_value& Val_Temp_)
             {
                 if(_root == nullptr)
                 {
@@ -4307,7 +4307,7 @@ namespace template_container
                     current_node->_color = black;
                 }
             }
-            return_pair_value pop(const val_type& RBTreeTemp)
+            return_pair_value pop(const rb_tree_type_value& RBTreeTemp)
             {
                 rb_tree_color DeleteColor;
                 if(_root == nullptr)
@@ -4448,7 +4448,7 @@ namespace template_container
                     return return_pair_value(iterator(nullptr),false);
                 }
             }
-            iterator find(const val_type& RB_Tree_Temp_)
+            iterator find(const rb_tree_type_value& RB_Tree_Temp_)
             {
                 if(_root == nullptr)
                 {
@@ -4547,64 +4547,64 @@ namespace template_container
             {
                 return const_reverse_iterator(nullptr);
             }
-            iterator operator[](const val_type& RBTreeTemp)
+            iterator operator[](const rb_tree_type_value& RBTreeTemp)
             {
                 return find(RBTreeTemp);
             }
         };
         /*############################     hash 容器     ############################*/
-        template <typename HashTableTypeKey, typename HashTableTypeVal,typename key_value_functions,
-        typename HashTableFunction = std::hash<HashTableTypeVal> >
-        class HashTable
+        template <typename hash_table_type_key, typename hash_table_type_value,typename container_imitate_function,
+        typename hash_function = std::hash<hash_table_type_value> >
+        class hash_table
         {
-            class HashTableNode
+            class hash_table_node
             {
             public:
-                HashTableTypeVal _data;
-                HashTableNode* _next;
-                HashTableNode* LinkPrev;
+                hash_table_type_value _data;
+                hash_table_node* _next;
+                hash_table_node* overall_list_prev;
                 //全局链表指针，方便按照插入的顺序有序遍历哈希表
-                HashTableNode* LinkNext;
-                HashTableNode(const HashTableTypeVal& TempVal)
+                hash_table_node* overall_list_next;
+                hash_table_node(const hash_table_type_value& TempVal)
                 {
                     _data = TempVal;
                     _next = nullptr;
-                    LinkPrev = nullptr;
-                    LinkNext = nullptr;
+                    overall_list_prev = nullptr;
+                    overall_list_next = nullptr;
                 }
             };
-            using container_node = HashTableNode;
-            key_value_functions HashDataFunctor;                   //仿函数
+            using container_node = hash_table_node;
+            container_imitate_function value_imitation_functions;                   //仿函数
             size_t _size;                                             //哈希表大小
-            size_t LoadFactor;                                        //负载因子   
-            size_t Capacity;                                          //哈希表容量
-            template_container::vector_container::vector<container_node*> _HashTable;    //哈希表
-            HashTableFunction hash_function;                           //哈希函数
-            container_node* PreviousData = nullptr;                             //上一个数据
-            container_node* HeadData = nullptr;                                 //插入头数据
-            template <typename Hash_Table_iterator_Key, typename Hash_Table_iterator_Val>
-            class Hash_iterator
+            size_t load_factor;                                        //负载因子   
+            size_t hash_capacity;                                          //哈希表容量
+            template_container::vector_container::vector<container_node*> vector_hash_table;    //哈希表
+            hash_function hash_function;                           //哈希函数
+            container_node* overall_list_before_node = nullptr;                             //上一个数据
+            container_node* overall_list_head_node = nullptr;                                 //插入头数据
+            template <typename iterator_type_key, typename iterator_type_val>
+            class hash_iterator
             {
                 using iterator_node = container_node;
-                using Ref  = Hash_Table_iterator_Val&;
-                using Ptr  = Hash_Table_iterator_Val*;
-                using self = Hash_iterator<Hash_Table_iterator_Key,Hash_Table_iterator_Val>;
-                iterator_node* HashTableIteratorNode;
+                using Ref  = iterator_type_val&;
+                using Ptr  = iterator_type_val*;
+                using self = hash_iterator<iterator_type_key,iterator_type_val>;
+                iterator_node* hash_table_iterator_node;
             public:
-                Hash_iterator(iterator_node* Temp_Node)      {      HashTableIteratorNode = Temp_Node;        }
-                Ref operator*()                              {      return HashTableIteratorNode->_data;      }
-                Ptr operator->()                             {      return &HashTableIteratorNode->_data;     }
-                self operator++()                            {      HashTableIteratorNode = HashTableIteratorNode->LinkNext;     return *this;     }
-                bool operator!=(const self& TempSelf)        {      return HashTableIteratorNode != TempSelf.HashTableIteratorNode;     }
-                bool operator==(const self& TempSelf)        {      return HashTableIteratorNode == TempSelf.HashTableIteratorNode;     }
+                hash_iterator(iterator_node* Temp_Node)      {      hash_table_iterator_node = Temp_Node;        }
+                Ref operator*()                              {      return hash_table_iterator_node->_data;      }
+                Ptr operator->()                             {      return &hash_table_iterator_node->_data;     }
+                self operator++()                            {      hash_table_iterator_node = hash_table_iterator_node->overall_list_next;     return *this;     }
+                bool operator!=(const self& TempSelf)        {      return hash_table_iterator_node != TempSelf.hash_table_iterator_node;     }
+                bool operator==(const self& TempSelf)        {      return hash_table_iterator_node == TempSelf.hash_table_iterator_node;     }
                 self operator++(int)                         
                 {       
                     self TempSelf = *this;
-                    HashTableIteratorNode = HashTableIteratorNode->LinkNext;
+                    hash_table_iterator_node = hash_table_iterator_node->overall_list_next;
                     return TempSelf;
                 }
             };
-            void parentJudgment(container_node*& TempNodeParent,container_node*& _TempNode,size_t& HashLocationData)
+            void hash_chain_adjustment(container_node*& TempNodeParent,container_node*& _TempNode,size_t& HashLocationData)
             {
                 if(TempNodeParent!= nullptr)
                 {
@@ -4614,41 +4614,41 @@ namespace template_container
                 else
                 {
                     //父亲节点为空，直接将映射位置置空
-                    _HashTable[HashLocationData] = nullptr;
+                    vector_hash_table[HashLocationData] = nullptr;
                 }
             } 
         public:  
-            using iterator = Hash_iterator<HashTableTypeKey,HashTableTypeVal>;
-            using const_iterator = Hash_iterator<const HashTableTypeKey,const HashTableTypeVal>;
-            HashTable()
+            using iterator = hash_iterator<hash_table_type_key,hash_table_type_value>;
+            using const_iterator = hash_iterator<const hash_table_type_key,const hash_table_type_value>;
+            hash_table()
             {
                 _size = 0;
-                LoadFactor = 7;
-                Capacity = 10;
-                _HashTable.resize(Capacity);
+                load_factor = 7;
+                hash_capacity = 10;
+                vector_hash_table.resize(hash_capacity);
             }
-            HashTable(size_t TempCapacity)
+            hash_table(size_t TempCapacity)
             {
                 _size = 0;
-                LoadFactor = 7;
-                Capacity = TempCapacity;
-                _HashTable.resize(Capacity);
+                load_factor = 7;
+                hash_capacity = TempCapacity;
+                vector_hash_table.resize(hash_capacity);
             }
-            HashTable(const HashTable& TempHashTable)
-            : HashDataFunctor(TempHashTable.HashDataFunctor),_size(TempHashTable._size),LoadFactor(TempHashTable.LoadFactor),Capacity(TempHashTable.Capacity),
-            key_value_functions(TempHashTable.key_value_functions),PreviousData(nullptr),   HeadData(nullptr)
+            hash_table(const hash_table& TempHashTable)
+            : value_imitation_functions(TempHashTable.value_imitation_functions),_size(TempHashTable._size),load_factor(TempHashTable.load_factor),hash_capacity(TempHashTable.hash_capacity),
+            container_imitate_function(TempHashTable.container_imitate_function),overall_list_before_node(nullptr),   overall_list_head_node(nullptr)
             {
-                if (Capacity == 0) 
+                if (hash_capacity == 0) 
                 {
                     return;
                 }
                 // 1. 分配同样大小的桶数组，所有桶初始为空
-                _HashTable.resize(Capacity, nullptr);
+                vector_hash_table.resize(hash_capacity, nullptr);
         
                 // 2. 遍历原表的每一个桶
-                for (size_t i = 0; i < Capacity; ++i) 
+                for (size_t i = 0; i < hash_capacity; ++i) 
                 {
-                    container_node* SrcBucketNode = TempHashTable._HashTable[i];
+                    container_node* SrcBucketNode = TempHashTable.vector_hash_table[i];
                     // 桶内新表的尾节点（用于串联 _next）
                     container_node* last_in_bucket = nullptr;
         
@@ -4664,48 +4664,48 @@ namespace template_container
                         } 
                         else 
                         {
-                            _HashTable[i] = NewNode;
+                            vector_hash_table[i] = NewNode;
                         }
                         last_in_bucket = NewNode;
         
                         // 2.3 插入到“全局插入
-                        if(PreviousData != nullptr)
+                        if(overall_list_before_node != nullptr)
                         {
-                            PreviousData->LinkNext = NewNode;
-                            NewNode->LinkPrev = PreviousData;
+                            overall_list_before_node->overall_list_next = NewNode;
+                            NewNode->overall_list_prev = overall_list_before_node;
                         } 
                         else 
                         {
                             // 第一个节点就是全局链表的头
-                            HeadData = NewNode;
+                            overall_list_head_node = NewNode;
                         }
-                        PreviousData = NewNode;
+                        overall_list_before_node = NewNode;
         
                         // 继续下一个源节点
                         SrcBucketNode = SrcBucketNode->_next;
                     }
                 }
-                if(PreviousData != nullptr)
+                if(overall_list_before_node != nullptr)
                 {
-                    PreviousData->LinkNext = nullptr;
+                    overall_list_before_node->overall_list_next = nullptr;
                 }
             }
-            HashTable(HashTable&& TempHashTable)
+            hash_table(hash_table&& TempHashTable)
             {
-                _HashTable = std::move(TempHashTable._HashTable);
+                vector_hash_table = std::move(TempHashTable.vector_hash_table);
                 _size = std::move(TempHashTable._size);
-                LoadFactor = std::move(TempHashTable.LoadFactor);
-                Capacity = std::move(TempHashTable.Capacity);
-                hash_function= std::move(TempHashTable.key_value_functions);
-                PreviousData = std::move(TempHashTable.PreviousData);
-                HeadData = std::move(TempHashTable.HeadData);
-                HashDataFunctor = std::move(TempHashTable.HashDataFunctor);
+                load_factor = std::move(TempHashTable.load_factor);
+                hash_capacity = std::move(TempHashTable.hash_capacity);
+                hash_function= std::move(TempHashTable.container_imitate_function);
+                overall_list_before_node = std::move(TempHashTable.overall_list_before_node);
+                overall_list_head_node = std::move(TempHashTable.overall_list_head_node);
+                value_imitation_functions = std::move(TempHashTable.value_imitation_functions);
             }
-            ~HashTable()
+            ~hash_table()
             {
-                for(size_t i = 0;i < _HashTable.size();++i)
+                for(size_t i = 0;i < vector_hash_table.size();++i)
                 {
-                    container_node* _TempNode = _HashTable[i];
+                    container_node* _TempNode = vector_hash_table[i];
                     while(_TempNode != nullptr)
                     {
                         container_node* _Temp_Node_prev = _TempNode;
@@ -4721,10 +4721,10 @@ namespace template_container
                 {
                     return false;
                 }
-                LoadFactor = TempLoadFactor;
+                load_factor = TempLoadFactor;
                 return true;
             }
-            iterator operator[](const HashTableTypeKey& TempKey)
+            iterator operator[](const hash_table_type_key& TempKey)
             {
                 if( _size == 0)
                 {
@@ -4732,13 +4732,13 @@ namespace template_container
                 }
                 else
                 {
-                    size_t Temp_Hash = key_value_functions(TempKey);
-                    size_t HashLocationData = Temp_Hash % Capacity;
+                    size_t Temp_Hash = container_imitate_function(TempKey);
+                    size_t HashLocationData = Temp_Hash % hash_capacity;
                     //找到映射位置
-                    container_node* _TempNode = _HashTable[HashLocationData];
+                    container_node* _TempNode = vector_hash_table[HashLocationData];
                     while(_TempNode!= nullptr)
                     {
-                        if(HashDataFunctor(_TempNode->_data) == HashDataFunctor(TempKey))
+                        if(value_imitation_functions(_TempNode->_data) == value_imitation_functions(TempKey))
                         {
                             return iterator(_TempNode);
                         }
@@ -4747,27 +4747,27 @@ namespace template_container
                     return iterator(nullptr);
                 }
             }
-            iterator begin()                    {   return iterator(HeadData);        }
-            const_iterator cbegin() const       {   return const_iterator(HeadData);  }
+            iterator begin()                    {   return iterator(overall_list_head_node);        }
+            const_iterator cbegin() const       {   return const_iterator(overall_list_head_node);  }
             iterator end()                      {   return iterator(nullptr);           }
             const_iterator cend() const         {   return const_iterator(nullptr);     }
             size_t size()                       {   return _size;                       }
             size_t size() const                 {   return _size;                       }
             bool   empty()                      {   return _size == 0;                  }
-            size_t capacity()                   {   return Capacity;                    }
-            size_t capacity() const             {   return Capacity;                    }
+            size_t capacity()                   {   return hash_capacity;                    }
+            size_t capacity() const             {   return hash_capacity;                    }
 
-            bool push (const HashTableTypeVal& TempVal)
+            bool push (const hash_table_type_value& TempVal)
             {
                 if( find(TempVal) != nullptr)
                 {
                     return false;
                 }
                 //判断扩容
-                if( _size * 10 >= Capacity * LoadFactor)
+                if( _size * 10 >= hash_capacity * load_factor)
                 {
                     //扩容
-                    size_t new_container_capacity = (Capacity == 0 && _HashTable.size() == 0) ? 10 : Capacity * 2;
+                    size_t new_container_capacity = (hash_capacity == 0 && vector_hash_table.size() == 0) ? 10 : hash_capacity * 2;
                     //新容量
                     template_container::vector_container::vector<container_node*> _NewHashTable;
                     _NewHashTable.resize(new_container_capacity,nullptr);
@@ -4775,7 +4775,7 @@ namespace template_container
                     //重新映射,按照插入链表顺序
                     container_node* _TempHeadNode = nullptr;
                     container_node* _TempPreviousData = nullptr;
-                    container_node* _TempNode = HeadData;
+                    container_node* _TempNode = overall_list_head_node;
                     while( _TempNode != nullptr)
                     {
                         size_t Temp_Hash = hash_function(_TempNode->_data) % new_container_capacity;
@@ -4786,14 +4786,14 @@ namespace template_container
                             container_node* PushNode = new container_node(_TempNode->_data);
                             if(_TempHeadNode == nullptr)
                             {
-                                PushNode->LinkPrev = nullptr;
-                                PushNode->LinkNext = nullptr;
+                                PushNode->overall_list_prev = nullptr;
+                                PushNode->overall_list_next = nullptr;
                                 _TempHeadNode = _TempPreviousData =PushNode;
                             }
                             else
                             {
-                                PushNode->LinkPrev = _TempPreviousData;
-                                _TempPreviousData->LinkNext = PushNode;
+                                PushNode->overall_list_prev = _TempPreviousData;
+                                _TempPreviousData->overall_list_next = PushNode;
                                 _TempPreviousData = PushNode;
                             }
                             _NewHashTable[Temp_Hash] = PushNode;
@@ -4804,13 +4804,13 @@ namespace template_container
                             container_node* PushNode = new container_node(_TempNode->_data);
                             if(_TempHeadNode == nullptr)
                             {
-                                PushNode->LinkPrev = nullptr;
+                                PushNode->overall_list_prev = nullptr;
                                 _TempHeadNode = _TempPreviousData =PushNode;
                             }
                             else
                             {
-                                PushNode->LinkPrev = _TempPreviousData;
-                                _TempPreviousData->LinkNext = PushNode;
+                                PushNode->overall_list_prev = _TempPreviousData;
+                                _TempPreviousData->overall_list_next = PushNode;
                                 _TempPreviousData = PushNode;
                             }
                             PushNode->_next = New_Mapping_location;
@@ -4818,12 +4818,12 @@ namespace template_container
                             //头插节点
                         }
                         ++_New_size;
-                        _TempNode = _TempNode->LinkNext;
+                        _TempNode = _TempNode->overall_list_next;
                     }
                     //释放旧哈希表
-                    for(size_t i = 0;i < _HashTable.size(); ++i)
+                    for(size_t i = 0;i < vector_hash_table.size(); ++i)
                     {
-                        container_node* _TempNode = _HashTable[i];
+                        container_node* _TempNode = vector_hash_table[i];
                         while(_TempNode!= nullptr)
                         {
                             container_node* _Temp_Node_prev = _TempNode;
@@ -4833,35 +4833,35 @@ namespace template_container
                         }
                     }
                     _size = _New_size;
-                    _HashTable.swap(_NewHashTable);
-                    Capacity = new_container_capacity;
-                    HeadData = _TempHeadNode;
-                    PreviousData = _TempPreviousData;
+                    vector_hash_table.swap(_NewHashTable);
+                    hash_capacity = new_container_capacity;
+                    overall_list_head_node = _TempHeadNode;
+                    overall_list_before_node = _TempPreviousData;
                     //重新映射,按照插入链表顺序
                 }
                 size_t Temp_Hash = hash_function(TempVal);
-                size_t HashLocationData = Temp_Hash % Capacity;
+                size_t HashLocationData = Temp_Hash % hash_capacity;
                 //找到映射位置
-                container_node* _TempNode = _HashTable[HashLocationData];
+                container_node* _TempNode = vector_hash_table[HashLocationData];
 
                 container_node* PushNode = new container_node(TempVal);
                 PushNode->_next = _TempNode;
-                _HashTable[HashLocationData] = PushNode;
-                if(_size == 0 && HeadData == nullptr)
+                vector_hash_table[HashLocationData] = PushNode;
+                if(_size == 0 && overall_list_head_node == nullptr)
                 {
-                    PushNode->LinkPrev = nullptr;
-                    HeadData = PreviousData = PushNode;
+                    PushNode->overall_list_prev = nullptr;
+                    overall_list_head_node = overall_list_before_node = PushNode;
                 }
                 else
                 {
-                    PushNode->LinkPrev = PreviousData;
-                    PreviousData->LinkNext = PushNode;
-                    PreviousData = PushNode;
+                    PushNode->overall_list_prev = overall_list_before_node;
+                    overall_list_before_node->overall_list_next = PushNode;
+                    overall_list_before_node = PushNode;
                 }
                 _size++;
                 return true;
             }
-            bool pop(const HashTableTypeVal& TempVal)
+            bool pop(const hash_table_type_value& TempVal)
             {
                 //空表判断
                 if( find(TempVal) == nullptr)
@@ -4869,45 +4869,45 @@ namespace template_container
                     return false;
                 }
                 size_t Temp_Hash = hash_function(TempVal);
-                size_t HashLocationData = Temp_Hash % Capacity;
+                size_t HashLocationData = Temp_Hash % hash_capacity;
                 //找到映射位置
-                container_node* _TempNode = _HashTable[HashLocationData];
+                container_node* _TempNode = vector_hash_table[HashLocationData];
                 container_node* TempNodeParent = nullptr;
                 while(_TempNode!= nullptr)
                 {
                     //找到位置
-                    if(HashDataFunctor(_TempNode->_data) == HashDataFunctor(TempVal))
+                    if(value_imitation_functions(_TempNode->_data) == value_imitation_functions(TempVal))
                     {
-                        if(HeadData == _TempNode)
+                        if(overall_list_head_node == _TempNode)
                         {
                             //头节点删除情况
-                            if(_TempNode == PreviousData)
+                            if(_TempNode == overall_list_before_node)
                             {
                                 //只有一个节点
-                                HeadData = PreviousData = nullptr;
-                                parentJudgment(TempNodeParent,_TempNode,HashLocationData);
+                                overall_list_head_node = overall_list_before_node = nullptr;
+                                hash_chain_adjustment(TempNodeParent,_TempNode,HashLocationData);
                             }
                             else
                             {
                                 //是头节点，不是尾节点
-                                parentJudgment(TempNodeParent,_TempNode,HashLocationData);
-                                HeadData = HeadData->LinkNext;
-                                HeadData->LinkPrev = nullptr;
+                                hash_chain_adjustment(TempNodeParent,_TempNode,HashLocationData);
+                                overall_list_head_node = overall_list_head_node->overall_list_next;
+                                overall_list_head_node->overall_list_prev = nullptr;
                             }
                         }
-                        else if(_TempNode == PreviousData)
+                        else if(_TempNode == overall_list_before_node)
                         {
                             //尾节点删除情况
-                            parentJudgment(TempNodeParent,_TempNode,HashLocationData);
-                            PreviousData = PreviousData->LinkPrev;
-                            PreviousData->LinkNext = nullptr;
+                            hash_chain_adjustment(TempNodeParent,_TempNode,HashLocationData);
+                            overall_list_before_node = overall_list_before_node->overall_list_prev;
+                            overall_list_before_node->overall_list_next = nullptr;
                         }
                         else
                         {
                             //中间节点删除情况
-                            parentJudgment(TempNodeParent,_TempNode,HashLocationData);
-                            _TempNode->LinkPrev->LinkNext = _TempNode->LinkNext;
-                            _TempNode->LinkNext->LinkPrev = _TempNode->LinkPrev;
+                            hash_chain_adjustment(TempNodeParent,_TempNode,HashLocationData);
+                            _TempNode->overall_list_prev->overall_list_next = _TempNode->overall_list_next;
+                            _TempNode->overall_list_next->overall_list_prev = _TempNode->overall_list_prev;
                         }
                         delete _TempNode;
                         _TempNode = nullptr;
@@ -4920,7 +4920,7 @@ namespace template_container
                 }
                 return false;
             }
-            iterator find(const HashTableTypeVal& TempVal)
+            iterator find(const hash_table_type_value& TempVal)
             {
                 if( _size == 0)
                 {
@@ -4929,12 +4929,12 @@ namespace template_container
                 else
                 {
                     size_t Temp_Hash = hash_function(TempVal);
-                    size_t HashLocationData = Temp_Hash % Capacity;
+                    size_t HashLocationData = Temp_Hash % hash_capacity;
                     //找到映射位置
-                    container_node* _TempNode = _HashTable[HashLocationData];
+                    container_node* _TempNode = vector_hash_table[HashLocationData];
                     while(_TempNode!= nullptr)
                     {
-                        if(HashDataFunctor(_TempNode->_data) == HashDataFunctor(TempVal))
+                        if(value_imitation_functions(_TempNode->_data) == value_imitation_functions(TempVal))
                         {
                             return iterator(_TempNode);
                         }
@@ -5100,13 +5100,13 @@ namespace template_container
                     return (num_One + num_Two);
                 }
             };
-            using HashTable = base_class_container::HashTable<UnorderedMapTypeK,key_val_type,key_val,Hash_Functor>;
-            HashTable HashMap;
+            using hash_table = base_class_container::hash_table<UnorderedMapTypeK,key_val_type,key_val,Hash_Functor>;
+            hash_table HashMap;
         public:
-            using iterator = typename HashTable::iterator;
-            using const_iterator = typename HashTable::const_iterator;
+            using iterator = typename hash_table::iterator;
+            using const_iterator = typename hash_table::const_iterator;
             hash_map()                                      {   ;                               }  
-            ~hash_map()                                     {  HashMap.~HashTable();            }
+            ~hash_map()                                     {  HashMap.~hash_table();            }
             hash_map(const key_val_type& TempKey)             {  HashMap.push(TempKey);           }
             bool push(const key_val_type& TempKey)                {  return HashMap.push(TempKey);    }
             bool pop(const key_val_type& TempKey)                 {  return HashMap.pop(TempKey);     }
@@ -5204,13 +5204,13 @@ namespace template_container
                     return TempKey;
                 }
             };
-            using HashTable = template_container::base_class_container::HashTable<UnorderedSetTypeK,key_val_type,key_val,Hash_Functor>;
-            HashTable HashSet;
+            using hash_table = template_container::base_class_container::hash_table<UnorderedSetTypeK,key_val_type,key_val,Hash_Functor>;
+            hash_table HashSet;
         public:
-            using iterator = typename HashTable::iterator;
-            using const_iterator = typename HashTable::const_iterator;
+            using iterator = typename hash_table::iterator;
+            using const_iterator = typename hash_table::const_iterator;
             hash_set()                                      {  ;                                     }
-            ~hash_set()                                     {   HashSet.~HashTable();                }
+            ~hash_set()                                     {   HashSet.~hash_table();                }
             bool push(const key_val_type& SetTemp)                {  return HashSet.push(SetTemp);         }
             bool pop(const key_val_type& SetTemp)                 {  return HashSet.pop(SetTemp);          }            
             iterator find(const key_val_type& SetTemp)            {  return HashSet.find(SetTemp);         }
@@ -5292,7 +5292,7 @@ namespace collections
     using template_container::queue_adapter::queue;
     using template_container::queue_adapter::priority_queue;
     using template_container::base_class_container::rb_tree;
-    using template_container::base_class_container::HashTable;
+    using template_container::base_class_container::hash_table;
     using template_container::map_container::tree_map;
     using template_container::map_container::hash_map;
     using template_container::set_container::tree_set;
