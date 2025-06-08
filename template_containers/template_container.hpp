@@ -14,11 +14,13 @@ namespace custom_exception
     public:
         customize_exception(const char* message_target,const char* function_name_target,const size_t& line_number_target) noexcept 
         {
-            message = message_target;
-            function_name = function_name_target;
+            message = new char [std::strlen(message_target) + 1];
+            std::strcpy(message,message_target);
+            function_name = new char [std::strlen(function_name_target) + 1];
+            std::strcpy(function_name,function_name_target);
             line_number = line_number_target;
         }
-        [[nodiscard]] constexpr virtual const char* what() const noexcept override
+        [[nodiscard]] virtual const char* what() const noexcept override
         {
             return message;
         }
@@ -29,6 +31,11 @@ namespace custom_exception
         [[nodiscard]] size_t line_number_get() const noexcept
         {
             return line_number;
+        }
+        ~customize_exception() noexcept
+        {
+            delete [] message;
+            delete [] function_name;
         }
     };
 }
@@ -251,17 +258,17 @@ namespace template_container
         class hash_imitation_functions
         {
         public:
-            size_t operator()(const int str_data) noexcept                              {       return str_data;                }
-            size_t operator()(const size_t DataNum) noexcept                            {       return DataNum;                }
-            size_t operator()(const char DataChar) noexcept                             {       return DataChar;               }
-            size_t operator()(const double DataDouble) noexcept                         {       return DataDouble;             }
-            size_t operator()(const float DataFloat) noexcept                           {       return DataFloat;              }
-            size_t operator()(const long DataLong) noexcept                             {       return DataLong;               }
-            size_t operator()(const short DataShort) noexcept                           {       return DataShort;              }
-            size_t operator()(const long long DataLongLong) noexcept                    {       return DataLongLong;           }
-            size_t operator()(const unsigned int DataUnsigned) noexcept                 {       return DataUnsigned;           }
-            size_t operator()(const unsigned long DataUnsignedLong) noexcept            {       return DataUnsignedLong;       }
-            size_t operator()(const unsigned short DataUnsignedShort) noexcept          {       return DataUnsignedShort;      }
+            size_t operator()(const int str_data) noexcept                                {       return str_data;                }
+            size_t operator()(const size_t data_size_t) noexcept                          {       return data_size_t;             }
+            size_t operator()(const char data_char) noexcept                              {       return data_char;               }
+            size_t operator()(const double data_double) noexcept                          {       return data_double;             }
+            size_t operator()(const float data_float) noexcept                            {       return data_float;              }
+            size_t operator()(const long data_long) noexcept                              {       return data_long;               }
+            size_t operator()(const short data_short) noexcept                            {       return data_short;              }
+            size_t operator()(const long long data_long_long) noexcept                    {       return data_long_long;          }
+            size_t operator()(const unsigned int data_unsigned) noexcept                  {       return data_unsigned;           }
+            size_t operator()(const unsigned long data_unsigned_long) noexcept            {       return data_unsigned_long;      }
+            size_t operator()(const unsigned short data_unsigned_short) noexcept          {       return data_unsigned_short;     }
             
   
             // size_t operator()(const MY_Template::string_container::string& data_string)
@@ -273,7 +280,7 @@ namespace template_container
             //     }
             //     return hash_value;
             // }
-            //有需要可以重载本文件的string容器和vector容器.list容器等计算哈希的函数
+            //有需要可以重载本文件的string容器和vector容器.list容器等计算哈希的函数,这里就不重载了
         };
     }
     namespace algorithm
@@ -3531,7 +3538,7 @@ namespace template_container
     namespace base_class_container
     {
         /*############################     rb_tree 容器     ############################*/
-        template <typename rb_tree_type_key, typename rb_tree_type_value, typename container_imitate_function,
+        template <typename rb_tree_type_key, typename rb_tree_type_value, typename container_imitate_function_visit,
         typename container_imitate_function = template_container::imitation_functions::less<rb_tree_type_key>>
         class rb_tree
         {
@@ -3719,7 +3726,7 @@ namespace template_container
             };
             using container_node = rb_tree_node;
             container_node* _root;
-            container_imitate_function element;
+            container_imitate_function_visit element;
             container_imitate_function function_policy;
             void left_revolve(container_node* subtree_node)
             {
@@ -4694,16 +4701,31 @@ namespace template_container
                     overall_list_prev = nullptr;
                     overall_list_next = nullptr;
                 }
+                hash_table_node(hash_table_type_value&& hash_table_value_data)
+                {
+                    _data = std::move(hash_table_value_data);
+                    _next = nullptr;
+                    overall_list_prev = nullptr;
+                    overall_list_next = nullptr;
+                }
             };
             using container_node = hash_table_node;
             container_imitate_function value_imitation_functions;                               //仿函数
+
             size_t _size;                                                                       //哈希表大小
+
             size_t load_factor;                                                                 //负载因子   
+
             size_t hash_capacity;                                                               //哈希表容量
+
             template_container::vector_container::vector<container_node*> vector_hash_table;    //哈希表
+
             hash_function hash_function_object;                                                 //哈希函数
+
             container_node* overall_list_before_node = nullptr;                                 //前一个数据
+
             container_node* overall_list_head_node = nullptr;                                   //全局头数据
+
             template <typename iterator_type_key, typename iterator_type_val>
             class hash_iterator
             {
@@ -4733,6 +4755,10 @@ namespace template_container
                 {      
                     hash_table_iterator_node = hash_table_iterator_node->overall_list_next;     
                     return *this;     
+                }
+                iterator_node* get_node()
+                {
+                    return hash_table_iterator_node;
                 }
             };
             void hash_chain_adjustment(container_node*& provisional_parent_node,container_node*& provisional_node,size_t& hash_map_location)
@@ -4837,23 +4863,23 @@ namespace template_container
             {
                 for(size_t i = 0;i < vector_hash_table.size();++i)
                 {
-                    container_node* _TempNode = vector_hash_table[i];
-                    while(_TempNode != nullptr)
+                    container_node* hash_bucket_delete = vector_hash_table[i];
+                    while(hash_bucket_delete != nullptr)
                     {
-                        container_node* _Temp_Node_prev = _TempNode;
-                        _TempNode = _TempNode->_next;
-                        delete _Temp_Node_prev;
-                        _Temp_Node_prev = nullptr;
+                        container_node* hash_bucket_prev_node = hash_bucket_delete;
+                        hash_bucket_delete = hash_bucket_delete->_next;
+                        delete hash_bucket_prev_node;
+                        hash_bucket_prev_node = nullptr;
                     }
                 }
             }
-            bool ChangeLoadFactor(const size_t& TempLoadFactor)
+            bool change_load_factor(const size_t& new_load_factor)  //作用：改变负载因子大小
             {
-                if(TempLoadFactor < 1)
+                if(new_load_factor < 1)
                 {
                     return false;
                 }
-                load_factor = TempLoadFactor;
+                load_factor = new_load_factor;
                 return true;
             }
             iterator operator[](const hash_table_type_key& key_value)
@@ -4864,34 +4890,42 @@ namespace template_container
                 }
                 else
                 {
-                    size_t Temp_Hash = value_imitation_functions(key_value);
-                    size_t hash_map_location = Temp_Hash % hash_capacity;
+                    size_t hash_value = value_imitation_functions(key_value);
+                    size_t hash_map_location = hash_value % hash_capacity;
                     //找到映射位置
-                    container_node* _TempNode = vector_hash_table[hash_map_location];
-                    while(_TempNode!= nullptr)
+                    container_node* bucket_node = vector_hash_table[hash_map_location];
+                    while(bucket_node != nullptr)
                     {
-                        if(value_imitation_functions(_TempNode->_data) == value_imitation_functions(key_value))
+                        if(value_imitation_functions(bucket_node->_data) == value_imitation_functions(key_value))
                         {
-                            return iterator(_TempNode);
+                            return iterator(bucket_node);
                         }
-                        _TempNode = _TempNode->_next;
+                        bucket_node = bucket_node->_next;
                     }
                     return iterator(nullptr);
                 }
             }
             iterator begin()                    {   return iterator(overall_list_head_node);        }
+
             const_iterator cbegin() const       {   return const_iterator(overall_list_head_node);  }
+
             iterator end()                      {   return iterator(nullptr);           }
+
             const_iterator cend() const         {   return const_iterator(nullptr);     }
+
             size_t size()                       {   return _size;                       }
+
             size_t size() const                 {   return _size;                       }
+
             bool   empty()                      {   return _size == 0;                  }
+
             size_t capacity()                   {   return hash_capacity;                    }
+
             size_t capacity() const             {   return hash_capacity;                    }
 
             bool push(const hash_table_type_value& hash_table_value_data)
             {
-                if( find(hash_table_value_data) != nullptr)
+                if( find(hash_table_value_data).get_node() != nullptr)
                 {
                     return false;
                 }
@@ -4901,94 +4935,198 @@ namespace template_container
                     //扩容
                     size_t new_container_capacity = (hash_capacity == 0 && vector_hash_table.size() == 0) ? 10 : hash_capacity * 2;
                     //新容量
-                    template_container::vector_container::vector<container_node*> _NewHashTable;
-                    _NewHashTable.resize(new_container_capacity,nullptr);
-                    size_t _New_size = 0;
+                    template_container::vector_container::vector<container_node*> new_vector_hash_table;
+                    new_vector_hash_table.resize(new_container_capacity,nullptr);
+                    size_t new_size = 0;
                     //重新映射,按照插入链表顺序
-                    container_node* _TempHeadNode = nullptr;
-                    container_node* _TempPreviousData = nullptr;
-                    container_node* _TempNode = overall_list_head_node;
-                    while( _TempNode != nullptr)
+                    container_node* regional_list_head_node = nullptr;                  //临时新哈希表全局头指针
+                    container_node* regional_list_previous_node = nullptr;              //临时新哈希表全局上一个插入数据指针
+                    container_node* start_position_node = overall_list_head_node;       //全局链表头指针赋值
+                    while( start_position_node != nullptr)
                     {
-                        size_t Temp_Hash = hash_function_object(_TempNode->_data) % new_container_capacity;
+                        size_t new_mapping_value = hash_function_object(start_position_node->_data) % new_container_capacity;
                         //重新计算映射值
-                        container_node* New_Mapping_location = _NewHashTable[Temp_Hash];
-                        if(New_Mapping_location == nullptr)
+                        container_node* hash_bucket_node = new_vector_hash_table[new_mapping_value];
+                        if(hash_bucket_node == nullptr)
                         {
-                            container_node* PushNode = new container_node(_TempNode->_data);
-                            if(_TempHeadNode == nullptr)
+                            container_node* new_mapping_data = new container_node(start_position_node->_data);
+                            if(regional_list_head_node == nullptr)
                             {
-                                PushNode->overall_list_prev = nullptr;
-                                PushNode->overall_list_next = nullptr;
-                                _TempHeadNode = _TempPreviousData =PushNode;
+                                new_mapping_data->overall_list_prev = nullptr;
+                                new_mapping_data->overall_list_next = nullptr;
+                                regional_list_head_node = regional_list_previous_node =new_mapping_data;
                             }
                             else
                             {
-                                PushNode->overall_list_prev = _TempPreviousData;
-                                _TempPreviousData->overall_list_next = PushNode;
-                                _TempPreviousData = PushNode;
+                                new_mapping_data->overall_list_prev = regional_list_previous_node;
+                                regional_list_previous_node->overall_list_next = new_mapping_data;
+                                regional_list_previous_node = new_mapping_data;
                             }
-                            _NewHashTable[Temp_Hash] = PushNode;
+                            new_vector_hash_table[new_mapping_value] = new_mapping_data;
                             //保存之前的遍历链表信息
                         }
                         else
                         {
-                            container_node* PushNode = new container_node(_TempNode->_data);
-                            if(_TempHeadNode == nullptr)
+                            container_node* new_mapping_data = new container_node(start_position_node->_data);
+                            if(regional_list_head_node == nullptr)
                             {
-                                PushNode->overall_list_prev = nullptr;
-                                _TempHeadNode = _TempPreviousData =PushNode;
+                                new_mapping_data->overall_list_prev = nullptr;
+                                regional_list_head_node = regional_list_previous_node =new_mapping_data;
                             }
                             else
                             {
-                                PushNode->overall_list_prev = _TempPreviousData;
-                                _TempPreviousData->overall_list_next = PushNode;
-                                _TempPreviousData = PushNode;
+                                new_mapping_data->overall_list_prev = regional_list_previous_node;
+                                regional_list_previous_node->overall_list_next = new_mapping_data;
+                                regional_list_previous_node = new_mapping_data;
                             }
-                            PushNode->_next = New_Mapping_location;
-                            _NewHashTable[Temp_Hash] = PushNode;
+                            new_mapping_data->_next = hash_bucket_node;
+                            new_vector_hash_table[new_mapping_value] = new_mapping_data;
                             //头插节点
                         }
-                        ++_New_size;
-                        _TempNode = _TempNode->overall_list_next;
+                        ++new_size;
+                        start_position_node = start_position_node->overall_list_next;
                     }
                     //释放旧哈希表
-                    for(size_t i = 0;i < vector_hash_table.size(); ++i)
+                    for(size_t delete_traversal = 0;delete_traversal < vector_hash_table.size(); ++delete_traversal)
                     {
-                        container_node* _TempNode = vector_hash_table[i];
-                        while(_TempNode!= nullptr)
+                        container_node* hash_bucket_delete = vector_hash_table[delete_traversal];
+                        while(hash_bucket_delete!= nullptr)
                         {
-                            container_node* _Temp_Node_prev = _TempNode;
-                            _TempNode = _TempNode->_next;
-                            delete _Temp_Node_prev;
-                            _Temp_Node_prev = nullptr;
+                            container_node* hash_bucket_prev_node = hash_bucket_delete;
+                            hash_bucket_delete = hash_bucket_delete->_next;
+                            delete hash_bucket_prev_node;
+                            hash_bucket_prev_node = nullptr;
                         }
                     }
-                    _size = _New_size;
-                    vector_hash_table.swap(_NewHashTable);
+                    _size = new_size;
+                    vector_hash_table.swap(new_vector_hash_table);
                     hash_capacity = new_container_capacity;
-                    overall_list_head_node = _TempHeadNode;
-                    overall_list_before_node = _TempPreviousData;
+                    overall_list_head_node = regional_list_head_node;
+                    overall_list_before_node = regional_list_previous_node;
                     //重新映射,按照插入链表顺序
                 }
-                size_t Temp_Hash = hash_function_object(hash_table_value_data);
-                size_t hash_map_location = Temp_Hash % hash_capacity;
+                size_t hash_mapping_value = hash_function_object(hash_table_value_data);
+                size_t hash_map_location = hash_mapping_value % hash_capacity;
                 //找到映射位置
-                container_node* _TempNode = vector_hash_table[hash_map_location];
+                container_node* hash_bucket_node = vector_hash_table[hash_map_location];
 
-                container_node* PushNode = new container_node(hash_table_value_data);
-                PushNode->_next = _TempNode;
-                vector_hash_table[hash_map_location] = PushNode;
+                container_node* new_mapping_data = new container_node(hash_table_value_data);
+                new_mapping_data->_next = hash_bucket_node;
+                vector_hash_table[hash_map_location] = new_mapping_data;
                 if(_size == 0 && overall_list_head_node == nullptr)
                 {
-                    PushNode->overall_list_prev = nullptr;
-                    overall_list_head_node = overall_list_before_node = PushNode;
+                    new_mapping_data->overall_list_prev = nullptr;
+                    overall_list_head_node = overall_list_before_node = new_mapping_data;
                 }
                 else
                 {
-                    PushNode->overall_list_prev = overall_list_before_node;
-                    overall_list_before_node->overall_list_next = PushNode;
-                    overall_list_before_node = PushNode;
+                    new_mapping_data->overall_list_prev = overall_list_before_node;
+                    overall_list_before_node->overall_list_next = new_mapping_data;
+                    overall_list_before_node = new_mapping_data;
+                }
+                _size++;
+                return true;
+            }
+            bool push(hash_table_type_value&& hash_table_value_data) noexcept
+            {
+                if( find(hash_table_value_data).hash_table_iterator_node != nullptr)
+                {
+                    return false;
+                }
+                //判断扩容
+                if( _size * 10 >= hash_capacity * load_factor)
+                {
+                    //扩容
+                    size_t new_container_capacity = (hash_capacity == 0 && vector_hash_table.size() == 0) ? 10 : hash_capacity * 2;
+                    //新容量
+                    template_container::vector_container::vector<container_node*> new_vector_hash_table;
+                    new_vector_hash_table.resize(new_container_capacity,nullptr);
+                    size_t new_size = 0;
+                    //重新映射,按照插入链表顺序
+                    container_node* regional_list_head_node = nullptr;                  //临时新哈希表全局头指针
+                    container_node* regional_list_previous_node = nullptr;              //临时新哈希表全局上一个插入数据指针
+                    container_node* start_position_node = overall_list_head_node;       //全局链表头指针赋值
+                    while( start_position_node != nullptr)
+                    {
+                        size_t new_mapping_value = hash_function_object(start_position_node->_data) % new_container_capacity;
+                        //重新计算映射值
+                        container_node* hash_bucket_node = new_vector_hash_table[new_mapping_value];
+                        if(hash_bucket_node == nullptr)
+                        {
+                            container_node* new_mapping_data = new container_node(std::forward<hash_table_type_value>(start_position_node->_data));
+                            if(regional_list_head_node == nullptr)
+                            {
+                                new_mapping_data->overall_list_prev = nullptr;
+                                new_mapping_data->overall_list_next = nullptr;
+                                regional_list_head_node = regional_list_previous_node =new_mapping_data;
+                            }
+                            else
+                            {
+                                new_mapping_data->overall_list_prev = regional_list_previous_node;
+                                regional_list_previous_node->overall_list_next = new_mapping_data;
+                                regional_list_previous_node = new_mapping_data;
+                            }
+                            new_vector_hash_table[new_mapping_value] = new_mapping_data;
+                            //保存之前的遍历链表信息
+                        }
+                        else
+                        {
+                            container_node* new_mapping_data = new container_node(std::forward<hash_table_type_value>(start_position_node->_data));
+                            if(regional_list_head_node == nullptr)
+                            {
+                                new_mapping_data->overall_list_prev = nullptr;
+                                regional_list_head_node = regional_list_previous_node =new_mapping_data;
+                            }
+                            else
+                            {
+                                new_mapping_data->overall_list_prev = regional_list_previous_node;
+                                regional_list_previous_node->overall_list_next = new_mapping_data;
+                                regional_list_previous_node = new_mapping_data;
+                            }
+                            new_mapping_data->_next = hash_bucket_node;
+                            new_vector_hash_table[new_mapping_value] = new_mapping_data;
+                            //头插节点
+                        }
+                        ++new_size;
+                        start_position_node = start_position_node->overall_list_next;
+                    }
+                    //释放旧哈希表
+                    for(size_t delete_traversal = 0;delete_traversal < vector_hash_table.size(); ++delete_traversal)
+                    {
+                        container_node* hash_bucket_delete = vector_hash_table[delete_traversal];
+                        while(hash_bucket_delete!= nullptr)
+                        {
+                            container_node* hash_bucket_prev_node = hash_bucket_delete;
+                            hash_bucket_delete = hash_bucket_delete->_next;
+                            delete hash_bucket_prev_node;
+                            hash_bucket_prev_node = nullptr;
+                        }
+                    }
+                    _size = new_size;
+                    vector_hash_table.swap(new_vector_hash_table);
+                    hash_capacity = new_container_capacity;
+                    overall_list_head_node = regional_list_head_node;
+                    overall_list_before_node = regional_list_previous_node;
+                    //重新映射,按照插入链表顺序
+                }
+                size_t hash_mapping_value = hash_function_object(hash_table_value_data);
+                size_t hash_map_location = hash_mapping_value % hash_capacity;
+                //找到映射位置
+                container_node* hash_bucket_node = vector_hash_table[hash_map_location];
+
+                container_node* new_mapping_data = new container_node(std::forward<hash_table_type_value>(hash_table_value_data));
+                new_mapping_data->_next = hash_bucket_node;
+                vector_hash_table[hash_map_location] = new_mapping_data;
+                if(_size == 0 && overall_list_head_node == nullptr)
+                {
+                    new_mapping_data->overall_list_prev = nullptr;
+                    overall_list_head_node = overall_list_before_node = new_mapping_data;
+                }
+                else
+                {
+                    new_mapping_data->overall_list_prev = overall_list_before_node;
+                    overall_list_before_node->overall_list_next = new_mapping_data;
+                    overall_list_before_node = new_mapping_data;
                 }
                 _size++;
                 return true;
@@ -4996,58 +5134,58 @@ namespace template_container
             bool pop(const hash_table_type_value& hash_table_value_data)
             {
                 //空表判断
-                if( find(hash_table_value_data) == nullptr)
+                if( find(hash_table_value_data).get_node() == nullptr)
                 {
                     return false;
                 }
-                size_t Temp_Hash = hash_function_object(hash_table_value_data);
-                size_t hash_map_location = Temp_Hash % hash_capacity;
+                size_t hash_mapping_value = hash_function_object(hash_table_value_data);
+                size_t hash_map_location = hash_mapping_value % hash_capacity;
                 //找到映射位置
-                container_node* _TempNode = vector_hash_table[hash_map_location];
-                container_node* TempNodeParent = nullptr;
-                while(_TempNode!= nullptr)
+                container_node* hash_bucket_node = vector_hash_table[hash_map_location]; //桶头节点赋值
+                container_node* hash_bucket_parent_node = nullptr;                       //保存上一个节点方便修改next指针的指向
+                while(hash_bucket_node!= nullptr)
                 {
                     //找到位置
-                    if(value_imitation_functions(_TempNode->_data) == value_imitation_functions(hash_table_value_data))
+                    if(value_imitation_functions(hash_bucket_node->_data) == value_imitation_functions(hash_table_value_data))
                     {
-                        if(overall_list_head_node == _TempNode)
+                        if(overall_list_head_node == hash_bucket_node)
                         {
                             //头节点删除情况
-                            if(_TempNode == overall_list_before_node)
+                            if(hash_bucket_node == overall_list_before_node)
                             {
                                 //只有一个节点
                                 overall_list_head_node = overall_list_before_node = nullptr;
-                                hash_chain_adjustment(TempNodeParent,_TempNode,hash_map_location);
-                            }
-                            else
+                                hash_chain_adjustment(hash_bucket_parent_node,hash_bucket_node,hash_map_location);
+                            }           //hash_chain_adjustment函数作用：检查hash_bucket_node节点是否哈希桶头结点，是则置空
+                            else        //不是则将hash_bucket_node的_next节点赋值给hash_bucket_parent_node的_next指针，因为删除的是hash_bucket_node节点
                             {
                                 //是头节点，不是尾节点
-                                hash_chain_adjustment(TempNodeParent,_TempNode,hash_map_location);
+                                hash_chain_adjustment(hash_bucket_parent_node,hash_bucket_node,hash_map_location);
                                 overall_list_head_node = overall_list_head_node->overall_list_next;
                                 overall_list_head_node->overall_list_prev = nullptr;
                             }
                         }
-                        else if(_TempNode == overall_list_before_node)
+                        else if(hash_bucket_node == overall_list_before_node)
                         {
                             //尾节点删除情况
-                            hash_chain_adjustment(TempNodeParent,_TempNode,hash_map_location);
+                            hash_chain_adjustment(hash_bucket_parent_node,hash_bucket_node,hash_map_location);
                             overall_list_before_node = overall_list_before_node->overall_list_prev;
                             overall_list_before_node->overall_list_next = nullptr;
                         }
                         else
                         {
                             //中间节点删除情况
-                            hash_chain_adjustment(TempNodeParent,_TempNode,hash_map_location);
-                            _TempNode->overall_list_prev->overall_list_next = _TempNode->overall_list_next;
-                            _TempNode->overall_list_next->overall_list_prev = _TempNode->overall_list_prev;
+                            hash_chain_adjustment(hash_bucket_parent_node,hash_bucket_node,hash_map_location);
+                            hash_bucket_node->overall_list_prev->overall_list_next = hash_bucket_node->overall_list_next;
+                            hash_bucket_node->overall_list_next->overall_list_prev = hash_bucket_node->overall_list_prev;
                         }
-                        delete _TempNode;
-                        _TempNode = nullptr;
+                        delete hash_bucket_node;
+                        hash_bucket_node = nullptr;
                         --_size;
                         return true;
                     }
-                    TempNodeParent = _TempNode;
-                    _TempNode = _TempNode->_next;
+                    hash_bucket_parent_node = hash_bucket_node;
+                    hash_bucket_node = hash_bucket_node->_next;
                     //向下遍历
                 }
                 return false;
@@ -5060,88 +5198,88 @@ namespace template_container
                 }
                 else
                 {
-                    size_t Temp_Hash = hash_function_object(hash_table_value_data);
-                    size_t hash_map_location = Temp_Hash % hash_capacity;
+                    size_t hash_mapping_value = hash_function_object(hash_table_value_data);
+                    size_t hash_map_location = hash_mapping_value % hash_capacity;
                     //找到映射位置
-                    container_node* _TempNode = vector_hash_table[hash_map_location];
-                    while(_TempNode!= nullptr)
+                    container_node* hash_bucket_node = vector_hash_table[hash_map_location];
+                    while(hash_bucket_node != nullptr)
                     {
-                        if(value_imitation_functions(_TempNode->_data) == value_imitation_functions(hash_table_value_data))
+                        if(value_imitation_functions(hash_bucket_node->_data) == value_imitation_functions(hash_table_value_data))
                         {
-                            return iterator(_TempNode);
+                            return iterator(hash_bucket_node);
                         }
-                        _TempNode = _TempNode->_next;
+                        hash_bucket_node = hash_bucket_node->_next;
                     }
                     return iterator(nullptr);
                 }
             }                             
         };
-        /*############################     BitSet 容器     ############################*/
-        class BitSet
+        /*############################     bit_set 容器     ############################*/
+        class bit_set
         {
-            template_container::vector_container::vector<int> _BitSet;
+            template_container::vector_container::vector<int> vector_bit_set;
             size_t _size;
         public:
-            BitSet() {  ;  }
-            BitSet(const size_t& Temp_size)
+            bit_set() {  ;  }
+            bit_set(const size_t& new_capacity)
             {
                 _size = 0;
-                _BitSet.resize((Temp_size / 32) + 1,0);
+                vector_bit_set.resize((new_capacity / 32) + 1,0);
                 //多开一个int的空间，防止不够
             }
-            void resize(const size_t& Temp_size)
+            void resize(const size_t& new_capacity)
             {
                 _size = 0;
-                _BitSet.resize((Temp_size / 32) + 1,0);
+                vector_bit_set.resize((new_capacity / 32) + 1,0);
             }
-            BitSet(const BitSet& BitMap_Temp)
+            bit_set(const bit_set& bit_set_data)
             {
-                _BitSet = BitMap_Temp._BitSet;
-                _size = BitMap_Temp._size;
+                vector_bit_set = bit_set_data.vector_bit_set;
+                _size = bit_set_data._size;
             }
-            BitSet& operator=(const BitSet& BitMap_Temp)
+            bit_set& operator=(const bit_set& bit_set_data)
             {
-                if(this != &BitMap_Temp)
+                if(this != &bit_set_data)
                 {
-                    _BitSet = BitMap_Temp._BitSet;
-                    _size = BitMap_Temp._size;
+                    vector_bit_set = bit_set_data.vector_bit_set;
+                    _size = bit_set_data._size;
                 }
                 return *this;
             }
-            void set(const size_t& TempVal)
+            void set(const size_t& value_data)
             {
                 //把数映射到BitSet上的函数
-                size_t BitSetLocation = TempVal / 32; //定位到BitSet的位置在哪个int上
-                size_t BitSet_Location_Val = TempVal % 32; //定位到BitSet的位置在哪个int上的第几位
-                _BitSet[BitSetLocation] = _BitSet[BitSetLocation] | (1 << BitSet_Location_Val);
+                size_t mapping_bit = value_data / 32; //定位到BitSet的位置在哪个int上
+                size_t value_bit = value_data % 32; //定位到BitSet的位置在哪个int上的第几位
+                vector_bit_set[mapping_bit] = vector_bit_set[mapping_bit] | (1 << value_bit);
                 //比较当前位置是否为1，若为1则不需要改变，若为0则需要改变，注意|只改变当前位不会改变其他位
                 //|是两个条件满足一个条件就行，&是两个条件都满足才行
                 //其他位如果是1那么就还是1，如果是0那么就还是0，因为|是两个条件满足一个条件就行
                 _size++;
             }
-            void reset(const size_t& TempVal)
+            void reset(const size_t& value_data)
             {
                 //删除映射的位置的函数
-                size_t BitSetLocation = TempVal / 32;
-                size_t BitSet_Location_Val = TempVal % 32;
-                _BitSet[BitSetLocation] = _BitSet[BitSetLocation] & (~(1 << BitSet_Location_Val));
+                size_t mapping_bit = value_data / 32;
+                size_t value_bit = value_data % 32;
+                vector_bit_set[mapping_bit] = vector_bit_set[mapping_bit] & (~(1 << value_bit));
                 //&是两个条件都满足，~是取反，^是两个条件不同时满足
                 //1取反关键位是0其他位是1，这样就成功与掉，&要求是两个条件都需要满足
                 //其他位如果是1那么就不会改变原来的，如果是0那么还是为0，因为与是两个条件都需要满足
                 _size--;
             }
-            size_t size()       { return _size; }
-            bool test(const size_t& TempVal)
+            size_t size()const           {   return _size;    }
+            bool test(const size_t& value_data)
             {
                 if(_size == 0)
                 {
                     return false;
                 }
-                size_t BitSetLocation = TempVal / 32;
-                size_t BitSet_Location_Val = TempVal % 32;
-                bool return_BitSet = _BitSet[BitSetLocation] & (1 << BitSet_Location_Val);
-                //如果_BitSet[BitSetLocation]里对应的位是1那么就返回true，否则返回false
-                return return_BitSet;
+                size_t mapping_bit = value_data / 32;
+                size_t value_bit = value_data % 32;
+                bool return_bit_set = vector_bit_set[mapping_bit] & (1 << value_bit);
+                //如果_BitSet[mapping_bit]里对应的位是1那么就返回true，否则返回false
+                return return_bit_set;
             }
         };
     }
@@ -5192,20 +5330,20 @@ namespace template_container
             {  
                 return instance_tree_map.push(tree_map_data);                   
             }
-            tree_map (std::initializer_list<key_val_type> lightweight_container)
-            {
-                for(auto& i : lightweight_container)
-                {
-                    instance_tree_map.push(i);
-                }
-            }
             tree_map& operator= (std::initializer_list<key_val_type> lightweight_container)
             {
-                for(auto& i : lightweight_container)
+                for(auto& chained_values : lightweight_container)
                 {
-                    instance_tree_map.push(i);
+                    instance_tree_map.push(std::move(chained_values));
                 }
                 return *this;
+            }
+            tree_map(const std::initializer_list<key_val_type>& lightweight_container)
+            {
+                for(auto& chained_values : lightweight_container)
+                {
+                    instance_tree_map.push(std::move(chained_values));
+                }
             }
             tree_map()                                               {  ;                                   }
 
@@ -5245,70 +5383,127 @@ namespace template_container
 
             const_reverse_iterator crend()                           {  return instance_tree_map.crend();                               }
 
-            iterator operator[](const key_val_type& tree_map_data)         {  return instance_tree_map[tree_map_data];                  }
+            iterator operator[](const key_val_type& tree_map_data)   {  return instance_tree_map[tree_map_data];                        }
 
         };
-        template <typename UnorderedMapTypeK,typename UnorderedMapTypeV>
+        template <typename hash_map_type_key,typename hash_map_type_value,
+        typename first_external_hash_functions = template_container::imitation_functions::hash_imitation_functions,
+        typename second_external_hash_functions = template_container::imitation_functions::hash_imitation_functions> //两个对应的hash函数
         class hash_map
         {
-            using key_val_type = template_container::practicality::pair<UnorderedMapTypeK,UnorderedMapTypeV>;
+            using key_val_type = template_container::practicality::pair<hash_map_type_key,hash_map_type_value>;
             struct key_val
             {
-                const UnorderedMapTypeK& operator()(const key_val_type& key_value)
+                const hash_map_type_key& operator()(const key_val_type& key_value)
                 {
                     return key_value.first;
                 }
             };
-            class Hash_Functor
+            class inbuilt_map_hash_functor
             {
+            private:
+                first_external_hash_functions  first_hash_functions_object;
+                second_external_hash_functions second_hash_functions_object;
             public:
-                size_t operator()(const key_val_type& key_value)
+                size_t operator()(const key_val_type& key_value) noexcept
                 {
-                    size_t num_One =  template_container::imitation_functions::hash_imitation_functions()(key_value.first);
-                    num_One = num_One * 31;
-                    size_t num_Two =  template_container::imitation_functions::hash_imitation_functions()(key_value.second);
-                    num_Two = num_Two * 31;
-                    return (num_One + num_Two);
+                    size_t first_hash_value  =  first_hash_functions_object(key_value.first); 
+                    first_hash_value = first_hash_value * 31;
+                    size_t second_hash_value =  second_hash_functions_object(key_value.second);
+                    second_hash_value = second_hash_value * 31;
+                    return (first_hash_value + second_hash_value);
                 }
             };
-            using hash_table = base_class_container::hash_table<UnorderedMapTypeK,key_val_type,key_val,Hash_Functor>;
-            hash_table HashMap;
+            using hash_table = base_class_container::hash_table<hash_map_type_key,key_val_type,key_val,inbuilt_map_hash_functor>;
+            hash_table instance_hash_map;
         public:
             using iterator = typename hash_table::iterator;
-            using const_iterator = typename hash_table::const_iterator;
-            hash_map()                                      {   ;                               }  
-            ~hash_map()                                     {  HashMap.~hash_table();            }
-            hash_map(const key_val_type& key_value)             {  HashMap.push(key_value);           }
-            bool push(const key_val_type& key_value)                {  return HashMap.push(key_value);    }
-            bool pop(const key_val_type& key_value)                 {  return HashMap.pop(key_value);     }
-            iterator find(const key_val_type& key_value)            {  return HashMap.find(key_value);    }
-            size_t size()                                       {  return HashMap.size();           }
-            size_t size() const                                 {  return HashMap.size();           }
-            size_t capacity() const                             {  return HashMap.capacity();       } 
-            bool empty()                                        {  return HashMap.empty();          }
-            iterator begin()                                    {  return HashMap.begin();          }
-            iterator end()                                      {  return HashMap.end();            }
-            const_iterator cbegin()                             {  return HashMap.cbegin();         }
-            const_iterator cend()                               {  return HashMap.cend();           }
-            iterator operator[](const key_val_type& key_value)      {  return HashMap[key_value];         }
+            using const_iterator = typename hash_table::const_iterator; //单向迭代器
+            hash_map()                                              {   ;                                         }  
+
+            ~hash_map()                                             {  instance_hash_map.~hash_table();           }
+
+            hash_map(const key_val_type& key_value)                 {  instance_hash_map.push(key_value);         }
+
+            hash_map(const hash_map& hash_map_data)                 {  instance_hash_map = hash_map_data.instance_hash_map;  }
+
+            hash_map(hash_map&& hash_map_data) noexcept             {  instance_hash_map = std::move(hash_map_data.instance_hash_map);  }
+
+            bool push(const key_val_type& key_value)                {  return instance_hash_map.push(key_value);  }
+
+            bool pop(const key_val_type& key_value)                 {  return instance_hash_map.pop(key_value);     }
+
+            iterator find(const key_val_type& key_value)            {  return instance_hash_map.find(key_value);    }
+
+            size_t size()                                           {  return instance_hash_map.size();           }
+
+            size_t size() const                                     {  return instance_hash_map.size();           }
+
+            size_t capacity() const                                 {  return instance_hash_map.capacity();       } 
+
+            bool empty()                                            {  return instance_hash_map.empty();          }
+
+            iterator begin()                                        {  return instance_hash_map.begin();          }
+
+            iterator end()                                          {  return instance_hash_map.end();            }
+
+            const_iterator cbegin()                                 {  return instance_hash_map.cbegin();         }
+
+            const_iterator cend()                                   {  return instance_hash_map.cend();           }
+
+            iterator operator[](const key_val_type& key_value)      {  return instance_hash_map[key_value];       }
+
+            hash_map(const std::initializer_list<key_val_type>& lightweight_container)
+            {
+                for(auto& chained_values : lightweight_container)
+                {
+                    instance_hash_map.push(std::move(chained_values));
+                }
+            }
+            hash_map& operator=(const std::initializer_list<key_val_type>& lightweight_container)
+            {
+                for(auto& chained_values : lightweight_container)
+                {
+                    instance_hash_map.push(std::move(chained_values));
+                }
+                return *this;
+            }
+            hash_map& operator=(hash_map&& hash_map_data) noexcept
+            {
+                if(this!= &hash_map_data)
+                {
+                    instance_hash_map = std::forward<hash_table>(hash_map_data.instance_hash_map);
+                }
+            }
+            bool push(key_val_type&& key_value) noexcept                 
+            {  
+                return instance_hash_map.push(std::forward<key_val_type>(key_value)); 
+            }
+            hash_map& operator=(const hash_map& hash_map_data)
+            {
+                if(this!= &hash_map_data)
+                {
+                    instance_hash_map = hash_map_data.instance_hash_map;
+                }
+                return *this;
+            }
         };
     }
     /*############################     tree_set 容器     ############################*/
     namespace set_container
     {
-        template <typename set_type>
+        template <typename set_type,typename comparators = template_container::imitation_functions::less<set_type>>
         class tree_set
         {
-            using key_val_type = set_type;
+            using key_val_type = set_type;           //comparators 用户自定义比较器，用于比较两个元素的大小，方便存储
             struct key_val
             {
-                /* 仿函数，返回比较的值 */
                 const set_type& operator()(const key_val_type& key_value)
                 {
                     return key_value;
                 }
             };
-            using instance_rb = base_class_container::rb_tree<set_type,key_val_type,key_val>;
+            using instance_rb = base_class_container::rb_tree<set_type,key_val_type,key_val,comparators>;
             instance_rb instance_tree_set;
         public:
             using iterator = typename instance_rb::iterator;
@@ -5335,16 +5530,16 @@ namespace template_container
             }
             tree_set(std::initializer_list<key_val_type> lightweight_container)
             {
-                for(auto& i : lightweight_container)
+                for(auto& chained_values : lightweight_container)
                 {
-                    instance_tree_set.push(i);
+                    instance_tree_set.push(std::move(chained_values));
                 }
             }
             tree_set& operator= (std::initializer_list<key_val_type> lightweight_container)
             {
-                for(auto& i : lightweight_container)
+                for(auto& chained_values : lightweight_container)
                 {
-                    instance_tree_set.push(i);
+                    instance_tree_set.push(std::move(chained_values));
                 }
                 return *this;
             }
@@ -5395,16 +5590,18 @@ namespace template_container
 
             iterator operator[](const key_val_type& set_type_data)   {  return instance_tree_set[set_type_data];         }
         };
-        template <typename UnorderedSetTypeK>
+        template <typename set_type_val,typename external_hash_functions = template_container::imitation_functions::hash_imitation_functions>
         class hash_set
         {
-            using key_val_type = UnorderedSetTypeK;
-            class Hash_Functor
+            using key_val_type = set_type_val;
+            class inbuilt_set_hash_functor
             {
+            private:
+                external_hash_functions hash_functions_object;
             public:
                 size_t operator()(const key_val_type& key_value)
                 {
-                    return template_container::imitation_functions::hash_imitation_functions()(key_value)* 131;
+                    return hash_functions_object(key_value)* 131;
                 }
             };
             class key_val
@@ -5415,77 +5612,130 @@ namespace template_container
                     return key_value;
                 }
             };
-            using hash_table = template_container::base_class_container::hash_table<UnorderedSetTypeK,key_val_type,key_val,Hash_Functor>;
-            hash_table HashSet;
+            using hash_table = template_container::base_class_container::hash_table<set_type_val,key_val_type,key_val,inbuilt_set_hash_functor>;
+            hash_table instance_hash_set;
         public:
             using iterator = typename hash_table::iterator;
             using const_iterator = typename hash_table::const_iterator;
-            hash_set()                                      {  ;                                     }
-            ~hash_set()                                     {   HashSet.~hash_table();                }
-            bool push(const key_val_type& set_type_data)                {  return HashSet.push(set_type_data);         }
-            bool pop(const key_val_type& set_type_data)                 {  return HashSet.pop(set_type_data);          }            
-            iterator find(const key_val_type& set_type_data)            {  return HashSet.find(set_type_data);         }
-            size_t size()                                       {  return HashSet.size();                 }
-            bool empty()                                        {  return HashSet.empty();                }
-            size_t capacity()                                   {  return HashSet.capacity();             }
-            size_t size() const                                 {  return HashSet.size();                 }
-            size_t capacity() const                             {  return HashSet.capacity();             }
-            iterator begin()                                    {  return HashSet.begin();                }
-            iterator end()                                      {  return HashSet.end();                  }
-            const_iterator cbegin()                             {  return HashSet.cbegin();               }
-            const_iterator cend()                               {  return HashSet.cend();                 }
-            iterator operator[](const key_val_type& set_type_data)      {  return HashSet[set_type_data];               }
+            hash_set()                                                  {  ;                                                }
+
+            hash_set(const set_type_val& set_type_data)                 {  instance_hash_set.push(set_type_data);           }
+
+            hash_set(const hash_set& hash_set_data)                     {  instance_hash_set = hash_set_data.instance_hash_set;  }
+
+            ~hash_set()                                                 {   instance_hash_set.~hash_table();                }
+
+            bool push(const key_val_type& set_type_data)                {  return instance_hash_set.push(set_type_data);    }
+
+            bool pop(const key_val_type& set_type_data)                 {  return instance_hash_set.pop(set_type_data);     }     
+
+            iterator find(const key_val_type& set_type_data)            {  return instance_hash_set.find(set_type_data);    }
+
+            size_t size()                                               {  return instance_hash_set.size();                 }
+
+            bool empty()                                                {  return instance_hash_set.empty();                }
+
+            size_t capacity()                                           {  return instance_hash_set.capacity();             }
+
+            size_t size() const                                         {  return instance_hash_set.size();                 }
+
+            size_t capacity() const                                     {  return instance_hash_set.capacity();             }
+
+            iterator begin()                                            {  return instance_hash_set.begin();                }
+
+            iterator end()                                              {  return instance_hash_set.end();                  }
+
+            const_iterator cbegin()                                     {  return instance_hash_set.cbegin();               }
+
+            const_iterator cend()                                       {  return instance_hash_set.cend();                 }
+
+            iterator operator[](const key_val_type& set_type_data)      {  return instance_hash_set[set_type_data];         }
+
+            hash_set(set_type_val&& set_type_data) noexcept             
+            {  
+                instance_hash_set.push(std::forward<set_type_val>(set_type_data));  
+            }
+            bool push(set_type_val&& set_type_data) noexcept
+            {
+                return instance_hash_set.push(std::forward<set_type_val>(set_type_data));
+            }
+            hash_set(std::initializer_list<key_val_type> lightweight_container)
+            {
+                for(auto& chained_values : lightweight_container)
+                {
+                    instance_hash_set.push(std::move(chained_values));
+                }
+            }
+            hash_set& operator=(const std::initializer_list<key_val_type>& lightweight_container)
+            {
+                for(auto& chained_values : lightweight_container)
+                {
+                    instance_hash_set.push(std::move(chained_values));
+                }
+                return *this;
+            }
+            hash_set& operator=(const hash_set& hash_set_data)
+            {
+                instance_hash_set = hash_set_data.instance_hash_set;
+                return *this;
+            }
+            hash_set& operator=(hash_set&& hash_set_data) noexcept
+            {
+                instance_hash_set = std::move(hash_set_data.instance_hash_set);
+                return *this;
+            }
         };
     }
-    /*############################     BloomFilter 容器     ############################*/
-    namespace bloom_filter_c
+    /*############################     bloom_filter 容器     ############################*/
+    namespace bloom_filter_container
     {
-        template <typename BloomFilterTypeVal,typename HashFunctorBloomFilter = template_container::algorithm::hash_algorithm::hash_function<BloomFilterTypeVal> >
-        class BloomFilter
+        template <typename bloom_filter_type_value,typename bloom_filter_hash_functor = template_container::algorithm::hash_algorithm::hash_function<bloom_filter_type_value>>
+        class bloom_filter
         {
-            HashFunctorBloomFilter   _Hash;
-            using BitSet = template_container::base_class_container::BitSet;
-            BitSet VectorBitSet;
-            size_t _Capacity;
+            bloom_filter_hash_functor   hash_functions_object;
+            using bit_set = template_container::base_class_container::bit_set;
+            bit_set instance_bit_set;
+            size_t _capacity;
         public:
-            BloomFilter()
+            bloom_filter()
             {
-                _Capacity = 1000;
-                VectorBitSet.resize(_Capacity);
+                _capacity = 1000;
+                instance_bit_set.resize(_capacity);
             }
-            BloomFilter(const size_t& Temp_Capacity)
+            bloom_filter(const size_t& Temp_Capacity)
             {
-                _Capacity = Temp_Capacity;
-                VectorBitSet.resize(_Capacity);
+                _capacity = Temp_Capacity;
+                instance_bit_set.resize(_capacity);
             }
             size_t size()
             {
-                return VectorBitSet.size();
+                return instance_bit_set.size();
             }
             size_t capacity()
             {
-                return _Capacity;
+                return _capacity;
             }
-            bool test(const BloomFilterTypeVal& TempVal)
+            bool test(const bloom_filter_type_value& TempVal)
             {
-                size_t num_One   = _Hash.hash_sdmmhash(TempVal) % _Capacity;
-                size_t num_Two   = _Hash.hash_djbhash (TempVal) % _Capacity;
-                size_t num_Three = _Hash.hash_pjwhash (TempVal) % _Capacity;
-                if(VectorBitSet.test(num_One) == true && VectorBitSet.test(num_Two) == true && VectorBitSet.test(num_Three) && true)
+                size_t primary_mapping_location   = hash_functions_object.hash_sdmmhash(TempVal) % _capacity;
+                size_t secondary_mapping_location = hash_functions_object.hash_djbhash (TempVal) % _capacity;
+                size_t tertiary_mapping_location  = hash_functions_object.hash_pjwhash (TempVal) % _capacity;
+                if(instance_bit_set.test(primary_mapping_location) == true && instance_bit_set.test(secondary_mapping_location) == true && 
+                instance_bit_set.test(tertiary_mapping_location) == true)
                 {
                     return true;
                     /* 有一个为0就返回false */
                 }
                 return false;
             }
-            void set(const BloomFilterTypeVal& TempVal)
+            void set(const bloom_filter_type_value& TempVal)
             {
-                size_t num_One   = _Hash.hash_sdmmhash(TempVal) % _Capacity;
-                size_t num_Two   = _Hash.hash_djbhash (TempVal) % _Capacity;
-                size_t num_Three = _Hash.hash_pjwhash (TempVal) % _Capacity;
-                VectorBitSet.set(num_One);
-                VectorBitSet.set(num_Two);
-                VectorBitSet.set(num_Three);
+                size_t primary_mapping_location   = hash_functions_object.hash_sdmmhash(TempVal) % _capacity;
+                size_t secondary_mapping_location = hash_functions_object.hash_djbhash (TempVal) % _capacity;
+                size_t tertiary_mapping_location  = hash_functions_object.hash_pjwhash (TempVal) % _capacity;
+                instance_bit_set.set(primary_mapping_location);
+                instance_bit_set.set(secondary_mapping_location);
+                instance_bit_set.set(tertiary_mapping_location);
             }
             //布隆过滤器只支持插入和查找，不支持删除
         };
@@ -5505,8 +5755,8 @@ namespace con
     using template_container::map_container::hash_map;
     using template_container::set_container::tree_set;
     using template_container::set_container::hash_set;
-    using template_container::base_class_container::BitSet;
-    using template_container::bloom_filter_c::BloomFilter;
+    using template_container::base_class_container::bit_set;
+    using template_container::bloom_filter_container::bloom_filter;
     using template_container::practicality::pair;
     using template_container::practicality::make_pair;
     using template_container::algorithm::copy;
@@ -5516,5 +5766,4 @@ namespace con
     using smart_pointer::unique_ptr;
     using smart_pointer::shared_ptr;
     using smart_pointer::weak_ptr;
-    //待测试？
 }

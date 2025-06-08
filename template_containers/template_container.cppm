@@ -4461,7 +4461,7 @@ namespace template_container
                     }
                 }
             }
-            bool ChangeLoadFactor(const size_t& Temp_Load_factor)
+            bool change_load_factor(const size_t& Temp_Load_factor)
             {
                 if(Temp_Load_factor < 1)
                 {
@@ -4690,34 +4690,34 @@ namespace template_container
                 }
             }                             
         };
-        /*############################     BitSet 容器     ############################*/
-        class BitSet
+        /*############################     bit_set 容器     ############################*/
+        class bit_set
         {
-            template_container::vector_container::vector<int> _BitSet;
+            template_container::vector_container::vector<int> vector_bit_set;
             size_t _size;
         public:
-            BitSet() {  ;  }
-            BitSet(const size_t& Temp_size)
+            bit_set() {  ;  }
+            bit_set(const size_t& Temp_size)
             {
                 _size = 0;
-                _BitSet.resize((Temp_size / 32) + 1,0);
+                vector_bit_set.resize((Temp_size / 32) + 1,0);
                 //多开一个int的空间，防止不够
             }
             void resize(const size_t& Temp_size)
             {
                 _size = 0;
-                _BitSet.resize((Temp_size / 32) + 1,0);
+                vector_bit_set.resize((Temp_size / 32) + 1,0);
             }
-            BitSet(const BitSet& BitMap_Temp)
+            bit_set(const bit_set& BitMap_Temp)
             {
-                _BitSet = BitMap_Temp._BitSet;
+                vector_bit_set = BitMap_Temp.vector_bit_set;
                 _size = BitMap_Temp._size;
             }
-            BitSet& operator=(const BitSet& BitMap_Temp)
+            bit_set& operator=(const bit_set& BitMap_Temp)
             {
                 if(this != &BitMap_Temp)
                 {
-                    _BitSet = BitMap_Temp._BitSet;
+                    vector_bit_set = BitMap_Temp.vector_bit_set;
                     _size = BitMap_Temp._size;
                 }
                 return *this;
@@ -4727,7 +4727,7 @@ namespace template_container
                 //把数映射到BitSet上的函数
                 size_t BitSet_Location = Temp_Val / 32; //定位到BitSet的位置在哪个int上
                 size_t BitSet_Location_Val = Temp_Val % 32; //定位到BitSet的位置在哪个int上的第几位
-                _BitSet[BitSet_Location] = _BitSet[BitSet_Location] | (1 << BitSet_Location_Val);
+                vector_bit_set[BitSet_Location] = vector_bit_set[BitSet_Location] | (1 << BitSet_Location_Val);
                 //比较当前位置是否为1，若为1则不需要改变，若为0则需要改变，注意|只改变当前位不会改变其他位
                 //|是两个条件满足一个条件就行，&是两个条件都满足才行
                 //其他位如果是1那么就还是1，如果是0那么就还是0，因为|是两个条件满足一个条件就行
@@ -4738,7 +4738,7 @@ namespace template_container
                 //删除映射的位置的函数
                 size_t BitSet_Location = Temp_Val / 32;
                 size_t BitSet_Location_Val = Temp_Val % 32;
-                _BitSet[BitSet_Location] = _BitSet[BitSet_Location] & (~(1 << BitSet_Location_Val));
+                vector_bit_set[BitSet_Location] = vector_bit_set[BitSet_Location] & (~(1 << BitSet_Location_Val));
                 //&是两个条件都满足，~是取反，^是两个条件不同时满足
                 //1取反关键位是0其他位是1，这样就成功与掉，&要求是两个条件都需要满足
                 //其他位如果是1那么就不会改变原来的，如果是0那么还是为0，因为与是两个条件都需要满足
@@ -4753,7 +4753,7 @@ namespace template_container
                 }
                 size_t BitSet_Location = Temp_Val / 32;
                 size_t BitSet_Location_Val = Temp_Val % 32;
-                bool return_BitSet = _BitSet[BitSet_Location] & (1 << BitSet_Location_Val);
+                bool return_BitSet = vector_bit_set[BitSet_Location] & (1 << BitSet_Location_Val);
                 //如果_BitSet[BitSet_Location]里对应的位是1那么就返回true，否则返回false
                 return return_BitSet;
             }
@@ -4823,18 +4823,18 @@ namespace template_container
             const_reverse_iterator crend()                          {  return instance_tree_map.crend();             }
             iterator operator[](const key_val_type& Map_Temp)       {  return instance_tree_map[Map_Temp];           }
         };
-        template <typename UnorderedMapTypeK,typename UnorderedMapTypeV>
+        template <typename hash_map_type_key,typename hash_map_type_value>
         class hash_map
         {
-            using key_val_type = template_container::practicality::pair<UnorderedMapTypeK,UnorderedMapTypeV>;
+            using key_val_type = template_container::practicality::pair<hash_map_type_key,hash_map_type_value>;
             struct key_val
             {
-                const UnorderedMapTypeK& operator()(const key_val_type& Temp_Key_)
+                const hash_map_type_key& operator()(const key_val_type& Temp_Key_)
                 {
                     return Temp_Key_.first;
                 }
             };
-            class Hash_Functor
+            class inbuilt_map_hash_functor
             {
             public:
                 size_t operator()(const key_val_type& Temp_Key_)
@@ -4846,26 +4846,26 @@ namespace template_container
                     return (num_One + num_Two);
                 }
             };
-            using hash_table = base_class_container::hash_table<UnorderedMapTypeK,key_val_type,key_val,Hash_Functor>;
-            hash_table HashMap;
+            using hash_table = base_class_container::hash_table<hash_map_type_key,key_val_type,key_val,inbuilt_map_hash_functor>;
+            hash_table instance_hash_map;
         public:
             using iterator = typename hash_table::iterator;
             using const_iterator = typename hash_table::const_iterator;
             hash_map()                                     {   ;                                 }  
-            ~hash_map()                                    {  HashMap.~hash_table();           }
-            hash_map(const key_val_type& Temp_Key_)        {  HashMap.push(Temp_Key_);         }
-            bool push(const key_val_type& Temp_Key_)            {  return HashMap.push(Temp_Key_);  }
-            bool pop(const key_val_type& Temp_Key_)             {  return HashMap.pop(Temp_Key_);   }
-            iterator find(const key_val_type& Temp_Key_)        {  return HashMap.find(Temp_Key_);  }
-            size_t size()                                       {  return HashMap.size();           }
-            size_t size() const                                 {  return HashMap.size();           }
-            size_t capacity() const                             {  return HashMap.capacity();       } 
-            bool empty()                                        {  return HashMap.empty();          }
-            iterator begin()                                    {  return HashMap.begin();          }
-            iterator end()                                      {  return HashMap.end();            }
-            const_iterator cbegin()                             {  return HashMap.cbegin();         }
-            const_iterator cend()                               {  return HashMap.cend();           }
-            iterator operator[](const key_val_type& Temp_Key_)  {  return HashMap[Temp_Key_];       }
+            ~hash_map()                                    {  instance_hash_map.~hash_table();           }
+            hash_map(const key_val_type& Temp_Key_)        {  instance_hash_map.push(Temp_Key_);         }
+            bool push(const key_val_type& Temp_Key_)            {  return instance_hash_map.push(Temp_Key_);  }
+            bool pop(const key_val_type& Temp_Key_)             {  return instance_hash_map.pop(Temp_Key_);   }
+            iterator find(const key_val_type& Temp_Key_)        {  return instance_hash_map.find(Temp_Key_);  }
+            size_t size()                                       {  return instance_hash_map.size();           }
+            size_t size() const                                 {  return instance_hash_map.size();           }
+            size_t capacity() const                             {  return instance_hash_map.capacity();       } 
+            bool empty()                                        {  return instance_hash_map.empty();          }
+            iterator begin()                                    {  return instance_hash_map.begin();          }
+            iterator end()                                      {  return instance_hash_map.end();            }
+            const_iterator cbegin()                             {  return instance_hash_map.cbegin();         }
+            const_iterator cend()                               {  return instance_hash_map.cend();           }
+            iterator operator[](const key_val_type& Temp_Key_)  {  return instance_hash_map[Temp_Key_];       }
         };
     }
     /*############################     tree_set 容器     ############################*/
@@ -4930,11 +4930,11 @@ namespace template_container
             const_reverse_iterator crend()                      {  return instance_tree_set.crend();                }
             iterator operator[](const key_val_type& Set_Temp)   {  return instance_tree_set[Set_Temp];              }
         };
-        template <typename UnorderedSetTypeK>
+        template <typename set_type_val>
         class hash_set
         {
-            using key_val_type = UnorderedSetTypeK;
-            class Hash_Functor
+            using key_val_type = set_type_val;
+            class inbuilt_set_hash_functor
             {
             public:
                 size_t operator()(const key_val_type& Temp_Key_)
@@ -4950,77 +4950,77 @@ namespace template_container
                     return Temp_Key_;
                 }
             };
-            using hash_table = template_container::base_class_container::hash_table<UnorderedSetTypeK,key_val_type,key_val,Hash_Functor>;
-            hash_table HashSet;
+            using hash_table = template_container::base_class_container::hash_table<set_type_val,key_val_type,key_val,inbuilt_set_hash_functor>;
+            hash_table instance_hash_set;
         public:
             using iterator = typename hash_table::iterator;
             using const_iterator = typename hash_table::const_iterator;
             hash_set()                                     {  ;                                        }
-            ~hash_set()                                    {   HashSet.~hash_table();                }
-            bool push(const key_val_type& Set_Temp)             {  return HashSet.push(Set_Temp);         }
-            bool pop(const key_val_type& Set_Temp)              {  return HashSet.pop(Set_Temp);          }            
-            iterator find(const key_val_type& Set_Temp)         {  return HashSet.find(Set_Temp);         }
-            size_t size()                                       {  return HashSet.size();                 }
-            bool empty()                                        {  return HashSet.empty();                }
-            size_t capacity()                                   {  return HashSet.capacity();             }
-            size_t size() const                                 {  return HashSet.size();                 }
-            size_t capacity() const                             {  return HashSet.capacity();             }
-            iterator begin()                                    {  return HashSet.begin();                }
-            iterator end()                                      {  return HashSet.end();                  }
-            const_iterator cbegin()                             {  return HashSet.cbegin();               }
-            const_iterator cend()                               {  return HashSet.cend();                 }
-            iterator operator[](const key_val_type& Set_Temp)   {  return HashSet[Set_Temp];              }
+            ~hash_set()                                    {   instance_hash_set.~hash_table();                }
+            bool push(const key_val_type& Set_Temp)             {  return instance_hash_set.push(Set_Temp);         }
+            bool pop(const key_val_type& Set_Temp)              {  return instance_hash_set.pop(Set_Temp);          }            
+            iterator find(const key_val_type& Set_Temp)         {  return instance_hash_set.find(Set_Temp);         }
+            size_t size()                                       {  return instance_hash_set.size();                 }
+            bool empty()                                        {  return instance_hash_set.empty();                }
+            size_t capacity()                                   {  return instance_hash_set.capacity();             }
+            size_t size() const                                 {  return instance_hash_set.size();                 }
+            size_t capacity() const                             {  return instance_hash_set.capacity();             }
+            iterator begin()                                    {  return instance_hash_set.begin();                }
+            iterator end()                                      {  return instance_hash_set.end();                  }
+            const_iterator cbegin()                             {  return instance_hash_set.cbegin();               }
+            const_iterator cend()                               {  return instance_hash_set.cend();                 }
+            iterator operator[](const key_val_type& Set_Temp)   {  return instance_hash_set[Set_Temp];              }
         };
     }
-    /*############################     BloomFilter 容器     ############################*/
-    namespace bloom_filter_c
+    /*############################     bloom_filter 容器     ############################*/
+    namespace bloom_filter_container
     {
-        template <typename BloomFilterTypeVal,typename HashFunctorBloomFilter = template_container::algorithm::hash_algorithm::hash_function<BloomFilterTypeVal> >
-        class BloomFilter
+        template <typename bloom_filter_type_value,typename bloom_filter_hash_functor = template_container::algorithm::hash_algorithm::hash_function<bloom_filter_type_value> >
+        class bloom_filter
         {
-            HashFunctorBloomFilter   _Hash;
-            using BitSet = template_container::base_class_container::BitSet;
-            BitSet VectorBitSet;
-            size_t _Capacity;
+            bloom_filter_hash_functor   hash_functions_object;
+            using bit_set = template_container::base_class_container::bit_set;
+            bit_set instance_bit_set;
+            size_t _capacity;
         public:
-            BloomFilter()
+            bloom_filter()
             {
-                _Capacity = 1000;
-                VectorBitSet.resize(_Capacity);
+                _capacity = 1000;
+                instance_bit_set.resize(_capacity);
             }
-            BloomFilter(const size_t& Temp_Capacity)
+            bloom_filter(const size_t& Temp_Capacity)
             {
-                _Capacity = Temp_Capacity;
-                VectorBitSet.resize(_Capacity);
+                _capacity = Temp_Capacity;
+                instance_bit_set.resize(_capacity);
             }
             size_t size()
             {
-                return VectorBitSet.size();
+                return instance_bit_set.size();
             }
             size_t capacity()
             {
-                return _Capacity;
+                return _capacity;
             }
-            bool test(const BloomFilterTypeVal& Temp_Val)
+            bool test(const bloom_filter_type_value& Temp_Val)
             {
-                size_t num_One   = _Hash.Hash_SDBMHash(Temp_Val) % _Capacity;
-                size_t num_Two   = _Hash.Hash_DJBHash (Temp_Val) % _Capacity;
-                size_t num_Three = _Hash.hash_pjwhash (Temp_Val) % _Capacity;
-                if(VectorBitSet.test(num_One) == true && VectorBitSet.test(num_Two) == true && VectorBitSet.test(num_Three) && true)
+                size_t num_One   = hash_functions_object.Hash_SDBMHash(Temp_Val) % _capacity;
+                size_t num_Two   = hash_functions_object.Hash_DJBHash (Temp_Val) % _capacity;
+                size_t num_Three = hash_functions_object.hash_pjwhash (Temp_Val) % _capacity;
+                if(instance_bit_set.test(num_One) == true && instance_bit_set.test(num_Two) == true && instance_bit_set.test(num_Three) && true)
                 {
                     return true;
                     /* 有一个为0就返回false */
                 }
                 return false;
             }
-            void set(const BloomFilterTypeVal& Temp_Val)
+            void set(const bloom_filter_type_value& Temp_Val)
             {
-                size_t num_One   = _Hash.Hash_SDBMHash(Temp_Val) % _Capacity;
-                size_t num_Two   = _Hash.Hash_DJBHash (Temp_Val) % _Capacity;
-                size_t num_Three = _Hash.hash_pjwhash (Temp_Val) % _Capacity;
-                VectorBitSet.set(num_One);
-                VectorBitSet.set(num_Two);
-                VectorBitSet.set(num_Three);
+                size_t num_One   = hash_functions_object.Hash_SDBMHash(Temp_Val) % _capacity;
+                size_t num_Two   = hash_functions_object.Hash_DJBHash (Temp_Val) % _capacity;
+                size_t num_Three = hash_functions_object.hash_pjwhash (Temp_Val) % _capacity;
+                instance_bit_set.set(num_One);
+                instance_bit_set.set(num_Two);
+                instance_bit_set.set(num_Three);
             }
             //布隆过滤器只支持插入和查找，不支持删除
         };

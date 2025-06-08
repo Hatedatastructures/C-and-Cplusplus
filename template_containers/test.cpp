@@ -644,133 +644,133 @@ int main()
             std::cout << *j << " ";
         }
     }
-    // /*            hash_map 测试             */
-    // {
-    //     template_container::map_container::hash_map<size_t,size_t> unordered_Map_test;
-    //     size_t size = 23;
-    //     template_container::vector_container::vector<template_container::practicality::pair<size_t,size_t>> arr;
-    //     size_t l = 0;
-    //     for(size_t i = 0 ; i < size; i++,l = i)
-    //     {
-    //         arr.push_back(template_container::practicality::pair<size_t,size_t>(i,l));
-    //     }
-    //     for(size_t i = 0; i < size; i++)
-    //     {
-    //         unordered_Map_test.push(arr[i]);
-    //     }
-    //     std::cout << std::endl;
+    /*            hash_map 测试             */
+    {
+        template_container::map_container::hash_map<size_t,size_t> unordered_Map_test;
+        size_t size = 23;
+        template_container::vector_container::vector<template_container::practicality::pair<size_t,size_t>> arr;
+        size_t l = 0;
+        for(size_t i = 0 ; i < size; i++,l = i)
+        {
+            arr.push_back(template_container::practicality::pair<size_t,size_t>(i,l));
+        }
+        for(size_t i = 0; i < size; i++)
+        {
+            unordered_Map_test.push(arr[i]);
+        }
+        std::cout << std::endl;
 
-    //     std::cout << arr << std::endl;
-    //     std::cout << *unordered_Map_test.find(template_container::practicality::pair<size_t,size_t>(20,20)) << std::endl;
-    //     for(size_t i = 0; i < size; i++)
-    //     {
-    //         std::cout << *unordered_Map_test.find(template_container::practicality::pair<size_t,size_t>(i,i)) << " ";
-    //     }
-    //     std::cout << std::endl;
-    //     for(size_t i = 0; i < (size - 10); i++)
-    //     {
-    //         std::cout <<  unordered_Map_test.pop(template_container::practicality::pair<size_t,size_t>(i,i)) <<" ";
-    //     }
-    //     // auto it = unordered_Map_test.begin();//迭代器越界
-    //     // for(size_t i = 0; i < size; i++)
-    //     // {
-    //     //     //
-    //     //     std::cout << *it <<" ";
-    //     //     ++it;
-    //     // }
-    //     std::cout << std::endl;
-    //     // for(auto& i : unordered_Map_test)
-    //     // {
-    //     //     std::cout << i << " ";
-    //     // }
-    //     std::cout << std::endl;
-    // }
-    // /*            BloomFilter 测试             */
-    // {
-    //     template_container::bloom_filter_c::BloomFilter<size_t> BloomFilter_test(3000000000);
-    //     size_t size = 20;
-    //     template_container::vector_container::vector<size_t> arr;
-    //     for(size_t i = 0; i < size; i++ )
-    //     {
-    //         arr.push_back(i);
-    //     }
-    //     std::cout << arr << std::endl;
-    //     for(auto& j : arr)
-    //     {
-    //         BloomFilter_test.set(j);
-    //     }
-    //     for(auto& j : arr)
-    //     {
-    //         std::cout << BloomFilter_test.test(j) << " ";
-    //     }
-    //     std::cout << BloomFilter_test.test(100) << " ";
-    //     std::cout << std::endl;
-    // }
-    // {
-    //     std::cout << "AVL_Tree移动构造测试" <<std::endl;
-    //     template_container::tree_container::avl_tree<int,int> AVL_Tree_test_pair;
-    //     template_container::vector_container::vector<template_container::practicality::pair<int,int>> AVL_Tree_array_pair = 
-    //     {{22,0},{16,0},{13,0},{15,0},{11,0},{12,0},{14,0},{10,0},{2,0},{10,0}};
+        std::cout << arr << std::endl;
+        std::cout << *unordered_Map_test.find(template_container::practicality::pair<size_t,size_t>(20,20)) << std::endl;
+        for(size_t i = 0; i < size; i++)
+        {
+            std::cout << *unordered_Map_test.find(template_container::practicality::pair<size_t,size_t>(i,i)) << " ";
+        }
+        std::cout << std::endl;
+        for(size_t i = 0; i < (size - 10); i++)
+        {
+            std::cout <<  unordered_Map_test.pop(template_container::practicality::pair<size_t,size_t>(i,i)) <<" ";
+        }
+        // auto it = unordered_Map_test.begin();//迭代器越界
+        // for(size_t i = 0; i < size; i++)
+        // {
+        //     //
+        //     std::cout << *it <<" ";
+        //     ++it;
+        // }
+        std::cout << std::endl;
+        // for(auto& i : unordered_Map_test)
+        // {
+        //     std::cout << i << " ";
+        // }
+        std::cout << std::endl;
+    }
+    /*            bloom_filter 测试             */
+    {
+        template_container::bloom_filter_container::bloom_filter<size_t> BloomFilter_test(3000000000);
+        size_t size = 20;
+        template_container::vector_container::vector<size_t> arr;
+        for(size_t i = 0; i < size; i++ )
+        {
+            arr.push_back(i);
+        }
+        std::cout << arr << std::endl;
+        for(auto& j : arr)
+        {
+            BloomFilter_test.set(j);
+        }
+        for(auto& j : arr)
+        {
+            std::cout << BloomFilter_test.test(j) << " ";
+        }
+        std::cout << BloomFilter_test.test(100) << " ";
+        std::cout << std::endl;
+    }
+    {
+        std::cout << "AVL_Tree移动构造测试" <<std::endl;
+        template_container::tree_container::avl_tree<int,int> AVL_Tree_test_pair;
+        template_container::vector_container::vector<template_container::practicality::pair<int,int>> AVL_Tree_array_pair = 
+        {{22,0},{16,0},{13,0},{15,0},{11,0},{12,0},{14,0},{10,0},{2,0},{10,0}};
 
-    //     for(auto& i : AVL_Tree_array_pair)
-    //     {
-    //         AVL_Tree_test_pair.push(i);
-    //     }
+        for(auto& i : AVL_Tree_array_pair)
+        {
+            AVL_Tree_test_pair.push(i);
+        }
 
-    //     std::cout << "移动前：" ;
-    //     AVL_Tree_test_pair.middle_order_traversal();
-    //     template_container::tree_container::avl_tree<int,int> AVL_Tree_test = std::move(AVL_Tree_test_pair);
-    //     std::cout << std::endl;
-    //     std::cout << "移动构造：";
-    //     AVL_Tree_test.middle_order_traversal();
-    //     std::cout << std::endl;
-    //     std::cout << "移动后：" ;
-    //     AVL_Tree_test_pair.middle_order_traversal();
-    //     //移动构造就是窃取资源
-    //     std::cout << std::endl;
-    // }
-    // {
-    //     std::cout << "AVL_Tree拷贝构造测试" <<std::endl;
-    //     template_container::tree_container::avl_tree<int,int> AVL_Tree_test_pair;
-    //     template_container::vector_container::vector<template_container::practicality::pair<int,int>> AVL_Tree_array_pair = 
-    //     {{22,0},{16,0},{13,0},{15,0},{11,0},{12,0},{14,0},{10,0},{2,0},{10,0}};
+        std::cout << "移动前：" ;
+        AVL_Tree_test_pair.middle_order_traversal();
+        template_container::tree_container::avl_tree<int,int> AVL_Tree_test = std::move(AVL_Tree_test_pair);
+        std::cout << std::endl;
+        std::cout << "移动构造：";
+        AVL_Tree_test.middle_order_traversal();
+        std::cout << std::endl;
+        std::cout << "移动后：" ;
+        AVL_Tree_test_pair.middle_order_traversal();
+        //移动构造就是窃取资源
+        std::cout << std::endl;
+    }
+    {
+        std::cout << "AVL_Tree拷贝构造测试" <<std::endl;
+        template_container::tree_container::avl_tree<int,int> AVL_Tree_test_pair;
+        template_container::vector_container::vector<template_container::practicality::pair<int,int>> AVL_Tree_array_pair = 
+        {{22,0},{16,0},{13,0},{15,0},{11,0},{12,0},{14,0},{10,0},{2,0},{10,0}};
 
-    //     for(auto& i : AVL_Tree_array_pair)
-    //     {
-    //         AVL_Tree_test_pair.push(i);
-    //     }
+        for(auto& i : AVL_Tree_array_pair)
+        {
+            AVL_Tree_test_pair.push(i);
+        }
 
-    //     std::cout << "拷贝前：" ;
-    //     AVL_Tree_test_pair.middle_order_traversal();
-    //     template_container::tree_container::avl_tree<int,int> AVL_Tree_test = AVL_Tree_test_pair;
-    //     std::cout << std::endl;
-    //     std::cout << "移动构造：";
-    //     AVL_Tree_test.middle_order_traversal();
-    //     std::cout << std::endl;
-    //     std::cout << "拷贝后：" ;
-    //     AVL_Tree_test_pair.middle_order_traversal();
-    //     std::cout << std::endl;
-    // }
-    // {
-    //     //链式输出轻量化容器
-    //     std::initializer_list<int> init_list = {1,2,3,4,5,6,7,8,9,10};
-    //     std::initializer_list<int>::iterator it = init_list.begin();
-    //     for(;it != init_list.end();it++)
-    //     {
-    //         std::cout << *it << " ";
-    //     }
-    //     std::cout << std::endl;
-    //     for(auto& i : init_list)
-    //     {
-    //         std::cout << i << " ";
-    //     }
-    //     std::cout << std::endl;
-    // }
-    // {
-    //     // std::forward<int>(1);
-    //     //完美转发，不会丢失左右值属性
+        std::cout << "拷贝前：" ;
+        AVL_Tree_test_pair.middle_order_traversal();
+        template_container::tree_container::avl_tree<int,int> AVL_Tree_test = AVL_Tree_test_pair;
+        std::cout << std::endl;
+        std::cout << "移动构造：";
+        AVL_Tree_test.middle_order_traversal();
+        std::cout << std::endl;
+        std::cout << "拷贝后：" ;
+        AVL_Tree_test_pair.middle_order_traversal();
+        std::cout << std::endl;
+    }
+    {
+        //链式输出轻量化容器
+        std::initializer_list<int> init_list = {1,2,3,4,5,6,7,8,9,10};
+        std::initializer_list<int>::iterator it = init_list.begin();
+        for(;it != init_list.end();it++)
+        {
+            std::cout << *it << " ";
+        }
+        std::cout << std::endl;
+        for(auto& i : init_list)
+        {
+            std::cout << i << " ";
+        }
+        std::cout << std::endl;
+    }
+    {
+        // std::forward<int>(1);
+        //完美转发，不会丢失左右值属性
         
-    // }
+    }
     // {
     //     std::atomic<size_t> sum(0);
     //     auto func = [&sum](){sum += 6;};
@@ -787,7 +787,7 @@ int main()
     //     }
     //     std::cout << sum << std::endl;
     // }
-    //问题vector容器resize函数问题啊大大。
+    // //问题vector容器resize函数问题啊大大。
     {
         //尝试构建线程池来测试给个容器性能开销
         using Vector_pair =  template_container::vector_container::vector<template_container::practicality::pair<size_t,size_t>>;
@@ -819,7 +819,7 @@ int main()
         auto t2 = std::chrono::high_resolution_clock::now();
         std::cout << std::chrono::duration<double, std::milli>(t2 - t1).count() << std::endl;
         {
-            // collections::BloomFilter<size_t> BloomFilter_test(3000000000);
+            // collections::bloom_filter<size_t> BloomFilter_test(3000000000);
         }
     }
     {
@@ -836,7 +836,7 @@ int main()
     {
         //结构化绑定测试
         template_container::map_container::tree_map<size_t,size_t> test_map;
-        test_map.push(imitation_functions::map_pair(1,1));
+        test_map.push(template_container::practicality::make_pair(345ull,3472ull));
         auto& [ key , value ] = *test_map.begin();
         std::cout << key << " " << value << std::endl;
 
