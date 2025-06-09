@@ -1,15 +1,15 @@
 #pragma once
-#define _CRT_SECURE_NO_WARNINGS
-#include <iostream>
+#define CRT_SECURE_NO_WARNINGS
 #include <cstring>
+#include <iostream>
 #include <mutex>
 namespace custom_exception
 {
-    class customize_exception : public std::exception
+    class  customize_exception final : public std::exception
     {
     private:
-        const char* message;
-        const char* function_name;
+        char* message;
+        char* function_name;
         size_t line_number;
     public:
         customize_exception(const char* message_target,const char* function_name_target,const size_t& line_number_target) noexcept 
@@ -20,7 +20,7 @@ namespace custom_exception
             std::strcpy(function_name,function_name_target);
             line_number = line_number_target;
         }
-        [[nodiscard]] virtual const char* what() const noexcept override
+        [[nodiscard]] const char* what() const noexcept override
         {
             return message;
         }
@@ -32,7 +32,7 @@ namespace custom_exception
         {
             return line_number;
         }
-        ~customize_exception() noexcept
+        ~customize_exception() noexcept override
         {
             delete [] message;
             delete [] function_name;
@@ -49,7 +49,7 @@ namespace smart_pointer
         using Ref = smart_ptr_type&;
         using Ptr = smart_ptr_type*;
     public:
-        smart_ptr(smart_ptr_type* Ptr) noexcept
+        explicit smart_ptr(smart_ptr_type* Ptr) noexcept
         {
             _ptr = Ptr;
         }
@@ -61,11 +61,11 @@ namespace smart_pointer
                 _ptr = nullptr;
             }
         }
-        smart_ptr(const smart_ptr& _SmartPtr) noexcept
+        smart_ptr(const smart_ptr& ptr_type_data) noexcept
         {
             //管理权转移到另一个
-            _ptr = _SmartPtr._ptr;
-            _SmartPtr._ptr = nullptr;
+            _ptr = ptr_type_data._ptr;
+            ptr_type_data._ptr = nullptr;
         }
         Ref operator*() noexcept
         {
@@ -75,15 +75,18 @@ namespace smart_pointer
         {
             return _ptr;
         }
-        smart_ptr<smart_ptr_type>& operator=(const smart_ptr& _SmartPtr) noexcept
+        smart_ptr<smart_ptr_type>& operator=(const smart_ptr& ptr_type_data) noexcept
         {
-            if( _ptr != nullptr)
+            if(&ptr_type_data != this)
             {
-                delete _ptr;
-                _ptr = nullptr;
+                if( _ptr != nullptr)
+                {
+                    delete _ptr;
+                    _ptr = nullptr;
+                }
+                _ptr = ptr_type_data._ptr;
+                ptr_type_data._ptr = nullptr;
             }
-            _ptr = _SmartPtr._ptr;
-            _SmartPtr._ptr = nullptr;
             return *this;
         }
     };
@@ -95,7 +98,7 @@ namespace smart_pointer
         using Ref = unique_ptr_type&;
         using Ptr = unique_ptr_type*;
     public:
-        unique_ptr(unique_ptr_type* Ptr) noexcept
+        explicit unique_ptr(unique_ptr_type* Ptr) noexcept
         {
             _ptr = Ptr;
         }
@@ -115,8 +118,8 @@ namespace smart_pointer
         {
             return _ptr;
         }
-        unique_ptr(const unique_ptr& _UniquePtr) noexcept = delete;
-        unique_ptr<unique_ptr_type>& operator= (const unique_ptr& _UniquePtr) noexcept = delete;
+        unique_ptr(const unique_ptr& ptr_type_data) noexcept = delete;
+        unique_ptr<unique_ptr_type>& operator= (const unique_ptr& ptr_type_data) noexcept = delete;
         //禁止拷贝
     };
     template <typename shared_ptr_type>
@@ -124,25 +127,25 @@ namespace smart_pointer
     {
     private:
         shared_ptr_type* _ptr;
-        int* _SharedPCount;
+        int* shared_pcount;
         std::mutex* _pmutex;
         using Ref = shared_ptr_type&;
         using Ptr = shared_ptr_type*;
     public:
-        shared_ptr(shared_ptr_type* Ptr = nullptr)
+        explicit shared_ptr(shared_ptr_type* Ptr = nullptr)
         {
             _ptr = Ptr;
-            _SharedPCount = new int(1);
+            shared_pcount = new int(1);
             _pmutex = new std::mutex;
         }
-        shared_ptr(const shared_ptr& _SharedPtr) noexcept
+        shared_ptr(const shared_ptr& shared_ptr_data) noexcept
         {
-            _ptr = _SharedPtr._ptr;
-            _SharedPCount = _SharedPtr._SharedPCount;
-            _pmutex = _SharedPtr._pmutex;
+            _ptr = shared_ptr_data._ptr;
+            shared_pcount = shared_ptr_data.shared_pcount;
+            _pmutex = shared_ptr_data._pmutex;
             //上锁
             _pmutex->lock();
-            (*_SharedPCount)++;
+            (*shared_pcount)++;
             _pmutex->unlock();
         }
         ~shared_ptr() noexcept
@@ -153,12 +156,12 @@ namespace smart_pointer
         {
             _pmutex->lock();
             bool flag = false;
-            if(--(*_SharedPCount) == 0 && _ptr != nullptr)
+            if(--(*shared_pcount) == 0 && _ptr != nullptr)
             {
                 delete _ptr;
                 _ptr = nullptr;
-                delete _SharedPCount;
-                _SharedPCount = nullptr;
+                delete shared_pcount;
+                shared_pcount = nullptr;
                 flag = true;
             }
             _pmutex->unlock();
@@ -180,24 +183,27 @@ namespace smart_pointer
         {
             return _ptr;
         }
-        shared_ptr<shared_ptr_type>& operator=(const shared_ptr& _SharedPtr) noexcept
+        shared_ptr<shared_ptr_type>& operator=(const shared_ptr& shared_ptr_data) noexcept
         {
-            if(_ptr != _SharedPtr._ptr)
+            if(&shared_ptr_data != this)
             {
-                release();
-                _ptr = _SharedPtr._ptr;
-                _SharedPCount = _SharedPtr._SharedPCount;
-                _pmutex = _SharedPtr._pmutex;
-                //上锁
-                _pmutex->lock();
-                (*_SharedPCount)++;
-                _pmutex->unlock();
+                if(_ptr != shared_ptr_data._ptr)
+                {
+                    release();
+                    _ptr = shared_ptr_data._ptr;
+                    shared_pcount = shared_ptr_data.shared_pcount;
+                    _pmutex = shared_ptr_data._pmutex;
+                    //上锁
+                    _pmutex->lock();
+                    (*shared_pcount)++;
+                    _pmutex->unlock();
+                }
             }
             return *this;
         }
-        int get_sharedp_count() const noexcept
+        [[nodiscard]] int get_sharedp_count() const noexcept
         {
-            return *_SharedPCount;
+            return *shared_pcount;
         }
     };
     template <typename weak_ptr_type>
@@ -209,13 +215,13 @@ namespace smart_pointer
         using Ptr = weak_ptr_type*;
     public:
         weak_ptr() = default;
-        weak_ptr(smart_pointer::shared_ptr<weak_ptr_type>& Ptr) noexcept
+        explicit weak_ptr(smart_pointer::shared_ptr<weak_ptr_type>& Ptr) noexcept
         {
             _ptr = Ptr.get_ptr();
         }
-        weak_ptr(const weak_ptr& _WeakPtr) noexcept
+        weak_ptr(const weak_ptr& ptr_type_data) noexcept
         {
-            _ptr = _WeakPtr._ptr;
+            _ptr = ptr_type_data._ptr;
         }
         Ref operator*() noexcept
         {
@@ -258,17 +264,50 @@ namespace template_container
         class hash_imitation_functions
         {
         public:
-            size_t operator()(const int str_data) noexcept                                {       return str_data;                }
-            size_t operator()(const size_t data_size_t) noexcept                          {       return data_size_t;             }
-            size_t operator()(const char data_char) noexcept                              {       return data_char;               }
-            size_t operator()(const double data_double) noexcept                          {       return data_double;             }
-            size_t operator()(const float data_float) noexcept                            {       return data_float;              }
-            size_t operator()(const long data_long) noexcept                              {       return data_long;               }
-            size_t operator()(const short data_short) noexcept                            {       return data_short;              }
-            size_t operator()(const long long data_long_long) noexcept                    {       return data_long_long;          }
-            size_t operator()(const unsigned int data_unsigned) noexcept                  {       return data_unsigned;           }
-            size_t operator()(const unsigned long data_unsigned_long) noexcept            {       return data_unsigned_long;      }
-            size_t operator()(const unsigned short data_unsigned_short) noexcept          {       return data_unsigned_short;     }
+            [[nodiscard]] size_t operator()(const int str_data)const noexcept
+            {
+                return static_cast<size_t>(str_data);
+            }
+            [[nodiscard]] size_t operator()(const size_t data_size_t)const noexcept
+            {
+                return data_size_t;
+            }
+            [[nodiscard]] size_t operator()(const char data_char)const noexcept
+            {
+                return static_cast<size_t>(data_char);
+            }
+            [[nodiscard]] size_t operator()(const double data_double)const noexcept
+            {
+                return static_cast<size_t>(data_double);
+            }
+            [[nodiscard]] size_t operator()(const float data_float)const noexcept
+            {
+                return static_cast<size_t>(data_float);
+            }
+            [[nodiscard]] size_t operator()(const long data_long)const noexcept
+            {
+                return static_cast<size_t>(data_long);
+            }
+            [[nodiscard]] size_t operator()(const short data_short)const noexcept
+            {
+                return static_cast<size_t>(data_short);
+            }
+            [[nodiscard]] size_t operator()(const long long data_long_long)const noexcept
+            {
+                return static_cast<size_t>(data_long_long);
+            }
+            [[nodiscard]] size_t operator()(const unsigned int data_unsigned)const noexcept
+            {
+                return static_cast<size_t>(data_unsigned);
+            }
+            [[nodiscard]] size_t operator()(const unsigned long data_unsigned_long)const noexcept
+            {
+                return static_cast<size_t>(data_unsigned_long);
+            }
+            [[nodiscard]] size_t operator()(const unsigned short data_unsigned_short)const noexcept
+            {
+                return static_cast<size_t>(data_unsigned_short);
+            }
             
   
             // size_t operator()(const MY_Template::string_container::string& data_string)
@@ -464,35 +503,77 @@ namespace template_container
             //反向迭代器
             //限定字符串最大值
             constexpr static const size_t nops = -1;
-            iterator begin() noexcept                       {   return _data;   }
+            [[nodiscard]] iterator begin()const noexcept
+            {
+                return _data;
+            }
 
-            iterator end() noexcept                         {   return _data + _size;   }
+            [[nodiscard]] iterator end()const noexcept
+            {
+                return _data + _size;
+            }
 
-            const_iterator cbegin()const noexcept           {   return const_iterator(_data);   }
+            [[nodiscard]] const_iterator cbegin()const noexcept
+            {
+                return static_cast<const_iterator>(_data);
+            }
 
-            const_iterator cend()const noexcept             {   return const_iterator(_data + _size);   }
+            [[nodiscard]] const_iterator cend()const noexcept
+            {
+                return static_cast<const_iterator>(_data + _size);
+            }
 
-            reverse_iterator rbegin() noexcept              {   return empty() ? reverse_iterator(end()) : reverse_iterator(end() - 1);  }
+            [[nodiscard]] reverse_iterator rbegin()const noexcept
+            {
+                return empty() ? static_cast<reverse_iterator>(end()) :static_cast<reverse_iterator>(end() - 1);
+            }
 
-            reverse_iterator rend() noexcept                {   return empty() ? reverse_iterator(begin()) : reverse_iterator(begin() - 1);  }
+            [[nodiscard]] reverse_iterator rend()const noexcept
+            {
+                return empty() ? static_cast<reverse_iterator>(begin()) : static_cast<reverse_iterator>(begin() - 1);
+            }
 
-            const_reverse_iterator crbegin()const noexcept  {   return const_reverse_iterator(cend()- 1);   }
+            [[nodiscard]] const_reverse_iterator crbegin()const noexcept
+            {
+                return static_cast<const_reverse_iterator>(cend()- 1);
+            }
 
-            const_reverse_iterator crend()const noexcept    {   return const_reverse_iterator(cbegin()- 1); }
+            [[nodiscard]] const_reverse_iterator crend()const noexcept
+            {
+                return static_cast<const_reverse_iterator>(cbegin()- 1);
+            }
 
-            bool empty() noexcept                           {   return _size == 0;  }
+            [[nodiscard]] bool empty()const noexcept
+            {
+                return _size == 0;
+            }
 
-            size_t size()const noexcept                     {   return _size;       }
+            [[nodiscard]] size_t size()const noexcept
+            {
+                return _size;
+            }
 
-            size_t capacity()const noexcept                 {   return _capacity;   }
+            [[nodiscard]] size_t capacity()const noexcept
+            {
+                return _capacity;
+            }
 
-            char* c_str()const noexcept                     {   return _data;       } //返回C风格字符串
+            [[nodiscard]] char* c_str()const noexcept
+            {
+                return static_cast<char*> (_data);
+            } //返回C风格字符串
 
-            char back() noexcept                            {   return _size > 0 ? _data[_size - 1] : '\0';    }
+            [[nodiscard]] char back()const noexcept
+            {
+                return _size > 0 ? _data[_size - 1] : '\0';
+            }
 
-            char front() noexcept                           {   return _data[0];    }//返回尾字符
+            [[nodiscard]] char front()const noexcept
+            {
+                return _data[0];
+            }//返回头字符
 
-            string(const char* str_data = " ")
+            explicit string(const char* str_data = " ")
             :_size(str_data == nullptr ? 0 : strlen(str_data)),_capacity(_size)
             {
                 //传进来的字符串是常量字符串，不能直接修改，需要拷贝一份，并且常量字符串在数据段(常量区)浅拷贝会导致程序崩溃
@@ -509,13 +590,13 @@ namespace template_container
                     _data[0] = '\0';
                 }
             }
-            string(char*&& str_data) noexcept
+            explicit string(char*&& str_data) noexcept
             :_data(nullptr),_size(str_data == nullptr ? 0 : strlen(str_data)),_capacity(_size)
             {
                 //移动构造函数，拿传入对象的变量初始化本地变量，对于涉及开辟内存的都要深拷贝
                 if(str_data != nullptr)
                 {
-                    _data = std::move(str_data);
+                    _data = str_data;
                     str_data = nullptr;
                 }
                 else
@@ -538,12 +619,12 @@ namespace template_container
             {
                 //移动构造函数，拿传入对象的变量初始化本地变量，对于涉及开辟内存的都要深拷贝
                 // template_container::algorithm::swap(str_data._data,_data);
-                _data = std::move(str_data._data);
-                _size = std::move(str_data._size);
-                _capacity = std::move(str_data._capacity);
+                _data = str_data._data;
+                _size = str_data._size;
+                _capacity = str_data._capacity;
                 str_data._data = nullptr;
             }
-            string(std::initializer_list<char> str_data)
+            string(const std::initializer_list<char> str_data)
             {
                 //初始化列表构造函数
                 _size = str_data.size();
@@ -811,7 +892,7 @@ namespace template_container
                 template_container::algorithm::swap(_capacity,str_data._capacity);
                 return *this;
             }
-            string reverse()
+            [[nodiscard]] string reverse() const
             {
                 try
                 {
@@ -832,7 +913,7 @@ namespace template_container
                 }
                 return reversed_string;
             }
-            string reverse_sub_string(const size_t& start_position , const size_t& terminate_position)
+            [[nodiscard]] string reverse_sub_string(const size_t& start_position , const size_t& terminate_position)const
             {
                 try
                 {
@@ -1019,11 +1100,11 @@ namespace template_container
                 return return_string_object;
             }
         };
-        std::istream& operator>>(std::istream& string_istream,string& str_data)
+        inline std::istream& operator>>(std::istream& string_istream,string& str_data)
         {
             while(true)
             {
-                char single_char = string_istream.get();                    //gat函数只读取一个字符
+                char single_char =static_cast<char>(string_istream.get());                    //gat函数只读取一个字符
                 if(single_char == '\n' || single_char == EOF)
                 {
                     break;
@@ -1037,9 +1118,9 @@ namespace template_container
         }
         inline std::ostream& operator<<(std::ostream& string_ostream,const string &str_data)
         {
-            for(template_container::string_container::string::const_iterator start_position = str_data.cbegin();start_position != str_data.cend();start_position++)
+            for(const char start_position : str_data)
             {
-                string_ostream << *start_position;
+                string_ostream << start_position;
             }
             return string_ostream;
         }
@@ -1168,7 +1249,7 @@ namespace template_container
                 _capacity_pointer = std::move(vector_data._capacity_pointer);
                 vector_data._data_pointer = vector_data._size_pointer = vector_data._capacity_pointer = nullptr;
             }
-            ~vector()
+            ~vector() noexcept
             {
                 delete[] _data_pointer;
                 _data_pointer = _size_pointer =_capacity_pointer = nullptr;
@@ -1541,7 +1622,7 @@ namespace template_container
             using reverse_iterator = reverse_list_iterator<iterator> ;
             using reverse_const_iterator = reverse_list_iterator<const_iterator>;
             list()      {       create_head();       }
-            ~list()
+            ~list() noexcept
             {
                 clear();
                 delete _head;
@@ -1598,13 +1679,13 @@ namespace template_container
                 list<list_type> Temp (list_data.cbegin(),list_data.cend());
                 swap(Temp);
             }
-            list(list<list_type>&& list_data)
+            list(list<list_type>&& list_data)noexcept
             {
                 create_head();  //移动构造
                 _head = std::move(list_data._head);
                 list_data._head = nullptr;
             }
-            void swap(template_container::list_container::list<list_type>& swap_target)
+            void swap(template_container::list_container::list<list_type>& swap_target) noexcept
             {
                 template_container::algorithm::swap(_head,swap_target._head);
             }
@@ -2025,7 +2106,7 @@ namespace template_container
                 }
             }
         public:
-            ~priority_queue()  
+            ~priority_queue()  noexcept
             {
                 vector_container_object.~vector();
             }
@@ -2198,7 +2279,7 @@ namespace template_container
                     }    //修改逻辑错误，先压右子树再压左子树，因为这是栈
                 }
             }
-            void clear()
+            void clear() noexcept
             {
                 if(_root == nullptr)
                 {
@@ -2224,7 +2305,7 @@ namespace template_container
                 _root = nullptr;
             }
         public:
-            ~binary_search_tree()                       {           clear();                }
+            ~binary_search_tree()noexcept                       {           clear();                }
             // 构造函数，使用初始化列表来初始化二叉搜索树
             binary_search_tree(std::initializer_list<binary_search_tree_type> lightweight_container)
             {
@@ -2851,7 +2932,7 @@ namespace template_container
                     sub_left_right_node->_balance_factor = 0;
                 }
             }
-            void clear()
+            void clear() noexcept
             {
                 //清空所有资源
                 if(_root == nullptr)
@@ -3143,7 +3224,7 @@ namespace template_container
                 template_container::algorithm::swap(_root,avl_tree_data._root);
                 return *this;
             }
-            ~avl_tree()                         {       clear();            }
+            ~avl_tree() noexcept                {       clear();            }
 
             size_t size() const                 {       return _size();     }
 
@@ -3564,7 +3645,7 @@ namespace template_container
                 rb_tree_node(rb_tree_type_value&& val_data) noexcept
                 :_data(std::move(val_data)),_left(nullptr),_right(nullptr),_parent(nullptr),_color(red)
                 {
-                    ;
+
                 }
             };
             template<typename T, typename Ref, typename Ptr>
@@ -3823,7 +3904,7 @@ namespace template_container
                     sub_tree_left_node->_parent = parent_node;
                 }
             }
-            void clear(container_node* clear_node_ptr)
+            void clear(container_node* clear_node_ptr) noexcept
             {
                 if(clear_node_ptr == nullptr)
                 {
@@ -4063,7 +4144,7 @@ namespace template_container
                 }
                 return *this;
             }
-            ~rb_tree()
+            ~rb_tree() noexcept
             {
                 clear(_root);
             }
@@ -4784,7 +4865,8 @@ namespace template_container
                 hash_capacity = 10;
                 vector_hash_table.resize(hash_capacity);
             }
-            hash_table(size_t new_hash_table_capacity)
+
+            explicit hash_table(const size_t new_hash_table_capacity)
             {
                 _size = 0;
                 load_factor = 7;
@@ -4793,7 +4875,7 @@ namespace template_container
             }
             hash_table(const hash_table& hash_table_data)
             : value_imitation_functions(hash_table_data.value_imitation_functions),_size(hash_table_data._size),load_factor(hash_table_data.load_factor),
-            hash_capacity(hash_table_data.hash_capacity),value_imitation_functions(hash_table_data.container_imitate_function),overall_list_before_node(nullptr),   
+            hash_capacity(hash_table_data.hash_capacity),overall_list_before_node(nullptr),
             overall_list_head_node(nullptr)
             {
                 if (hash_capacity == 0) 
@@ -4814,7 +4896,7 @@ namespace template_container
                     while (src_bucket_node) 
                     {
                         // 2.1 创建新节点并拷贝数据
-                        container_node* new_structure_node = new container_node(src_bucket_node->_data);
+                        auto* new_structure_node = new container_node(src_bucket_node->_data);
                         // 2.2 插入到“桶内部”链表
                         if (last_in_bucket != nullptr) 
                         {
@@ -4859,7 +4941,7 @@ namespace template_container
                 overall_list_head_node = std::move(hash_table_data.overall_list_head_node);
                 value_imitation_functions = std::move(hash_table_data.value_imitation_functions);
             }
-            ~hash_table()
+            ~hash_table() noexcept
             {
                 for(size_t i = 0;i < vector_hash_table.size();++i)
                 {
@@ -5306,10 +5388,7 @@ namespace template_container
             using const_reverse_iterator = typename instance_rb::const_reverse_iterator;
             
             using map_iterator = template_container::practicality::pair<iterator,bool>;
-            ~tree_map()
-            {
-                instance_tree_map.~rb_tree();
-            }
+            ~tree_map() = default;
             tree_map& operator=(const tree_map& tree_map_data)
             {
                 if(this != &tree_map_data)
@@ -5344,6 +5423,10 @@ namespace template_container
                 {
                     instance_tree_map.push(std::move(chained_values));
                 }
+            }
+            tree_map(key_val_type&& tree_map_data)noexcept              
+            {  
+                instance_tree_map.push(std::forward<key_val_type>(tree_map_data));                          
             }
             tree_map()                                               {  ;                                   }
 
@@ -5421,7 +5504,7 @@ namespace template_container
             using const_iterator = typename hash_table::const_iterator; //单向迭代器
             hash_map()                                              {   ;                                         }  
 
-            ~hash_map()                                             {  instance_hash_map.~hash_table();           }
+            ~hash_map()  = default;
 
             hash_map(const key_val_type& key_value)                 {  instance_hash_map.push(key_value);         }
 
@@ -5459,6 +5542,10 @@ namespace template_container
                 {
                     instance_hash_map.push(std::move(chained_values));
                 }
+            }
+            hash_map(key_val_type&& key_value)noexcept                
+            {  
+                instance_hash_map.push(std::forward<key_val_type>(key_value));         
             }
             hash_map& operator=(const std::initializer_list<key_val_type>& lightweight_container)
             {
@@ -5547,10 +5634,14 @@ namespace template_container
             {
                 return instance_tree_set.push(std::forward<key_val_type>(set_data));
             }
+            tree_set(key_val_type&& set_type_data) noexcept               
+            {  
+                instance_tree_set.push(std::forward<key_val_type>(set_type_data));                 
+            }
 
             tree_set()                                               {  ;                                                 }
 
-            ~tree_set()                                              {  instance_tree_set.~rb_tree();                     }
+            ~tree_set()  = default;
 
             tree_set(const tree_set& set_data)                       {  instance_tree_set = set_data.instance_tree_set;             }
 
@@ -5623,7 +5714,9 @@ namespace template_container
 
             hash_set(const hash_set& hash_set_data)                     {  instance_hash_set = hash_set_data.instance_hash_set;  }
 
-            ~hash_set()                                                 {   instance_hash_set.~hash_table();                }
+            ~hash_set()  =  default;
+
+            hash_set(hash_set&& hash_set_data) noexcept                {  instance_hash_set = std::move(hash_set_data.instance_hash_set);  }
 
             bool push(const key_val_type& set_type_data)                {  return instance_hash_set.push(set_type_data);    }
 
@@ -5689,7 +5782,8 @@ namespace template_container
     /*############################     bloom_filter 容器     ############################*/
     namespace bloom_filter_container
     {
-        template <typename bloom_filter_type_value,typename bloom_filter_hash_functor = template_container::algorithm::hash_algorithm::hash_function<bloom_filter_type_value>>
+        template <typename bloom_filter_type_value,typename bloom_filter_hash_functor = template_container::
+        algorithm::hash_algorithm::hash_function<bloom_filter_type_value>>
         class bloom_filter
         {
             bloom_filter_hash_functor   hash_functions_object;

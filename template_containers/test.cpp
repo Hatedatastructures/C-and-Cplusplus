@@ -59,16 +59,16 @@ int main()
         }
         std::cout << std::endl;
 
-        for(template_container::string_container::string::const_iterator i = string_test3.begin();i != string_test3.end();i++)
+        for(char i : string_test3)
         {
-            std::cout << *i << " ";
+            std::cout << i << " ";
         }
         // std::cout << string_test3[30000000] << std::endl;
         std::cout << std::endl;
         {
             //异常测试
             template_container::string_container::string Ex;
-            Ex.resize(size_t(10000000));
+            Ex.resize(10000000);
             Ex.push_back("异常测试");
         }
     }
@@ -140,7 +140,7 @@ int main()
         template_container::list_container::list<int> list_test1;
         for(size_t i = 1; i < 10; i++)
         {
-            list_test1.push_back(i);
+            list_test1.push_back(static_cast<int>(i));
         }
         template_container::list_container::list<int>::const_iterator it =list_test1.cbegin();
         while(it != list_test1.cend())
@@ -254,7 +254,7 @@ int main()
         time_t num1 = clock();
         for(int i = 0; i < size ; i++)
         {
-            priority_queue_test.push(std::move(i));
+            priority_queue_test.push(i);
         }
         time_t num2 = clock();
         std::cout << priority_queue_test.size() << std::endl;
@@ -344,11 +344,11 @@ int main()
     }
 
     {
-        const size_t Binary_search_tree_arraySize = 20;
+        constexpr const size_t Binary_search_tree_arraySize = 20;
         template_container::vector_container::vector<int> Binary_search_tree_array(Binary_search_tree_arraySize);
         for (size_t i = 0; i < Binary_search_tree_arraySize; ++i) 
         {
-            Binary_search_tree_array[i] = i;
+            Binary_search_tree_array[i] = static_cast<int>(i);
         }
 
         // 创建随机数引擎和分布
@@ -410,8 +410,8 @@ int main()
         {"西瓜","樱桃","苹果","西瓜","樱桃","苹果","樱桃","西瓜","樱桃","西瓜","樱桃","苹果","樱桃","苹果","樱桃"};
 
         template_container::tree_container::binary_search_tree< template_container::string_container::string> BST_temp;
-        size_t _BST_size = vector_str.size();
-        for(size_t i = 0 ; i < _BST_size;i++)
+        size_t BST_size = vector_str.size();
+        for(size_t i = 0 ; i < BST_size;i++)
         {
             if(BST_temp.push(vector_str[i]))
             {

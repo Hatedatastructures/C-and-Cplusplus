@@ -51,7 +51,7 @@ public:
     }
 
     // 容量相关方法
-    size_t size() const { return _SizePointer - _DataPointer; }
+    [[nodiscard]] size_t size() const { return _SizePointer - _DataPointer; }
     size_t capacity() const { return _CapacityPointer - _DataPointer; }
     bool empty() const { return _DataPointer == _SizePointer; }
 
