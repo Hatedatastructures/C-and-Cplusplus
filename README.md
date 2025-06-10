@@ -1,12 +1,4 @@
-<style>
-/* 为“目录”文字加颜色强调 */
-.highlight-toc {
-  color: #2c3e50;
-  font-weight: bold;
-}
-</style>
 
-<span class="highlight-toc">目录</span>
 
 1. [概览](#概览)
 2. [命名空间与整体结构](#命名空间与整体结构)
