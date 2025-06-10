@@ -109,7 +109,7 @@ namespace smart_pointer
                 delete _ptr;
                 _ptr = nullptr;
             }
-        }
+        }//重载swap放弃所有权转移指针，移动语义
         Ref operator*() noexcept
         {
             return *(_ptr);
