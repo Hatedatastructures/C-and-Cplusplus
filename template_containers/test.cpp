@@ -25,7 +25,7 @@ int main()
         template_container::string_container::string string_test3 = string_test1 + string_test2;
         std::cout << "string_test3: " << string_test3 << std::endl;
         string_test3.push_back('!');
-        const char* insert_str = "inserted";
+        auto insert_str = "inserted";
         string_test3.prepend(insert_str);
         std::cout << "str3 after insertion: " << string_test3 << std::endl;
 
@@ -202,9 +202,9 @@ int main()
         template_container::list_container::list<template_container::string_container::string> list_string_test;
         list_string_test.push_back("hello");
     }
-    /*            staic测试             */
+    /*            stack测试             */
     {
-        std::cout << " staic 测试 " << std::endl << std::endl;
+        std::cout << " stack 测试 " << std::endl << std::endl;
         template_container::string_container::string staic_test_str1 = "hello";
         template_container::string_container::string staic_test_str2 = "word";
         template_container::string_container::string staic_test_str3 = "  ";
@@ -275,7 +275,7 @@ int main()
         for(size_t i = 100; i > 0; i--)
         {
             //相对来说这算是有序插入导致二叉树相乘时间复杂度为O(N)的链表
-            Binary_search_tree_test.push(i);
+            Binary_search_tree_test.push(static_cast<int>(i));
         }
         time_t Binary_search_tree_num2 = clock();
 
@@ -300,11 +300,11 @@ int main()
     }
 
     {
-        const size_t Binary_search_tree_arraySize = 10;
+        constexpr size_t Binary_search_tree_arraySize = 10;
         template_container::vector_container::vector<int> Binary_search_tree_array(Binary_search_tree_arraySize);
         for (size_t i = 0; i < Binary_search_tree_arraySize; ++i) 
         {
-            Binary_search_tree_array[i] = i;
+            Binary_search_tree_array[i] = static_cast<int>(i);
         }
 
         // 创建随机数引擎和分布
@@ -312,7 +312,7 @@ int main()
         std::mt19937 g(rd());
         std::shuffle(Binary_search_tree_array.begin(), Binary_search_tree_array.end(), g);
         //输出打乱后的数组
-        // for(auto& i : Binary_search_tree_array)
+        // for (auto& i : Binary_search_tree_array)
         // {
         //     std::cout << i << " ";
         // }
@@ -428,7 +428,7 @@ int main()
     }
     /*            pair类 测试             */
     {
-        const int i = 31; const int j = 28;
+        constexpr const int i = 31;constexpr const int j = 28;
         template_container::practicality::pair<int,int> pair_test =template_container::practicality::make_pair(i,j);
         std::cout << pair_test << std::endl;
     }
@@ -501,7 +501,7 @@ int main()
             AVL_Tree_test_pair.push(i);
         }
         std::cout << std::endl;
-        for ( auto i : AVL_Tree_test_pair)
+        for ( const auto& i : AVL_Tree_test_pair)
         {
             std::cout << i << " ";
             // 该行会被推断为pair<int,int>类型
@@ -548,7 +548,7 @@ int main()
         size_t size = 100000;
         for(size_t i = 0; i < size; i++)
         {
-            AVL_Tree_array_pair.push_back(template_container::practicality::pair<size_t,int>(std::move(i),std::move(0)));
+            AVL_Tree_array_pair.push_back(template_container::practicality::pair<size_t,int>(i,0));
         }
         time_t AVL_Tree_num1 = clock();
         for(auto& i : AVL_Tree_array_pair)
@@ -839,7 +839,6 @@ int main()
         test_map.push(template_container::practicality::make_pair(345ull,3472ull));
         auto& [ key , value ] = *test_map.begin();
         std::cout << key << " " << value << std::endl;
-
     }
     return 0;
 }
