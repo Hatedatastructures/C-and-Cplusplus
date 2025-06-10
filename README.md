@@ -1,39 +1,36 @@
-
-
 1. [概览](#概览)
 2. [命名空间与整体结构](#命名空间与整体结构)
-3. [异常处理模块 `custom_exception`](#异常处理模块-custom_exception)
-4. [智能指针模块 `smart_pointer`](#智能指针模块-smart_pointer)
-5. [基础工具模块 `practicality`](#基础工具模块-practicality)
-6. [仿函数与算法模块 `imitation_functions` / `algorithm`](#仿函数与算法模块-imitation_functions--algorithm)
-7. [字符串容器模块 `string_container`](#字符串容器模块-string_container)
-8. [动态数组与链表容器](#动态数组与链表容器)
+3. [异常处理命名空间 `custom_exception`](#异常处理模块-custom_exception)
+4. [智能指针命名空间 `smart_pointer`](#智能指针模块-smart_pointer)
+5. [基础工具命名空间 `practicality`](#基础工具模块-practicality)
+6. [仿函数与算法模块 ](#仿函数与算法模块)
+     * [imitation_functions](#imitation_functions)
+     * [algorithm](#algorithm)
+7.  [字符数组](#字符数组)
+     * [string ](#string_container)
+8.  [动态数组](#动态数组)
+     * [vector](#vector_container)
+9.  [链表容器](#链表容器)
+     * [list](#list_container)
+10. [容器适配器](#容器适配器)
+     * [stack\_adapter::stack](#stack_adapterstack)
+     * [queue\_adapter::queue](#queue_adapterqueue)
+     * [queue\_adapter::priority\_queue](#queue_adapterpriority_queue)
+11. [树形容器基础 `tree_container`](#树形容器基础-tree_container)
 
-    * [vector\_container::vector](#vector_containervector)
-    * [list\_container::list](#list_containerlist)
-9. [容器适配器](#容器适配器)
+     * [binary\_search\_tree（二叉搜索树）](#binary_search_tree二叉搜索树)
+     * [rb\_tree（红黑树）](#rb_tree红黑树)
+     * [AVL 树（若有，对比说明）](#avl-树若有对比说明)
+12. [关联容器](#关联容器)
 
-    * [stack\_adapter::stack](#stack_adapterstack)
-    * [queue\_adapter::queue](#queue_adapterqueue)
-    * [queue\_adapter::priority\_queue](#queue_adapterpriority_queue)
-10. [树形容器基础 `tree_container`](#树形容器基础-tree_container)
-
-    * [binary\_search\_tree（二叉搜索树）](#binary_search_tree二叉搜索树)
-    * [rb\_tree（红黑树）](#rb_tree红黑树)
-    * [AVL 树（若有，对比说明）](#avl-树若有对比说明)
-11. [关联容器](#关联容器)
-
-    * [map\_container::tree\_map](#map_containertree_map)
-    * [set\_container::tree\_set](#set_containertree_set)
-    * [hash\_map 容器](#hash_map-容器)
-    * [hash\_set 容器](#hash_set-容器)
-12. [基础哈希表实现 `base_class_container::hash_table`](#基础哈希表实现-base_class_containercore_hash_table)
-13. [位集合容器 `base_class_container::bit_set`](#位集合容器-base_class_containerbit_set)
-14. [布隆过滤器 `bloom_filter_container::bloom_filter`](#布隆过滤器-bloom_filter_containerbloom_filter)
-15. [算法细节与性能分析](#算法细节与性能分析)
-16. [示意图说明](#示意图说明)
-17. [示例代码汇总](#示例代码汇总)
-18. [附录：头文件引用摘要](#附录头文件引用摘要)
+     * [map\_container::tree\_map](#map_containertree_map)
+     * [set\_container::tree\_set](#set_containertree_set)
+     * [hash\_map 容器](#hash_map-容器)
+     * [hash\_set 容器](#hash_set-容器)
+13. [基础哈希表实现 `base_class_container::hash_table`](#基础哈希表实现-base_class_containercore_hash_table)
+14. [位集合容器 `base_class_container::bit_set`](#位集合容器-base_class_containerbit_set)
+15. [布隆过滤器 `bloom_filter_container::bloom_filter`](#布隆过滤器-bloom_filter_containerbloom_filter)
+16. [算法细节与性能分析](#算法细节与性能分析)
 
 ---
 
@@ -50,7 +47,6 @@
 * **边界条件和错误处理**：讨论空容器、极限值、异常抛出或安全检查。
 * **示意图**：对涉及树旋转、链表操作、哈希冲突处理等，提供示意图（当前未考虑）。
 * **注意事项**：包含多线程安全、异常安全、迭代器失效规则等。
-* **参考**：引用头文件片段，并标注出处。
 
 
 ---
@@ -62,9 +58,9 @@
 * `custom_exception`：自定义异常类 `customize_exception`，用于抛出带消息、函数名、行号信息的异常 。
 * `smart_pointer`：实现 `shared_ptr`, `weak_ptr` 等智能指针，管理动态内存资源。
 * `practicality`：提供工具类型，如 `pair`、辅助类型。
-* `imitation_functions`：仿函数集合，如 `less`, `equal_to`, `hash_imitation_functions` 等，用于比较、散列等操作。
-* `algorithm`：算法模块，包含哈希函数、排序等基础算法工具。
-* `string_container`：字符串容器实现。
+* `imitation_functions`：仿函数集合，如 `less`, `greater`, `hash_imitation_functions` 等，用于比较和计算哈希操作。
+* `algorithm`：算法模块，包含哈希函数、交换等基础算法工具。
+* `string_container`：字符数组`string`。
 * `vector_container`：动态数组 `vector`。
 * `list_container`：双向链表 `list`。
 * `stack_adapter`, `queue_adapter`：容器适配器 `stack`, `queue`, `priority_queue`。
@@ -72,29 +68,29 @@
 * `map_container`, `set_container`：关联容器 `tree_map`, `tree_set`，基于红黑树实现。
 * `base_class_container`：基础容器，如 `hash_table`, `bit_set`, `rb_tree` 低级实现等（部分在此命名空间）。
 * `bloom_filter_container`：布隆过滤器实现，依赖 `bit_set`。
-* `con`, `ptr`, `exc`：方便使用的别名命名空间，将上述常用命名空间引入。
+* `con`, `ptr`, `exc`：方便使用的别名命名空间，将上述常用命名空间引入,方便调用
 
 整体结构如：
 
 ```cpp
-namespace custom_exception { ... }
-namespace smart_pointer { ... }
-namespace practicality { ... }
-namespace imitation_functions { ... }
-namespace algorithm { ... }
-namespace string_container { ... }
-namespace vector_container { ... }
-namespace list_container { ... }
-namespace stack_adapter { ... }
-namespace queue_adapter { ... }
-namespace tree_container { ... }
-namespace map_container { ... }
-namespace set_container { ... }
-namespace base_class_container { ... }
-namespace bloom_filter_container { ... }
-namespace con { using namespace ...; }
-namespace ptr { using namespace smart_pointer; }
-namespace exc { using namespace custom_exception; }
+namespace custom_exception          { ... }
+namespace smart_pointer             { ... }
+namespace practicality              { ... }
+namespace imitation_functions       { ... }
+namespace algorithm                 { ... }
+namespace string_container          { ... }
+namespace vector_container          { ... }
+namespace list_container            { ... }
+namespace stack_adapter             { ... }
+namespace queue_adapter             { ... }
+namespace tree_container            { ... }
+namespace map_container             { ... }
+namespace set_container             { ... }
+namespace base_class_container      { ... }
+namespace bloom_filter_container    { ... }
+namespace con                       { using namespace template_container; }
+namespace ptr                       { using namespace smart_pointer;      }
+namespace exc                       { using namespace custom_exception;   }
 ```
 
 各模块实现互相调用，结构清晰。
@@ -325,7 +321,7 @@ try
 
 ---
 
-## 仿函数与算法模块 `imitation_functions` / `algorithm`
+## 仿函数与算法模块
 
 ### `imitation_functions`
 
@@ -361,8 +357,9 @@ try
 
 ---
 
-## 字符串容器模块 `string_container`
+## 字符数组
 
+### `string_container`
 * **概览**：提供类似 `std::string` 或自定义字符串容器功能。
 * **主要类**：假设名为 `string` 或 `basic_string`。
 * **成员函数**：
@@ -385,9 +382,9 @@ try
 
 ---
 
-## 动态数组与链表容器
+## 动态数组
 
-### vector\_container::vector
+### `vector_container`
 
 **定义位置**：
 `namespace vector_container { template<typename T> class vector { ... }; }`
@@ -466,7 +463,8 @@ try
 
 ---
 
-### list\_container::list
+## 链表容器
+### `list_container`
 
 **定义位置**：
 `namespace list_container { template<typename T> class list { ... }; }`
@@ -474,7 +472,7 @@ try
 
 #### 内部数据结构
 
-* **底层**：双向链表。
+* **底层**：双向循环链表。
 * **节点类型**：包含 `T _data; list_node* _prev; list_node* _next;`。
 * **成员变量**：
 
@@ -520,7 +518,8 @@ try
 template_container::list_container::list<int> lst;
 lst.push_back(1);
 lst.push_front(0);
-for(auto it = lst.begin(); it != lst.end(); ++it) {
+for(auto it = lst.begin(); it != lst.end(); ++it) 
+{
     std::cout << *it << " ";
 }
 lst.pop_back();
