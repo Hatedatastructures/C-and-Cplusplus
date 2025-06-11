@@ -37,6 +37,10 @@ namespace custom_exception
             delete [] message;
             delete [] function_name;
         }
+        customize_exception(const customize_exception&) = delete;
+        customize_exception(customize_exception&&) = delete;
+        customize_exception& operator=(const customize_exception&) = delete;
+        customize_exception& operator=(customize_exception&&) = delete;
     };
 }
 namespace smart_pointer
@@ -6040,6 +6044,7 @@ namespace con
 {
     using namespace template_container::imitation_functions;
     using namespace template_container::algorithm;
+    using namespace template_container::algorithm::hash_algorithm;
     using namespace template_container::practicality;
     using namespace template_container::string_container;
     using namespace template_container::vector_container;

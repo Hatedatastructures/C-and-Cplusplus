@@ -1,55 +1,57 @@
-# [概览](#概览)
+# [文件说明](#说明)
   * [命名空间与整体结构](#命名空间与整体结构)
-## [异常处理命名空间 `custom_exception`](#异常处理模块-custom_exception)
-## [智能指针命名空间 `smart_pointer`](#智能指针模块-smart_pointer)
- * [`smart_ptr`](#智能指针模块-smart_pointer)
- * [`unique_ptr`]()
- * [`shared_ptr`]()
- * [`weak_ptr`]()
-## [模板容器命名空间 `template_container`]()
- * ### [仿函数命名空间 `imitation_functions` ](#仿函数与算法模块)
+## [异常处理 `custom_exception`](#异常处理-custom_exception)
+## [智能指针 `smart_pointer`](#智能指针-smart_pointer)
+ * [`smart_ptr`](#smart_ptrsmart_ptr_type)
+ * [`unique_ptr`](#unique_ptrunique_ptr_type)
+ * [`shared_ptr`](#shared_ptrshared_ptr_type)
+ * [`weak_ptr`](#weak_ptrweak_ptr_type)
+## [模板容器 `template_container`](#模板容器-template_container)
+ * ### [仿函数 `imitation_functions` ](#仿函数与算法模块)
      * [`less` ]()
      * [`greater`]()
      * [`hash_imitation_functions`](#imitation_functions)
- * ### [算法命名空间 `algorithm`]()
+ * ### [算法 `algorithm`]()
      * [`copy`]()
      * [`swap`]()
      * [`find`]()
      * [`hash_function`]()
- * ### [基础工具命名空间 `practicality`](#基础工具命名空间-practicality)
+ * ### [基础工具 `practicality`](#基础工具命名空间-practicality)
     * [`pair`]()
     * [`make_pair`]()
- * ### [字符数组容器命名空间 `string_container`](#字符数组)
+ * ### [字符数组 `string_container`](#字符数组)
     * [`string`](#string_container)
- * ### [动态数组容器命名空间 `vector_container`](#动态数组)
+ * ### [动态数组容器 `vector_container`](#动态数组)
     * [`vector`](#vector_container)
- * ### [链表容器命名空间 `list_container`](#链表容器)
+ * ### [链表容器 `list_container`](#链表容器)
      * [`list`](#list_container)
- * ### [栈适配器命名空间 `stack_adapter`]()
+ * ### [栈适配器 `stack_adapter`]()
      * [`stack`](#stack_adapterstack)
- * ### [队列适配器命名空间 `queue_adapter`]()
+ * ### [队列适配器 `queue_adapter`]()
      * [`queue`](#queue_adapterqueue)
      * [`priority_queue`](#queue_adapterpriority_queue)
- * ### [树形容器命名空间 `tree_container`](#树形容器基础-tree_container)
+ * ### [树形容器 `tree_container`](#树形容器基础-tree_container)
 
      * [`binary_search_tree`](#binary_search_tree二叉搜索树)
      * [`avl_tree`](#avl-树若有对比说明)
 
- * ### [基类容器命名空间 `base_class_container`]()
+ * ### [基类容器 `base_class_container`]()
      * [`rb_tree`]()
      * [`hash_table`]()
      * [`bit_set`]()
- * ### [关联式容器命名空间 `map_container` `set_container`]()
-    * #### [`map_container`]()
-        ##### [`tree_map`](#map_containertree_map)
-         ##### [`hash_map`](#set_containertree_set)
-    * #### [`set_container`]()
-        ##### [`tree_set`](#hash_map-容器)
-        ##### [`hash_set`](#hash_set-容器)
+ * ### [关联式容器 `map_container` `set_container`]()
+    * ### [`有序容器`]()
+        * #### [`tree_map`](#map_containertree_map)
+        * #### [`tree_set`](#tree_set-容器)
+    * ### [`无序容器`]()
+        * #### [`hash_map`](#set_containertree_set)
+        * #### [`hash_set`](#hash_set-容器)
  * ### [布隆过滤器 `bloom_filter_container`]()
+    * ### [`bloom_filter`]()
 ## [算法细节与性能分析](#算法细节与性能分析)
 
-## 概览
+---
+## `说明`
 
 本文档基于 `template_container.hpp` 头文件内容的文档。每个模块按照以下思路进行说明：
 
@@ -63,27 +65,26 @@
 * **示意图**：对涉及树旋转、链表操作、哈希冲突处理等，提供示意图（当前未添加）。
 * **注意事项**：包含多线程安全、异常安全、迭代器失效规则等。
 
-
 ---
 
-## 命名空间与整体结构
+# 命名空间与整体结构
 
 `template_container.hpp` 中，整体内容分布在以下主要命名空间（摘录并引用）：
 
 * `custom_exception`：自定义异常类 `customize_exception`，用于抛出带消息、函数名、行号信息的异常 。
-* `smart_pointer`：实现 `shared_ptr`, `weak_ptr` 等智能指针，管理动态内存资源。
-* `practicality`：提供工具类型，如 `pair`、辅助类型。
-* `imitation_functions`：仿函数集合，如 `less`, `greater`, `hash_imitation_functions` 等，用于比较和计算哈希操作。
-* `algorithm`：算法模块，包含哈希函数、数据交换等基础算法工具。
+* `smart_pointer`：实现 `shared_ptr`, `weak_ptr`,`smart_ptr`,`unique_ptr` 4种智能指针，管理动态内存资源。
+* `practicality`：提供工具类型，如 `pair`、和 `make_pair`函数 `make_pair`函数自动推导类型。
+* `imitation_functions`：仿函数集合，如 `less`, `greater`, `hash_imitation_functions` 等，用于比较和返回内置类型哈希值操作。
+* `algorithm`：算法模块，包含`hash_algorithm`、`swap`、`copy`、`find`这个几个基础算法工具,`hash_algorithm`是个命名空间，展开是`hash_function`类,在`con`命名空间已经展开
 * `string_container`：字符数组`string`。
 * `vector_container`：动态数组 `vector`。
 * `list_container`：双向链表 `list`。
 * `stack_adapter`, `queue_adapter`：容器适配器 `stack`, `queue`, `priority_queue`。
 * `tree_container`：树形容器基础，包括 `binary_search_tree`, `avl_tree` 等。
-* `map_container`, `set_container`：关联容器 `tree_map`, `tree_set`，基于红黑树实现。
+* `map_container`, `set_container`：关联容器 `tree_map`, `tree_set`，基于红黑树实现。`hash_map`,`hash_set`,基于哈希表实现。
 * `base_class_container`：基类容器，如 `hash_table`, `bit_set`, `rb_tree` 基类实现等（在此命名空间）。
-* `bloom_filter_container`：布隆过滤器实现，依赖 `bit_set`。
-* `con`, `ptr`, `exc`：方便使用的命名空间，将上述容器异常智能指针引入，减少命名长度,方便调用
+* `bloom_filter_container`：布隆过滤器实现，依赖基类容器`bit_set`。
+* `con`, `ptr`, `exc`：方便使用的命名空间，将上述容器异常智能指针引入，减少命名长度,方便`直接调用`
 
 整体结构如：
 
@@ -108,15 +109,15 @@ namespace ptr                       { using namespace smart_pointer;      }
 namespace exc                       { using namespace custom_exception;   }
 ```
 
-各模块实现互相调用，结构清晰。
+>各模块实现互相调用，结构清晰。但是对于map和set那块比较复杂，会在他们的文档里详细介绍
 
 ---
 
-## 异常处理模块 `custom_exception`
+# 异常处理 `custom_exception`
 
-### 类 `customize_exception`
+## 类 `customize_exception`
 
-**定义位置**：
+**定义位置**：`custom_exception`里
 
 ```cpp
 namespace custom_exception
@@ -137,15 +138,15 @@ namespace custom_exception
 }
 ```
 
-**引用**：`custom_exception::customize_exception`
+**引用**：`template_container::customize_exception`.
 
 **注意**：该类不能被继承
 
-#### 作用
+### 作用
 
-* 该类用于在发生错误或异常情况下，抛出带有详细信息的异常，包含错误消息、发生异常的函数名、异常位置的代码行号，便于调试和查找异常错误。
+* 该类实列用于在发生错误或异常情况下，抛出带有详细信息的异常，包含错误消息、发生异常的函数名、异常位置的代码行号，便于调试和查找异常错误。
 
-#### 构造函数
+### 构造函数
 
 ```cpp
 customize_exception(const char* message_target, const char* function_name_target, const size_t& line_number_target) noexcept
@@ -153,14 +154,14 @@ customize_exception(const char* message_target, const char* function_name_target
 
 * **参数**
 
-    * `message_target`：错误消息字符串。
-    * `function_name_target`：抛出异常的函数名称。
-    * `line_number_target`：抛出异常的代码行号。
+    * `message_target`：返回错误消息字符串。
+    * `function_name_target`：返回抛出异常的函数名称。
+    * `line_number_target`：返回抛出异常的代码行号。
 * **异常规范**：`noexcept`，保证构造过程中不再抛出异常。
 * **内部实现**：复制字符串到内部 `char*` 缓冲区（通过 `new char[...]`），保存行号。
-* **边界检查**：若 `message_target` 或 `function_name_target` 为空？头文件实现未对空指针进行检查，调用者需保证传入非空合法指针以避免未定义行为。
+* **边界检查**：若 `message_target` 或 `function_name_target` 为空？头文件实现未对空指针进行检查，调用者需自己保证传入非空合法指针以避免未定义行为。
 
-#### 成员方法
+### 成员方法
 
 1. `[[nodiscard]] const char* what() const noexcept override`
 
@@ -175,7 +176,7 @@ customize_exception(const char* message_target, const char* function_name_target
 
 3. `[[nodiscard]] size_t line_number_get() const noexcept`
 
-    * **作用**：获取发生异常的行号。
+    * **作用**：获取抛出异常地行号。
     * **返回值**：`size_t`，行号信息。
 
 4. 析构函数：`~customize_exception() noexcept override`
@@ -184,7 +185,7 @@ customize_exception(const char* message_target, const char* function_name_target
     * **异常规范**：`noexcept`，在析构时不会抛出。
     * **实现注意**：若复制或释放过程中出现错误，因 `noexcept`，应保证安全。
 
-#### 使用示例
+### 使用示例
 
 ```cpp
 #include "template_container.hpp"
@@ -210,107 +211,163 @@ catch(const custom_exception::customize_exception& e)
 
 * **错误处理建议**：调用者在捕获时，可结合 `what()`, `function_name_get()`, `line_number_get()` 记录详细日志或输出到调试控制台，提升排错效率。
 
-#### 复杂度与安全
+### 复杂度与安全
 
+* 注意改异常类不支持`拷贝构造`,`移动拷贝构造`,`赋值`，`移动赋值`。
 * 构造时字符串复制成本与消息长度成正比，通常较短消息复制开销较小。
 * 析构释放开销固定。
-* 未使用锁或多线程保护，若在多线程环境中抛出/捕获异常时，各线程独立异常对象，安全。
+* 该未使用锁或多线程保护，若在多线程环境中抛出/捕获异常时，请根据自己环境重载库标准异常。
 
 ---
 
-## 智能指针模块 `smart_pointer`
+## 智能指针`smart_pointer`
 >注意！当前未处理个别错误，及涉及到指针管理权转移等，还未测试
 ### 模块概览
 
-`smart_pointer` 命名空间中，提供如 `shared_ptr`, `weak_ptr`,`smart_ptr`,`unique_ptr` 4个智能指针的实现，管理资源，避免手动 `delete`，支持引用计数、多线程安全（通过内部互斥锁）。
+`smart_pointer` 命名空间中，提供如 `shared_ptr`, `weak_ptr`,`smart_ptr`,`unique_ptr` 4种智能指针的实现，管理资源，避免手动 `delete`，支持引用计数、多线程安全（通过内部互斥锁）。
 
 **引用**：在头文件中，可搜索 `namespace smart_pointer` 获取完整实现；以下示例基于头文件内容分析。
 
 > **注意**：此处省略完整源码摘录，文档假设已严格依据头文件实现，不做任何命名或签名更改。
 #### `smart_ptr<smart_ptr_type>`
+* **成员变量**
+    * `_ptr`：裸指针，指向托管对象。
+* **构造与析构**
+    * 构造自裸指针：`explicit smart_ptr(smart_ptr_type* p)`。
+    * 拷贝构造：指针管理权转移，原先智能指针为空。
+    * 析构：作用域结束自动释放。
+* **赋值运算符**
+    * 拷贝赋值：指针管理权转移，原先智能指针为空。
+* **成员函数**
 
+    * `Ref& operator*() const`, `Ptr operator->() const`: 访问托管对象。
+* **线程安全**
+    * 存在线程安全。
+* **问题**
+    * > 如果在赋值和拷贝之后，管理权转移，如果还访问原先的智能指针就会出现错误！ 
+* **示例**
+
+  ```cpp
+  template_container::smart_pointer:: smart_ptr<my_class> sp1(new my_class(...));
+  {
+      auto sp2 = sp1; //指针管理权转移
+  } 
+  delete 对象
+  ```
+* **复杂度**
+
+    * 拷贝构造/赋值，时间复杂度 O(1)。
+    * 访问托管对象效率与裸指针相当。
+> **引用/出处**：头文件中 `namespace smart_pointer::smart_ptr`
+
+---
 #### `unique_ptr<unique_ptr_type>`
+* **成员变量**
+    * `_ptr`：裸指针，指向托管对象。
+* **构造与析构**
 
+    * 构造自裸指针：`explicit unique_ptr(unique_ptr_type* p)`。
+    * 拷贝构造：删除状态。
+    * 析构：作用域结束自动释放。
+* **赋值运算符**
+    * 拷贝赋值：删除状态。
+* **成员函数**
+    * `Ref& operator*() const`, `Ptr operator->() const`: 访问托管对象。
+    * `get_ptr() const noexcept` 返回托管指针。
+* **线程安全**
+    * 存在线程安全。
+* **问题**
+    * > 暂时没发现，欢迎测试
+* **示例**
+
+  ```cpp
+  template_container::smart_pointer::unique_ptr<my_class> sp1(new my_class(...));
+  {
+      auto sp2 = sp1; //独占资源，不存在赋值一类行为
+  } 
+  delete 对象
+  ```
+* **复杂度**
+
+    * 拷贝构造/赋值，时间复杂度 O(1)。
+    * 访问托管对象效率与裸指针相当。
+> **引用/出处**：头文件中 `namespace smart_pointer::unique_ptr`
+--- 
 #### `shared_ptr<shared_ptr_type>`
 
 * **成员变量**
-
     * `_ptr`：裸指针，指向托管对象。
     * `shared_pcount`：引用计数（通常为指针，指向堆上计数）。
     * `_pmutex`：`std::mutex*` 或其他同步机制，用于多线程引用计数安全。
 * **构造与析构**
-
     * 默认构造：初始化 `_ptr` 为 `nullptr`，`shared_pcount` 为 nullptr 或 0。
-    * 构造自裸指针：`explicit shared_ptr(T* p)`，设置 `_ptr = p`，`shared_pcount = new size_t(1)`，初始化互斥锁。
+    * 构造自裸指针：`explicit shared_ptr(shared_ptr_type* p)`，设置 `_ptr = p`，`shared_pcount = new size_t(1)`，初始化互斥锁。
     * 拷贝构造：加锁后引用计数递增。
     * 移动构造：接管资源，不增加引用计数。
     * 析构：加锁后引用计数递减，若减为 0，则 `delete _ptr`，释放互斥锁及计数内存。
 * **赋值运算符**
-
     * 拷贝赋值：先比较自赋值保护，释放自身旧资源（递减引用计数并可能删除），再复制新资源并加锁递增。
     * 移动赋值：释放自身旧资源，再接管右值资源，无需增加计数。
 * **成员函数**
 
-    * `T* get() const`: 返回裸指针。
-    * `T& operator*() const`, `T* operator->() const`: 访问托管对象。
-    * `size_t use_count() const`: 返回当前引用计数。
-    * `void reset()`, `void reset(T* p)`: 释放当前资源并可能删除，重新托管 `p`。
+    * `Ptr get_ptr() const noexcept`: 返回裸指针。
+    * `Ref operator*() const`, `Ptr operator->() const`: 访问托管对象。
+    * `int get_sharedp_count() const noexcept`: 返回当前引用计数。
+    * `void release() noexcept`: 释放当前资源并可能删除，重新托管 `p`。
 * **线程安全**
 
     * 通过内部互斥锁保护引用计数的递增/递减，保证多线程场景下安全管理。
 * **示例**
 
   ```cpp
-  template_container::smart_pointer::shared_ptr<MyClass> sp1(new MyClass(...));
+  template_container::smart_pointer::shared_ptr<my_Class> sp1(new my_class(...));
   {
       auto sp2 = sp1; // 引用计数从 1 增到 2
-      std::cout << sp1.use_count(); // 输出 2
+      std::cout << sp1.get_sharedp_count(); // 输出 2
   } // sp2 离开作用域，引用计数减为 1
-  sp1.reset(); // 计数减为 0，delete 对象
+  sp1.release(); // 计数减为 0，delete 对象
   ```
 * **复杂度**
-
     * 拷贝构造/赋值、析构涉及锁和计数更新，时间复杂度 O(1)，但存在锁开销。
     * 访问托管对象效率与裸指针相当。
-
-#### `weak_ptr<T>`
+> **引用/出处**：头文件中 `namespace smart_pointer::shared_ptr`
+---
+#### `weak_ptr<weak_ptr_type>`
 
 * **用途**：解决循环引用问题，可观察 `shared_ptr` 管理的对象但不影响引用计数。
 * **成员变量**
-
     * `_weak_pcount`：指向与 `shared_ptr` 相同或独立的弱引用计数结构。
     * `_pmutex`：共享锁或与 `shared_ptr` 共享的互斥锁用于同步。
 * **构造与析构**
-
     * 从 `shared_ptr` 构造：增加弱引用计数，不增加强引用计数。
     * 默认构造：空状态，无托管对象。
     * 拷贝/移动：调整弱引用计数或接管资源。
     * 析构：减少弱引用计数，不会删除托管对象，只当强引用计数为 0 且弱引用计数为 0 时回收计数结构。
 * **成员函数**
 
-    * `shared_ptr<T> lock() const`: 返回有效的 `shared_ptr<T>`，若托管对象已被销毁，则返回空 `shared_ptr`。通过检查强引用计数。
-    * `bool expired() const`: 检查托管对象是否已被销毁（即强引用计数为 0）。
-    * `size_t use_count() const`: 返回当前强引用计数。
-    * `void reset()`: 释放弱引用，不影响托管对象。
+    * `int get_sharedp_count() const noexcept`: 返回当前强引用计数。
+    * `void release() noexcept`: 释放弱引用，不影响托管对象。
 * **示例**
 
   ```cpp
-  auto sp = template_container::smart_pointer::shared_ptr<MyClass>(new MyClass);
-  template_container::smart_pointer::weak_ptr<MyClass> wp = sp;
-  if(auto locked = wp.lock()) {
+  auto sp = template_container::smart_pointer::shared_ptr<my_Class>(new my_class);
+  template_container::smart_pointer::weak_ptr<my_class> wp = sp;
+  if(auto locked = wp.lock()) 
+  {
       // 托管对象依然存在，可安全使用 locked
   }
-  sp.reset(); // 删除托管对象
-  if(wp.expired()) { /* 对象已销毁 */ }
+  sp.release(); // 删除托管对象
   ```
 * **复杂度**
 
-    * lock() 涉及原子或锁检查计数，O(1)时间；其后构造临时 shared\_ptr 可能涉及锁和计数递增。
+    * lock() 涉及原子或锁检查计数，O(1)时间；其后构造临时 shared_ptr 可能涉及锁和计数递增。
     * 其他操作 O(1)。
 
-> **引用/出处**：头文件中 `namespace smart_pointer` 部分，所有函数签名严格按实现。因篇幅原因，此处不重复粘贴每个方法源码，但实际生成文档时已包含完整签名。
+> **引用/出处**：头文件中 `namespace smart_pointer::weak_ptr` 
 
 ---
+
+# 模板容器 `template_container`
 
 ## 基础工具命名空间 `practicality`
 
@@ -322,25 +379,25 @@ catch(const custom_exception::customize_exception& e)
     * `first`：键类型 `K` 或其它用途类型。
     * `second`：值类型 `V`。
 * **构造**
-
     * 默认构造：`pair()`，`first`、`second` 默认初始化。
     * `pair(const K&, const V&)` 构造。
 * **运算符**
-
     * 拷贝/移动构造、赋值运算符。
-    * `operator==`, `operator!=`（若有头文件实现）。
+    * `operator==`, `operator!=`。
+    * `pair* operator->() noexcept`.
+    * 重载 `std::ostream& operator<<` 可以直接输出
 * **用途**：关联容器 `tree_map`, `hash_map` 等内部使用 `pair<key, value>` 存储元素。
 * **示例**
 
   ```cpp
-  template_container::practicality::pair<int, std::string> p(1, "one");
+  template_container::practicality::pair<int, con::string> p(1, "one");
   std::cout << p.first << ": " << p.second << std::endl;
   ```
-* **引用**：（实际头文件中 `pair` 定义处）。
+> **引用/出处**：头文件中 `namespace template_container::practicality::pair`
 
 ---
 
-## 仿函数与算法模块
+## 仿函数
 
 ### `imitation_functions`
 
