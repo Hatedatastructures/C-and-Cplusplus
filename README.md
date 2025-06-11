@@ -7,10 +7,18 @@
  * [`shared_ptr`]()
  * [`weak_ptr`]()
 ## [模板容器命名空间 `template_container`]()
- * ### [仿函数与算法模块 ](#仿函数与算法模块)
-     * [`imitation_functions`](#imitation_functions)
-     * [`algorithm`](#algorithm)
-
+ * ### [仿函数命名空间 `imitation_functions` ](#仿函数与算法模块)
+     * [`less` ]()
+     * [`greater`]()
+     * [`hash_imitation_functions`](#imitation_functions)
+ * ### [算法命名空间 `algorithm`]()
+     * [`copy`]()
+     * [`swap`]()
+     * [`find`]()
+     * [`hash_function`]()
+ * ### [基础工具命名空间 `practicality`](#基础工具命名空间-practicality)
+    * [`pair`]()
+    * [`make_pair`]()
  * ### [字符数组容器命名空间 `string_container`](#字符数组)
     * [`string`](#string_container)
  * ### [动态数组容器命名空间 `vector_container`](#动态数组)
@@ -214,13 +222,16 @@ catch(const custom_exception::customize_exception& e)
 >注意！当前未处理个别错误，及涉及到指针管理权转移等，还未测试
 ### 模块概览
 
-`smart_pointer` 命名空间中，提供如 `shared_ptr`, `weak_ptr` 等智能指针的实现，管理资源，避免手动 `delete`，支持引用计数、多线程安全（通过内部互斥锁）。
+`smart_pointer` 命名空间中，提供如 `shared_ptr`, `weak_ptr`,`smart_ptr`,`unique_ptr` 4个智能指针的实现，管理资源，避免手动 `delete`，支持引用计数、多线程安全（通过内部互斥锁）。
 
 **引用**：在头文件中，可搜索 `namespace smart_pointer` 获取完整实现；以下示例基于头文件内容分析。
 
 > **注意**：此处省略完整源码摘录，文档假设已严格依据头文件实现，不做任何命名或签名更改。
+#### `smart_ptr<smart_ptr_type>`
 
-#### `shared_ptr<T>`
+#### `unique_ptr<unique_ptr_type>`
+
+#### `shared_ptr<shared_ptr_type>`
 
 * **成员变量**
 
@@ -301,7 +312,7 @@ catch(const custom_exception::customize_exception& e)
 
 ---
 
-## 基础工具模块 `practicality`
+## 基础工具命名空间 `practicality`
 
 ### `pair<K, V>`
 
@@ -1833,7 +1844,7 @@ namespace bloom_filter_container
 
 #### 边界与错误
 
-* **索引越界**：确保 `_capacity > 0`，`value_data` 可哈希后取模；哈希函数应返回非负数。
+* **索引越界**：确保 `_capacity > 0`，`value_data` 可哈希后取模；哈希函数应返回非负数(size_t类型)。
 * **多线程**：并发插入/测试位竞争可能导致数据不一致；可在外部加锁或改进 `bit_set` 的原子位操作。
 * **哈希函数安全**：若 `hash_function<T>` 对输入产生不均匀哈希，可能导致高冲突；可自定义 `bloom_filter_hash_functor` 传入更合适哈希。
 
@@ -1841,19 +1852,19 @@ namespace bloom_filter_container
 
 ## 算法细节与性能分析
 
-### 红黑树 vs. AVL 树
+### 红黑树 vs avl 树
 
 * **插入/删除频率 vs. 查找需求**
 
-    * AVL 更严格平衡，查询速度略优（高度更小），但插入/删除旋转次数更多。
-    * RB 树平衡松散，插入/删除旋转次数较少，常用于通用关联容器。
-* **实际选择**：若读操作远多于写操作，AVL 可能更佳；若写操作较多，RB 更合适。
+    * avl 更严格平衡，查询速度略优（高度更小），但插入/删除旋转次数更多。
+    * rb 树平衡松散，插入/删除旋转次数较少，常用于通用关联容器。
+* **实际选择**：若读操作远多于写操作，avl 可能更佳；若写操作较多，rb 更合适。
 
 ### 哈希表设计
 
-* **负载因子**：需根据应用场景设置，常用阈值 0.75；过高导致冲突增多；过低浪费空间。
+* **负载因子**：需根据应用场景设置，文件中阈值为 0.75；过高导致冲突增多；过低浪费空间，函数接口change_load_factor()可以调节。
 * **桶数量**：通常取素数或 2 的幂，见头文件实现；可提供 `resize` 接口，允许用户手动调整。
-* **冲突解决**：链式散列（Chaining），实现简单；也可开放地址法，但头文件使用链表。
+* **冲突解决**：链式散列（Chaining），实现简单；也可开放地址法，但头文件使用链表，如果及其特殊情况下挂红黑树。
 * **再哈希（Rehash）**：扩容时重新分配桶数组，并重新插入所有元素，临时开销大，留意在高实时要求场景下可能引发卡顿。
 
 ### 位集与布隆过滤器
