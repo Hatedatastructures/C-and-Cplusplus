@@ -2,14 +2,20 @@
 2. [命名空间与整体结构](#命名空间与整体结构)
 3. [异常处理命名空间 `custom_exception`](#异常处理模块-custom_exception)
 4. [智能指针命名空间 `smart_pointer`](#智能指针模块-smart_pointer)
+     * [`smart_ptr`](#智能指针模块-smart_pointer)
+     * [`unique_ptr`]()
+     * [`shared_ptr`]()
+     * [`weak_ptr`]()
 5. [基础工具命名空间 `practicality`](#基础工具模块-practicality)
 6. [仿函数与算法模块 ](#仿函数与算法模块)
-     * [imitation_functions](#imitation_functions)
-     * [algorithm](#algorithm)
-7.  [字符数组](#字符数组)
-     * [string ](#string_container)
-8.  [动态数组](#动态数组)
-     * [vector](#vector_container)
+     * [`imitation_functions`](#imitation_functions)
+     * [`algorithm`](#algorithm)
+7.  [容器命名空间`template_container`]()
+
+    * [字符数组](#字符数组)
+         * [`string`](#string_container)
+     * [动态数组](#动态数组)
+         * [`vector`](#vector_container)
 9.  [链表容器](#链表容器)
      * [list](#list_container)
 10. [容器适配器](#容器适配器)
@@ -42,10 +48,10 @@
 * **作用描述**：基于函数名与实现逻辑，从使用者角度和实现者角度双重解释函数用途。
 * **返回值说明**：给出返回类型、语义含义、可能的错误或异常情况。
 * **使用示例**：提供调用示例，演示典型用法。
-* **内部原理剖析**：解析底层数据结构、算法流程、关键步骤，结合伪代码或流程图加深理解。
+* **内部原理剖析**：解析底层数据结构、算法流程、关键步骤，结合代码或流程图加深理解。
 * **复杂度分析**：对时间复杂度、空间复杂度做详尽分析，包含平均/最坏/摊销情况。
 * **边界条件和错误处理**：讨论空容器、极限值、异常抛出或安全检查。
-* **示意图**：对涉及树旋转、链表操作、哈希冲突处理等，提供示意图（当前未考虑）。
+* **示意图**：对涉及树旋转、链表操作、哈希冲突处理等，提供示意图（当前未添加）。
 * **注意事项**：包含多线程安全、异常安全、迭代器失效规则等。
 
 
@@ -59,16 +65,16 @@
 * `smart_pointer`：实现 `shared_ptr`, `weak_ptr` 等智能指针，管理动态内存资源。
 * `practicality`：提供工具类型，如 `pair`、辅助类型。
 * `imitation_functions`：仿函数集合，如 `less`, `greater`, `hash_imitation_functions` 等，用于比较和计算哈希操作。
-* `algorithm`：算法模块，包含哈希函数、交换等基础算法工具。
+* `algorithm`：算法模块，包含哈希函数、数据交换等基础算法工具。
 * `string_container`：字符数组`string`。
 * `vector_container`：动态数组 `vector`。
 * `list_container`：双向链表 `list`。
 * `stack_adapter`, `queue_adapter`：容器适配器 `stack`, `queue`, `priority_queue`。
-* `tree_container`：树形容器基础，包括 `binary_search_tree`, `rb_tree` 等。
+* `tree_container`：树形容器基础，包括 `binary_search_tree`, `avl_tree` 等。
 * `map_container`, `set_container`：关联容器 `tree_map`, `tree_set`，基于红黑树实现。
-* `base_class_container`：基础容器，如 `hash_table`, `bit_set`, `rb_tree` 低级实现等（部分在此命名空间）。
+* `base_class_container`：基类容器，如 `hash_table`, `bit_set`, `rb_tree` 基类实现等（在此命名空间）。
 * `bloom_filter_container`：布隆过滤器实现，依赖 `bit_set`。
-* `con`, `ptr`, `exc`：方便使用的别名命名空间，将上述常用命名空间引入,方便调用
+* `con`, `ptr`, `exc`：方便使用的命名空间，将上述容器异常智能指针引入，减少命名长度,方便调用
 
 整体结构如：
 
@@ -122,11 +128,13 @@ namespace custom_exception
 }
 ```
 
-**引用**：
+**引用**：`custom_exception::customize_exception`
+
+**注意**：该类不能被继承
 
 #### 作用
 
-* 该类用于在发生错误或异常情况下，抛出带有详细信息的异常，包含错误消息、发生异常的函数名、代码行号，便于调试和日志记录。
+* 该类用于在发生错误或异常情况下，抛出带有详细信息的异常，包含错误消息、发生异常的函数名、异常位置的代码行号，便于调试和查找异常错误。
 
 #### 构造函数
 
@@ -176,16 +184,15 @@ void some_function()
 {
     if(error_condition) 
     {
-        throw custom_exception::customize_exception("错误描述", __func__, __LINE__);
+        throw custom_exception::customize_exception("错误信息", __func__, __LINE__);
     }
 }
-// 捕获
-try 
+try // 捕获 
 {
     some_function();
 }
- catch(const custom_exception::customize_exception& e) 
- {
+catch(const custom_exception::customize_exception& e) 
+{
     std::cerr << "Exception: "   << e.what() 
               << " in function " << e.function_name_get() 
               << " at line "     << e.line_number_get() << std::endl;
