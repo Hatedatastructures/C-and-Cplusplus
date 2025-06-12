@@ -17,8 +17,8 @@
      * [`find`](#find)
      * [`hash_function`](#hash_algorithmhash_function)
  * ### [基础工具 `practicality`](#基础工具命名空间-practicality)
-    * [`pair`]()
-    * [`make_pair`]()
+    * [`pair`](#pairk-v)
+    * [`make_pair`](#pairk-v)
  * ### [字符数组 `string_container`](#字符数组)
     * [`string`](#string_container)
  * ### [动态数组容器 `vector_container`](#动态数组)
@@ -392,8 +392,10 @@ catch(const custom_exception::customize_exception& e)
     template_container::practicality::pair<int, con::string> p(1, "one");
     std::cout << p.first << ": " << p.second << std::endl;
     ```
->   **引用/出处**：头文件中 `namespace template_container::practicality::pair`
+### `make_pair`
+ * **make_pair函数** ：一个自动类型推导的函数，返回的是pair类实例。
 
+>   **引用/出处**：头文件中 `namespace template_container::practicality::pair`
 ## 仿函数 `imitation_functions`
 
 ### `imitation_functions`
@@ -463,7 +465,7 @@ catch(const custom_exception::customize_exception& e)
       * **参数**：起始位置 `source_sequence_find begin`，结束位置 `source_sequence_find end`，查找的数据 `target_sequence_find& value`.
       * **返回值** ：如果找到值返回该值的迭代器，如果找不到返回尾位置迭代器
 
-  >     **引用**：头文件中`namespace template_container::algorithm::find`.
+  >    **引用**：头文件中`namespace template_container::algorithm::find`.
 
 ### `swap`
 * **内容**：基本算法工具 `swap`
@@ -617,39 +619,282 @@ namespace string_container
 * **初始化列表构造**：`string(const std::initializer_list<char> str_data)`，使用初始化列表中的字符初始化字符串。
 * **析构**：释放 `_data` 指向的内存。
 ### 迭代器
-* 定义 `iterator`, `const_iterator`, `reverse_iterator`, `const_reverse_iterator`，支持随机访问特性。
+* **定义** `iterator`, `const_iterator`, `reverse_iterator`, `const_reverse_iterator`，支持随机访问特性。
 * `begin()`/`end()` 返回指向 `_data`, _`data + _size`。
 * `rbegin()`/`rend()` 返回反向迭代器
 ### 访问元素
 * `char& operator[](size_t index)`, `const char& operator[](size_t index) const`：做边界检查，直接访问第`index`个字符。
-* `front()`, `back()`: 访问第一个和最后一个字符；须保证 _size > 0。
-* `c_str()`: 返回指向内部字符数组的指针，以 \0 结尾。
+* `front()`, `back()`: 访问第一个和最后一个字符；须保证 `_size > 0`。
+* `c_str()`: 返回指向内部字符数组的指针，以 `\0` 结尾。
   * #### 示例
     ```cpp
     string s("hello");
     std::cout << s[0] << ", " << s.back() << ", " << s.c_str();
     ```
-* **引用**：头文件 `string_container` 部分函数调用。
         
 ### 字符串修改
-* `push_back(const char&)`：在末尾添加新字符；若 `_size == _capacity`，需扩容。
-* `push_back(const string&)`：在末尾追加字符串；若容量不足，需扩容。
-* `push_back(const char*)`：在末尾追加 `C`风格字符串；若容量不足，需扩容。
-* `prepend(const char*)`：在字符串开头插入 `C` 风格字符串；需要移动所有字符，开销 `O(n)`。
-* `clear()`：清空字符串，`_size = 0`，可能保留容量。
-* `resize(size_t n, char c = '\0')`：调整字符串大小，若扩大则用指定字符填充。
-
-* **复杂度分析**：
-
-    * 普通访问 O(1)，连接/插入可能涉及重分配，平均摊销 O(n)。
-* **示例**
+#### 追加操作
+* `string& push_back(const char& c)` 
+    * **功能**：末尾添加字符，容量不足时扩容，策略：`空间不足2倍增容`。
+* `string& push_back(const string& str)` / `string& push_back(const char* str)`
+    * **功能**：追加字符串 / `C` 串，自动扩容并深拷贝内容。
+#### 插入操作
+* `string& prepend(const char*& sub)`
+   * **功能**：头部插入子串，使用`memmove`移动原数据并扩容。
+* `string& insert_sub_string(const char*& sub, size_t pos)` 
+   * **功能**：在`pos`位置插入子串，越界抛异常，通过临时缓冲区保证内存安全。
+#### 内存管理
+* `void allocate_resources(size_t new_cap)`
+   * **功能**：重新分配内存，复制原数据后释放旧空间，仅在`new_cap > _capacity`时执行。
+*  `iterator reserve(size_t new_cap)`
+   * **功能**：预分配内存，返回首地址迭代器，内存不足抛`std::bad_alloc`。
+#### 其他修改
+*  `string& resize(size_t n, char c = '\0')`
+    * **功能**：调整长度，扩容时用c填充，缩容时截断并添加\0。
+*   `string& swap(string& str) noexcept`
+    * **功能**：交换两字符串的`_data、_size`、`_capacity`，时间复杂度 `O(1)`。
+####  子串与反转
+* `string sub_string(size_t start) / string sub_string_from(size_t start)`
+  * **功能**：从start提取子串至末尾，越界抛custom_exception。
+*  `string sub_string(size_t start, size_t terminate)`
+   * **功能**：提取`[start, terminate)`区间子串，检查位置合法性。
+*   `string reverse() const`
+    * **功能**：返回反转后的新字符串，空串抛异常，通过反向迭代器实现。
+*   `string reverse_sub_string(size_t start, size_t terminate) const`
+    * **功能**：返回指定区间子串的反转，校验参数有效性。
+#### 大小写转换
+ * `string& uppercase() noexcept / string& lowercase() noexcept`
+   * **功能**：原地转换大小写，遍历字符并调整 `ASCII` 码（小写 + 32 / 大写 - 32）。
+#### 容量与工具方法
+ * `bool empty() const noexcept` / `size_t size() const noexcept` / `size_t capacity() const noexcept`
+     * **功能**：返回空状态、长度和容量，时间复杂度 O (1)。
+ * `void string_print() const noexcept` / `void string_reverse_print() const noexcept`
+     * **功能**：正向打印字符串和反向打印字符串。
+ ####  运算符重载
+ * ##### 赋值运算符：
+     * `string& operator=(const string& str)` / `string& operator=(const char* str)`
+       * **功能**：深拷贝赋值，先释放原内存再重新分配。
+     * `string& operator=(string&& str) noexcept`
+       * **功能**：移动赋值，接管右值资源并清空原对象。
+ * ##### 拼接运算符：
+     * `string& operator+=(const string& str)`
+       * **功能**：原地拼接，扩容后复制数据。
+     *  `string operator+(const string& str) const`
+        * **功能**：返回拼接后的新字符串，避免修改原对象。
+ * ##### 比较运算符：
+    * `bool operator==(const string& str) const noexcept`
+       `bool operator<(const string& str) const noexcept` / `bool operator>(const string& str) const noexcept`
+        * **功能**：字典序比较，先比字符再比长度，空串小于非空串。
+ #### 输入输出运算符
+ * `friend std::istream& operator>>(std::istream&, string&)`
+   * **功能**：读取字符直至换行或 `EOF`，逐个`push_back`实现输入。
+* `friend std::ostream& operator<<(std::ostream&, const string&)`
+    * **功能**：遍历字符并输出，支持流式操作。
+#### 复杂度与异常安全
+*  **时间复杂度**：
+    *  **随机访问**：`O(1)`
+    *  **插入** / **删除中间**：`O(n)`（移动元素）
+    *  **扩容**：`O(n)`（复制数据），摊销后均摊 `O(1)`
+* **空间复杂度**：
+  * `O(n)`（存储字符 +`\0`）
+* **异常处理**：
+    * 内存分配失败抛`std::bad_alloc`。
+    * 越界操作抛`custom_exception::customize_exception`，包含错误位置和函数名。
+*  **迭代器失效**：
+   * 扩容或修改数据时，所有迭代器和引用失效。
+#### 注意事项
+* **迭代器安全**：扩容或修改数据会导致迭代器失效，需重新获取`迭代器`。
+* **内存优化**：频繁拼接前建议使用`reserve(n)`预分配空间，减少重分配开销。
+* **异常安全**：插入 / 扩容操作可能抛异常，建议使用`try-catch`处理或确保传入参数合法。
+* **移动语义**：对临时字符串优先使用移动构造 / 赋值`（string&&）`，避免深拷贝性能损耗。
+### **`string`** 类用法示例
 
   ```cpp
-  template_container::string_container::string s("hello");
-  s.append(", world");
-  std::cout << s << std::endl;
+  #include "template_container.hpp"
+using namespace template_container;
+int main() 
+{
+    // 1. 构造函数示例
+    std::cout << "=== 构造函数示例 ===\n";
+    
+    // 默认构造函数
+    string_container::string s1;
+    std::cout << "s1 (默认构造): " << s1 << std::endl;
+    
+    // C风格字符串构造
+    string_container::string s2("Hello");
+    std::cout << "s2 (C风格字符串构造): " << s2 << std::endl;
+    
+    // 拷贝构造
+    string_container::string s3(s2);
+    std::cout << "s3 (拷贝构造自s2): " << s3 << std::endl;
+    
+    // 移动构造 (使用临时对象)
+    string_container::string s4(string_container::string("World"));
+    std::cout << "s4 (移动构造): " << s4 << std::endl;
+    
+    // 初始化列表构造
+    string_container::string s5({'H', 'e', 'l', 'l', 'o'});
+    std::cout << "s5 (初始化列表构造): " << s5 << std::endl;
+    
+    // 2. 访问元素示例
+    std::cout << "\n=== 访问元素示例 ===\n";
+    
+    // 下标运算符
+    std::cout << "s2[0]: " << s2[0] << std::endl;
+    
+    // front() 和 back()
+    std::cout << "s2.front(): " << s2.front() << std::endl;
+    std::cout << "s2.back(): " << s2.back() << std::endl;
+    
+    // c_str()
+    std::cout << "s2.c_str(): " << s2.c_str() << std::endl;
+    
+    // 3. 字符串修改示例
+    std::cout << "\n=== 字符串修改示例 ===\n";
+    
+    // push_back() 添加单个字符
+    s2.push_back('!');
+    std::cout << "s2.push_back('!'): " << s2 << std::endl;
+    
+    // push_back() 添加字符串
+    s2.push_back(string_container::string(" World"));
+    std::cout << "s2.push_back(\" World\"): " << s2 << std::endl;
+    
+    // push_back() 添加C风格字符串
+    s2.push_back(" Again");
+    std::cout << "s2.push_back(\" Again\"): " << s2 << std::endl;
+    
+    // prepend() 在开头插入
+    s2.prepend("Hi, ");
+    std::cout << "s2.prepend(\"Hi, \"): " << s2 << std::endl;
+    
+    // insert_sub_string() 在中间插入
+    const char* str_test = " there";
+    s2.insert_sub_string(str_test, 4);
+    std::cout << "s2.insert_sub_string(\" there\", 4): " << s2 << std::endl;
+    
+    // resize() 调整大小
+    s2.resize(10, 'x');
+    std::cout << "s2.resize(10, 'x'): " << s2 << std::endl;
+    
+    s2.resize(20, 'y');
+    std::cout << "s2.resize(20, 'y'): " << s2 << std::endl;
+    
+    // 4. 子串与反转示例
+    std::cout << "\n=== 子串与反转示例 ===\n";
+    
+    // sub_string() 提取子串
+    string_container::string sub1 = s2.sub_string(3);
+    std::cout << "s2.sub_string(3): " << sub1 << std::endl;
+    
+    string_container::string sub2 = s2.sub_string_from(5);
+    std::cout << "s2.sub_string_from(5): " << sub2 << std::endl;
+    
+    string_container::string sub3 = s2.sub_string(2, 8);
+    std::cout << "s2.sub_string(2, 8): " << sub3 << std::endl;
+    
+    // reverse() 反转字符串
+    string_container::string rev1 = s2.reverse();
+    std::cout << "s2.reverse(): " << rev1 << std::endl;
+    
+    // reverse_sub_string() 反转子串
+    string_container::string rev2 = s2.reverse_sub_string(3, 8);
+    std::cout << "s2.reverse_sub_string(3, 8): " << rev2 << std::endl;
+    
+    // 5. 大小写转换示例
+    std::cout << "\n=== 大小写转换示例 ===\n";
+    
+    s2.uppercase();
+    std::cout << "s2.uppercase(): " << s2 << std::endl;
+    
+    s2.lowercase();
+    std::cout << "s2.lowercase(): " << s2 << std::endl;
+    
+    // 6. 容量与工具方法示例
+    std::cout << "\n=== 容量与工具方法示例 ===\n";
+    
+    std::cout << "s2.empty(): " << (s2.empty() ? "true" : "false") << std::endl;
+    std::cout << "s2.size(): " << s2.size() << std::endl;
+    std::cout << "s2.capacity(): " << s2.capacity() << std::endl;
+    
+    // reserve() 预分配空间
+    s2.reserve(100);
+    std::cout << "s2.reserve(100) 后 capacity: " << s2.capacity() << std::endl;
+    
+    // swap() 交换字符串
+    string_container::string temp("Temp String");
+    s2.swap(temp);
+    std::cout << "s2.swap(temp) 后 s2: " << s2 << std::endl;
+    std::cout << "s2.swap(temp) 后 temp: " << temp << std::endl;
+    
+    // 7. 运算符重载示例
+    std::cout << "\n=== 运算符重载示例 ===\n";
+    
+    // 赋值运算符
+    s2 = "New Value";
+    std::cout << "s2 = \"New Value\": " << s2 << std::endl;
+    
+    s2 = string_container::string("Another Value");
+    std::cout << "s2 = string(\"Another Value\"): " << s2 << std::endl;
+    
+    // += 运算符
+    s2 += " appended";
+    std::cout << "s2 += \" appended\": " << s2 << std::endl;
+    
+    // + 运算符
+    string_container::string s6 = s2 + " and more";
+    std::cout << "s6 = s2 + \" and more\": " << s6 << std::endl;
+    
+    // 比较运算符
+    string_container::string s7("Test");
+    string_container::string s8("Test");
+    string_container::string s9("Different");
+    
+    std::cout << "s7 == s8: " << (s7 == s8 ? "true" : "false") << std::endl;
+    std::cout << "s7 == s9: " << (s7 == s9 ? "true" : "false") << std::endl;
+    std::cout << "s7 < s9: " << (s7 < s9 ? "true" : "false") << std::endl;
+    std::cout << "s7 > s9: " << (s7 > s9 ? "true" : "false") << std::endl;
+    
+    // 8. 输入输出示例
+    std::cout << "\n=== 输入输出示例 ===\n";
+    
+    // 输出
+    std::cout << "请输入一个字符串: ";
+    string_container::string input;
+    std::cin >> input;
+    std::cout << "你输入的是: " << input << std::endl;
+    
+    // 9. 迭代器示例
+    std::cout << "\n=== 迭代器示例 ===\n";
+    
+    std::cout << "使用迭代器遍历 s2: ";
+    for (auto it = s2.begin(); it != s2.end(); ++it) {
+        std::cout << *it;
+    }
+    std::cout << std::endl;
+    
+    std::cout << "使用反向迭代器遍历 s2: ";
+    for (auto it = s2.rbegin(); it != s2.rend(); --it) {
+        std::cout << *it;
+    }
+    std::cout << std::endl;
+    
+    // 10. 工具方法
+    std::cout << "\n=== 工具方法示例 ===\n";
+    
+    std::cout << "打印 s2: ";
+    s2.string_print();
+    
+    std::cout << "反向打印 s2: ";
+    s2.string_reverse_print();
+    
+    return 0;
+}
+
   ```
-* **引用**：头文件 `string_container` 部分。
+
+> **引用**：头文件 `string_container` 命名空间。
 
 ---
 

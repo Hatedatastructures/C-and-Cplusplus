@@ -335,7 +335,7 @@ namespace template_container
         template <typename source_sequence_copy,typename target_sequence_copy>
         constexpr target_sequence_copy* copy(source_sequence_copy begin,source_sequence_copy end,target_sequence_copy first) noexcept
         {
-            target_sequence_copy* return_first = first;
+            target_sequence_copy* return_first = &first;
             while(begin != end)
             {
                 *first = *begin;
@@ -680,7 +680,7 @@ namespace template_container
             // {
             //     //查找子串
             // }
-            string& prepend(const char*& sub_string)
+            string& prepend(const char* sub_string)
             {
                 //前duan插入子串
                 size_t len = strlen(sub_string);
@@ -697,7 +697,7 @@ namespace template_container
                 delete [] temporary_buffers;
                 return *this;
             }
-            string& insert_sub_string(const char*& sub_string,const size_t& start_position)
+            string& insert_sub_string(const char* sub_string,const size_t& start_position)
             {
                 try
                 {
