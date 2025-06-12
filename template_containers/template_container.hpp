@@ -843,8 +843,8 @@ namespace template_container
                 {
                     return *this;
                 }
-                size_t len = strlen( temporary_str_ptr_data );
-                size_t new_container_capacity = len + _size ;
+                const size_t len = strlen( temporary_str_ptr_data );
+                const size_t new_container_capacity = len + _size ;
                 if(new_container_capacity >_capacity)
                 {
                    allocate_resources(new_container_capacity);

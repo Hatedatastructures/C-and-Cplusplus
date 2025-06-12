@@ -1,15 +1,15 @@
 #pragma once
-#define _CRT_SECURE_NO_WARNINGS
-#include <iostream>
+#define CRT_SECURE_NO_WARNINGS
 #include <cstring>
+#include <iostream>
 #include <mutex>
 namespace custom_exception
 {
-    class customize_exception : public std::exception
+    class  customize_exception final : public std::exception
     {
     private:
-        const char* message;
-        const char* function_name;
+        char* message;
+        char* function_name;
         size_t line_number;
     public:
         customize_exception(const char* message_target,const char* function_name_target,const size_t& line_number_target) noexcept 
@@ -20,7 +20,7 @@ namespace custom_exception
             std::strcpy(function_name,function_name_target);
             line_number = line_number_target;
         }
-        [[nodiscard]] virtual const char* what() const noexcept override
+        [[nodiscard]] const char* what() const noexcept override
         {
             return message;
         }
@@ -32,11 +32,15 @@ namespace custom_exception
         {
             return line_number;
         }
-        ~customize_exception() noexcept
+        ~customize_exception() noexcept override
         {
             delete [] message;
             delete [] function_name;
         }
+        customize_exception(const customize_exception&) = delete;
+        customize_exception(customize_exception&&) = delete;
+        customize_exception& operator=(const customize_exception&) = delete;
+        customize_exception& operator=(customize_exception&&) = delete;
     };
 }
 namespace smart_pointer
@@ -49,7 +53,7 @@ namespace smart_pointer
         using Ref = smart_ptr_type&;
         using Ptr = smart_ptr_type*;
     public:
-        smart_ptr(smart_ptr_type* Ptr) noexcept
+        explicit smart_ptr(smart_ptr_type* Ptr) noexcept
         {
             _ptr = Ptr;
         }
@@ -61,11 +65,11 @@ namespace smart_pointer
                 _ptr = nullptr;
             }
         }
-        smart_ptr(const smart_ptr& _SmartPtr) noexcept
+        smart_ptr(const smart_ptr& ptr_type_data) noexcept
         {
             //管理权转移到另一个
-            _ptr = _SmartPtr._ptr;
-            _SmartPtr._ptr = nullptr;
+            _ptr = ptr_type_data._ptr;
+            ptr_type_data._ptr = nullptr;
         }
         Ref operator*() noexcept
         {
@@ -75,27 +79,30 @@ namespace smart_pointer
         {
             return _ptr;
         }
-        smart_ptr<smart_ptr_type>& operator=(const smart_ptr& _SmartPtr) noexcept
+        smart_ptr<smart_ptr_type>& operator=(const smart_ptr& ptr_type_data) noexcept
         {
-            if( _ptr != nullptr)
+            if(&ptr_type_data != this)
             {
-                delete _ptr;
-                _ptr = nullptr;
+                if( _ptr != nullptr)
+                {
+                    delete _ptr;
+                    _ptr = nullptr;
+                }
+                _ptr = ptr_type_data._ptr;
+                ptr_type_data._ptr = nullptr;
             }
-            _ptr = _SmartPtr._ptr;
-            _SmartPtr._ptr = nullptr;
             return *this;
         }
     };
     template <typename unique_ptr_type>
     class unique_ptr
-    {
+    {     //独占指针所有权
     private:
         unique_ptr_type* _ptr;
         using Ref = unique_ptr_type&;
         using Ptr = unique_ptr_type*;
     public:
-        unique_ptr(unique_ptr_type* Ptr) noexcept
+        explicit unique_ptr(unique_ptr_type* Ptr) noexcept
         {
             _ptr = Ptr;
         }
@@ -106,7 +113,7 @@ namespace smart_pointer
                 delete _ptr;
                 _ptr = nullptr;
             }
-        }
+        }//重载swap放弃所有权转移指针，移动语义
         Ref operator*() noexcept
         {
             return *(_ptr);
@@ -115,8 +122,12 @@ namespace smart_pointer
         {
             return _ptr;
         }
-        unique_ptr(const unique_ptr& _UniquePtr) noexcept = delete;
-        unique_ptr<unique_ptr_type>& operator= (const unique_ptr& _UniquePtr) noexcept = delete;
+        unique_ptr_type* get_ptr() const noexcept
+        {
+            return _ptr;
+        }
+        unique_ptr(const unique_ptr& ptr_type_data) noexcept = delete;
+        unique_ptr<unique_ptr_type>& operator= (const unique_ptr& ptr_type_data) noexcept = delete;
         //禁止拷贝
     };
     template <typename shared_ptr_type>
@@ -129,17 +140,17 @@ namespace smart_pointer
         using Ref = shared_ptr_type&;
         using Ptr = shared_ptr_type*;
     public:
-        shared_ptr(shared_ptr_type* Ptr = nullptr)
+        explicit shared_ptr(shared_ptr_type* Ptr = nullptr)
         {
             _ptr = Ptr;
             shared_pcount = new int(1);
             _pmutex = new std::mutex;
         }
-        shared_ptr(const shared_ptr& _SharedPtr) noexcept
+        shared_ptr(const shared_ptr& shared_ptr_data) noexcept
         {
-            _ptr = _SharedPtr._ptr;
-            shared_pcount = _SharedPtr.shared_pcount;
-            _pmutex = _SharedPtr._pmutex;
+            _ptr = shared_ptr_data._ptr;
+            shared_pcount = shared_ptr_data.shared_pcount;
+            _pmutex = shared_ptr_data._pmutex;
             //上锁
             _pmutex->lock();
             (*shared_pcount)++;
@@ -180,22 +191,25 @@ namespace smart_pointer
         {
             return _ptr;
         }
-        shared_ptr<shared_ptr_type>& operator=(const shared_ptr& _SharedPtr) noexcept
+        shared_ptr<shared_ptr_type>& operator=(const shared_ptr& shared_ptr_data) noexcept
         {
-            if(_ptr != _SharedPtr._ptr)
+            if(&shared_ptr_data != this)
             {
-                release();
-                _ptr = _SharedPtr._ptr;
-                shared_pcount = _SharedPtr.shared_pcount;
-                _pmutex = _SharedPtr._pmutex;
-                //上锁
-                _pmutex->lock();
-                (*shared_pcount)++;
-                _pmutex->unlock();
+                if(_ptr != shared_ptr_data._ptr)
+                {
+                    release();
+                    _ptr = shared_ptr_data._ptr;
+                    shared_pcount = shared_ptr_data.shared_pcount;
+                    _pmutex = shared_ptr_data._pmutex;
+                    //上锁
+                    _pmutex->lock();
+                    (*shared_pcount)++;
+                    _pmutex->unlock();
+                }
             }
             return *this;
         }
-        int get_sharedp_count() const noexcept
+        [[nodiscard]] int get_sharedp_count() const noexcept
         {
             return *shared_pcount;
         }
@@ -209,13 +223,13 @@ namespace smart_pointer
         using Ptr = weak_ptr_type*;
     public:
         weak_ptr() = default;
-        weak_ptr(smart_pointer::shared_ptr<weak_ptr_type>& Ptr) noexcept
+        explicit weak_ptr(smart_pointer::shared_ptr<weak_ptr_type>& Ptr) noexcept
         {
             _ptr = Ptr.get_ptr();
         }
-        weak_ptr(const weak_ptr& _WeakPtr) noexcept
+        weak_ptr(const weak_ptr& ptr_type_data) noexcept
         {
-            _ptr = _WeakPtr._ptr;
+            _ptr = ptr_type_data._ptr;
         }
         Ref operator*() noexcept
         {
@@ -258,17 +272,50 @@ namespace template_container
         class hash_imitation_functions
         {
         public:
-            size_t operator()(const int str_data) noexcept                                {       return str_data;                }
-            size_t operator()(const size_t data_size_t) noexcept                          {       return data_size_t;             }
-            size_t operator()(const char data_char) noexcept                              {       return data_char;               }
-            size_t operator()(const double data_double) noexcept                          {       return data_double;             }
-            size_t operator()(const float data_float) noexcept                            {       return data_float;              }
-            size_t operator()(const long data_long) noexcept                              {       return data_long;               }
-            size_t operator()(const short data_short) noexcept                            {       return data_short;              }
-            size_t operator()(const long long data_long_long) noexcept                    {       return data_long_long;          }
-            size_t operator()(const unsigned int data_unsigned) noexcept                  {       return data_unsigned;           }
-            size_t operator()(const unsigned long data_unsigned_long) noexcept            {       return data_unsigned_long;      }
-            size_t operator()(const unsigned short data_unsigned_short) noexcept          {       return data_unsigned_short;     }
+            [[nodiscard]] size_t operator()(const int str_data)const noexcept
+            {
+                return static_cast<size_t>(str_data);
+            }
+            [[nodiscard]] size_t operator()(const size_t data_size_t)const noexcept
+            {
+                return data_size_t;
+            }
+            [[nodiscard]] size_t operator()(const char data_char)const noexcept
+            {
+                return static_cast<size_t>(data_char);
+            }
+            [[nodiscard]] size_t operator()(const double data_double)const noexcept
+            {
+                return static_cast<size_t>(data_double);
+            }
+            [[nodiscard]] size_t operator()(const float data_float)const noexcept
+            {
+                return static_cast<size_t>(data_float);
+            }
+            [[nodiscard]] size_t operator()(const long data_long)const noexcept
+            {
+                return static_cast<size_t>(data_long);
+            }
+            [[nodiscard]] size_t operator()(const short data_short)const noexcept
+            {
+                return static_cast<size_t>(data_short);
+            }
+            [[nodiscard]] size_t operator()(const long long data_long_long)const noexcept
+            {
+                return static_cast<size_t>(data_long_long);
+            }
+            [[nodiscard]] size_t operator()(const unsigned int data_unsigned)const noexcept
+            {
+                return static_cast<size_t>(data_unsigned);
+            }
+            [[nodiscard]] size_t operator()(const unsigned long data_unsigned_long)const noexcept
+            {
+                return static_cast<size_t>(data_unsigned_long);
+            }
+            [[nodiscard]] size_t operator()(const unsigned short data_unsigned_short)const noexcept
+            {
+                return static_cast<size_t>(data_unsigned_short);
+            }
             
   
             // size_t operator()(const MY_Template::string_container::string& data_string)
@@ -280,21 +327,22 @@ namespace template_container
             //     }
             //     return hash_value;
             // }
-            //有需要可以重载本文件的string容器和vector容器.list容器等计算哈希的函数,这里就不重载了
+            //有需要可以重载本文件的string容器和vector容器.list容器等计算哈希的函数, 这里就不重载了
         };
     }
     namespace algorithm
     {
         template <typename source_sequence_copy,typename target_sequence_copy>
-        constexpr target_sequence_copy copy(source_sequence_copy begin,source_sequence_copy end,target_sequence_copy first) noexcept
+        constexpr target_sequence_copy* copy(source_sequence_copy begin,source_sequence_copy end,target_sequence_copy first) noexcept
         {
+            target_sequence_copy* return_first = first;
             while(begin != end)
             {
                 *first = *begin;
                 ++begin;
                 ++first;
             }
-            return first;
+            return return_first;
         }
         //返回下一个位置的迭代器，是否深浅拷贝取决于自定义类型重载和拷贝构造
         template<typename source_sequence_find,typename target_sequence_find>
@@ -323,6 +371,11 @@ namespace template_container
             class hash_function
             {
             public:
+                constexpr hash_function()
+                {
+                    hash_imitation_functions_object = hash_if();
+                }
+                ~hash_function() = default;
                 hash_if hash_imitation_functions_object;
                 [[nodiscard]] constexpr size_t hash_sdmmhash(const hash_algorithm_type& data_hash) noexcept
                 {
@@ -464,33 +517,75 @@ namespace template_container
             //反向迭代器
             //限定字符串最大值
             constexpr static const size_t nops = -1;
-            iterator begin() noexcept                       {   return _data;   }
+            [[nodiscard]] iterator begin()const noexcept
+            {
+                return _data;
+            }
 
-            iterator end() noexcept                         {   return _data + _size;   }
+            [[nodiscard]] iterator end()const noexcept
+            {
+                return _data + _size;
+            }
 
-            const_iterator cbegin()const noexcept           {   return const_iterator(_data);   }
+            [[nodiscard]] const_iterator cbegin()const noexcept
+            {
+                return static_cast<const_iterator>(_data);
+            }
 
-            const_iterator cend()const noexcept             {   return const_iterator(_data + _size);   }
+            [[nodiscard]] const_iterator cend()const noexcept
+            {
+                return static_cast<const_iterator>(_data + _size);
+            }
 
-            reverse_iterator rbegin() noexcept              {   return empty() ? reverse_iterator(end()) : reverse_iterator(end() - 1);  }
+            [[nodiscard]] reverse_iterator rbegin()const noexcept
+            {
+                return empty() ? static_cast<reverse_iterator>(end()) :static_cast<reverse_iterator>(end() - 1);
+            }
 
-            reverse_iterator rend() noexcept                {   return empty() ? reverse_iterator(begin()) : reverse_iterator(begin() - 1);  }
+            [[nodiscard]] reverse_iterator rend()const noexcept
+            {
+                return empty() ? static_cast<reverse_iterator>(begin()) : static_cast<reverse_iterator>(begin() - 1);
+            }
 
-            const_reverse_iterator crbegin()const noexcept  {   return const_reverse_iterator(cend()- 1);   }
+            [[nodiscard]] const_reverse_iterator crbegin()const noexcept
+            {
+                return static_cast<const_reverse_iterator>(cend()- 1);
+            }
 
-            const_reverse_iterator crend()const noexcept    {   return const_reverse_iterator(cbegin()- 1); }
+            [[nodiscard]] const_reverse_iterator crend()const noexcept
+            {
+                return static_cast<const_reverse_iterator>(cbegin()- 1);
+            }
 
-            bool empty() noexcept                           {   return _size == 0;  }
+            [[nodiscard]] bool empty()const noexcept
+            {
+                return _size == 0;
+            }
 
-            size_t size()const noexcept                     {   return _size;       }
+            [[nodiscard]] size_t size()const noexcept
+            {
+                return _size;
+            }
 
-            size_t capacity()const noexcept                 {   return _capacity;   }
+            [[nodiscard]] size_t capacity()const noexcept
+            {
+                return _capacity;
+            }
 
-            char* c_str()const noexcept                     {   return _data;       } //返回C风格字符串
+            [[nodiscard]] char* c_str()const noexcept
+            {
+                return static_cast<char*> (_data);
+            } //返回C风格字符串
 
-            char back() noexcept                            {   return _size > 0 ? _data[_size - 1] : '\0';    }
+            [[nodiscard]] char back()const noexcept
+            {
+                return _size > 0 ? _data[_size - 1] : '\0';
+            }
 
-            char front() noexcept                           {   return _data[0];    }//返回尾字符
+            [[nodiscard]] char front()const noexcept
+            {
+                return _data[0];
+            }//返回头字符
 
             string(const char* str_data = " ")
             :_size(str_data == nullptr ? 0 : strlen(str_data)),_capacity(_size)
@@ -500,7 +595,6 @@ namespace template_container
                 {
                     _data = new char[_capacity + 1];
                     std::strncpy(_data,str_data,std::strlen(str_data));
-                    // strcpy(_data,str_data);
                     _data[_size] = '\0';
                 }
                 else
@@ -515,7 +609,7 @@ namespace template_container
                 //移动构造函数，拿传入对象的变量初始化本地变量，对于涉及开辟内存的都要深拷贝
                 if(str_data != nullptr)
                 {
-                    _data = std::move(str_data);
+                    _data = str_data;
                     str_data = nullptr;
                 }
                 else
@@ -538,12 +632,12 @@ namespace template_container
             {
                 //移动构造函数，拿传入对象的变量初始化本地变量，对于涉及开辟内存的都要深拷贝
                 // template_container::algorithm::swap(str_data._data,_data);
-                _data = std::move(str_data._data);
-                _size = std::move(str_data._size);
-                _capacity = std::move(str_data._capacity);
+                _data = str_data._data;
+                _size = str_data._size;
+                _capacity = str_data._capacity;
                 str_data._data = nullptr;
             }
-            string(std::initializer_list<char> str_data)
+            string(const std::initializer_list<char> str_data)
             {
                 //初始化列表构造函数
                 _size = str_data.size();
@@ -588,7 +682,7 @@ namespace template_container
             // }
             string& prepend(const char*& sub_string)
             {
-                //前部插入子串
+                //前duan插入子串
                 size_t len = strlen(sub_string);
                 size_t new_size = _size + len;
                 allocate_resources(new_size);
@@ -632,7 +726,7 @@ namespace template_container
                     throw;
                 }
             }
-            string sub_string(const size_t& start_position)
+            [[nodiscard]] string sub_string(const size_t& start_position)const
             {
                 //提取字串到'\0'
                 try
@@ -655,7 +749,7 @@ namespace template_container
                 result._data[result._size] = '\0';
                 return result;
             }
-            string sub_string_from(const size_t& start_position)
+            [[nodiscard]] string sub_string_from(const size_t& start_position)const
             {
                 //提取字串到末尾
                 try
@@ -678,7 +772,7 @@ namespace template_container
                 result._data[result._size] = '\0';
                 return result;
             }
-            string sub_string(const size_t& start_position ,const size_t& terminate_position)
+            [[nodiscard]] string sub_string(const size_t& start_position ,const size_t& terminate_position)const
             {
                 //提取字串到指定位置
                 try
@@ -811,7 +905,7 @@ namespace template_container
                 template_container::algorithm::swap(_capacity,str_data._capacity);
                 return *this;
             }
-            string reverse()
+            [[nodiscard]] string reverse() const
             {
                 try
                 {
@@ -832,7 +926,7 @@ namespace template_container
                 }
                 return reversed_string;
             }
-            string reverse_sub_string(const size_t& start_position , const size_t& terminate_position)
+            [[nodiscard]] string reverse_sub_string(const size_t& start_position , const size_t& terminate_position)const
             {
                 try
                 {
@@ -1007,23 +1101,23 @@ namespace template_container
                     throw;
                 }
             }
-            string operator+(const string& string_array)
+            [[nodiscard]] string operator+(const string& string_array) const
             {
                 string return_string_object;
-                size_t object_len = _size + string_array._size;
+                const size_t object_len = _size + string_array._size;
                 return_string_object.allocate_resources(object_len);
                 std::strncpy(return_string_object._data , _data,size());
                 std::strncpy(return_string_object._data + _size , string_array._data,string_array.size());
                 return_string_object._size = _size + string_array._size;
                 return_string_object._data[return_string_object._size] = '\0';
-                return return_string_object;
+                return return_string_object;    //不能转为右值，编译器会再做一次优化
             }
         };
-        std::istream& operator>>(std::istream& string_istream,string& str_data)
+        inline std::istream& operator>>(std::istream& string_istream,string& str_data)
         {
             while(true)
             {
-                char single_char = string_istream.get();                    //gat函数只读取一个字符
+                char single_char =static_cast<char>(string_istream.get());                    //gat函数只读取一个字符
                 if(single_char == '\n' || single_char == EOF)
                 {
                     break;
@@ -1037,9 +1131,9 @@ namespace template_container
         }
         inline std::ostream& operator<<(std::ostream& string_ostream,const string &str_data)
         {
-            for(template_container::string_container::string::const_iterator start_position = str_data.cbegin();start_position != str_data.cend();start_position++)
+            for(const char start_position : str_data)
             {
-                string_ostream << *start_position;
+                string_ostream << start_position;
             }
             return string_ostream;
         }
@@ -1060,23 +1154,50 @@ namespace template_container
             iterator _size_pointer;     //指向数据的尾
             iterator _capacity_pointer; //指向容量的尾
         public:
-            iterator begin() noexcept        {   return _data_pointer;   }
+            [[nodiscard]] iterator begin() noexcept
+            {
+                return _data_pointer;
+            }
 
-            iterator end()  noexcept         {   return _size_pointer;   }
+            [[nodiscard]] iterator end()  noexcept
+            {
+                return _size_pointer;
+            }
 
-            size_t size() const  noexcept    {   return _data_pointer ? (_size_pointer - _data_pointer) : 0; }
+            [[nodiscard]] size_t size() const  noexcept
+            {
+                return _data_pointer ? (_size_pointer - _data_pointer) : 0;
+            }
 
-            size_t capacity() const noexcept {   return _data_pointer ? (_capacity_pointer - _data_pointer) : 0; }
+            [[nodiscard]] size_t capacity() const noexcept
+            {
+                return _data_pointer ? (_capacity_pointer - _data_pointer) : 0;
+            }
 
-            vector_type& front() noexcept    {   return head();      }
+            [[nodiscard]] vector_type& front()const noexcept
+            {
+                return head();
+            }
 
-            vector_type& back() noexcept     {   return tail();      }
+            [[nodiscard]] vector_type& back()const noexcept
+            {
+                return tail();
+            }
 
-            bool empty() noexcept            {   return size() == 0; }
+            [[nodiscard]] bool empty()const noexcept
+            {
+                return size() == 0;
+            }
 
-            vector_type& head() noexcept     {   return *_data_pointer;  }
+            [[nodiscard]] vector_type& head()const noexcept
+            {
+                return *_data_pointer;
+            }
 
-            vector_type& tail() noexcept     {   return *(_size_pointer-1);  }
+            [[nodiscard]] vector_type& tail()const noexcept
+            {
+                return *(_size_pointer-1);
+            }
 
             vector() noexcept
             {
@@ -1084,7 +1205,7 @@ namespace template_container
                 _size_pointer = nullptr;
                 _capacity_pointer = nullptr;
             }
-            vector(const size_t& container_capacity , const vector_type& vector_data = vector_type())
+            explicit vector(const size_t& container_capacity , const vector_type& vector_data = vector_type())
             :_data_pointer(new vector_type[container_capacity]),_size_pointer(_data_pointer + container_capacity)
             ,_capacity_pointer(_data_pointer + container_capacity)
             {
@@ -1131,7 +1252,7 @@ namespace template_container
                 if(data_size > container_capacity)
                 {
                     resize(data_size);
-                    for(size_t assignment_traversal = container_capacity; assignment_traversal < data_size ; assignment_traversal++)
+                    for(size_t assignment_traversal = container_capacity; assignment_traversal < data_size ; ++assignment_traversal)
                     {
                         _data_pointer[assignment_traversal] = padding_temp_data;
                     }
@@ -1140,7 +1261,7 @@ namespace template_container
                 {
                     if(data_size > container_size)
                     {
-                        for(size_t assignment_traversal = container_size; assignment_traversal < data_size ; assignment_traversal++)
+                        for(size_t assignment_traversal = container_size; assignment_traversal < data_size ; ++assignment_traversal)
                         {
                             _data_pointer[assignment_traversal] = padding_temp_data;
                         }
@@ -1168,7 +1289,7 @@ namespace template_container
                 _capacity_pointer = std::move(vector_data._capacity_pointer);
                 vector_data._data_pointer = vector_data._size_pointer = vector_data._capacity_pointer = nullptr;
             }
-            ~vector()
+            ~vector() noexcept
             {
                 delete[] _data_pointer;
                 _data_pointer = _size_pointer =_capacity_pointer = nullptr;
@@ -1186,7 +1307,7 @@ namespace template_container
                 while (next_position != _size_pointer)
                 {
                     *(next_position-1) = *next_position; //(temp-1)就是pos的位置，从pos位置开始覆盖，覆盖到倒数第1个结束，最后一个会被--屏蔽掉
-                    next_position++;
+                    ++next_position;
                 }
                 --_size_pointer;
                 return next_position;                 //返回下一个位置地址
@@ -1196,16 +1317,16 @@ namespace template_container
                 try 
                 {
                     size_t original_size = size();  // 先保存原来的元素数量
-                    if ((size_t)(_capacity_pointer - _data_pointer) < new_container_capacity) 
+                    if (static_cast<size_t>(_capacity_pointer - _data_pointer) < new_container_capacity)
                     {
                         //涉及到迭代器失效问题，不能调用size()函数，会释放未知空间
-                        iterator new_vector_type_array = new vector_type[new_container_capacity]; 
+                        auto new_vector_type_array = new vector_type[new_container_capacity];
                         // 复制原先的数据
                         for (size_t original_data_traversal = 0; original_data_traversal < original_size; original_data_traversal++) 
                         {
                             new_vector_type_array[original_data_traversal] = std::move(_data_pointer[original_data_traversal]);
                         }
-                        for(size_t assignment_traversal = original_size; assignment_traversal < new_container_capacity; assignment_traversal++)
+                        for(size_t assignment_traversal = original_size; assignment_traversal < new_container_capacity; ++assignment_traversal)
                         {
                             new_vector_type_array[assignment_traversal] = vector_data;
                         }
@@ -1228,25 +1349,25 @@ namespace template_container
             {
                 if(_size_pointer == _capacity_pointer)
                 {
-                    size_t new_container_capacity = _data_pointer == nullptr ? 10 : (size_t)(_capacity_pointer-_data_pointer)*2;
+                    const size_t new_container_capacity = _data_pointer == nullptr ? 10 : static_cast<size_t>((_capacity_pointer-_data_pointer)*2);
                     resize(new_container_capacity);
                 }
                 //注意—_size_pointer是原生迭代器指针，需要解引用才能赋值
                 *_size_pointer = vector_type_data;
-                _size_pointer++;
+                ++_size_pointer;
                 return *this;
             }
             vector<vector_type>& push_back(vector_type&& vector_type_data)
             {
                 if(_size_pointer == _capacity_pointer)
                 {
-                    size_t new_container_capacity = _data_pointer == nullptr ? 10 : (size_t)(_capacity_pointer-_data_pointer)*2;
+                    const size_t new_container_capacity = _data_pointer == nullptr ? 10 : static_cast<size_t>((_capacity_pointer-_data_pointer)*2);
                     resize(new_container_capacity);
                 }
                 //注意_size_pointer是原生迭代器指针，需要解引用才能赋值
                 *_size_pointer = std::move(vector_type_data);
                 // new (_data_pointer) vector_type(std::forward<vector_type>(vector_type_data));
-                _size_pointer++;
+                ++_size_pointer;
                 return *this;
             }
             vector<vector_type>& pop_back() 
@@ -1262,7 +1383,7 @@ namespace template_container
                 //头插
                 if(_size_pointer == _capacity_pointer)
                 {
-                    size_t new_container_size = _data_pointer == nullptr ? 10 : (size_t)(_capacity_pointer-_data_pointer)*2;
+                    const size_t new_container_size = _data_pointer == nullptr ? 10 : static_cast<size_t>((_capacity_pointer-_data_pointer)*2);
                     resize(new_container_size);
                 }
                 for(size_t container_size = size() ; container_size > 0 ; --container_size)
@@ -1358,7 +1479,7 @@ namespace template_container
                     resize(vector_data_size + container_size);
                 } 
                 size_t array_counter = 0;
-                for(size_t slicing_traversal = container_size ; slicing_traversal < (vector_data_size + container_size); slicing_traversal++)
+                for(size_t slicing_traversal = container_size ; slicing_traversal < (vector_data_size + container_size); ++slicing_traversal)
                 {
                     _data_pointer[slicing_traversal] = vector_data._data_pointer[array_counter++];
                 }
@@ -1393,12 +1514,12 @@ namespace template_container
                 list_container_node<list_type_function_node>* _next;
                 list_type_function_node _data;
 
-                list_container_node(const list_type_function_node& list_type_data = list_type_function_node()) 
+                explicit list_container_node(const list_type_function_node& list_type_data = list_type_function_node())
                 :_prev(nullptr), _next(nullptr), _data(list_type_data)
                 {
                     //列表初始化
                 }
-                list_container_node(const list_type_function_node&& data) 
+                explicit list_container_node(const list_type_function_node&& data)
                 :_prev(nullptr), _next(nullptr)
                 {
                     _data = data;
@@ -1414,7 +1535,7 @@ namespace template_container
                 using reference = Ref ;
                 using pointer   = Ptr ;
                 container_node* _node;
-                list_iterator(container_node* node) noexcept
+                explicit list_iterator(container_node* node) noexcept
                 :_node(node)
                 {
                     ;//拿一个指针来构造迭代器
@@ -1469,7 +1590,7 @@ namespace template_container
                 using  const_reverse_list_iterator = reverse_list_iterator<iterator>;
             public:
                 iterator _it;
-                reverse_list_iterator(iterator it) noexcept
+                explicit reverse_list_iterator(iterator it) noexcept
                 :_it(it)
                 {
                     ;
@@ -1541,7 +1662,7 @@ namespace template_container
             using reverse_iterator = reverse_list_iterator<iterator> ;
             using reverse_const_iterator = reverse_list_iterator<const_iterator>;
             list()      {       create_head();       }
-            ~list()
+            ~list() noexcept
             {
                 clear();
                 delete _head;
@@ -1598,35 +1719,62 @@ namespace template_container
                 list<list_type> Temp (list_data.cbegin(),list_data.cend());
                 swap(Temp);
             }
-            list(list<list_type>&& list_data)
+            list(list<list_type>&& list_data)noexcept
             {
                 create_head();  //移动构造
                 _head = std::move(list_data._head);
                 list_data._head = nullptr;
             }
-            void swap(template_container::list_container::list<list_type>& swap_target)
+            void swap(template_container::list_container::list<list_type>& swap_target) noexcept
             {
                 template_container::algorithm::swap(_head,swap_target._head);
             }
-            iterator begin() noexcept                       {   return iterator(_head ->_next);  }
+            [[nodiscard]] iterator begin() noexcept
+            {
+                return iterator(_head ->_next);
+            }
 
-            iterator end() noexcept                         {   return iterator(_head);     }
+            [[nodiscard]] iterator end() noexcept
+            {
+                return iterator(_head);
+            }
 
-            const_iterator cbegin()const noexcept           {   return const_iterator(_head ->_next);   }
+            [[nodiscard]] const_iterator cbegin()const noexcept
+            {
+                return const_iterator(_head ->_next);
+            }
 
-            const_iterator cend()const noexcept             {   return const_iterator(_head);   }
+            [[nodiscard]] const_iterator cend()const noexcept
+            {
+                return const_iterator(_head);
+            }
             
-            bool empty() const noexcept                     {   return _head->_next == _head;   }
+            [[nodiscard]] bool empty() const noexcept
+            {
+                return _head->_next == _head;
+            }
 
-            reverse_iterator rbegin() noexcept              {   return reverse_iterator(_head->_prev);  }
+            [[nodiscard]] reverse_iterator rbegin() noexcept
+            {
+                return reverse_iterator(_head->_prev);
+            }
 
-            reverse_iterator rend() noexcept                {   return reverse_iterator(_head); }
+            [[nodiscard]] reverse_iterator rend() noexcept
+            {
+                return reverse_iterator(_head);
+            }
 
-            reverse_const_iterator rcbegin()const noexcept  {   return reverse_const_iterator(cend());  }
+            [[nodiscard]] reverse_const_iterator rcbegin()const noexcept
+            {
+                return reverse_const_iterator(cend());
+            }
 
-            reverse_const_iterator rcend()const noexcept    {   return reverse_const_iterator(cbegin());  }
+            [[nodiscard]] reverse_const_iterator rcend()const noexcept
+            {
+                return reverse_const_iterator(cbegin());
+            }
 
-            size_t size()const noexcept
+            [[nodiscard]] size_t size()const noexcept
             {
                 container_node* current_node = _head->_next;
                 size_t count = 0;
@@ -1640,9 +1788,15 @@ namespace template_container
             /*
             元素访问操作
             */
-            const list_type& front()const noexcept       {       return _head->_next->_data;         }
+            const list_type& front()const noexcept
+            {
+                return _head->_next->_data;
+            }
 
-            const list_type& back()const noexcept        {       return _head->_prev->_data;         }
+            const list_type& back()const noexcept
+            {
+                return _head->_prev->_data;
+            }
             list_type& front()noexcept
             {
                 return _head->_next->_data;
@@ -1652,20 +1806,36 @@ namespace template_container
             {
                 return _head->_prev->_data;
             }
-            /*
-            插入删除操作
-            */
-            void push_back (const list_type& PushBackData)     {       insert(end(),PushBackData);     }
+            /*          插入删除操作          */
+            void push_back (const list_type& push_back_data)
+            {
+                insert(end(),push_back_data);
+            }
 
-            void push_front(const list_type& PushfrontData)    {       insert(begin(),PushfrontData);  }
+            void push_front(const list_type& push_front_data)
+            {
+                insert(begin(),push_front_data);
+            }
 
-            void push_back(list_type&& PushBackData)           {       insert(end(),std::forward<list_type>(PushBackData)); }
+            void push_back(list_type&& push_back_data)
+            {
+                insert(end(),std::forward<list_type>(push_back_data));
+            }
 
-            void push_front(list_type&& PushfrontData)         {       insert(begin(),std::forward<list_type>(PushfrontData));  }
+            void push_front(list_type&& push_front_data)
+            {
+                insert(begin(),std::forward<list_type>(push_front_data));
+            }
 
-            void pop_back()                                    {       erase(--end());     }
+            void pop_back()
+            {
+                erase(--end());
+            }
 
-            iterator pop_front()                               {       return erase(begin());  }
+            iterator pop_front()
+            {
+                return erase(begin());
+            }
 
             iterator insert(iterator iterator_position ,const list_type& list_type_data)
             {
@@ -1675,7 +1845,7 @@ namespace template_container
                     {
                         throw custom_exception::customize_exception("传入迭代器参数为空","list::insert",__LINE__);
                     }
-                    container_node* new_container_node = new container_node(list_type_data);
+                    auto* new_container_node (new container_node(list_type_data));
                     //开辟新节点
                     container_node* iterator_current_node = iterator_position._node;
                     //保存pos位置的值
@@ -1704,7 +1874,7 @@ namespace template_container
                     {
                         throw custom_exception::customize_exception("传入迭代器参数为空","list::insert移动语义版本",__LINE__);
                     }
-                    container_node* new_container_node = new container_node(std::forward<list_type>(list_type_data));
+                    auto* new_container_node = new container_node(std::forward<list_type>(list_type_data));
                     container_node* iterator_current_node = iterator_position._node;
                     new_container_node->_prev = iterator_current_node->_prev;
                     new_container_node->_next = iterator_current_node;
@@ -1746,16 +1916,15 @@ namespace template_container
                     throw;
                 }
             }
-            void resize(size_t new_container_size, const list_type& list_type_data = list_type())
+            void resize(const size_t new_container_size, const list_type& list_type_data = list_type())
             {
-                size_t container_size = size();
-                if (new_container_size <= container_size)
+                if (size_t container_size = size(); new_container_size <= container_size)
                 {
                     // 有效元素个数减少到new_container_size
                     while (new_container_size < container_size)
                     {
                         pop_back();
-                        container_size--;
+                        --container_size;
                     }
                 }
                 else
@@ -1763,7 +1932,7 @@ namespace template_container
                     while (container_size < new_container_size)
                     {
                         push_back(list_type_data);
-                        container_size++;
+                        ++container_size;
                     }
                 }
             }
@@ -1856,23 +2025,47 @@ namespace template_container
         public:
             ~stack()                                                {       ;       }
 
-            void push(stack_type&& stack_type_data)                 {       vector_object.push_back(std::forward<stack_type>(stack_type_data));                 }
+            void push(stack_type&& stack_type_data)
+            {
+                vector_object.push_back(std::forward<stack_type>(stack_type_data));
+            }
 
-            void push(const stack_type& stack_type_data)            {       vector_object.push_back(stack_type_data);                 }
+            void push(const stack_type& stack_type_data)
+            {
+                vector_object.push_back(stack_type_data);
+            }
 
-            void pop()                                              {       vector_object.pop_back();                                 }
+            void pop()
+            {
+                vector_object.pop_back();
+            }
 
-            size_t size() noexcept                                  {       return vector_object.size();                              }
+            size_t size() noexcept
+            {
+                return vector_object.size();
+            }
 
-            stack_type& top() noexcept                              {       return vector_object.back();                              }
+            [[nodiscard]] stack_type& top()const noexcept
+            {
+                return vector_object.back();
+            }
 
-            bool empty() noexcept                                   {       return vector_object.empty();                             }
+            [[nodiscard]] bool empty()const noexcept
+            {
+                return vector_object.empty();
+            }
 
-            stack(const stack<stack_type>& stack_data)              {       vector_object = stack_data.vector_object;                 }
+            explicit stack(const stack<stack_type>& stack_data)
+            {
+                vector_object = stack_data.vector_object;
+            }
 
-            stack_type& footer() noexcept                           {       return vector_object.back();                              }
+            stack_type& footer() noexcept
+            {
+                return vector_object.back();
+            }
 
-            stack( stack<stack_type>&& stack_data) noexcept
+            explicit stack( stack<stack_type>&& stack_data) noexcept
             {
                 vector_object = std::move(stack_data.vector_object); //std::move将对象转换为右值引用
             }
@@ -1883,7 +2076,7 @@ namespace template_container
                     vector_object.push_back(chained_values);
                 }
             }
-            stack(const stack_type& stack_type_data)
+            explicit stack(const stack_type& stack_type_data)
             {
                 vector_object.push_back(stack_type_data);
             }
@@ -1917,23 +2110,47 @@ namespace template_container
         public:
             ~queue()                                        {    ;       }
             
-            void push(queue_type&& queue_type_data)         {   list_object.push_back(std::forward<queue_type>(queue_type_data));    }
+            void push(queue_type&& queue_type_data)
+            {
+                list_object.push_back(std::forward<queue_type>(queue_type_data));
+            }
 
-            void push(const queue_type& queue_type_data)    {   list_object.push_back(queue_type_data);    }
+            void push(const queue_type& queue_type_data)
+            {
+                list_object.push_back(queue_type_data);
+            }
 
-            void pop()                                      {   list_object.pop_front();                   }
+            void pop()
+            {
+                list_object.pop_front();
+            }
 
-            size_t size() noexcept                          {   return list_object.size();                 }
+            [[nodiscard]] size_t size()const noexcept
+            {
+                return list_object.size();
+            }
 
-            bool empty() noexcept                           {   return list_object.empty();                }
+            [[nodiscard]] bool empty()const noexcept
+            {
+                return list_object.empty();
+            }
 
-            queue_type& front() noexcept                    {   return list_object.front();                }
+            [[nodiscard]] queue_type& front() noexcept
+            {
+                return list_object.front();
+            }
 
-            queue_type& back() noexcept                     {   return list_object.back();                 }
+            [[nodiscard]] queue_type& back()  noexcept
+            {
+                return list_object.back();
+            }
 
-            queue(const queue<queue_type>& queue_data)      {   list_object = queue_data.list_object;      }
+            explicit queue(const queue<queue_type>& queue_data)
+            {
+                list_object = queue_data.list_object;
+            }
 
-            queue(queue<queue_type>&& queue_type_data) noexcept
+            explicit queue(queue<queue_type>&& queue_type_data) noexcept
             {
                 //移动构造
                 list_object = std::forward<list_based_queue>(queue_type_data.list_object);
@@ -1946,7 +2163,7 @@ namespace template_container
                     list_object.push_back(std::move(chained_values));
                 }
             }
-            queue(const queue_type& queue_type_data)
+            explicit queue(const queue_type& queue_type_data)
             {
                 list_object.push_back(queue_type_data);
             }
@@ -1975,7 +2192,7 @@ namespace template_container
         {
             //创建容器对象
             vector_based_priority_queue vector_container_object;
-            container_imitate_function function_policy;
+            container_imitate_function function_policy;                 //仿函数：数据类型比较器，可自定义
             //仿函数对象
 
             void priority_queue_adjust_upwards(int adjust_upwards_child) noexcept
@@ -1986,7 +2203,8 @@ namespace template_container
                 {
                     if(function_policy(vector_container_object[adjust_upwards_parent],vector_container_object[adjust_upwards_child]))
                     {
-                        template_container::algorithm::swap(vector_container_object[adjust_upwards_parent],vector_container_object[adjust_upwards_child]);
+                        template_container::algorithm::swap(vector_container_object[adjust_upwards_parent],
+                            vector_container_object[adjust_upwards_child]);
                         adjust_upwards_child = adjust_upwards_parent;
                         adjust_upwards_parent = (adjust_upwards_child-1)/2;
                     }
@@ -1999,11 +2217,11 @@ namespace template_container
             void priority_queue_adjust_downwards(int adjust_downwards_parent = 0) noexcept
             {
                 int adjust_downwards_child = (adjust_downwards_parent*2)+1;
-                while(adjust_downwards_child < (int)vector_container_object.size())
+                while(adjust_downwards_child < static_cast<int>(vector_container_object.size()) )
                 {
                     int adjust_downwards_left  = adjust_downwards_child;
                     int adjust_downwards_right = adjust_downwards_left + 1;
-                    if( adjust_downwards_right < (int)vector_container_object.size() && 
+                    if( adjust_downwards_right < static_cast<int>(vector_container_object.size()) &&
                     function_policy(vector_container_object[adjust_downwards_left],vector_container_object[adjust_downwards_right]))
                     {
                         //大堆找出左右节点哪个孩子大
@@ -2012,7 +2230,8 @@ namespace template_container
                     if(function_policy(vector_container_object[adjust_downwards_parent],vector_container_object[adjust_downwards_child]))
                     {
                         //建大堆把小的换下去，建小堆把大的换下去
-                        template_container::algorithm::swap(vector_container_object[adjust_downwards_parent] , vector_container_object[adjust_downwards_child]);
+                        template_container::algorithm::swap(vector_container_object[adjust_downwards_parent] ,
+                            vector_container_object[adjust_downwards_child]);
 
                         //换完之后如果是大堆，则父亲节点是较大的值，需要更新孩子节点继续向下找比孩子节点大的值，如果有继续交换
                         adjust_downwards_parent = adjust_downwards_child;
@@ -2025,14 +2244,14 @@ namespace template_container
                 }
             }
         public:
-            ~priority_queue()  
+            ~priority_queue()  noexcept
             {
                 vector_container_object.~vector();
             }
             void push(const priority_queue_type& prioity_queue_type_data)
             {
                 vector_container_object.push_back(prioity_queue_type_data);
-                priority_queue_adjust_upwards((int)vector_container_object.size()-1);
+                priority_queue_adjust_upwards(static_cast<int>(vector_container_object.size()-1));
             }
             priority_queue_type& top() noexcept
             {
@@ -2048,7 +2267,8 @@ namespace template_container
             }
             void pop()
             {
-                template_container::algorithm::swap(vector_container_object[0],vector_container_object[vector_container_object.size()-(size_t)1]);
+                template_container::algorithm::swap(vector_container_object[0],
+                    vector_container_object[vector_container_object.size() - static_cast<size_t>(1) ] );
                 vector_container_object.pop_back();
                 priority_queue_adjust_downwards();
             }
@@ -2075,10 +2295,10 @@ namespace template_container
                 //移动构造
                 vector_container_object = std::move(priority_queue_data.vector_container_object);
             }
-            priority_queue(const priority_queue_type& priority_queue_type_data)
+            explicit priority_queue(const priority_queue_type& priority_queue_type_data)
             {
                 vector_container_object.push_back(priority_queue_type_data);
-                priority_queue_adjust_upwards((int)vector_container_object.size()-1);
+                priority_queue_adjust_upwards((static_cast<int>(vector_container_object.size()-1)) );
             }
             priority_queue& operator=(priority_queue&& priority_queue_data) noexcept
             {
@@ -2116,7 +2336,7 @@ namespace template_container
                 binary_search_tree_type_node* _left;
                 binary_search_tree_type_node* _right;
                 binary_search_tree_type _data;
-                binary_search_tree_type_node(const binary_search_tree_type& binary_search_tree_type_data = binary_search_tree_type())
+                explicit binary_search_tree_type_node(const binary_search_tree_type& binary_search_tree_type_data = binary_search_tree_type())
                 :_left(nullptr),_right(nullptr),_data(binary_search_tree_type_data)
                 {
                     ;
@@ -2198,7 +2418,7 @@ namespace template_container
                     }    //修改逻辑错误，先压右子树再压左子树，因为这是栈
                 }
             }
-            void clear()
+            void clear() noexcept
             {
                 if(_root == nullptr)
                 {
@@ -2224,7 +2444,7 @@ namespace template_container
                 _root = nullptr;
             }
         public:
-            ~binary_search_tree()                       {           clear();                }
+            ~binary_search_tree()noexcept                       {           clear();                }
             // 构造函数，使用初始化列表来初始化二叉搜索树
             binary_search_tree(std::initializer_list<binary_search_tree_type> lightweight_container)
             {
@@ -2233,13 +2453,13 @@ namespace template_container
                     push(chained_values);
                 }
             }
-            binary_search_tree(const binary_search_tree_type& bstt_node = binary_search_tree_type())
+            explicit binary_search_tree(const binary_search_tree_type& bstt_node = binary_search_tree_type())
             :_root(nullptr)
             {   
                 _root = new container_node(bstt_node);
             }
             binary_search_tree(binary_search_tree&& binary_search_tree_object) noexcept
-            :function_policy(binary_search_tree_object.function_policy),_root(nullptr)
+            :_root(nullptr),function_policy(binary_search_tree_object.function_policy)
             {
                 _root = std::move(binary_search_tree_object._root);
                 binary_search_tree_object._root = nullptr;
@@ -2266,21 +2486,25 @@ namespace template_container
                     *(pair_node.second) = new container_node(pair_node.first->_data);
                     // container_node* _staic_temp_pair_second = *(pair_node.second);
                     // if(pair_node.first->_left!= nullptr)
-                    // {   //远古版本
-                    //     interior_stack.push(MY_Template::practicality::pair<container_node*,container_node**>(pair_node.first->_left,&_staic_temp_pair_second->_left));
+                    // { //远古版本
+                    //     interior_stack.push(MY_Template::practicality::pair<container_node*,container_node**>
+                    //     (pair_node.first->_left,&_staic_temp_pair_second->_left));
                     // }
                     // if(pair_node.first->_right!= nullptr)
                     // {
-                    //     interior_stack.push(MY_Template::practicality::pair<container_node*,container_node**>(pair_node.first->_right,&_staic_temp_pair_second->_right));
+                    //     interior_stack.push(MY_Template::practicality::pair<container_node*,container_node**>
+                    //     (pair_node.first->_right,&_staic_temp_pair_second->_right));
                     // }
                     //移除临时变量，直接使用指针解引用
                     if(pair_node.first->_right!= nullptr)
                     {
-                        interior_stack.push(template_container::practicality::pair<container_node*,container_node**>(pair_node.first->_right,&((*pair_node.second)->_right)));
+                        interior_stack.push(template_container::practicality::pair<container_node*,container_node**>
+                            (pair_node.first->_right,&((*pair_node.second)->_right)) );
                     }
                     if(pair_node.first->_left!= nullptr)
                     {
-                        interior_stack.push(template_container::practicality::pair<container_node*,container_node**>(pair_node.first->_left,&((*pair_node.second)->_left)));
+                        interior_stack.push(template_container::practicality::pair<container_node*,container_node**>
+                            (pair_node.first->_left,&((*pair_node.second)->_left)) );
                     }
                 }
             }
@@ -2306,7 +2530,8 @@ namespace template_container
                     while(reference_node!= nullptr)
                     {
                         subtree_node = reference_node;
-                        if(!function_policy(binary_search_tree_type_data, reference_node->_data) && !function_policy(reference_node->_data, binary_search_tree_type_data))
+                        if(!function_policy(binary_search_tree_type_data, reference_node->_data) &&
+                            !function_policy(reference_node->_data, binary_search_tree_type_data))
                         {
                             //改用仿函数特性，判断是否有重复元素,防止自定义类型没有重载==运算符
                             return false;
@@ -2321,7 +2546,7 @@ namespace template_container
                         }
                     }
                     //新开节点链接
-                    container_node* new_element_node = new container_node(binary_search_tree_type_data);
+                    auto* new_element_node = new container_node(binary_search_tree_type_data);
                     //链接节点
                     if(function_policy(binary_search_tree_type_data , subtree_node->_data))
                     {
@@ -2438,7 +2663,7 @@ namespace template_container
                 size_t _size = 0;
                 return interior_middle_order_traversal(_root,_size);
             }
-            size_t size()const
+            [[nodiscard]] size_t size()const
             {
                 size_t node_number_counter = 0;
                 return interior_middle_order_traversal(_root,node_number_counter);
@@ -2475,7 +2700,7 @@ namespace template_container
                 }
                 else
                 {
-                    container_node* new_value_node = new container_node(new_value);
+                    auto* new_value_node = new container_node(new_value);
                     new_value_node->_left = existing_value_node->_right;
                     existing_value_node->_right = new_value_node;
                 }
@@ -2522,12 +2747,12 @@ namespace template_container
                 avl_tree_type_node* _parent;
                 //平衡因子
                 int _balance_factor;
-                avl_tree_type_node(const avl_tree_type_k& avl_tt_k_data = avl_tree_type_k(),const avl_tree_type_v& avl_tt_v_data = avl_tree_type_v())
+                explicit avl_tree_type_node(const avl_tree_type_k& avl_tt_k_data = avl_tree_type_k(),const avl_tree_type_v& avl_tt_v_data = avl_tree_type_v())
                 :_data(avl_tt_k_data,avl_tt_v_data),_left(nullptr),_right(nullptr),_parent(nullptr),_balance_factor(0)
                 {
                     ;
                 }
-                avl_tree_type_node(const avl_tree_node_pair& pair_type_data)
+                explicit avl_tree_type_node(const avl_tree_node_pair& pair_type_data)
                 :_data(pair_type_data),_left(nullptr),_right(nullptr),_parent(nullptr),_balance_factor(0)
                 {
                     ;
@@ -2542,7 +2767,7 @@ namespace template_container
                 using pointer = Ptr;
                 using reference = Ref;
                 iterator_node* _node_iterator_ptr;
-                avl_tree_iterator(iterator_node* iterator_ptr_data)
+                explicit avl_tree_iterator(iterator_node* iterator_ptr_data)
                 :_node_iterator_ptr(iterator_ptr_data)                  {               ;               }
 
                 Ptr operator->()                                        {       return &(_node_iterator_ptr->_data);        }
@@ -2615,7 +2840,7 @@ namespace template_container
                 iterator _it;
                 using Ptr = typename iterator::pointer;
                 using Ref = typename iterator::reference;
-                avl_tree_reverse_iterator(iterator iterator_data)
+                explicit avl_tree_reverse_iterator(iterator iterator_data)
                 :_it(iterator_data)                                 {       ;           }
 
                 Ptr operator->()                                    {   return &(*this);    }
@@ -2625,6 +2850,7 @@ namespace template_container
                 bool operator!=(const self& another_iterator)       {   return _it != another_iterator._it;     }
 
                 bool operator==(const self& another_iterator)       {   return _it == another_iterator._it;     }
+
                 self& operator++()
                 {
                     --_it;
@@ -2851,7 +3077,7 @@ namespace template_container
                     sub_left_right_node->_balance_factor = 0;
                 }
             }
-            void clear()
+            void clear() noexcept
             {
                 //清空所有资源
                 if(_root == nullptr)
@@ -2981,7 +3207,8 @@ namespace template_container
                 }
                 return iterator(start_position_node);
             }
-            iterator end()
+
+            static iterator end()
             {
                 return iterator(nullptr);
             }
@@ -2994,7 +3221,8 @@ namespace template_container
                 }
                 return const_iterator(start_position_node);
             }
-            const_iterator cend() const
+
+            static const_iterator cend()
             {
                 return const_iterator(nullptr);
             }
@@ -3007,7 +3235,8 @@ namespace template_container
                 }
                 return reverse_iterator(iterator(reverse_start_position));
             }
-            reverse_iterator rend()
+
+            static reverse_iterator rend()
             {
                 return reverse_iterator(iterator(nullptr));
             }
@@ -3020,7 +3249,8 @@ namespace template_container
                 }
                 return const_reverse_iterator(const_iterator(reverse_start_position));
             }
-            const_reverse_iterator crend() const
+
+            static const_reverse_iterator crend()
             {
                 return const_reverse_iterator(const_iterator(nullptr));
             }
@@ -3032,13 +3262,13 @@ namespace template_container
             {
                 _root = nullptr;
             }
-            avl_tree(const avl_tree_type_k& key_data,const avl_tree_type_v& val_data = avl_tree_type_v(),
+            explicit avl_tree(const avl_tree_type_k& key_data,const avl_tree_type_v& val_data = avl_tree_type_v(),
             container_imitate_function com_value = container_imitate_function())
             :_root(nullptr),function_policy(com_value)
             {
                 _root = new container_node(key_data,val_data);
             }
-            avl_tree(const avl_tree_node_pair& pair_type_data,
+            explicit avl_tree(const avl_tree_node_pair& pair_type_data,
             container_imitate_function com_value = container_imitate_function())
             :_root(nullptr),function_policy(com_value)
             {
@@ -3077,7 +3307,7 @@ namespace template_container
                     stack.pop();
                     
                     // 创建新节点并复制数据
-                    container_node* new_structure_node = new container_node(first_node->_data);
+                    auto* new_structure_node = new container_node(first_node->_data);
                     new_structure_node->_balance_factor = first_node->_balance_factor;
                     
                     // 设置父节点关系（注意：second_node 是一级指针）
@@ -3125,8 +3355,8 @@ namespace template_container
                     _root = std::move(avl_tree_data._root);
                     function_policy  = std::move(avl_tree_data.function_policy);
                     avl_tree_data._root = nullptr;
-                    return *this;
                 }
+                return *this;
             }
             avl_tree& operator=(const avl_tree avl_tree_data)
             {
@@ -3143,15 +3373,30 @@ namespace template_container
                 template_container::algorithm::swap(_root,avl_tree_data._root);
                 return *this;
             }
-            ~avl_tree()                         {       clear();            }
+            ~avl_tree() noexcept
+            {
+                clear();
+            }
 
-            size_t size() const                 {       return _size();     }
+            [[nodiscard]] size_t size() const
+            {
+                return _size();
+            }
 
-            size_t size()                       {       return _size();     } 
+            [[nodiscard]] size_t size()
+            {
+                return _size();
+            }
 
-            void pre_order_traversal()          {       interior_pre_order_traversal(_root); }
+            void pre_order_traversal()
+            {
+                interior_pre_order_traversal(_root);
+            }
 
-            void middle_order_traversal()       {       interior_middle_order_traversal(_root);     }
+            void middle_order_traversal()
+            {
+                interior_middle_order_traversal(_root);
+            }
 
             bool push(const avl_tree_type_k& key_data,const avl_tree_type_v& val_data = avl_tree_type_v())
             {
@@ -3199,11 +3444,11 @@ namespace template_container
                     {
                         if(adjust_reference_parent_node->_left == adjust_reference_node)
                         {
-                            adjust_reference_parent_node->_balance_factor--;
+                            --adjust_reference_parent_node->_balance_factor;
                         }
                         else
                         {
-                            adjust_reference_parent_node->_balance_factor++;
+                            ++adjust_reference_parent_node->_balance_factor;
                         }
 
                         if(adjust_reference_parent_node->_balance_factor == 0)
@@ -3295,11 +3540,11 @@ namespace template_container
                         //更新到根节点跳出
                         if(adjust_reference_node == adjust_reference_parent_node->_right)
                         {
-                            adjust_reference_parent_node->_balance_factor++;
+                            ++adjust_reference_parent_node->_balance_factor;
                         }
                         else
                         {
-                            adjust_reference_parent_node->_balance_factor--;
+                            --adjust_reference_parent_node->_balance_factor;
                         }
 
                         if(adjust_reference_parent_node->_balance_factor == 0)
@@ -3486,11 +3731,11 @@ namespace template_container
                 {
                     if(parent_bf->_left == reference_node)
                     {
-                        parent_bf->_balance_factor--;
+                        --parent_bf->_balance_factor;
                     }
                     else
                     {
-                        parent_bf->_balance_factor++;
+                        ++parent_bf->_balance_factor;
                     }
                     if(parent_bf->_balance_factor == 0)
                     {
@@ -3556,15 +3801,15 @@ namespace template_container
                 rb_tree_node* _right;
                 rb_tree_node* _parent;
                 rb_tree_color _color;
-                rb_tree_node(const rb_tree_type_value& val_data = rb_tree_type_value())
+                explicit rb_tree_node(const rb_tree_type_value& val_data = rb_tree_type_value())
                 :_data(val_data),_left(nullptr),_right(nullptr),_parent(nullptr),_color(red)
                 {
                     ;
                 }
-                rb_tree_node(rb_tree_type_value&& val_data) noexcept
+                explicit rb_tree_node(rb_tree_type_value&& val_data) noexcept
                 :_data(std::move(val_data)),_left(nullptr),_right(nullptr),_parent(nullptr),_color(red)
                 {
-                    ;
+
                 }
             };
             template<typename T, typename Ref, typename Ptr>
@@ -3823,7 +4068,7 @@ namespace template_container
                     sub_tree_left_node->_parent = parent_node;
                 }
             }
-            void clear(container_node* clear_node_ptr)
+            void clear(container_node* clear_node_ptr) noexcept
             {
                 if(clear_node_ptr == nullptr)
                 {
@@ -3912,7 +4157,7 @@ namespace template_container
             {
                 return get_color(current_node) == black;
             }
-            size_t _size() const 
+            [[nodiscard]] size_t _size() const
             {
                 size_t size = 0;
                 if(_root == nullptr)
@@ -3951,24 +4196,24 @@ namespace template_container
             {
                 _root = nullptr;
             }
-            rb_tree(const rb_tree_type_value& rb_tree_data)
+            explicit rb_tree(const rb_tree_type_value& rb_tree_data)
             {
                 _root = new container_node(rb_tree_data);
                 _root->_color = black;
             }
-            rb_tree(rb_tree_type_value&& rb_tree_data) noexcept
+            explicit rb_tree(rb_tree_type_value&& rb_tree_data) noexcept
             {
                 _root = new container_node(std::forward<rb_tree_type_value>(rb_tree_data));
                 _root->_color = black;
             }
             rb_tree(rb_tree&& rb_tree_data) noexcept
-            :function_policy(rb_tree_data.function_policy),element(rb_tree_data.element)
+            :element(rb_tree_data.element),function_policy(rb_tree_data.function_policy)
             {
                 _root = std::move(rb_tree_data._root);
                 rb_tree_data._root = nullptr;
             }
             rb_tree(const rb_tree& rb_tree_data)
-            :function_policy(rb_tree_data.function_policy),element(rb_tree_data.element),_root(nullptr)
+            :_root(nullptr),element(rb_tree_data.element),function_policy(rb_tree_data.function_policy)
             {
                 if(rb_tree_data._root == nullptr)
                 {
@@ -4001,7 +4246,7 @@ namespace template_container
                         stack.pop();
                         
                         // 创建新节点并复制数据
-                        container_node* new_structure_node = new container_node(first_node->_data);
+                        auto* new_structure_node = new container_node(first_node->_data);
                         new_structure_node->_color = first_node-> _color;
                         
                         // 设置父节点关系（注意：parent_node 是一级指针）
@@ -4063,7 +4308,7 @@ namespace template_container
                 }
                 return *this;
             }
-            ~rb_tree()
+            ~rb_tree() noexcept
             {
                 clear(_root);
             }
@@ -4438,7 +4683,6 @@ namespace template_container
             }
             return_pair_value pop(const rb_tree_type_value& rb_tree_data)
             {
-                rb_tree_color delete_color;
                 if(_root == nullptr)
                 {
                     return return_pair_value(iterator(nullptr),false);
@@ -4471,7 +4715,7 @@ namespace template_container
                         return return_pair_value(iterator(nullptr),false);
                     }
                     //找到位置开始删除
-                    delete_color = reference_node->_color;
+                    rb_tree_color delete_color = reference_node->_color;
                     if(reference_node->_left == nullptr)
                     {
                         if(reference_node->_right != nullptr)
@@ -4608,7 +4852,7 @@ namespace template_container
             {
                 return _size();
             }
-            size_t size() const
+            [[nodiscard]] size_t size() const
             {
                 return _size();
             }
@@ -4633,7 +4877,8 @@ namespace template_container
                 }
                 return iterator(root_node);
             }
-            iterator end()
+
+            static iterator end()
             {
                 return iterator(nullptr);
             }
@@ -4646,7 +4891,8 @@ namespace template_container
                 }
                 return const_iterator(croot_node);
             }
-            const_iterator cend() const
+
+            static const_iterator cend()
             {
                 return const_iterator(nullptr);
             }
@@ -4659,7 +4905,8 @@ namespace template_container
                 }
                 return reverse_iterator(iterator_node);
             }
-            reverse_iterator rend()
+
+            static reverse_iterator rend()
             {
                 return reverse_iterator(nullptr);
             }
@@ -4672,7 +4919,8 @@ namespace template_container
                 }
                 return const_reverse_iterator(iterator_node);
             }
-            const_reverse_iterator crend() const
+
+            static const_reverse_iterator crend()
             {
                 return const_reverse_iterator(nullptr);
             }
@@ -4694,14 +4942,14 @@ namespace template_container
                 hash_table_node* overall_list_prev;
                 //全局链表指针，方便按照插入的顺序有序遍历哈希表
                 hash_table_node* overall_list_next;
-                hash_table_node(const hash_table_type_value& hash_table_value_data)
+                explicit hash_table_node(const hash_table_type_value& hash_table_value_data)
                 {
                     _data = hash_table_value_data;
                     _next = nullptr;
                     overall_list_prev = nullptr;
                     overall_list_next = nullptr;
                 }
-                hash_table_node(hash_table_type_value&& hash_table_value_data)
+                explicit hash_table_node(hash_table_type_value&& hash_table_value_data)
                 {
                     _data = std::move(hash_table_value_data);
                     _next = nullptr;
@@ -4784,7 +5032,8 @@ namespace template_container
                 hash_capacity = 10;
                 vector_hash_table.resize(hash_capacity);
             }
-            hash_table(size_t new_hash_table_capacity)
+
+            explicit hash_table(const size_t new_hash_table_capacity)
             {
                 _size = 0;
                 load_factor = 7;
@@ -4793,7 +5042,7 @@ namespace template_container
             }
             hash_table(const hash_table& hash_table_data)
             : value_imitation_functions(hash_table_data.value_imitation_functions),_size(hash_table_data._size),load_factor(hash_table_data.load_factor),
-            hash_capacity(hash_table_data.hash_capacity),value_imitation_functions(hash_table_data.container_imitate_function),overall_list_before_node(nullptr),   
+            hash_capacity(hash_table_data.hash_capacity),overall_list_before_node(nullptr),
             overall_list_head_node(nullptr)
             {
                 if (hash_capacity == 0) 
@@ -4814,7 +5063,7 @@ namespace template_container
                     while (src_bucket_node) 
                     {
                         // 2.1 创建新节点并拷贝数据
-                        container_node* new_structure_node = new container_node(src_bucket_node->_data);
+                        auto* new_structure_node = new container_node(src_bucket_node->_data);
                         // 2.2 插入到“桶内部”链表
                         if (last_in_bucket != nullptr) 
                         {
@@ -4851,15 +5100,15 @@ namespace template_container
             hash_table(hash_table&& hash_table_data) noexcept
             {
                 vector_hash_table = std::move(hash_table_data.vector_hash_table);
-                _size = std::move(hash_table_data._size);
-                load_factor = std::move(hash_table_data.load_factor);
-                hash_capacity = std::move(hash_table_data.hash_capacity);
+                _size = hash_table_data._size;
+                load_factor = hash_table_data.load_factor;
+                hash_capacity = hash_table_data.hash_capacity;
                 hash_function_object = std::move(hash_table_data.hash_function_object);
                 overall_list_before_node = std::move(hash_table_data.overall_list_before_node);
                 overall_list_head_node = std::move(hash_table_data.overall_list_head_node);
                 value_imitation_functions = std::move(hash_table_data.value_imitation_functions);
             }
-            ~hash_table()
+            ~hash_table() noexcept
             {
                 for(size_t i = 0;i < vector_hash_table.size();++i)
                 {
@@ -4909,19 +5158,34 @@ namespace template_container
 
             const_iterator cbegin() const       {   return const_iterator(overall_list_head_node);  }
 
-            iterator end()                      {   return iterator(nullptr);           }
+            static iterator end()
+            {
+                return iterator(nullptr);
+            }
 
-            const_iterator cend() const         {   return const_iterator(nullptr);     }
+            static const_iterator cend()
+            {
+                return const_iterator(nullptr);
+            }
 
             size_t size()                       {   return _size;                       }
 
-            size_t size() const                 {   return _size;                       }
+            [[nodiscard]] size_t size() const
+            {
+                return _size;
+            }
 
-            bool   empty()                      {   return _size == 0;                  }
+            [[nodiscard]] bool  empty() const
+            {
+                return _size == 0;
+            }
 
             size_t capacity()                   {   return hash_capacity;                    }
 
-            size_t capacity() const             {   return hash_capacity;                    }
+            [[nodiscard]] size_t capacity() const
+            {
+                return hash_capacity;
+            }
 
             bool push(const hash_table_type_value& hash_table_value_data)
             {
@@ -4933,7 +5197,7 @@ namespace template_container
                 if( _size * 10 >= hash_capacity * load_factor)
                 {
                     //扩容
-                    size_t new_container_capacity = (hash_capacity == 0 && vector_hash_table.size() == 0) ? 10 : hash_capacity * 2;
+                    size_t new_container_capacity = (hash_capacity == 0 && vector_hash_table.empty()) ? 10 : hash_capacity * 2;
                     //新容量
                     template_container::vector_container::vector<container_node*> new_vector_hash_table;
                     new_vector_hash_table.resize(new_container_capacity,nullptr);
@@ -4949,7 +5213,7 @@ namespace template_container
                         container_node* hash_bucket_node = new_vector_hash_table[new_mapping_value];
                         if(hash_bucket_node == nullptr)
                         {
-                            container_node* new_mapping_data = new container_node(start_position_node->_data);
+                            auto* new_mapping_data = new container_node(start_position_node->_data);
                             if(regional_list_head_node == nullptr)
                             {
                                 new_mapping_data->overall_list_prev = nullptr;
@@ -4967,7 +5231,7 @@ namespace template_container
                         }
                         else
                         {
-                            container_node* new_mapping_data = new container_node(start_position_node->_data);
+                            auto* new_mapping_data = new container_node(start_position_node->_data);
                             if(regional_list_head_node == nullptr)
                             {
                                 new_mapping_data->overall_list_prev = nullptr;
@@ -5010,7 +5274,7 @@ namespace template_container
                 //找到映射位置
                 container_node* hash_bucket_node = vector_hash_table[hash_map_location];
 
-                container_node* new_mapping_data = new container_node(hash_table_value_data);
+                auto* new_mapping_data = new container_node(hash_table_value_data);
                 new_mapping_data->_next = hash_bucket_node;
                 vector_hash_table[hash_map_location] = new_mapping_data;
                 if(_size == 0 && overall_list_head_node == nullptr)
@@ -5037,7 +5301,7 @@ namespace template_container
                 if( _size * 10 >= hash_capacity * load_factor)
                 {
                     //扩容
-                    size_t new_container_capacity = (hash_capacity == 0 && vector_hash_table.size() == 0) ? 10 : hash_capacity * 2;
+                    size_t new_container_capacity = (hash_capacity == 0 && vector_hash_table.empty()) ? 10 : hash_capacity * 2;
                     //新容量
                     template_container::vector_container::vector<container_node*> new_vector_hash_table;
                     new_vector_hash_table.resize(new_container_capacity,nullptr);
@@ -5053,7 +5317,7 @@ namespace template_container
                         container_node* hash_bucket_node = new_vector_hash_table[new_mapping_value];
                         if(hash_bucket_node == nullptr)
                         {
-                            container_node* new_mapping_data = new container_node(std::forward<hash_table_type_value>(start_position_node->_data));
+                            auto* new_mapping_data = new container_node(std::forward<hash_table_type_value>(start_position_node->_data));
                             if(regional_list_head_node == nullptr)
                             {
                                 new_mapping_data->overall_list_prev = nullptr;
@@ -5071,7 +5335,7 @@ namespace template_container
                         }
                         else
                         {
-                            container_node* new_mapping_data = new container_node(std::forward<hash_table_type_value>(start_position_node->_data));
+                            auto* new_mapping_data = new container_node(std::forward<hash_table_type_value>(start_position_node->_data));
                             if(regional_list_head_node == nullptr)
                             {
                                 new_mapping_data->overall_list_prev = nullptr;
@@ -5114,7 +5378,7 @@ namespace template_container
                 //找到映射位置
                 container_node* hash_bucket_node = vector_hash_table[hash_map_location];
 
-                container_node* new_mapping_data = new container_node(std::forward<hash_table_type_value>(hash_table_value_data));
+                auto* new_mapping_data = new container_node(std::forward<hash_table_type_value>(hash_table_value_data));
                 new_mapping_data->_next = hash_bucket_node;
                 vector_hash_table[hash_map_location] = new_mapping_data;
                 if(_size == 0 && overall_list_head_node == nullptr)
@@ -5220,8 +5484,8 @@ namespace template_container
             template_container::vector_container::vector<int> vector_bit_set;
             size_t _size;
         public:
-            bit_set() {  ;  }
-            bit_set(const size_t& new_capacity)
+            bit_set():_size(0) {  ;  }
+            explicit bit_set(const size_t& new_capacity)
             {
                 _size = 0;
                 vector_bit_set.resize((new_capacity / 32) + 1,0);
@@ -5268,7 +5532,10 @@ namespace template_container
                 //其他位如果是1那么就不会改变原来的，如果是0那么还是为0，因为与是两个条件都需要满足
                 _size--;
             }
-            size_t size()const           {   return _size;    }
+            [[nodiscard]] size_t size()const
+            {
+                return _size;
+            }
             bool test(const size_t& value_data)
             {
                 if(_size == 0)
@@ -5306,10 +5573,7 @@ namespace template_container
             using const_reverse_iterator = typename instance_rb::const_reverse_iterator;
             
             using map_iterator = template_container::practicality::pair<iterator,bool>;
-            ~tree_map()
-            {
-                instance_tree_map.~rb_tree();
-            }
+            ~tree_map() = default;
             tree_map& operator=(const tree_map& tree_map_data)
             {
                 if(this != &tree_map_data)
@@ -5345,13 +5609,20 @@ namespace template_container
                     instance_tree_map.push(std::move(chained_values));
                 }
             }
+            explicit tree_map(key_val_type&& tree_map_data)noexcept
+            {  
+                instance_tree_map.push(std::forward<key_val_type>(tree_map_data));                          
+            }
             tree_map()                                               {  ;                                   }
 
             tree_map(const tree_map& tree_map_data)                  {  instance_tree_map = tree_map_data.instance_tree_map;            }
 
             tree_map(tree_map&& tree_map_data) noexcept              {  instance_tree_map = std::move(tree_map_data.instance_tree_map); }
 
-            tree_map(const key_val_type& tree_map_data)              {  instance_tree_map.push(tree_map_data);                          }
+            explicit tree_map(const key_val_type& tree_map_data)
+            {
+                instance_tree_map.push(tree_map_data);
+            }
 
             map_iterator push(const key_val_type& tree_map_data)     {  return instance_tree_map.push(tree_map_data);                   }
 
@@ -5363,7 +5634,10 @@ namespace template_container
 
             void pre_order_traversal()                               {  instance_tree_map.pre_order_traversal();                        }
 
-            size_t size() const                                      {  return instance_tree_map.size();                                }
+            [[nodiscard]] size_t size() const
+            {
+                return instance_tree_map.size();
+            }
 
             bool empty()                                             {  return instance_tree_map.empty();                               }
 
@@ -5421,9 +5695,9 @@ namespace template_container
             using const_iterator = typename hash_table::const_iterator; //单向迭代器
             hash_map()                                              {   ;                                         }  
 
-            ~hash_map()                                             {  instance_hash_map.~hash_table();           }
+            ~hash_map()  = default;
 
-            hash_map(const key_val_type& key_value)                 {  instance_hash_map.push(key_value);         }
+            explicit hash_map(const key_val_type& key_value)                 {  instance_hash_map.push(key_value);         }
 
             hash_map(const hash_map& hash_map_data)                 {  instance_hash_map = hash_map_data.instance_hash_map;  }
 
@@ -5437,9 +5711,15 @@ namespace template_container
 
             size_t size()                                           {  return instance_hash_map.size();           }
 
-            size_t size() const                                     {  return instance_hash_map.size();           }
+            [[nodiscard]] size_t size() const
+            {
+                return instance_hash_map.size();
+            }
 
-            size_t capacity() const                                 {  return instance_hash_map.capacity();       } 
+            [[nodiscard]] size_t capacity() const
+            {
+                return instance_hash_map.capacity();
+            }
 
             bool empty()                                            {  return instance_hash_map.empty();          }
 
@@ -5460,6 +5740,10 @@ namespace template_container
                     instance_hash_map.push(std::move(chained_values));
                 }
             }
+            explicit hash_map(key_val_type&& key_value)noexcept
+            {  
+                instance_hash_map.push(std::forward<key_val_type>(key_value));         
+            }
             hash_map& operator=(const std::initializer_list<key_val_type>& lightweight_container)
             {
                 for(auto& chained_values : lightweight_container)
@@ -5474,6 +5758,7 @@ namespace template_container
                 {
                     instance_hash_map = std::forward<hash_table>(hash_map_data.instance_hash_map);
                 }
+                return *this;
             }
             bool push(key_val_type&& key_value) noexcept                 
             {  
@@ -5547,16 +5832,20 @@ namespace template_container
             {
                 return instance_tree_set.push(std::forward<key_val_type>(set_data));
             }
+            explicit tree_set(key_val_type&& set_type_data) noexcept
+            {  
+                instance_tree_set.push(std::forward<key_val_type>(set_type_data));                 
+            }
 
             tree_set()                                               {  ;                                                 }
 
-            ~tree_set()                                              {  instance_tree_set.~rb_tree();                     }
+            ~tree_set()  = default;
 
             tree_set(const tree_set& set_data)                       {  instance_tree_set = set_data.instance_tree_set;             }
 
             tree_set(tree_set&& set_data) noexcept                   {  instance_tree_set=std::move(set_data.instance_tree_set);    }
 
-            tree_set(const key_val_type& set_type_data)              {  instance_tree_set.push(set_type_data);                 }
+            explicit tree_set(const key_val_type& set_type_data)              {  instance_tree_set.push(set_type_data);                 }
 
             set_iterator push(const key_val_type& set_type_data)     {  return instance_tree_set.push(set_type_data);          }
 
@@ -5568,7 +5857,10 @@ namespace template_container
 
             void pre_order_traversal()                               {  instance_tree_set.pre_order_traversal();         }  
 
-            size_t size() const                                      {  return instance_tree_set.size();                 }
+            [[nodiscard]] size_t size() const
+            {
+                return instance_tree_set.size();
+            }
 
             bool empty()                                             {  return instance_tree_set.empty();                }  
 
@@ -5619,11 +5911,16 @@ namespace template_container
             using const_iterator = typename hash_table::const_iterator;
             hash_set()                                                  {  ;                                                }
 
-            hash_set(const set_type_val& set_type_data)                 {  instance_hash_set.push(set_type_data);           }
+            explicit hash_set(const set_type_val& set_type_data)
+            {
+                instance_hash_set.push(set_type_data);
+            }
 
             hash_set(const hash_set& hash_set_data)                     {  instance_hash_set = hash_set_data.instance_hash_set;  }
 
-            ~hash_set()                                                 {   instance_hash_set.~hash_table();                }
+            ~hash_set()  =  default;
+
+            hash_set(hash_set&& hash_set_data) noexcept                {  instance_hash_set = std::move(hash_set_data.instance_hash_set);  }
 
             bool push(const key_val_type& set_type_data)                {  return instance_hash_set.push(set_type_data);    }
 
@@ -5637,9 +5934,15 @@ namespace template_container
 
             size_t capacity()                                           {  return instance_hash_set.capacity();             }
 
-            size_t size() const                                         {  return instance_hash_set.size();                 }
+            [[nodiscard]] size_t size() const
+            {
+                return instance_hash_set.size();
+            }
 
-            size_t capacity() const                                     {  return instance_hash_set.capacity();             }
+            [[nodiscard]] size_t capacity() const
+            {
+                return instance_hash_set.capacity();
+            }
 
             iterator begin()                                            {  return instance_hash_set.begin();                }
 
@@ -5651,7 +5954,7 @@ namespace template_container
 
             iterator operator[](const key_val_type& set_type_data)      {  return instance_hash_set[set_type_data];         }
 
-            hash_set(set_type_val&& set_type_data) noexcept             
+            explicit hash_set(set_type_val&& set_type_data) noexcept
             {  
                 instance_hash_set.push(std::forward<set_type_val>(set_type_data));  
             }
@@ -5674,11 +5977,7 @@ namespace template_container
                 }
                 return *this;
             }
-            hash_set& operator=(const hash_set& hash_set_data)
-            {
-                instance_hash_set = hash_set_data.instance_hash_set;
-                return *this;
-            }
+            hash_set& operator=(const hash_set& hash_set_data) = default;
             hash_set& operator=(hash_set&& hash_set_data) noexcept
             {
                 instance_hash_set = std::move(hash_set_data.instance_hash_set);
@@ -5689,7 +5988,8 @@ namespace template_container
     /*############################     bloom_filter 容器     ############################*/
     namespace bloom_filter_container
     {
-        template <typename bloom_filter_type_value,typename bloom_filter_hash_functor = template_container::algorithm::hash_algorithm::hash_function<bloom_filter_type_value>>
+        template <typename bloom_filter_type_value,typename bloom_filter_hash_functor = template_container::
+        algorithm::hash_algorithm::hash_function<bloom_filter_type_value>>
         class bloom_filter
         {
             bloom_filter_hash_functor   hash_functions_object;
@@ -5702,16 +6002,16 @@ namespace template_container
                 _capacity = 1000;
                 instance_bit_set.resize(_capacity);
             }
-            bloom_filter(const size_t& Temp_Capacity)
+            explicit bloom_filter(const size_t& Temp_Capacity)
             {
                 _capacity = Temp_Capacity;
                 instance_bit_set.resize(_capacity);
             }
-            size_t size()
+            [[nodiscard]] size_t size() const
             {
                 return instance_bit_set.size();
             }
-            size_t capacity()
+            [[nodiscard]] size_t capacity() const
             {
                 return _capacity;
             }
@@ -5743,27 +6043,27 @@ namespace template_container
 }
 namespace con
 {
-    using template_container::string_container::string;
-    using template_container::vector_container::vector;
-    using template_container::list_container::list;
-    using template_container::stack_adapter::stack;
-    using template_container::queue_adapter::queue;
-    using template_container::queue_adapter::priority_queue;
-    using template_container::base_class_container::rb_tree;
-    using template_container::base_class_container::hash_table;
-    using template_container::map_container::tree_map;
-    using template_container::map_container::hash_map;
-    using template_container::set_container::tree_set;
-    using template_container::set_container::hash_set;
-    using template_container::base_class_container::bit_set;
-    using template_container::bloom_filter_container::bloom_filter;
-    using template_container::practicality::pair;
-    using template_container::practicality::make_pair;
-    using template_container::algorithm::copy;
-    using template_container::algorithm::find;
-    using template_container::algorithm::swap;
-    using smart_pointer::smart_ptr;
-    using smart_pointer::unique_ptr;
-    using smart_pointer::shared_ptr;
-    using smart_pointer::weak_ptr;
+    using namespace template_container::imitation_functions;
+    using namespace template_container::algorithm;
+    using namespace template_container::algorithm::hash_algorithm;
+    using namespace template_container::practicality;
+    using namespace template_container::string_container;
+    using namespace template_container::vector_container;
+    using namespace template_container::list_container;
+    using namespace template_container::stack_adapter;
+    using namespace template_container::queue_adapter;
+    using namespace template_container::map_container;
+    using namespace template_container::set_container;
+    using namespace template_container::tree_container;
+    using namespace template_container::base_class_container;
+    using namespace template_container::bloom_filter_container;
+}
+namespace ptr
+{
+    using namespace smart_pointer;
+}
+
+namespace exc
+{
+    using namespace custom_exception;
 }

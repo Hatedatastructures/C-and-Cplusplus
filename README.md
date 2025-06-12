@@ -41,11 +41,11 @@
      * [`bit_set`]()
  * ### [关联式容器 `map_container` `set_container`]()
     * ### [`有序容器`]()
-        * #### [`tree_map`](#map_containertree_map)
-        * #### [`tree_set`](#tree_set-容器)
+         #### [`tree_map`](#map_containertree_map)
+         #### [`tree_set`](#tree_set-容器)
     * ### [`无序容器`]()
-        * #### [`hash_map`](#set_containertree_set)
-        * #### [`hash_set`](#hash_set-容器)
+        #### [`hash_map`](#set_containertree_set)
+        #### [`hash_set`](#hash_set-容器)
  * ### [布隆过滤器 `bloom_filter_container`]()
     * ### [`bloom_filter`]()
 ## [算法细节与性能分析](#算法细节与性能分析)
@@ -416,7 +416,7 @@ catch(const custom_exception::customize_exception& e)
 
 ## 算法 `algorithm`
 ### `copy`
-* **内容**：基本算法工具,`copy`
+* **内容**：基本算法工具 `copy`
 * **用途**：线性拷贝值
 * **示例**
 
@@ -434,7 +434,7 @@ catch(const custom_exception::customize_exception& e)
 
   >   **引用**：头文件中`namespace template_container::algorithm::copy`.
 ### `find`
-* **内容**：基本算法工具,`find`
+* **内容**：基本算法工具 `find`
 * **用途**：迭代器查找某个值
   * **示例**
 
@@ -466,7 +466,7 @@ catch(const custom_exception::customize_exception& e)
   >     **引用**：头文件中`namespace template_container::algorithm::find`.
 
 ### `swap`
-* **内容**：基本算法工具,`swap`
+* **内容**：基本算法工具 `swap`
 * **用途**：数据类型深拷贝交换（需要提前重载数据类型的拷贝构造）
 * **示例**
 
@@ -477,7 +477,7 @@ catch(const custom_exception::customize_exception& e)
   }
   
   ```
-    * **参数**：数据位置A `swap_data_type& a`，数据位置B `swap_data_type& b`，.
+    * **参数**：数据位置A `swap_data_type& a`，数据位置B `swap_data_type& b`.
     * **返回值** ：void
 
   >   **引用**：头文件中`namespace template_container::algorithm::swap`.
@@ -516,14 +516,129 @@ catch(const custom_exception::customize_exception& e)
 ## 字符数组
 
 ### `string_container`
-* **概览**：提供类似 `std::string` 或自定义字符串容器功能。
-* **主要类**：假设名为 `string` 或 `basic_string`。
-* **成员函数**：
+* **概览**:`string`类是一个自定义实现的字符串容器，模拟了标准库`std::string`的核心功能，
+同时提供了额外的字符串操作方法。该类使用动态内存分配管理字符数据，支持迭代器遍历、字符串修改、子串操作等功能。
+### 类及其函数定义：
+```cpp
+namespace string_container 
+{
+    class string 
+    {
+    private:
+        char*  _data;
+        size_t _size;
+        size_t _capacity;
+    public:
+        // 迭代器类型定义
+        using iterator = char*;
+        using const_iterator = const char*;
+        using reverse_iterator = iterator;
+        using const_reverse_iterator = const_iterator;
+        constexpr static const size_t nops = -1;
+        
+        // 构造函数、析构函数及赋值运算符
+        string(const char* str_data = " ");
+        string(char*&& str_data) noexcept;
+        string(const string& str_data);
+        string(string&& str_data) noexcept;
+        string(const std::initializer_list<char> str_data);
+        ~string() noexcept;
+        
+        // 迭代器相关方法
+        [[nodiscard]] iterator begin() const noexcept;
+        [[nodiscard]] iterator end() const noexcept;
+        [[nodiscard]] const_iterator cbegin() const noexcept;
+        [[nodiscard]] const_iterator cend() const noexcept;
+        [[nodiscard]] reverse_iterator rbegin() const noexcept;
+        [[nodiscard]] reverse_iterator rend() const noexcept;
+        [[nodiscard]] const_reverse_iterator crbegin() const noexcept;
+        [[nodiscard]] const_reverse_iterator crend() const noexcept;
+        
+        // 容量相关方法
+        [[nodiscard]] bool empty() const noexcept;
+        [[nodiscard]] size_t size() const noexcept;
+        [[nodiscard]] size_t capacity() const noexcept;
+        
+        // 元素访问方法
+        [[nodiscard]] char* c_str() const noexcept;
+        [[nodiscard]] char back() const noexcept;
+        [[nodiscard]] char front() const noexcept;
+        char& operator[](const size_t& access_location);
+        const char& operator[](const size_t& access_location) const;
+        
+        // 字符串修改方法
+        string& uppercase() noexcept;
+        string& lowercase() noexcept;
+        string& prepend(const char*& sub_string);
+        string& insert_sub_string(const char*& sub_string, const size_t& start_position);
+        string sub_string(const size_t& start_position) const;
+        string sub_string_from(const size_t& start_position) const;
+        string sub_string(const size_t& start_position, const size_t& terminate_position) const;
+        void allocate_resources(const size_t& new_inaugurate_capacity);
+        string& push_back(const char& temporary_str_data);
+        string& push_back(const string& temporary_string_data);
+        string& push_back(const char* temporary_str_ptr_data);
+        string& resize(const size_t& inaugurate_size, const char& default_data = '\0');
+        iterator reserve(const size_t& new_container_capacity);
+        string& swap(string& str_data) noexcept;
+        [[nodiscard]] string reverse() const;
+        [[nodiscard]] string reverse_sub_string(const size_t& start_position, const size_t& terminate_position) const;
+        
+        // 输出方法
+        void string_print() const noexcept;
+        void string_reverse_print() const noexcept;
+        
+        // 运算符重载
+        friend std::ostream& operator<<(std::ostream& string_ostream, const string& str_data);
+        friend std::istream& operator>>(std::istream& string_istream, string& str_data);
+        string& operator=(const string& str_data);
+        string& operator=(const char* str_data);
+        string& operator=(string&& str_data) noexcept;
+        string& operator+=(const string& str_data);
+        bool operator==(const string& str_data) const noexcept;
+        bool operator<(const string& str_data) const noexcept;
+        bool operator>(const string& str_data) const noexcept;
+        [[nodiscard]] string operator+(const string& string_array) const;
+    };
+}
+```
+### 内部数据结构
+* **底层**：基于动态内存的连续字符数组。
+* **成员变量** ：
+    * `char* _data`：指向已分配内存区域的首地址。
+    * `size_t _size`：当前字符串长度。
+    * `size_t _capacity`：当前分配的内存容量。
+* **内存布局** 位置连续，以 `\0`结尾，符合 C 风格字符串要求。
+### 构造与析构
+* **默认构造**：  `string(const char* str_data = " ")`，初始化 `_data` 为输入字符串的副本。
+* **移动构造**： `string(char*&& str_data) noexcept`，接管右值 `_data` 指针，置右值为 `nullptr`，避免复制字符串。
+* **拷贝构造**： `string(const string& str_data)`，分配相同容量，复制所有字符。
+* **移动构造**： `string(string&& str_data) noexcept`，接管右值 `_data` 指针，置右值为 `nullptr`，避免复制字符。
+* **初始化列表构造**：`string(const std::initializer_list<char> str_data)`，使用初始化列表中的字符初始化字符串。
+* **析构**：释放 `_data` 指向的内存。
+### 迭代器
+* 定义 `iterator`, `const_iterator`, `reverse_iterator`, `const_reverse_iterator`，支持随机访问特性。
+* `begin()`/`end()` 返回指向 `_data`, _`data + _size`。
+* `rbegin()`/`rend()` 返回反向迭代器
+### 访问元素
+* `char& operator[](size_t index)`, `const char& operator[](size_t index) const`：做边界检查，直接访问第`index`个字符。
+* `front()`, `back()`: 访问第一个和最后一个字符；须保证 _size > 0。
+* `c_str()`: 返回指向内部字符数组的指针，以 \0 结尾。
+  * #### 示例
+    ```cpp
+    string s("hello");
+    std::cout << s[0] << ", " << s.back() << ", " << s.c_str();
+    ```
+* **引用**：头文件 `string_container` 部分函数调用。
+        
+### 字符串修改
+* `push_back(const char&)`：在末尾添加新字符；若 `_size == _capacity`，需扩容。
+* `push_back(const string&)`：在末尾追加字符串；若容量不足，需扩容。
+* `push_back(const char*)`：在末尾追加 `C`风格字符串；若容量不足，需扩容。
+* `prepend(const char*)`：在字符串开头插入 `C` 风格字符串；需要移动所有字符，开销 `O(n)`。
+* `clear()`：清空字符串，`_size = 0`，可能保留容量。
+* `resize(size_t n, char c = '\0')`：调整字符串大小，若扩大则用指定字符填充。
 
-    * 构造/析构、拷贝/移动、赋值操作。
-    * `size()`, `empty()`, `capacity()`, `reserve()`, `resize()`.
-    * `operator+`, `append`, `insert`, `erase`, `find`, `substr` 等。
-* **内部实现**：基于动态数组管理字符缓冲，支持小对象优化或直接 new/delete。
 * **复杂度分析**：
 
     * 普通访问 O(1)，连接/插入可能涉及重分配，平均摊销 O(n)。
