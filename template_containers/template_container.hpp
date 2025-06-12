@@ -327,21 +327,22 @@ namespace template_container
             //     }
             //     return hash_value;
             // }
-            //有需要可以重载本文件的string容器和vector容器.list容器等计算哈希的函数,这里就不重载了
+            //有需要可以重载本文件的string容器和vector容器.list容器等计算哈希的函数, 这里就不重载了
         };
     }
     namespace algorithm
     {
         template <typename source_sequence_copy,typename target_sequence_copy>
-        constexpr target_sequence_copy copy(source_sequence_copy begin,source_sequence_copy end,target_sequence_copy first) noexcept
+        constexpr target_sequence_copy* copy(source_sequence_copy begin,source_sequence_copy end,target_sequence_copy first) noexcept
         {
+            target_sequence_copy* return_first = first;
             while(begin != end)
             {
                 *first = *begin;
                 ++begin;
                 ++first;
             }
-            return first;
+            return return_first;
         }
         //返回下一个位置的迭代器，是否深浅拷贝取决于自定义类型重载和拷贝构造
         template<typename source_sequence_find,typename target_sequence_find>

@@ -1037,7 +1037,7 @@ namespace template_container
         }
         inline std::ostream& operator<<(std::ostream& string_ostream,const string &str_data)
         {
-            for(template_container::string_container::string::const_iterator start_position = str_data.cbegin();start_position != str_data.cend();start_position++)
+            for(string::const_iterator start_position = str_data.cbegin();start_position != str_data.cend();start_position++)
             {
                 string_ostream << *start_position;
             }

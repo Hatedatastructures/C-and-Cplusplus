@@ -7,15 +7,15 @@
  * [`shared_ptr`](#shared_ptrshared_ptr_type)
  * [`weak_ptr`](#weak_ptrweak_ptr_type)
 ## [模板容器 `template_container`](#模板容器-template_container)
- * ### [仿函数 `imitation_functions` ](#仿函数与算法模块)
-     * [`less` ]()
-     * [`greater`]()
+ * ### [仿函数 `imitation_functions` ](#仿函数-imitation_functions)
+     * [`less` ](#imitation_functions)
+     * [`greater`](#imitation_functions)
      * [`hash_imitation_functions`](#imitation_functions)
- * ### [算法 `algorithm`]()
-     * [`copy`]()
-     * [`swap`]()
-     * [`find`]()
-     * [`hash_function`]()
+ * ### [算法 `algorithm`](#算法-algorithm)
+     * [`copy`](#copy)
+     * [`swap`](#swap)
+     * [`find`](#find)
+     * [`hash_function`](#hash_algorithmhash_function)
  * ### [基础工具 `practicality`](#基础工具命名空间-practicality)
     * [`pair`]()
     * [`make_pair`]()
@@ -228,7 +228,7 @@ catch(const custom_exception::customize_exception& e)
 
 **引用**：在头文件中，可搜索 `namespace smart_pointer` 获取完整实现；以下示例基于头文件内容分析。
 
-> **注意**：此处省略完整源码摘录，文档假设已严格依据头文件实现，不做任何命名或签名更改。
+> **注意**：此处省略完整源码摘录
 #### `smart_ptr<smart_ptr_type>`
 * **成员变量**
     * `_ptr`：裸指针，指向托管对象。
@@ -369,8 +369,7 @@ catch(const custom_exception::customize_exception& e)
 
 # 模板容器 `template_container`
 
-## 基础工具命名空间 `practicality`
-
+##  基础工具命名空间 `practicality`
 ### `pair<K, V>`
 
 * **定义**：类似于 `std::pair`，用于键值对存储，如 map/set 中。
@@ -387,49 +386,130 @@ catch(const custom_exception::customize_exception& e)
     * `pair* operator->() noexcept`.
     * 重载 `std::ostream& operator<<` 可以直接输出
 * **用途**：关联容器 `tree_map`, `hash_map` 等内部使用 `pair<key, value>` 存储元素。
-* **示例**
+  * **示例**
 
-  ```cpp
-  template_container::practicality::pair<int, con::string> p(1, "one");
-  std::cout << p.first << ": " << p.second << std::endl;
-  ```
-> **引用/出处**：头文件中 `namespace template_container::practicality::pair`
+    ```cpp
+    template_container::practicality::pair<int, con::string> p(1, "one");
+    std::cout << p.first << ": " << p.second << std::endl;
+    ```
+>   **引用/出处**：头文件中 `namespace template_container::practicality::pair`
 
----
-
-## 仿函数
+## 仿函数 `imitation_functions`
 
 ### `imitation_functions`
 
 * **内容**：包含常见比较、等价、散列等仿函数。
 * 常见类型：
 
-    * `less<T>`, `greater<T>`, `equal_to<T>` 等，用于比较元素大小、相等。
-    * `hash_imitation_functions`：针对一些类型提供 `operator()(const T&) -> size_t` 散列值。
-* **用途**：关联容器、哈希表等需要自定义比较、散列时，可传入此默认仿函数或用户自定义仿函数。
+    * `less<T>`, `greater<T>`，用于比较元素大小、相等。
+    * `hash_imitation_functions`：针对一些内置类型提供 ` size_t operator()(const T&) -> size_t` 数据哈希值。
+* **用途**：关联容器、哈希表等需要自定义比较器、哈希计算时，可传入此默认仿函数或用户自定义仿函数。
 * **示例**
 
   ```cpp
   template_container::imitation_functions::less<int> cmp;
   bool lt = cmp(3, 5); // true
   template_container::imitation_functions::hash_imitation_functions hf;
-  size_t hv = hf("hello");
+  size_t hv = hf(5678.8763468);
   ```
-* **注意**：若需要自定义类型散列，可特化或自定义仿函数类型，并传递给容器模板参数。
+* **注意**：若需要`自定义类型`，可重新写一个哈希仿函数返回数据类型哈希值，并传递给容器模板参数。
 
-### `algorithm`
+## 算法 `algorithm`
+### `copy`
+* **内容**：基本算法工具,`copy`
+* **用途**：线性拷贝值
+* **示例**
 
-* **内容**：基本算法工具，如哈希函数实现（`hash_algorithm::hash_function<T>`），可能包括 `hash_sdmmhash`, `hash_djbhash`, `hash_pjwhash` 等多种哈希函数实现。
+  ```cpp
+  using template_container::algorithm;
+  int source[] = {1, 2, 3, 4, 5};
+  int size = sizeof(source) / sizeof(source[0]);
+  // 创建数组
+  int target[size];
+  copy(source, source + size, target);
+  
+  ```
+  * **参数**：起始位置 `source_sequence_copy begin`，结束位置 `source_sequence_copy end`，拷贝位置 `target_sequence_copy first`.
+  * **返回值** ：返回原先拷贝位置地址
+
+  >   **引用**：头文件中`namespace template_container::algorithm::copy`.
+### `find`
+* **内容**：基本算法工具,`find`
+* **用途**：迭代器查找某个值
+  * **示例**
+
+    ```cpp
+     using template_container::algorithm;
+     using map_pair = template_container::practicality::pair<size_t,size_t>;
+     using map_string = template_container::string_container::string;
+     using map_data = template_container::practicality::pair<map_pair,map_string>;
+     template_container::map_container::tree_map<map_pair,map_string,imitation_functions::comparators> map_pair_test;
+     constexpr size_t size = 100000;
+     template_container::vector_container::vector<map_pair> map_pair_array;
+     template_container::vector_container::vector<map_string> map_string_array;
+     template_container::vector_container::vector<map_data> map_data_array;
+     for(size_t i = 0; i < size; i++)
+     {
+         map_pair_array.push_back(map_pair(i,i));
+         map_string_array.push_back(map_string("hello world"));
+         map_data_array.push_back(map_data(std::move(map_pair_array[i]),std::move(map_string_array[i])));
+     }
+     for(size_t j = 0; j < size; j++)
+     {
+         map_pair_test.push(std::move(map_data_array[j]));
+     }                                                              //注意自定义==的重载才能用find函数
+     auto map_iterator = find(map_pair_test.begin(), map_pair_test.end(),std::move(map_data_array[j])); //返回找到位置的迭代器
+    ```
+      * **参数**：起始位置 `source_sequence_find begin`，结束位置 `source_sequence_find end`，查找的数据 `target_sequence_find& value`.
+      * **返回值** ：如果找到值返回该值的迭代器，如果找不到返回尾位置迭代器
+
+  >     **引用**：头文件中`namespace template_container::algorithm::find`.
+
+### `swap`
+* **内容**：基本算法工具,`swap`
+* **用途**：数据类型深拷贝交换（需要提前重载数据类型的拷贝构造）
+* **示例**
+
+  ```cpp
+  void swap(template_container::list_container::list<list_type>& swap_target) noexcept
+  {
+     template_container::algorithm::swap(_head,swap_target._head);
+  }
+  
+  ```
+    * **参数**：数据位置A `swap_data_type& a`，数据位置B `swap_data_type& b`，.
+    * **返回值** ：void
+
+  >   **引用**：头文件中`namespace template_container::algorithm::swap`.
+### `hash_algorithm::hash_function`
+
+* **内容**：基本算法工具，如哈希函数实现（`hash_algorithm::hash_function<T>`），包括 `hash_sdmmhash`, `hash_djbhash`, `hash_pjwhash` 等多种哈希函数实现。
 * **用途**：布隆过滤器或哈希表中使用不同哈希函数，减少冲突。
 * **示例**
 
   ```cpp
-  template_container::algorithm::hash_algorithm::hash_function<std::string> hf;
-  size_t h1 = hf.hash_sdmmhash("key");
+  using string =  template_container::string_container::string;
+  class custom_comparators 
+  {
+  public:
+     size_t operator() (const string& string_data)
+     {
+         size_t hash_string = 0;
+         for(const auto&  ch : string_data)
+         {
+              hash_string  = hash_string * 131 + static_cast<size_t>(ch);
+         }
+         return hash_string;
+     }
+  }
+  //可重载模板版本的，前提把像custom_comparators类的size_t operator()封装好
+  template_container::algorithm::hash_algorithm::hash_function<string,custom_comparators> hf;
+  string test_string = "hello,word!";
+  size_t h1 = hf.hash_sdmmhash(test_string);
   ```
 * **复杂度**：哈希函数计算时间依赖输入长度，通常 O(len)。
 
-> **引用**：头文件中 `namespace template_container::algorithm` 部分，具体函数签名在头文件中可查阅。（具体编号视检索结果）
+    > **引用**：头文件中`namespace template_container::algorithm::hash_algorithm`.
 
 ---
 
