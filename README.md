@@ -869,13 +869,15 @@ int main()
     std::cout << "\n=== 迭代器示例 ===\n";
     
     std::cout << "使用迭代器遍历 s2: ";
-    for (auto it = s2.begin(); it != s2.end(); ++it) {
+    for (auto it = s2.begin(); it != s2.end(); ++it) 
+    {
         std::cout << *it;
     }
     std::cout << std::endl;
     
     std::cout << "使用反向迭代器遍历 s2: ";
-    for (auto it = s2.rbegin(); it != s2.rend(); --it) {
+    for (auto it = s2.rbegin(); it != s2.rend(); --it) 
+    {
         std::cout << *it;
     }
     std::cout << std::endl;
@@ -902,40 +904,154 @@ int main()
 
 ### `vector_container`
 
-**定义位置**：
-`namespace vector_container { template<typename T> class vector { ... }; }`
-**引用**：
-
+#### 类概述
+*   `vector` 类是一个模板化的动态数组容器，模拟了标准库 `std::vector` 的核心功能。
+    该容器使用连续内存存储元素，支持动态扩容、随机访问和各种容器操作。通过模板参数 `vector_type`
+    支持任意数据类型，并提供了完整的迭代器系统和异常处理机制。
+### **类及其函数定义**：
+```cpp
+namespace vector_container 
+{
+    template <typename vector_type>
+    class vector 
+    {
+    public:
+        using iterator = vector_type*;
+        using const_iterator = const vector_type*;
+        using reverse_iterator = iterator;
+        using const_reverse_iterator = const_iterator;
+    
+    private:
+        iterator _data_pointer;     // 指向数据起始位置
+        iterator _size_pointer;     // 指向数据结束位置（最后一个元素的下一个位置）
+        iterator _capacity_pointer; // 指向容量结束位置
+    
+    public:
+        // 迭代器方法
+        [[nodiscard]] iterator begin() noexcept;
+        [[nodiscard]] iterator end() noexcept;
+        
+        // 容量方法
+        [[nodiscard]] size_t size() const noexcept;
+        [[nodiscard]] size_t capacity() const noexcept;
+        [[nodiscard]] bool empty() const noexcept;
+        
+        // 元素访问
+        [[nodiscard]] vector_type& front() const noexcept;
+        [[nodiscard]] vector_type& back() const noexcept;
+        [[nodiscard]] vector_type& head() const noexcept;
+        [[nodiscard]] vector_type& tail() const noexcept;
+        vector_type& find(const size_t& find_size);
+        vector_type& operator[](const size_t& access_location);
+        const vector_type& operator[](const size_t& access_location) const;
+        
+        // 构造函数
+        vector() noexcept;
+        explicit vector(const size_t& container_capacity, const vector_type& vector_data = vector_type());
+        vector(std::initializer_list<vector_type> lightweight_container);
+        vector(const vector<vector_type>& vector_data);
+        vector(vector<vector_type>&& vector_data) noexcept;
+        ~vector() noexcept;
+        
+        // 修改方法
+        void swap(vector<vector_type>& vector_data) noexcept;
+        iterator erase(iterator delete_position) noexcept;
+        vector<vector_type>& resize(const size_t& new_container_capacity, const vector_type& vector_data = vector_type());
+        vector<vector_type>& push_back(const vector_type& vector_type_data);
+        vector<vector_type>& push_back(vector_type&& vector_type_data);
+        vector<vector_type>& pop_back();
+        vector<vector_type>& push_front(const vector_type& vector_type_data);
+        vector<vector_type>& pop_front();
+        vector<vector_type>& size_adjust(const size_t& data_size, const vector_type& padding_temp_data = vector_type());
+        
+        // 赋值运算符
+        vector<vector_type>& operator=(const vector<vector_type>& vector_data);
+        vector<vector_type>& operator=(vector<vector_type>&& vector_mobile_data) noexcept;
+        vector<vector_type>& operator+=(const vector<vector_type>& vector_data);
+        
+        // 友元运算符
+        template <typename const_vector_output_templates>
+        friend std::ostream& operator<<(std::ostream& vector_ostream, const vector<const_vector_output_templates>& dynamic_arrays_data);
+    };
+    
+    template <typename const_vector_output_templates>
+    std::ostream& operator<<(std::ostream& vector_ostream, const vector<const_vector_output_templates>& dynamic_arrays_data);
+}
+```
 #### 内部数据结构
 
-* **底层**：基于动态内存的连续数组。
+* **底层**：基于动态内存的连续数组,使用原生指针管理数组。
 * **成员变量**：
-
-    * `T* _data` 3个原生指针，指向已分配内存区域。
-    * 可能有分配器或异常安全相关成员。
-* **内存布局**：位置连续，符合随机访问迭代器要求。
+    * `iterator _data_pointer`：指向已分配内存区域的首地址。
+    * `iterator _size_pointer`：指向当前数据末尾的下一个位置。
+    * `iterator _capacity_pointer`：指向已分配内存容量的末尾。
+* **内存布局**：位置连续，存储任意自定义类型的 `vector_type` 对象，符合 `STL`库容器设计规范。
 
 #### 构造与析构
 
-* **默认构造**：`vector()`，初始化 `_data_pointer = nullptr`, `_size_pointer = nullptr`, `_capacity_pointer = nullptr`。
-* **带初始容量构造**：`explicit vector(const size_t& n)`，分配至少 `n` 个元素空间。
-* **拷贝构造**：分配相同容量，复制所有元素（调用拷贝构造）。
-* **移动构造**：接管右值 `_data` 指针，置右值为 null，避免复制元素。
-* **析构**：析构所有元素，释放底层内存。
+* **默认构造**：`vector() noexcept`，初始化空向量，所有指针为 `nullptr`。
+* **容量构造**：`vector(const size_t& container_capacity`, `const vector_type& vector_data = vector_type())`，分配指定容量并初始化所有元素。
+* **链式构造**：`vector(std::initializer_list<vector_type> lightweight_container)`，使用初始化列表元素初始化向量。
+* **拷贝构造**：`vector(const vector<vector_type>& vector_data)`，深拷贝另一个向量的所有元素。
+* **移动构造**：`vector(vector<vector_type>&& vector_data) noexcept`，接管右值资源，避免深拷贝。
+* **析构**：释放 `_data_pointer` 指向的内存，防止内存泄漏。
 
 #### 迭代器
 
 * 定义 `iterator`, `const_iterator`, `reverse_iterator`, `const_reverse_iterator`，支持随机访问特性。
-* **begin()/end()** 返回指向 `_data_pointer`, `_size_pointer`。
-* **rbegin()/rend()** 返回反向迭代器。
-* **c++ 标准兼容**：遵循 STL 接口设计。
-
-#### 访问元素
-
-* `T& operator[](size_t index)`, `const T& operator[](size_t index) const`：做边界检查，直接访问第 index 个元素。
-* `at(size_t index)`：若实现，可能抛出异常或调用 `customize_exception` 报错越界。
-* `front()`, `back()`: 访问第一个和最后一个元素；须保证 `_size > 0`。
-* **示例**
+* **`begin()`/`end()`** 返回指向 `_data_pointer`, `_size_pointer`位置的迭代器。
+* **`rbegin()`/`rend()`** 返回反向迭代器,支持从后往前遍历。
+### 访问元素
+* `vector_type& operator[](const size_t& access_location)`：直接访问第 `access_location` 个元素，越界时抛异常。
+* `const vector_type& operator[](const size_t& access_location) const`：常量版本的下标运算符。
+* `front()`/`back()`：访问第一个和最后一个元素，容器非空时有效。
+* `head()`/`tail()`：与 `front()`/`back()` 功能相同，提供额外命名方式。
+* `find(const size_t& find_size)`：查找指定位置元素，越界时抛异常。
+### 容器修改
+* #### 追加操作
+    * `push_back(const vector_type& vector_type_data)`：末尾添加元素，容量不足时扩容（初始 10，不足时翻倍）。
+     * `push_back(vector_type&& vector_type_data)`：移动语义版本的 `push_back`，避免不必要的拷贝。
+* #### 头部插入
+    * `push_front(const vector_type& vector_type_data)`：头部插入元素，需移动所有现有元素，时间复杂度 `O(n)`。
+* #### 删除操作
+     * `pop_back()`：移除最后一个元素，不释放内存。
+     * `pop_front()`：移除第一个元素，移动所有剩余元素，时间复杂度 `O(n)`。
+     * `erase(iterator delete_position)`：删除指定位置元素，返回下一个位置的迭代器。
+### 内存管理
+* `resize(const size_t& new_container_capacity, const vector_type& vector_data = vector_type())`：调整容量，扩容时用 `vector_data` 填充新增空间。
+* `size_adjust(const size_t& data_size, const vector_type& padding_temp_data = vector_type())`：调整大小，支持扩容和缩容。
+### 其他修改
+* `swap(vector<vector_type>& vector_data) noexcept`：交换两个向量的内容，时间复杂度 `O(1)`。
+### 容量与工具方法
+* `empty() const noexcept`：判断容器是否为空。
+* `size() const noexcept`：返回当前元素数量。
+* `capacity() const noexcept`：返回当前分配的容量。
+* `operator<<`：支持流式输出，遍历所有元素。
+### 运算符重载
+* #### 赋值运算符
+    * `operator=(const vector<vector_type>& vector_data)`：深拷贝赋值。
+    * `operator=(vector<vector_type>&& vector_mobile_data) noexcept`：移动赋值，接管右值资源。
+* #### 拼接运算符
+    * `operator+=(const vector<vector_type>& vector_data)`：将另一个向量的元素追加到当前向量末尾。
+### 复杂度与异常安全
+* #### 时间复杂度
+  * **随机访问**：`O(1)`
+  * **末尾插入** / **删除**：均摊 `O(1)`（扩容时 `O(n)`）
+  * **头部** / **中间插入** / **删除**：`O(n)`（移动元素）
+  * **扩容**：`O(n)`（复制元素） 
+* #### 空间复杂度
+  * `O(n)`（存储元素 + 额外容量）
+* #### 异常处理
+  *  内存分配失败抛 `std::bad_alloc`。
+  *  越界操作抛 `custom_exception::customize_exception`。
+* #### 迭代器失效
+  *  扩容或修改元素时，所有迭代器和引用失效
+### 注意事项
+* **迭代器安全**：`扩容`或`修改数据`会导致迭代器失效，需重新获取。
+* **内存优化**：频繁插入前建议使用 `reserve()` 预分配空间。
+* **异常安全**：`插入` / `扩容`操作可能抛异常，建议使用 `try-catch` 处理。
+* **移动语义**：优先使用`移动`构造或`移动`赋值，避免不必要的深拷贝。
+### **`vector`** 类用法示例
 
   ```cpp
   vector<int> v;
@@ -943,7 +1059,7 @@ int main()
   v.push_back(2);
   std::cout << v[0] << ", " << v.back();
   ```
-* **引用**：头文件 `vector_container` 部分方法签名。
+>**引用**：头文件 `vector_container` 命名空间。
 
 #### 插入与删除
 
