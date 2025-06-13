@@ -123,12 +123,12 @@ int main()
     std::cout << std::endl;
 
     // 反向迭代器
-    std::cout << "反向迭代器遍历 v3: ";
-    for (auto ref_it = v3.rbegin(); ref_it != v3.rend(); --ref_it)
-    {
-        std::cout << *ref_it << " ";
-    }
-    std::cout << std::endl;
+    // std::cout << "反向迭代器遍历 v3: ";
+    // for (auto ref_it = v3.rbegin(); ref_it != v3.rend(); --ref_it)
+    // {
+    //     std::cout << *ref_it << " ";
+    // }
+    // std::cout << std::endl;
 
     // 7. 异常处理示例
     std::cout << "\n=== 异常处理示例 ===\n";

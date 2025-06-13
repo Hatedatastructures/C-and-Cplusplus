@@ -710,7 +710,6 @@ namespace string_container
 ### **`string`** 类用法示例
 
   ```cpp
-  #include "template_container.hpp"
 using namespace template_container;
 int main() 
 {
@@ -1051,48 +1050,175 @@ namespace vector_container
 * **内存优化**：频繁插入前建议使用 `reserve()` 预分配空间。
 * **异常安全**：`插入` / `扩容`操作可能抛异常，建议使用 `try-catch` 处理。
 * **移动语义**：优先使用`移动`构造或`移动`赋值，避免不必要的深拷贝。
+* **迭代器**：注意当前迭代器未实现封装，导致反向迭代器无法使用，如果想实现的话可以根据链表迭代器类来封装
 ### **`vector`** 类用法示例
 
   ```cpp
-  vector<int> v;
-  v.push_back(1);
-  v.push_back(2);
-  std::cout << v[0] << ", " << v.back();
+using namespace template_container;
+
+int main()
+{
+    // 1. 构造函数示例
+    std::cout << "=== 构造函数示例 ===\n";
+
+    // 默认构造
+    vector_container::vector<double> v1;
+    std::cout << "v1 (默认构造): " << v1 << std::endl;
+
+    // 指定容量构造
+    vector_container::vector<double> v2(5, 3.14);
+    std::cout << "v2 (指定容量构造): " << v2 << std::endl;
+
+    // 初始化列表构造
+    vector_container::vector<std::string> v3 = {"hello", "world", "!"};
+    std::cout << "v3 (初始化列表构造): " << v3 << std::endl;
+
+    // 拷贝构造
+    vector_container::vector<double> v4(v2);
+    std::cout << "v4 (拷贝构造自v2): " << v4 << std::endl;
+
+    // 移动构造
+    vector_container::vector<double> v5(std::move(v1));
+    std::cout << "v5 (移动构造): " << v5 << std::endl;
+    std::cout << "v1 (移动后): " << v1 << std::endl;
+
+    // 2. 访问元素示例
+    std::cout << "\n=== 访问元素示例 ===\n";
+
+    // 下标运算符
+    std::cout << "v3[0]: " << v3[0] << std::endl;
+
+    // front() 和 back()
+    std::cout << "v3.front(): " << v3.front() << std::endl;
+    std::cout << "v3.back(): " << v3.back() << std::endl;
+
+    // head() 和 tail()
+    std::cout << "v3.head(): " << v3.head() << std::endl;
+    std::cout << "v3.tail(): " << v3.tail() << std::endl;
+
+    // find()
+    std::cout << "v3.find(1): " << v3.find(1) << std::endl;
+
+    // 3. 容器修改示例
+    std::cout << "\n=== 容器修改示例 ===\n";
+
+    // push_back()
+    v3.push_back("new");
+    std::cout << "v3.push_back(\"new\"): " << v3 << std::endl;
+
+    // push_back() 移动语义
+    std::string temp = "moved";
+    v3.push_back(std::move(temp));
+    std::cout << "v3.push_back(std::move(temp)): " << v3 << std::endl;
+
+    // push_front()
+    v3.push_front("start");
+    std::cout << "v3.push_front(\"start\"): " << v3 << std::endl;
+
+    // pop_back()
+    v3.pop_back();
+    std::cout << "v3.pop_back(): " << v3 << std::endl;
+
+    // pop_front()
+    v3.pop_front();
+    std::cout << "v3.pop_front(): " << v3 << std::endl;
+
+    // erase()
+    auto it = v3.begin() + 1;
+    v3.erase(it);
+    std::cout << "v3.erase(v3.begin() + 1): " << v3 << std::endl;
+
+    // resize()
+    v3.resize(10, "default");
+    std::cout << "v3.resize(10, \"default\"): " << v3 << std::endl;
+
+    // size_adjust()
+    v3.size_adjust(5, "adjusted");
+    std::cout << "v3.size_adjust(5, \"adjusted\"): " << v3 << std::endl;
+
+
+    // swap()
+    vector_container::vector<std::string> v6 = {"a", "b", "c"};
+    v3.swap(v6);
+    std::cout << "v3.swap(v6) 后 v3: " << v3 << std::endl;
+    std::cout << "v3.swap(v6) 后 v6: " << v6 << std::endl;
+
+    // 4. 容量与工具方法示例
+    std::cout << "\n=== 容量与工具方法示例 ===\n";
+
+    std::cout << "v3.empty(): " << (v3.empty() ? "true" : "false") << std::endl;
+    std::cout << "v3.size(): " << v3.size() << std::endl;
+    std::cout << "v3.capacity(): " << v3.capacity() << std::endl;
+
+    // 5. 运算符重载示例
+    std::cout << "\n=== 运算符重载示例 ===\n";
+
+    // 赋值运算符
+    v1 = v4;
+    std::cout << "v1 = v4: " << v1 << std::endl;
+
+    // 移动赋值
+    v1 = std::move(v4);
+    std::cout << "v1 = std::move(v4): " << v1 << std::endl;
+    std::cout << "v4 (移动后): " << v4 << std::endl;
+
+    // += 运算符
+    v1 += v2;
+    std::cout << "v1 += v2: " << v1 << std::endl;
+
+    // 6. 迭代器示例
+    std::cout << "\n=== 迭代器示例 ===\n";
+
+    // 正向迭代器
+    std::cout << "正向迭代器遍历 v3: ";
+    for (auto iterator = v3.begin(); iterator != v3.end(); ++iterator)
+    {
+        std::cout << *iterator << " ";
+    }
+    std::cout << std::endl;
+
+    // 反向迭代器
+    // std::cout << "反向迭代器遍历 v3: ";
+    // for (auto ref_it = v3.rbegin(); ref_it != v3.rend(); --ref_it)
+    // {
+    //     std::cout << *ref_it << " ";
+    // }
+    // std::cout << std::endl;
+
+    // 7. 异常处理示例
+    std::cout << "\n=== 异常处理示例 ===\n";
+
+    try 
+    {
+        // 尝试访问越界元素
+        std::cout << "尝试访问 v3[10]: ";
+        std::cout << v3[10] << std::endl;
+    } catch (const custom_exception::customize_exception& e) 
+    {
+        std::cout << "捕获异常: " << e.what() << " 在 " << e.function_name_get()
+                  << " 行 " << e.line_number_get() << std::endl;
+    }
+
+    // 8. 内存管理示例
+    std::cout << "\n=== 内存管理示例 ===\n";
+
+    // 测试扩容策略
+    vector_container::vector<int> v7;
+    std::cout << "v7 初始容量: " << v7.capacity() << std::endl;
+
+    for (int i = 0; i < 20; ++i)
+    {
+        v7.push_back(i);
+        if (i % 5 == 0) 
+        {
+            std::cout << "添加 " << i << " 后容量: " << v7.capacity() << std::endl;
+        }
+    }
+
+    return 0;
+
   ```
 >**引用**：头文件 `vector_container` 命名空间。
-
-#### 插入与删除
-
-* `void push_back(const T&)`：在末尾插入新元素；若 `_size_pointer== _capacity_pointer`，需扩容。
-* `void pop_back()`：移除末尾元素；析构该元素并 `--_size_pointer`。
-* `iterator insert(iterator pos, const T&)`：在指定位置插入；需要移动后续元素，开销 O(n)。
-* `iterator erase(iterator pos)`, `iterator erase(iterator first, iterator last)`：移除元素，需要移动后续元素，O(n)。
-* `void clear()`：析构所有元素，`size = 0`，可能保留容量。
-
-##### 扩容策略
-
-* 常见策略：若 `capacity == 0`，置为 1；否则 `capacity *= 2`；或其他增长因子。
-* **复杂度摊销分析**：插入操作平均摊销 O(1)，最坏情况 O(n)（扩容并复制所有元素）。
-
-#### 大小与容量
-
-* `size()`, `capacity()`, `empty()`：O(1) 访问。
-* `void reserve(size_t new_cap)`: 提前分配至少 `new_cap` 空间，避免频繁扩容。
-* `void shrink_to_fit()`: 若有实现，可释放多余容量，使 `_capacity == _size`。
-
-#### 边界条件与异常安全
-
-* 在扩容过程中，若分配或元素复制抛异常，应保证容器处于有效状态：未修改原数据，或使用强异常保证。若头文件使用 `customize_exception` 抛出，需在 catch 中释放分配、回滚 `_size` 等。
-* `operator[]` 不检查边界；`at` 实现应检查并抛出 `customize_exception`。
-* 多线程：非线程安全；若多线程访问同一 `vector`，需外部同步。
-
-#### 复杂度
-
-* 随机访问：O(1)。
-* 插入/删除末尾：平均 O(1)（摊销），最坏 O(n)（扩容）。
-* 插入/删除中间：O(n)。
-* 空间：O(n) 元素，占用连续内存。
-
 ---
 
 ## 链表容器

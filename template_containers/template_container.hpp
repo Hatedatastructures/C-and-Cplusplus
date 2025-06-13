@@ -1163,10 +1163,6 @@ namespace template_container
             {
                 return _size_pointer;
             }
-            [[nodiscard]] reverse_iterator rbegin() noexcept
-            {
-                return _data_pointer;
-            }
             [[nodiscard]] size_t size() const  noexcept
             {
                 return _data_pointer ? (_size_pointer - _data_pointer) : 0;
