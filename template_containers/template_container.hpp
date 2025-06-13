@@ -1534,7 +1534,7 @@ namespace template_container
                 using reference = Ref ;
                 using pointer   = Ptr ;
                 container_node* _node;
-                explicit list_iterator(container_node* node) noexcept
+                list_iterator(container_node* node) noexcept
                 :_node(node)
                 {
                     ;//拿一个指针来构造迭代器
@@ -1589,7 +1589,7 @@ namespace template_container
                 using  const_reverse_list_iterator = reverse_list_iterator<iterator>;
             public:
                 iterator _it;
-                explicit reverse_list_iterator(iterator it) noexcept
+                reverse_list_iterator(iterator it) noexcept
                 :_it(it)
                 {
                     ;

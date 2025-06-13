@@ -1224,110 +1224,485 @@ int main()
 ## 链表容器
 ### `list_container`
 
-**定义位置**：
-`namespace list_container { template<typename T> class list { ... }; }`
-**引用**：
+#### 类概述
 
-#### 内部数据结构
+`list` 类是一个模板化的双向链表容器，模拟标准库 `std::list` 的核心功能，通过哨兵节点实现统一边界处理，支持常量时间的任意位置插入与删除。
 
-* **底层**：双向循环链表。
-* **节点类型**：包含 `T _data; list_node* _prev; list_node* _next;`。
-* **成员变量**：
+---
 
-    * `list_node* head; list_node* tail; size_t _size;`。
-    * 可能有哨兵节点（sentinel）简化边界处理。
-
-#### 构造与析构
-
-* 默认构造：`head = tail = nullptr; _size = 0;`。
-* 拷贝构造：遍历源列表，逐个复制节点数据，保持顺序。
-* 移动构造：接管源列表指针，置源 `head/tail` 为 nullptr，`_size` 调整。
-* 析构：遍历所有节点，析构数据、释放节点内存。
-
-#### 迭代器
-
-* `iterator`, `const_iterator`, `reverse_iterator`，支持双向迭代。
-* `begin()`: 指向 `head`；`end()`: 指向 `nullptr` 或哨兵；同理 `rbegin()`, `rend()`。
-* **失效规则**：插入或删除节点会使相关迭代器失效（指向被删除节点的迭代器无效；其它节点迭代器仍有效）。
-
-#### 插入与删除
-
-* `void push_back(const T&)`, `void push_front(const T&)`：在尾部/头部插入新节点，O(1)。
-* `void pop_back()`, `void pop_front()`: 移除尾部/头部节点，析构并释放，O(1)。
-* `iterator insert(iterator pos, const T&)`: 在给定位置前插入，需定位 pos 节点，若持有 iterator，直接操作，O(1)；否则可能 O(n) 查找。
-* `iterator erase(iterator pos)`: 删除 pos 指向节点，O(1)。
-* `void clear()`: 遍历删除所有节点，O(n)。
-
-#### 访问
-
-* 不支持随机访问，仅支持迭代访问。
-* `front()`, `back()`: 返回首/尾元素，需保证非空。
-
-#### 复杂度
-
-* 插入/删除给定节点：O(1)。
-* 查找某值：O(n)。
-* 迭代遍历：O(n)。
-* 空间：每节点多 2 个指针开销。
-
-#### 示例
+#### **类及其函数定义**
 
 ```cpp
-template_container::list_container::list<int> lst;
-lst.push_back(1);
-lst.push_front(0);
-for(auto it = lst.begin(); it != lst.end(); ++it) 
-{
-    std::cout << *it << " ";
+namespace list_container {
+    template <typename list_type>
+    class list {
+    public:
+        // 嵌套节点与迭代器
+        template<typename list_type_function_node>
+        struct list_container_node;
+        template<typename listNodeTypeIterator, typename Ref, typename Ptr>
+        class list_iterator;
+        template<typename iterator>
+        class reverse_list_iterator;
+
+        using container_node = list_container_node<list_type>;
+        using iterator = list_iterator<list_type, list_type&, list_type*>;
+        using const_iterator = list_iterator<list_type, const list_type&, const list_type*>;
+        using reverse_iterator = reverse_list_iterator<iterator>;
+        using reverse_const_iterator = reverse_list_iterator<const_iterator>;
+
+        // 构造与析构
+        list();
+        ~list() noexcept;
+        list(iterator first, iterator last);
+        list(const_iterator first, const_iterator last);
+        list(std::initializer_list<list_type> lightweight_container);
+        list(const list<list_type>& list_data);
+        list(list<list_type>&& list_data) noexcept;
+
+        // 迭代器接口
+        iterator begin() noexcept;
+        iterator end() noexcept;
+        const_iterator cbegin() const noexcept;
+        const_iterator cend() const noexcept;
+        reverse_iterator rbegin() noexcept;
+        reverse_iterator rend() noexcept;
+        reverse_const_iterator rcbegin() const noexcept;
+        reverse_const_iterator rcend() const noexcept;
+
+        // 容量与访问
+        bool empty() const noexcept;
+        size_t size() const noexcept;
+        list_type& front() noexcept;
+        const list_type& front() const noexcept;
+        list_type& back() noexcept;
+        const list_type& back() const noexcept;
+
+        // 插入/删除操作
+        void push_back(const list_type& data);
+        void push_back(list_type&& data);
+        void push_front(const list_type& data);
+        void push_front(list_type&& data);
+        void pop_back();
+        iterator pop_front();
+        iterator insert(iterator pos, const list_type& data);
+        iterator insert(iterator pos, list_type&& data);
+        iterator erase(iterator pos);
+
+        // 调整与管理
+        void resize(const size_t new_container_size, const list_type& data = list_type());
+        void clear() noexcept;
+        void swap(list<list_type>& swap_target) noexcept;
+
+        // 运算符重载
+        list<list_type>& operator=(list<list_type> list_data) noexcept;
+        list<list_type>& operator=(std::initializer_list<list_type> lightweight_container);
+        list<list_type>& operator=(list<list_type>&& list_data) noexcept;
+        list<list_type> operator+(const list<list_type>& list_data);
+        list<list_type>& operator+=(const list<list_type>& list_data);
+
+        template <typename const_list_output_templates>
+        friend std::ostream& operator<< (std::ostream& os, const list<const_list_output_templates>& lst);
+    };
+
+    template <typename const_list_output_templates>
+    std::ostream& operator<< (std::ostream& os, const list<const_list_output_templates>& lst);
 }
-lst.pop_back();
-lst.clear();
 ```
 
-#### 边界与异常
+---
 
-* 插入时若内存分配失败，应抛出 `customize_exception`；需保证链表状态一致或回滚。
-* 多线程：非线程安全；并发修改需同步。
+#### **作用描述**
+
+* **构造与析构**：
+
+    * `list() noexcept`：初始化空链表，创建哨兵节点，`_head->next` 和 `_head->prev` 指向自身。
+    * `list(iterator first, iterator last)`：从区间 `[first, last)` 拷贝或移动元素构造链表。
+    * `list(std::initializer_list<list_type> init)`：接受初始化列表，按顺序插入元素。
+    * 拷贝/移动构造：分别实现深拷贝或接管资源，确保原对象处于有效或空状态。
+    * 析构 `~list()`：清空节点并释放哨兵。
+
+* **迭代器接口**：
+
+    * `begin()/end()`：返回指向首元素的正向迭代器和哨兵节点。
+    * `rbegin()/rend()`：基于正向迭代器封装，实现反向遍历。
+
+* **容量与访问**：
+
+    * `empty()/size()`：检测是否无元素和返回元素数量。
+    * `front()/back()`：访问首尾元素，调用者需保证非空。
+
+* **修改操作**：
+
+    * `push_back/push_front`：在尾部或头部插入，常量时间。
+    * `insert/erase(iterator)`：在指定位置插入或删除节点，无需移动其他节点。
+    * `pop_back/pop_front`：删除尾部或头部元素。
+    * `resize`：根据目标大小增删节点。
+    * `clear`：释放所有数据节点，保留哨兵。
+    * `swap`：交换两链表头指针，时间 O(1)。
+
+* **运算符重载**：
+
+    * 赋值、合并（`+`/`+=`）、流式输出，提供直观便捷的接口。
+
+
+#### **返回值说明**
+
+* `size()` → 返回 `size_t`：链表中元素数量，始终非负。
+* `empty()` → 返回 `bool`：链表是否为空。
+* `begin()/end()` → 返回 `iterator`：正向遍历的起始和终止位置。
+* `push_back`/`push_front` → 返回 `void`：在尾部/头部插入元素，可能抛 `std::bad_alloc`。
+* `insert(pos, value)` → 返回 `iterator`：指向新插入节点的位置，传入空或非法迭代器时抛 `custom_exception`。
+* `erase(pos)` → 返回 `iterator`：指向被删除节点的下一个位置，传入空或非法迭代器时抛 `custom_exception`。
+* `front()/back()` → 返回引用(`list_type&` 或 `const list_type&`)：访问首/尾元素，空表时调用未定义行为。
+* `swap(other)` → 返回 `void`：交换两链表内容，无异常。
+
+#### **内部数据结构**
+
+* **节点结构 (`list_container_node`)**：
+
+    * `_prev`：指向前驱节点。
+    * `_next`：指向后继节点。
+    * `_data`：存储用户数据。
+* **哨兵节点 (`_head`)**：
+
+    * 不存储有效数据，用于统一边界处理。
+    * 初始时 `_head->_prev` 和 `_head->_next` 均指向自身。
+* **内存布局**：
+
+    * 链表通过动态 `new/delete` 分配节点。
+    * 所有节点通过双向指针连接，形成循环结构。
+
+#### **构造与析构**
+
+* **默认构造**：`list() noexcept`，创建哨兵节点，初始化空表状态。
+* **范围构造**：`list(iterator first, iterator last)` / `list(const_iterator first, const_iterator last)`，从区间复制或移动元素。
+* **初始化列表构造**：`list(std::initializer_list<list_type> init)`，按顺序插入列表元素。
+* **拷贝构造**：`list(const list& other)`，深拷贝所有节点数据。
+* **移动构造**：`list(list&& other) noexcept`，接管原链表头指针，置空源对象。
+* **析构**：`~list() noexcept`，调用 `clear()` 释放所有数据节点，然后释放哨兵。
+
+
+#### **迭代器**
+
+* **定义**：
+
+    * `iterator` / `const_iterator`：支持 `operator++`, `operator--`, `operator*`, `operator->`, `operator!=`。
+    * `reverse_iterator` / `reverse_const_iterator`：基于正向迭代器封装，反向遍历。
+* **用法**：
+
+    * `begin()` / `cbegin()`：指向首元素的迭代器。
+    * `end()` / `cend()`：指向哨兵节点。
+    * `rbegin()` / `rcbegin()`：指向尾元素。
+    * `rend()` / `rcend()`：指向哨兵节点。
+
+
+
+#### **元素访问**
+
+* **`empty()`**：检查链表是否为空（仅哨兵）。
+* **`size()`**：遍历计数后返回元素数量。
+* **`front()`** / **`back()`**：返回头/尾节点的数据引用，常量和非常量版本。
+
+
+
+#### **修改操作**
+
+* **尾部插入**：
+
+    * `push_back(const list_type& value)` / `push_back(list_type&& value)`，在哨兵前插入节点。
+* **头部插入**：
+
+    * `push_front(const list_type& value)` / `push_front(list_type&& value)`，在哨兵后插入节点。
+* **插入指定位置**：
+
+    * `insert(iterator pos, const list_type& value)` / `insert(iterator pos, list_type&& value)`，在 `pos` 前插入。
+* **删除操作**：
+
+    * `pop_back()`：删除尾节点。
+    * `pop_front()`：删除头节点，返回下一个位置迭代器。
+    * `erase(iterator pos)`：删除 `pos` 指向节点并返回下一个节点迭代器。
+
+
+
+#### **内存管理 & swap**
+
+* **调整大小**：
+
+    * `resize(size_t count, const list_type& value = list_type())`，根据 `count` 增删节点。
+* **清理资源**：
+
+    * `clear() noexcept`，循环删除所有数据节点，保留哨兵。
+* **交换**：
+
+    * `swap(list& other) noexcept`，交换两个链表的哨兵指针。
+
+
+#### **复杂度分析**
+
+* `empty()`：`O(1)`，直接检查哨兵指针。
+* `size()`：`O(n)`，遍历整个链表统计元素（可通过缓存优化至 `O(1)`）。
+* `push_back()/push_front()`：`O(1)`，在哨兵相邻位置插入新节点。
+* `insert()/erase()`：`O(1)`，在已知节点位置常量时间操作。
+* `clear()`：`O(n)`，释放所有数据节点。
+* `operator+`：`O(n + m)`，合并两个链表时遍历所有元素。
+
+#### **边界条件和错误处理**
+
+* **空表操作**：`front()/back()` 前应检查 `empty()`；否则行为未定义。
+* **迭代器有效性**：`insert` 与 `erase` 参数必须指向同一链表且非哨兵空指针。
+* **内存分配失败**：插入时抛 `std::bad_alloc`，建议在高层捕获。
+* **自定义异常**：传入空迭代器或非法区间时抛 `custom_exception::customize_exception`。
+
+---
+
+#### **注意事项**
+
+* **迭代器失效规则**：链表插入/删除仅失效目标位置的迭代器，其他迭代器保持有效。
+* **异常安全**：插入失败时保证链表状态不变（强异常保证）。
+* **多线程安全**：非线程安全，需外部同步锁。
+* **性能优化**：频繁 `size()` 可缓存；可扩展 `reserve` 模式减少节点分配。
+#### **使用示例**
+
+```cpp
+using namespace list_container;
+
+int main()
+{
+    // 1. 构造函数示例
+    std::cout << "=== 构造函数示例 ===\n";
+
+    // 默认构造
+    list_container::list<int> l1;
+    std::cout << "l1 (默认构造): " << l1 << std::endl;
+
+    // 初始化列表构造
+    list_container::list<std::string> l2 = {"hello", "world", "!"};
+    std::cout << "l2 (初始化列表构造): " << l2 << std::endl;
+
+    // 拷贝构造
+    list_container::list<std::string> l3(l2);
+    std::cout << "l3 (拷贝构造): " << l3 << std::endl;
+
+    // 2. 插入操作示例
+    std::cout << "\n=== 插入操作示例 ===\n";
+
+    l1.push_back(10);
+    l1.push_back(20);
+    l1.push_front(5);
+    std::cout << "l1 插入后: " << l1 << std::endl;
+
+    // 指定位置插入
+    auto it = l1.begin();
+    ++it;  // 指向第二个元素
+    l1.insert(it, 15);
+    std::cout << "l1 插入中间: " << l1 << std::endl;
+
+    // 3. 删除操作示例
+    std::cout << "\n=== 删除操作示例 ===\n";
+
+    l1.pop_back();
+    std::cout << "l1 删除尾部: " << l1 << std::endl;
+
+    l1.pop_front();
+    std::cout << "l1 删除头部: " << l1 << std::endl;
+
+    it = l1.begin();
+    l1.erase(it);
+    std::cout << "l1 删除中间: " << l1 << std::endl;
+
+    // 4. 迭代器遍历示例
+    std::cout << "\n=== 迭代器遍历示例 ===\n";
+
+    std::cout << "正向遍历 l2: ";
+    for (auto list_iterator = l2.begin(); list_iterator != l2.end(); ++list_iterator) {
+        std::cout << *list_iterator << " ";
+    }
+    std::cout << std::endl;
+
+    std::cout << "反向遍历 l2: ";
+    for (auto reverse_list_iterator = l2.rbegin(); reverse_list_iterator != l2.rend(); ++reverse_list_iterator) {
+        std::cout << *reverse_list_iterator << " ";
+    }
+    std::cout << std::endl;
+
+    // 5. 其他操作示例
+    std::cout << "\n=== 其他操作示例 ===\n";
+
+    std::cout << "l2 size: " << l2.size() << std::endl;
+    std::cout << "l2 empty: " << (l2.empty() ? "true" : "false") << std::endl;
+
+    l2.resize(5, "default");
+    std::cout << "l2 resize: " << l2 << std::endl;
+
+    // 6. 运算符重载示例
+    std::cout << "\n=== 运算符重载示例 ===\n";
+
+    list_container::list<std::string> l4 = {"a", "b"};
+    l4 += l2;
+    std::cout << "l4 += l2: " << l4 << std::endl;
+
+    list_container::list<std::string> l5 = l4 + l2;
+    std::cout << "l5 = l4 + l2: " << l5 << std::endl;
+
+    return 0;
+}
+```
+
+
+>**引用**：头文件 `list_container` 命名空间。
 
 ---
 
 ## 容器适配器
 
 ### stack\_adapter::stack
-
-**定义位置**：
-`namespace stack_adapter { template<typename T, typename Container = vector_container::vector<T>> class stack { ... }; }`
-**引用**：头文件 `stack_adapter` 部分。
-
-#### 原理
-
-* 基于底层容器（默认 `vector<T>`）实现后进先出 (LIFO)。
-* **成员变量**：`Container c;` 存储元素。
-
-#### 主要接口
-
-* `void push(const T&)`: `c.push_back(value)`；
-* `void pop()`: `c.pop_back()`；
-* `T& top()`: 返回 `c.back()`；
-* `bool empty() const`: `c.empty()`；
-* `size_t size() const`: `c.size()`；
-* 移动/拷贝构造与赋值按底层容器行为实现。
-
-#### 复杂度
-
-* push/pop/top O(1) 平摊。
-* 空间与底层容器一致。
-
-#### 示例
+### 类概述
+* `stack` 类是一个基于向量容器的栈适配器，采用适配器设计模式实现。
+通过模板参数 `stack_type` 支持任意数据类型，并可指定底层容器类型（默认为 `template_container::vector_container::vector`）。
+该类将向量的接口转换为栈的后进先出`（LIFO`接口，提供了标准栈的所有核心操作。
+#### **类及其函数定义**
 
 ```cpp
-template_container::stack_adapter::stack<int> st;
-st.push(1);
-st.push(2);
-std::cout << st.top(); // 2
-st.pop();
+namespace stack_adapter 
+{
+    template <typename stack_type,typename vector_based_stack = template_container::vector_container::vector<stack_type>>
+    class stack 
+    {
+    private:
+        vector_based_stack vector_object;
+    public:
+        stack() = default;
+        ~stack();
+
+        // 构造与赋值
+        explicit stack(const stack<stack_type>& stack_data);
+        explicit stack(stack<stack_type>&& stack_data) noexcept;
+        stack(std::initializer_list<stack_type> stack_type_data);
+        explicit stack(const stack_type& stack_type_data);
+        stack& operator=(const stack<stack_type>& stack_data);
+        stack& operator=(stack<stack_type>&& stack_data) noexcept;
+
+        // 栈操作
+        void push(const stack_type& stack_type_data);
+        void push(stack_type&& stack_type_data);
+        void pop();
+        [[nodiscard]] stack_type& top() const noexcept;
+        [[nodiscard]] bool empty() const noexcept;
+        size_t size() noexcept;
+        stack_type& footer() noexcept;
+    };
+}
 ```
 
+---
+
+#### **作用描述**
+
+* `push(const stack_type&)` / `push(stack_type&&)`：向栈顶添加元素。前者拷贝语义，后者移动语义。
+* `pop()`：移除栈顶元素，调用底层容器的 `pop_back()`。
+* `top() const`：返回栈顶元素的引用，通过底层容器的 `back()` 获取。
+* `empty() const`：检查栈是否为空，底层调用 `vector.empty()`。
+* `size()`：返回栈中元素数量，底层调用 `vector.size()`。
+* `footer()`：与 `top()` 相同，返回栈顶元素引用。
+* 构造/赋值：
+
+    * 拷贝构造与拷贝赋值：深拷贝底层容器。
+    * 移动构造与移动赋值：接管底层容器资源。
+    * 初始化列表构造：按顺序将列表值 `push_back` 至栈中。
+    * 单值构造：将单个元素 `push_back`。
+
+
+#### **返回值说明**
+
+* `push(...)` → `void`：无返回，可能抛 `std::bad_alloc`。
+* `pop()` → `void`：无返回，调用前应保证非空。
+* `top()` / `footer()` → `stack_type&`：栈顶元素引用，栈空时行为未定义。
+* `empty()` → `bool`：栈是否为空。
+* `size()` → `size_t`：当前元素数量。
+* 构造/赋值函数 → 返回对象引用或构造新实例，可能抛 `std::bad_alloc` 或 `custom_exception`。
+
+#### **内部原理剖析**
+
+* 适配器模式：封装底层 `vector_container::vector`，利用其 `push_back`/`pop_back`/`back` 实现栈行为。
+* 栈顶对应底层容器末尾。
+* 所有操作委托给底层容器，简化实现。
+
+
+#### **复杂度分析**
+
+* `push` / `pop` / `top` / `footer` / `empty` / `size`：均为底层 `vector` 的 `O(1)` 均摊时间。
+* 构造与赋值：深拷贝为 `O(n)`，移动为 `O(1)`。
+
+
+#### **边界条件和错误处理**
+
+* `top()` / `pop()` 在空栈上调用行为未定义，需先检查 `empty()`。
+* 元素插入若底层扩容失败，会抛 `std::bad_alloc`。
+
+
+#### **注意事项**
+
+* 非线程安全：多线程访问需加锁。
+* 异常安全：`push` 失败时无副作用，保持旧状态。
+* 迭代器不可用：适配器未提供迭代接口，只能通过 `pop`/`top` 访问元素。
+### **使用示例**
+
+```cpp
+using namespace template_container;
+
+int main()
+{
+    // 1. 构造函数示例
+    std::cout << "=== 构造函数示例 ===\n";
+
+    // 默认构造
+    stack_adapter::stack<int> s1;
+    std::cout << "s1 (默认构造，空栈): size=" << s1.size() << std::endl;
+
+    // 元素构造
+    stack_adapter::stack<double> s2(3.14);
+    std::cout << "s2 (元素构造): top=" << s2.top() << std::endl;
+
+    // 初始化列表构造
+    stack_adapter::stack<std::string> s3 = {"hello", "world"};
+    std::cout << "s3 (初始化列表构造): ";
+    while ( !s3.empty() ) 
+    {
+        std::cout << s3.top() << " ";
+        s3.pop();
+    }
+    std::cout << std::endl;
+
+    // 2. 栈操作示例
+    std::cout << "\n=== 栈操作示例 ===\n";
+
+    stack_adapter::stack<int> s4;
+    s4.push(10);
+    s4.push(20);
+    s4.push(30);
+
+    std::cout << "s4 压栈后 size=" << s4.size() << ", top=" << s4.top() << std::endl;
+
+    s4.pop();
+    std::cout << "s4 弹栈后 size=" << s4.size() << ", top=" << s4.top() << std::endl;
+
+    // 3. 拷贝与移动示例
+    std::cout << "\n=== 拷贝与移动示例 ===\n";
+
+    // 拷贝构造
+    stack_adapter::stack<int> s5(s4);
+    std::cout << "s5 (拷贝构造自 s4): top=" << s5.top() << std::endl;
+
+    // 移动构造
+    stack_adapter::stack<int> s6(std::move(s5));
+    std::cout << "s6 (移动构造自 s5): top=" << s6.top() << ", s5 size=" << s5.size() << std::endl;
+
+    return 0;
+}
+```
+>**引用**：头文件 `stack_adapter` 命名空间。
+---
 ### queue\_adapter::queue
 
 **定义位置**：
@@ -1355,12 +1730,9 @@ st.pop();
 #### 示例
 
 ```cpp
-template_container::queue_adapter::queue<int> q;
-q.push(1); q.push(2);
-std::cout << q.front(); // 1
-q.pop();
-```
 
+```
+---
 ### queue\_adapter::priority\_queue
 
 **定义位置**：
