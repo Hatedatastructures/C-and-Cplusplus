@@ -1948,12 +1948,13 @@ namespace template_container
                 }
                 _head->_next = _head->_prev = _head;
             }
-            list& operator=(list<list_type> list_data) noexcept
+            list& operator=(const list<list_type>& list_data) noexcept
             {
                 //拷贝赋值
                 if( this != &list_data)
                 {
-                    swap(list_data);
+                    list<list_type> copy_list_object (list_data);
+                    swap(copy_list_object);
                 }
                 return *this;
             }
@@ -1971,7 +1972,8 @@ namespace template_container
                 if( this != &list_data)
                 {
                     _head = std::move(list_data._head);
-                    list_data._head = nullptr;
+                    list_data.create_head();
+                    //防止移动之后类判空空指针
                 }
                 return *this;
             }
@@ -2149,7 +2151,7 @@ namespace template_container
                 list_object = queue_data.list_object;
             }
 
-            explicit queue(queue<queue_type>&& queue_type_data) noexcept
+            queue(queue<queue_type>&& queue_type_data) noexcept
             {
                 //移动构造
                 list_object = std::forward<list_based_queue>(queue_type_data.list_object);

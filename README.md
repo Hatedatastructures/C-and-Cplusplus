@@ -1228,14 +1228,15 @@ int main()
 
 `list` 类是一个模板化的双向链表容器，模拟标准库 `std::list` 的核心功能，通过哨兵节点实现统一边界处理，支持常量时间的任意位置插入与删除。
 
----
 
 #### **类及其函数定义**
 
 ```cpp
-namespace list_container {
+namespace list_container 
+{
     template <typename list_type>
-    class list {
+    class list 
+    {
     public:
         // 嵌套节点与迭代器
         template<typename list_type_function_node>
@@ -1554,13 +1555,13 @@ int main()
 
 ---
 
-## 容器适配器
+## 栈适配器
 
-### stack\_adapter::stack
+### `stack_adapter::stack`
 ### 类概述
 * `stack` 类是一个基于向量容器的栈适配器，采用适配器设计模式实现。
 通过模板参数 `stack_type` 支持任意数据类型，并可指定底层容器类型（默认为 `template_container::vector_container::vector`）。
-该类将向量的接口转换为栈的后进先出`（LIFO`接口，提供了标准栈的所有核心操作。
+该类将向量的接口转换为栈的后进先出`（LIFO）`接口，提供了标准栈的所有核心操作。
 #### **类及其函数定义**
 
 ```cpp
@@ -1703,87 +1704,437 @@ int main()
 ```
 >**引用**：头文件 `stack_adapter` 命名空间。
 ---
-### queue\_adapter::queue
-
-**定义位置**：
-`namespace queue_adapter { template<typename T, typename Container = list_container::list<T>> class queue { ... }; }`
-**引用**：
-
-#### 原理
-
-* 基于底层容器（默认 `list<T>`）实现先进先出 (FIFO)。
-* **成员变量**：`Container c;`。
-
-#### 主要接口
-
-* `void push(const T&)`: `c.push_back(value)`；
-* `void pop()`: `c.pop_front()`；
-* `T& front()`: `c.front()`；
-* `T& back()`: `c.back()`；
-* `bool empty() const`, `size_t size() const`.
-
-#### 复杂度
-
-* push/pop O(1)。
-* 空间与底层容器一致。
-
-#### 示例
+#### **类及其函数定义**
 
 ```cpp
+namespace queue_adapter {
+    template <typename queue_type,
+              typename list_based_queue = template_container::list_container::list<queue_type>>
+    class queue {
+    private:
+        list_based_queue list_object;
+    public:
+        queue() = default;
+        ~queue();
 
+        // 构造与赋值
+        explicit queue(const queue& queue_data);
+        explicit queue(queue&& queue_data) noexcept;
+        queue(std::initializer_list<queue_type> list_data);
+        explicit queue(const queue_type& single_data);
+        queue& operator=(const queue& queue_data);
+        queue& operator=(queue&& queue_data) noexcept;
+
+        // 核心操作
+        void push(const queue_type& data);
+        void push(queue_type&& data);
+        void pop();
+        [[nodiscard]] queue_type& front() noexcept;
+        [[nodiscard]] queue_type& back() noexcept;
+        [[nodiscard]] size_t size() const noexcept;
+        [[nodiscard]] bool empty() const noexcept;
+    };
+
+    template <typename priority_queue_type,
+              typename compare = template_container::imitation_functions::less<priority_queue_type>,
+              typename vector_based_priority_queue = template_container::vector_container::vector<priority_queue_type>>
+    class priority_queue {
+    private:
+        vector_based_priority_queue data;
+        compare comp;
+
+        void adjust_up(int idx) noexcept;
+        void adjust_down(int idx = 0) noexcept;
+    public:
+        priority_queue() = default;
+        ~priority_queue() noexcept;
+        priority_queue(std::initializer_list<priority_queue_type> init);
+        priority_queue(const priority_queue& other);
+        priority_queue(priority_queue&& other) noexcept;
+        explicit priority_queue(const priority_queue_type& single);
+        priority_queue& operator=(const priority_queue& other);
+        priority_queue& operator=(priority_queue&& other) noexcept;
+
+        // 核心操作
+        void push(const priority_queue_type& value);
+        [[nodiscard]] priority_queue_type& top() noexcept;
+        void pop();
+        [[nodiscard]] size_t size() const noexcept;
+        [[nodiscard]] bool empty() const noexcept;
+    };
+}
+```
+
+---
+
+#### **作用描述**
+
+* **queue**：
+
+    * **模板参数**：`queue_type` 为存储元素类型；`list_based_queue` 可自定义链表类型。
+    * **push**：将元素追加到队尾，利用 `list_object.push_back`，支持左值/右值重载。
+    * **pop**：移除队首元素，调用 `list_object.pop_front`。
+    * **front/back**：分别返回队首/队尾元素引用，可修改底层数据。
+    * **empty/size**：检查队列是否为空并获取元素个数。
+    * **拷贝/移动构造赋值**：支持拷贝和移动语义，保持异常安全。
+
+* **priority\_queue**：
+
+    * **模板参数**：`priority_queue_type` 为元素类型；`compare` 为比较仿函数；底层容器默认 `vector`。
+    * **push**：先在末尾 `data.push_back`，再调用 `adjust_up` 恢复堆性质。
+    * **top**：返回当前最大（或最小）元素引用，由 `comp` 决定排序方向。
+    * **pop**：用末尾元素替换堆顶，移除末尾，然后 `adjust_down` 恢复堆序。
+    * **empty/size**：常量时间获取状态和大小。
+    * **构造与赋值**：支持对初始化列表批量 `push`、拷贝所有元素或接管资源。
+
+---
+
+#### **返回值说明**
+
+* `push(...)` → `void`：无返回；可能因底层容器扩容抛 `std::bad_alloc`。
+* `pop()` → `void`：无返回；调用前需确保非空，空队列调用行为未定义。
+* `front()/back()/top()` → 引用：返回对应元素引用；空容器调用将出现未定义行为。
+* `empty()` → `bool`：队列是否为空。
+* `size()` → `size_t`：元素数量。
+* 构造/赋值 → 返回对象引用或实例；可能抛异常或保持强异常安全。
+
+---
+
+#### **内部原理剖析**
+
+* **queue**：
+
+    * 基于双向链表存储，每个节点通过 `prev/next` 连接。
+    * `push` 在尾部插入新节点，`pop` 在头部删除节点，均为 O(1)。
+    * 哨兵节点机制简化边界，无需额外判断首尾空指针。
+
+* **priority\_queue**：
+
+    * 利用数组下标计算父子关系：父 `i` 的左右子分别 `2*i+1` 和 `2*i+2`。
+    * **上浮算法**（`adjust_up`）：比较子与父，如子优先级更高则交换，直至根或堆序满足。
+    * **下沉算法**（`adjust_down`）：比较父与子节点，找出优先级更高的子交换，直至无违反堆序或到叶节点。
+    * 支持自定义 `comp`，可构造大顶堆或小顶堆。
+
+---
+
+#### **复杂度分析**
+
+* **queue**：
+
+    * `push`, `pop`, `front`, `back`, `empty`, `size` 均为 O(1)。
+
+* **priority\_queue**：
+
+    * `push`, `pop`：O(log n) 均摊，`adjust_up/down` 操作沿路径深度交换。
+    * `top`, `empty`, `size`：O(1)。
+    * 构造（初始化列表）: 对 `n` 个元素执行 `push`，总 O(n log n)。
+
+---
+
+#### **边界条件和错误处理**
+
+* **空检测**：所有访问与删除操作前应调用 `empty()`。
+* **内存分配失败**：底层容器扩容时抛 `std::bad_alloc`。
+* **比较策略**：确保 `compare` 仿函数满足严格弱排序，否则堆操作行为不确定。
+
+---
+
+#### **注意事项**
+
+* **线程安全**：非线程安全，实现无锁，需要外部同步。
+* **异常安全**：`push` 失败时容器状态不变，`pop` 无额外分配。
+* **无迭代接口**：适配器仅提供队列/堆操作，不支持遍历访问。
+
+---
+
+#### **使用示例**
+
+```cpp
+#include <iostream>
+using namespace queue_adapter;
+
+int main() {
+    // queue 使用示例
+    queue<int> q = {10, 20, 30};
+    q.push(40);
+    std::cout << "Front: " << q.front() << ", Back: " << q.back() << std::endl;
+    q.pop();
+    std::cout << "After pop, Front: " << q.front() << std::endl;
+
+    // priority_queue 使用示例
+    priority_queue<int> pq = {3, 1, 4, 1, 5};
+    pq.push(9);
+    std::cout << "Top: " << pq.top() << std::endl;
+    pq.pop();
+    std::cout << "After pop, Top: " << pq.top() << std::endl;
+
+    return 0;
+}
 ```
 ---
-### queue\_adapter::priority\_queue
+## 队列适配器
+## 队列
+### `queue_adapter::queue`
+### 类概述
+* `queue` 类是一个基于双向链表的队列适配器，
+采用先进先出`（FIFO）`的操作方式。通过模板参数 `queue_type` 支持任意数据类型，
+并可指定底层容器类型（默认为 `template_container::list_container::list`）。该类将链表的接口转换为队列的标准接口，提供了队列的所有核心操作。
+#### **类及其函数定义**
 
-**定义位置**：
-`namespace queue_adapter { template<typename T, typename Compare = imitation_functions::less<T>> class priority_queue { ... }; }`
-**引用**：
+```cpp
+namespace queue_adapter 
+{
+    template <typename queue_type,typename list_based_queue = template_container::list_container::list<queue_type>>
+    class queue 
+    {
+    private:
+        list_based_queue list_object;
+    public:
+        queue() = default;
+        ~queue();
 
-#### 原理
+        // 构造与赋值
+        explicit queue(const queue& queue_data);
+        explicit queue(queue&& queue_data) noexcept;
+        queue(std::initializer_list<queue_type> list_data);
+        explicit queue(const queue_type& single_data);
+        queue& operator=(const queue& queue_data);
+        queue& operator=(queue&& queue_data) noexcept;
 
-* 基于底层 `vector<T>` 实现二叉堆；维护最大堆或最小堆（依据 Compare）。
-* **成员变量**：`vector_container::vector<T> vector_container_object; Compare function_policy;`
+        // 核心操作
+        void push(const queue_type& data);
+        void push(queue_type&& data);
+        void pop();
+        [[nodiscard]] queue_type& front() noexcept;
+        [[nodiscard]] queue_type& back() noexcept;
+        [[nodiscard]] size_t size() const noexcept;
+        [[nodiscard]] bool empty() const noexcept;
+    };
+}
+```
 
-#### 主要接口
+#### **作用描述**
 
-* 构造函数：
+* **模板参数**：`queue_type` 为元素类型；`list_based_queue` 为底层双向链表类型。
+* **push**：将元素追加到队尾，支持拷贝与移动语义。
+* **pop**：移除队首元素。
+* **front/back**：返回队首/队尾元素的引用。
+* **empty/size**：获取队列状态和元素数量。
+* **构造/赋值**：支持拷贝、移动、初始化列表和单值构造。
 
-    * 默认构造：空堆。
-    * 从单个元素构造：插入元素后上浮调整。
-    * 拷贝/移动构造与赋值。
-* `void push(const T&)`:
+#### **返回值说明**
 
-    * 将新元素插入 `vector_container_object.push_back(val)`，然后上浮 `priority_queue_adjust_upwards` 保持堆性质。
-* `void pop()`:
+* `push`/`pop` → `void`：无返回，`push` 可能抛 `std::bad_alloc`。
+* `front()/back()` → `queue_type&`：返回元素引用，空队列调用行为未定义。
+* `empty()` → `bool`：是否为空。
+* `size()` → `size_t`：元素数量。
+* 构造/赋值 → 返回实例或对象引用，异常安全需依赖底层链表。
 
-    * 交换根元素与最后元素，删除最后元素，调用 `priority_queue_adjust_downwards` 从根开始下沉调整。
-* `T& top()`: 返回 `vector_container_object.front()` 或 `vector_container_object[0]`。
-* `bool empty() const`, `size_t size() const`.
-* `void adjust_upwards(int idx)`, `void adjust_downwards(int idx)`: 内部堆调整函数。
-* **复杂度**
+#### **内部原理剖析**
 
-    * push/pop O(log n)；top O(1)。
-    * 构造若给定范围批量建堆，可 O(n)，但头文件若无批量构造，从空逐个插入 O(n log n)。
-* **示意图**
+* 基于自定义双向链表：节点通过 `_prev`/`_next` 链接。
+* `push` 在尾部插入新节点，`pop` 在头部删除节点，均为 O(1)。
+* 利用哨兵节点简化边界操作。
 
-    * 堆插入上浮：从插入节点不断与父节点比较并交换，直到不需交换或到达根。
-    * 堆删除下沉：从根节点开始，将较小/较大子节点上移替代，直到叶子或无需调整位置。
-    * 可在文档中插入示意图（手绘或工具生成），如节点数组映射树结构。
-* **示例**
+#### **复杂度分析**
 
-  ```cpp
-  template_container::queue_adapter::priority_queue<int> pq;
-  pq.push(5);
-  pq.push(3);
-  pq.push(7);
-  std::cout << pq.top(); // 7 (若为最大堆)
-  pq.pop(); // 删除 7
-  std::cout << pq.top(); // 5
-  ```
-* **引用**：详见&#x20;
+* `push`, `pop`, `front`, `back`, `empty`, `size`：O(1)。
+* 构造（初始化列表）: O(n)。
 
+#### **边界条件和错误处理**
+
+* 操作前应调用 `empty()` 检查空队列。
+* 底层分配失败抛 `std::bad_alloc`。
+
+#### **注意事项**
+
+* 非线程安全。
+* 无迭代接口。
+
+#### **使用示例**
+
+```cpp
+using namespace  template_container;
+int main()
+{
+    // 1. 构造函数示例
+    std::cout << "=== 构造函数示例 ===\n";
+
+    // 默认构造
+    queue_adapter::queue<int> q1;
+    std::cout << "q1 (默认构造，空队列): size=" << q1.size() << std::endl;
+
+    // 元素构造
+    queue_adapter::queue<double> q2(3.14);
+    std::cout << "q2 (元素构造): front=" << q2.front() << std::endl;
+
+    // 初始化列表构造
+    queue_adapter::queue<std::string> q3 = {"hello", "world"};
+    std::cout << "q3 (初始化列表构造): ";
+    while (!q3.empty())
+    {
+        std::cout << q3.front() << " ";
+        q3.pop();
+    }
+    std::cout << std::endl;
+
+    // 2. 队列操作示例
+    std::cout << "\n=== 队列操作示例 ===\n";
+
+    queue_adapter::queue<int> q4;
+    q4.push(10);
+    q4.push(20);
+    q4.push(30);
+
+    std::cout << "q4 入队后: front=" << q4.front() << ", back=" << q4.back() << std::endl;
+
+    q4.pop();
+    std::cout << "q4 出队后: front=" << q4.front() << ", size=" << q4.size() << std::endl;
+
+    // 3. 拷贝与移动示例
+    std::cout << "\n=== 拷贝与移动示例 ===\n";
+
+    // 拷贝构造
+    queue_adapter::queue<int> q5(q4);
+    std::cout << "q5 (拷贝构造自 q4): front=" << q5.front() << std::endl;
+
+    // 移动构造
+    queue_adapter::queue<int> q6(std::move(q5));
+    std::cout << "q6 (移动构造自 q5): front=" << q6.front() << ", q5 empty=" << q5.empty() << std::endl;
+
+    return 0;
+}
+```
+> **引用**： 头文件 `queue_adapter` 命名空间
 ---
+### 优先级队列
+### `queue_adapter::priority_queue`
 
+#### **类及其函数定义**
+
+```cpp
+namespace queue_adapter 
+{
+    template <typename priority_queue_type,typename compare = template_container::imitation_functions::less<priority_queue_type>,
+    typename vector_based_priority_queue = template_container::vector_container::vector<priority_queue_type>>
+    class priority_queue 
+    {
+    private:
+        vector_based_priority_queue data;
+        compare comp;
+        void adjust_up(int idx) noexcept;
+        void adjust_down(int idx = 0) noexcept;
+    public:
+        priority_queue() = default;
+        ~priority_queue() noexcept;
+        priority_queue(std::initializer_list<priority_queue_type> init);
+        priority_queue(const priority_queue& other);
+        priority_queue(priority_queue&& other) noexcept;
+        explicit priority_queue(const priority_queue_type& single);
+        priority_queue& operator=(const priority_queue& other);
+        priority_queue& operator=(priority_queue&& other) noexcept;
+
+        // 核心操作
+        void push(const priority_queue_type& value);
+        [[nodiscard]] priority_queue_type& top() noexcept;
+        void pop();
+        [[nodiscard]] size_t size() const noexcept;
+        [[nodiscard]] bool empty() const noexcept;
+    };
+}
+```
+
+#### **作用描述**
+
+* **模板参数**：`priority_queue_type` 为元素类型；`compare` 为排序仿函数。
+* **push**：末尾插入后调用 `adjust_up` 恢复堆序。
+* **top**：返回堆顶元素引用。
+* **pop**：交换堆顶与尾部元素，删除尾部并 `adjust_down`。
+* **empty/size**：获取堆状态和大小。
+* **构造/赋值**：支持初始化列表、拷贝和移动语义。
+
+#### **返回值说明**
+
+* `push`/`pop` → `void`：`push` 可能抛 `std::bad_alloc`。
+* `top()` → `priority_queue_type&`：返回元素引用，空堆调用未定义。
+* `empty()` → `bool`。
+* `size()` → `size_t`。
+
+#### **内部原理剖析**
+
+* 基于动态数组（`vector`）：
+
+    * 栈顶对应 `data[0]`。
+    * **向上调整**：比较子与父，必要时交换。
+    * **向下调整**：比较父与子，交换以维护堆序。
+    * 紧耦合 `comp` 仿函数，可配大顶/小顶堆。
+
+#### **复杂度分析**
+
+* `push`, `pop`：`O(log n)`。
+* `top`, `empty`, `size`：`O(1)`。
+* 构造（初始化列表）：`O(n log n)`。
+* 拷贝/移动构造：`O(n)`/`O(1)`。
+
+#### **边界条件和错误处理**
+
+* 操作前检查 `empty()`。
+* 分配失败抛 `std::bad_alloc`。
+* 确保 `compare` 满足弱排序。
+
+#### **注意事项**
+
+* 非线程安全。
+* 无迭代接口。
+
+#### **使用示例**
+
+```cpp
+using namespace template_container;
+int main() 
+{
+    // 1. 构造函数示例
+    std::cout << "=== 构造函数示例 ===\n";
+    
+    // 默认构造（大顶堆）
+    queue_adapter::priority_queue<int> pq1;
+    std::cout << "pq1 (默认构造，空队列): size=" << pq1.size() << std::endl;
+    
+    // 初始化列表构造
+    queue_adapter::priority_queue<int> pq2 = {3, 1, 4, 1, 5, 9};
+    std::cout << "pq2 (初始化列表构造): top=" << pq2.top() << std::endl;
+    
+    // 2. 优先队列操作示例
+    std::cout << std::endl << "=== 优先队列操作示例 ===" <<std::endl;
+
+    
+    pq1.push(10);
+    pq1.push(20);
+    pq1.push(15);
+    
+    std::cout << "pq1 入队后: top=" << pq1.top() << std::endl;
+    
+    pq1.pop();
+    std::cout << "pq1 出队后: top=" << pq1.top() << std::endl;
+    
+    // 3. 自定义比较器示例（小顶堆）
+    std::cout << "\n=== 自定义比较器示例 ===\n";
+    
+    using MinHeap = queue_adapter::priority_queue<int, 
+        template_container::imitation_functions::greater<int>>;
+    
+    MinHeap minHeap;
+    minHeap.push(5);
+    minHeap.push(3);
+    minHeap.push(7);
+    
+    std::cout << "小顶堆: top=" << minHeap.top() << std::endl;
+    
+    return 0;
+}
+```
+> **引用**：头文件 `queue_adapter` 命名空间
+---
 ## 树形容器基础 `tree_container`
 
 ### binary\_search\_tree（二叉搜索树）
