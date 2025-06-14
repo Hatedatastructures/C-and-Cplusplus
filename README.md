@@ -25,9 +25,9 @@
     * [`vector`](#vector_container)
  * ### [链表容器 `list_container`](#链表容器)
      * [`list`](#list_container)
- * ### [栈适配器 `stack_adapter`]()
+ * ### [栈适配器 `stack_adapter`](#stack_adapterstack)
      * [`stack`](#stack_adapterstack)
- * ### [队列适配器 `queue_adapter`]()
+ * ### [队列适配器 `queue_adapter`](#队列适配器)
      * [`queue`](#queue_adapterqueue)
      * [`priority_queue`](#queue_adapterpriority_queue)
  * ### [树形容器 `tree_container`](#树形容器基础-tree_container)
@@ -1704,174 +1704,7 @@ int main()
 ```
 >**引用**：头文件 `stack_adapter` 命名空间。
 ---
-#### **类及其函数定义**
 
-```cpp
-namespace queue_adapter {
-    template <typename queue_type,
-              typename list_based_queue = template_container::list_container::list<queue_type>>
-    class queue {
-    private:
-        list_based_queue list_object;
-    public:
-        queue() = default;
-        ~queue();
-
-        // 构造与赋值
-        explicit queue(const queue& queue_data);
-        explicit queue(queue&& queue_data) noexcept;
-        queue(std::initializer_list<queue_type> list_data);
-        explicit queue(const queue_type& single_data);
-        queue& operator=(const queue& queue_data);
-        queue& operator=(queue&& queue_data) noexcept;
-
-        // 核心操作
-        void push(const queue_type& data);
-        void push(queue_type&& data);
-        void pop();
-        [[nodiscard]] queue_type& front() noexcept;
-        [[nodiscard]] queue_type& back() noexcept;
-        [[nodiscard]] size_t size() const noexcept;
-        [[nodiscard]] bool empty() const noexcept;
-    };
-
-    template <typename priority_queue_type,
-              typename compare = template_container::imitation_functions::less<priority_queue_type>,
-              typename vector_based_priority_queue = template_container::vector_container::vector<priority_queue_type>>
-    class priority_queue {
-    private:
-        vector_based_priority_queue data;
-        compare comp;
-
-        void adjust_up(int idx) noexcept;
-        void adjust_down(int idx = 0) noexcept;
-    public:
-        priority_queue() = default;
-        ~priority_queue() noexcept;
-        priority_queue(std::initializer_list<priority_queue_type> init);
-        priority_queue(const priority_queue& other);
-        priority_queue(priority_queue&& other) noexcept;
-        explicit priority_queue(const priority_queue_type& single);
-        priority_queue& operator=(const priority_queue& other);
-        priority_queue& operator=(priority_queue&& other) noexcept;
-
-        // 核心操作
-        void push(const priority_queue_type& value);
-        [[nodiscard]] priority_queue_type& top() noexcept;
-        void pop();
-        [[nodiscard]] size_t size() const noexcept;
-        [[nodiscard]] bool empty() const noexcept;
-    };
-}
-```
-
----
-
-#### **作用描述**
-
-* **queue**：
-
-    * **模板参数**：`queue_type` 为存储元素类型；`list_based_queue` 可自定义链表类型。
-    * **push**：将元素追加到队尾，利用 `list_object.push_back`，支持左值/右值重载。
-    * **pop**：移除队首元素，调用 `list_object.pop_front`。
-    * **front/back**：分别返回队首/队尾元素引用，可修改底层数据。
-    * **empty/size**：检查队列是否为空并获取元素个数。
-    * **拷贝/移动构造赋值**：支持拷贝和移动语义，保持异常安全。
-
-* **priority\_queue**：
-
-    * **模板参数**：`priority_queue_type` 为元素类型；`compare` 为比较仿函数；底层容器默认 `vector`。
-    * **push**：先在末尾 `data.push_back`，再调用 `adjust_up` 恢复堆性质。
-    * **top**：返回当前最大（或最小）元素引用，由 `comp` 决定排序方向。
-    * **pop**：用末尾元素替换堆顶，移除末尾，然后 `adjust_down` 恢复堆序。
-    * **empty/size**：常量时间获取状态和大小。
-    * **构造与赋值**：支持对初始化列表批量 `push`、拷贝所有元素或接管资源。
-
----
-
-#### **返回值说明**
-
-* `push(...)` → `void`：无返回；可能因底层容器扩容抛 `std::bad_alloc`。
-* `pop()` → `void`：无返回；调用前需确保非空，空队列调用行为未定义。
-* `front()/back()/top()` → 引用：返回对应元素引用；空容器调用将出现未定义行为。
-* `empty()` → `bool`：队列是否为空。
-* `size()` → `size_t`：元素数量。
-* 构造/赋值 → 返回对象引用或实例；可能抛异常或保持强异常安全。
-
----
-
-#### **内部原理剖析**
-
-* **queue**：
-
-    * 基于双向链表存储，每个节点通过 `prev/next` 连接。
-    * `push` 在尾部插入新节点，`pop` 在头部删除节点，均为 O(1)。
-    * 哨兵节点机制简化边界，无需额外判断首尾空指针。
-
-* **priority\_queue**：
-
-    * 利用数组下标计算父子关系：父 `i` 的左右子分别 `2*i+1` 和 `2*i+2`。
-    * **上浮算法**（`adjust_up`）：比较子与父，如子优先级更高则交换，直至根或堆序满足。
-    * **下沉算法**（`adjust_down`）：比较父与子节点，找出优先级更高的子交换，直至无违反堆序或到叶节点。
-    * 支持自定义 `comp`，可构造大顶堆或小顶堆。
-
----
-
-#### **复杂度分析**
-
-* **queue**：
-
-    * `push`, `pop`, `front`, `back`, `empty`, `size` 均为 O(1)。
-
-* **priority\_queue**：
-
-    * `push`, `pop`：O(log n) 均摊，`adjust_up/down` 操作沿路径深度交换。
-    * `top`, `empty`, `size`：O(1)。
-    * 构造（初始化列表）: 对 `n` 个元素执行 `push`，总 O(n log n)。
-
----
-
-#### **边界条件和错误处理**
-
-* **空检测**：所有访问与删除操作前应调用 `empty()`。
-* **内存分配失败**：底层容器扩容时抛 `std::bad_alloc`。
-* **比较策略**：确保 `compare` 仿函数满足严格弱排序，否则堆操作行为不确定。
-
----
-
-#### **注意事项**
-
-* **线程安全**：非线程安全，实现无锁，需要外部同步。
-* **异常安全**：`push` 失败时容器状态不变，`pop` 无额外分配。
-* **无迭代接口**：适配器仅提供队列/堆操作，不支持遍历访问。
-
----
-
-#### **使用示例**
-
-```cpp
-#include <iostream>
-using namespace queue_adapter;
-
-int main() {
-    // queue 使用示例
-    queue<int> q = {10, 20, 30};
-    q.push(40);
-    std::cout << "Front: " << q.front() << ", Back: " << q.back() << std::endl;
-    q.pop();
-    std::cout << "After pop, Front: " << q.front() << std::endl;
-
-    // priority_queue 使用示例
-    priority_queue<int> pq = {3, 1, 4, 1, 5};
-    pq.push(9);
-    std::cout << "Top: " << pq.top() << std::endl;
-    pq.pop();
-    std::cout << "After pop, Top: " << pq.top() << std::endl;
-
-    return 0;
-}
-```
----
 ## 队列适配器
 ## 队列
 ### `queue_adapter::queue`
@@ -2135,165 +1968,180 @@ int main()
 ```
 > **引用**：头文件 `queue_adapter` 命名空间
 ---
-## 树形容器基础 `tree_container`
+## 树容器 `tree_container`
 
-### binary\_search\_tree（二叉搜索树）
+### 二叉搜索树
 
-**定义位置**：
+### `binary_search_tree`
+* **概述**：`binary_search_tree` 类是一个模板化的二叉搜索树实现，支持任意数据类型和自定义比较策略。
+二叉搜索树是一种有序数据结构，具有以下性质：左子树所有节点值小于根节点，右子树所有节点值大于根节点。
+该类实现了树的插入、删除、查找和遍历等核心操作，并提供了拷贝构造、移动语义等高级功能。
+
+#### **类及其函数定义**
 
 ```cpp
-namespace tree_container
+template <typename binary_search_tree_type,
+    typename container_imitate_function = template_container::imitation_functions::less<binary_search_tree_type>>
+class binary_search_tree 
 {
-    template <typename binary_search_tree_type, typename container_imitate_function = template_container::imitation_functions::less<binary_search_tree_type>>
-    class binary_search_tree
+private:
+    class binary_search_tree_type_node 
     {
-    private:
-        class binary_search_tree_type_node
-        {
-        public:
-            binary_search_tree_type_node* _left;
-            binary_search_tree_type_node* _right;
-            binary_search_tree_type _data;
-            explicit binary_search_tree_type_node(const binary_search_tree_type& data = binary_search_tree_type());
-            ~binary_search_tree_type_node();
-        };
-        using container_node = binary_search_tree_type_node;
-        container_node* _root;
-        container_imitate_function function_policy;
-        // 内部递归或迭代遍历辅助函数...
     public:
-        binary_search_tree();
-        ~binary_search_tree();
-        bool push(const binary_search_tree_type& value);
-        bool pop(const binary_search_tree_type& value);
-        container_node* find(const binary_search_tree_type& value);
-        void middle_order_traversal() const;
-        size_t size() const;
+        binary_search_tree_type_node* _left;
+        binary_search_tree_type_node* _right;
+        binary_search_tree_type _data;
+        explicit binary_search_tree_type_node(const binary_search_tree_type& val = binary_search_tree_type());
+        ~binary_search_tree_type_node();
     };
-}
+
+    using container_node = binary_search_tree_type_node;
+    container_node* _root;
+    container_imitate_function function_policy;
+
+    // 内部遍历与辅助
+    void interior_middle_order_traversal(container_node* node);
+    size_t interior_middle_order_traversal(container_node* node, size_t& counter);
+    void interior_pre_order_traversal(container_node* node);
+    void clear() noexcept;
+
+public:
+    // 构造与析构
+    binary_search_tree() = default;
+    explicit binary_search_tree(const binary_search_tree_type& val);
+    binary_search_tree(std::initializer_list<binary_search_tree_type> init);
+    binary_search_tree(const binary_search_tree& other);
+    binary_search_tree(binary_search_tree&& other) noexcept;
+    ~binary_search_tree() noexcept;
+
+    // 核心操作
+    bool push(const binary_search_tree_type& val);
+    binary_search_tree& pop(const binary_search_tree_type& val);
+    container_node* find(const binary_search_tree_type& val);
+    void insert(const binary_search_tree_type& existing, const binary_search_tree_type& new_val);
+
+    // 信息查询
+    size_t size();
+    [[nodiscard]] size_t size() const;
+
+    // 遍历接口
+    void middle_order_traversal();
+    void pre_order_traversal();
+
+    // 赋值运算符
+    binary_search_tree& operator=(const binary_search_tree& other);
+    binary_search_tree& operator=(binary_search_tree&& other) noexcept;
+};
 ```
 
-* **引用**：
+---
 
-#### 数据结构与性质
+#### **作用描述**
 
-* 每个节点存储 `_data`，左子树值 < 当前值，右子树值 > 当前值（或使用 `function_policy` 定义的比较）。
-* 不保证平衡，最坏情况可退化为链表。
+* **模板参数**：
 
-#### 构造与析构
+  * `binary_search_tree_type`：节点存储的数据类型。
+  * `container_imitate_function`：用于比较节点值的仿函数（默认 `less<T>`）。
+* **push(val)**：向树中插入新节点；若根为空则新建根，否则根据比较函数向左或右子树递归定位。
+* **pop(val)**：删除具有指定值的节点，分三种情况：
 
-* 默认构造：`_root = nullptr;`。
-* 析构：需要遍历整棵树释放所有节点；通常递归或迭代后序遍历删除。头文件可能在 `~binary_search_tree()` 实现中处理。
+  1. **无左子**：替换为右子树。
+  2. **无右子**：替换为左子树。
+  3. **双子**：找到右子树最小节点，与待删节点数据交换，再删除该最小节点。
+* **`find(val)`**：在树中查找值等于 `val` 的节点，返回指向该节点的指针或 `nullptr`。
+* **`insert(existing, new_val)`**：在已有节点后作为其右子树插入新节点。
+* **遍历**：
 
-#### 插入 `bool push(const T& value)`
+  * `middle_order_traversal()`：非递归中序。
+  * `pre_order_traversal()`：非递归前序。
+* **`size()`**：通过中序遍历计数节点总数；常量/非常量版本。
+* **`clear()`**：非递归释放所有节点。
+* **赋值运算符**：支持深拷贝和移动赋值，清理旧树后接管或复制节点。
 
-* **流程**
 
-    1. 若 `_root == nullptr`，创建新节点 `_root = new node(value)`，`_data = value`，左右子树指向 nullptr，返回 `true`（首次插入）。
-    2. 否则，从 `_root` 开始，通过 `function_policy(value, current->_data)` 判断走左或右：
+#### **返回值说明**
 
-        * 若小于当前节点值，则递归或迭代进入左子树；若左子树为空，创建新节点插入并返回 `true`；否则继续。
-        * 若大于当前节点值，则同理右子树。
-        * 若相等（取决实现），可认为已存在，插入失败返回 `false`，或允许重复插入取决需求；头文件实现需查看 `function_policy` 或设计。
-* **返回值**：
+* `push` → `bool`：插入成功返回 `true`，遇到重复元素返回 `false`。
+* `pop` → `binary_search_tree&`：操作完成后返回自身引用。
+* `find` → `container_node*`：指向找到的节点或 `nullptr`。
+* `size()` → `size_t`：返回当前节点总数。
+* 遍历/clear → `void`。
+* 构造/赋值 → 实例化或赋值，无返回。
 
-    * `true`：插入成功。
-    * `false`：值已存在或插入失败。
-* **复杂度**
 
-    * 平均 O(log n)（随机插入时），最坏 O(n)（退化链表）。
-* **边界与错误**
+#### **内部原理剖析**
 
-    * 内存分配失败抛出 `customize_exception`；调用者可捕获或让程序终止。
-* **示例**
+* **节点结构**：`_left`、`_right` 双向指针与数据 `_data`。
+* **插入**：从根开始，使用 `function_policy` 决定向左或向右，直到空位置。
+* **删除**：三种子树情况处理，并使用 `swap` 数据简化双子删除。
+* **非递归遍历**：利用自定义 `stack_adapter::stack<container_node*>` 实现中序和前序遍历。
+* **清理**：同样利用栈做后序释放，防止递归栈溢。
 
-  ```cpp
-  tree_container::binary_search_tree<int> bst;
-  bst.push(5);
-  bst.push(3);
-  bst.push(7);
-  if(!bst.push(5)) {
-      std::cout << "已存在 5，不插入重复项\n";
-  }
-  ```
 
-#### 查找 `container_node* find(const T& value)`
+#### **复杂度分析**
 
-* **流程**
+* 平均情况下，操作（`push`/`pop`/`find`）时间为 `O(log n)`；最坏为退化为链表 `O(n)`。
+* `size()`：`O(n)` 遍历所有节点。
+* 遍历/`clear`：`O(n)`。
+* 空间：`O(n)`（存储节点）+ `O(h)`额外栈空间，`h` 为树高。
 
-    * 从 `_root` 出发，比较 `value` 与 `current->_data`：若相等，返回当前节点指针；若小于，进入左子树；若大于，进入右子树；直至叶节点或 nullptr。
-* **返回值**
 
-    * 若找到，返回指向节点的指针；否则返回 `nullptr`。
-* **复杂度**：平均 O(log n)，最坏 O(n)。
-* **示例**
+#### **边界条件和错误处理**
 
-  ```cpp
-  auto node_ptr = bst.find(7);
-  if(node_ptr) {
-      std::cout << "找到值 7\n";
-  }
-  ```
+* **空树**：在根为空时 `push` 会创建根节点；`pop`/`find` 返回空或保持无变化。
+* **重复元素**：`push` 返回 `false` 而不插入。
+* **内存分配失败**：抛 `std::bad_alloc`。
+* **仿函数要求**：`container_imitate_function` 应提供严格弱序。
 
-#### 删除 `bool pop(const T& value)`
 
-* **流程**
+#### **注意事项**
 
-    1. 先查找目标节点及其父节点。
-    2. 若节点不存在，返回 `false`。
-    3. 若节点是叶节点，直接删除并将父指针置 `nullptr`。
-    4. 若只有一个子节点，用子节点替代当前节点，delete 当前节点。
-    5. 若有两个子节点，一般做：
+* 非线程安全，需外部同步。
+* 对深度大或不平衡树，递归遍历易栈溢，故使用显式栈。
+* `pop` 删除后，外部持有的节点指针可能失效。
 
-        * 找到右子树的最小节点（或左子树最大节点）作为“后继”或“前驱”，将其值赋给当前节点，然后删除该后继节点（后继节点必无左子节点），或相应前驱逻辑。
-    6. 返回 `true`。
-* **复杂度**：平均 O(log n)，最坏 O(n)。
-* **注意**
+#### **使用示例**
 
-    * 删除节点时要确保正确维护父子指针。
-    * 由于不平衡，删除后可能加剧失衡，影响后续操作性能；需谨慎，如果需平衡，考虑 AVL/RB 树。
-* **示例**
-
-  ```cpp
-  if(bst.pop(3)) {
-      std::cout << "删除 3 成功\n";
-  } else {
-      std::cout << "未找到 3\n";
-  }
-  ```
-
-#### 遍历 `void middle_order_traversal() const`
-
-* **中序遍历**：递归或非递归方式。
-* 头文件示例使用迭代栈方式：
-
-  ```cpp
-  void interior_middle_order_traversal(container_node* node) {
-      stack<container_node*> st;
-      while(node != nullptr || !st.empty()) {
-          while(node != nullptr) {
-              st.push(node);
-              node = node->_left;
-          }
-          node = st.top(); st.pop();
-          std::cout << node->_data << " ";
-          node = node->_right;
-      }
-  }
-  void middle_order_traversal() const {
-      interior_middle_order_traversal(_root);
-  }
-  ```
-
-    * 引用：
-* **前序/后序遍历**：若实现，可类比。
-* **用途**：调试、打印、有序输出。
-
-#### size() `size_t size() const`
-
-* **实现**：可能在插入/删除时维护 `_size` 成员；若无，遍历整树计数，O(n)。
-* **头文件**：查看 `size()` 实现细节，若递归或迭代统计节点数。
-* **引用**：可见  中对 `_size()` 统计过程的示例（红黑树统计类似）。
+```cpp
+using namespace template_container::tree_container;
+int main() 
+{
+    // 1. 构造二叉搜索树
+    binary_search_tree<int> bst = {5, 3, 7, 2, 4, 6, 8};
+    
+    std::cout << "中序遍历: ";
+    bst.middle_order_traversal();  // 输出: 2 3 4 5 6 7 8
+    std::cout << "\n前序遍历: ";
+    bst.pre_order_traversal();   // 输出: 5 3 2 4 7 6 8
+    std::cout << "\n树大小: " << bst.size() << std::endl;  // 输出: 7
+    
+    // 2. 插入节点
+    bst.push(9);
+    std::cout << "插入9后中序遍历: ";
+    bst.middle_order_traversal();  // 输出: 2 3 4 5 6 7 8 9
+    
+    // 3. 删除节点
+    bst.pop(3);
+    std::cout << "删除3后中序遍历: ";
+    bst.middle_order_traversal();  // 输出: 2 4 5 6 7 8 9
+    
+    // 4. 查找节点
+    auto node = bst.find(6);
+    if (node) 
+    {
+        std::cout << "\n找到节点: " << node->_data << std::endl;
+    }
+    
+    // 5. 拷贝构造
+    binary_search_tree<int> bst_copy = bst;
+    std::cout << "拷贝树中序遍历: ";
+    bst_copy.middle_order_traversal();
+    
+    return 0;
+}
+}
+```
+> **引用**： 头文件 `tree_container` 命名空间
 
 ---
 

@@ -2449,6 +2449,7 @@ namespace template_container
             // 构造函数，使用初始化列表来初始化二叉搜索树
             binary_search_tree(std::initializer_list<binary_search_tree_type> lightweight_container)
             {
+                _root =  nullptr;
                 for(auto& chained_values:lightweight_container)
                 {
                     push(chained_values);
