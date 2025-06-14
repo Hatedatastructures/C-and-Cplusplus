@@ -2042,8 +2042,8 @@ public:
 
   * `binary_search_tree_type`：节点存储的数据类型。
   * `container_imitate_function`：用于比较节点值的仿函数（默认 `less<T>`）。
-* **push(val)**：向树中插入新节点；若根为空则新建根，否则根据比较函数向左或右子树递归定位。
-* **pop(val)**：删除具有指定值的节点，分三种情况：
+* **`push(val)`**：向树中插入新节点；若根为空则新建根，否则根据比较函数向左或右子树递归定位。
+* **`pop(val)`**：删除具有指定值的节点，分三种情况：
 
   1. **无左子**：替换为右子树。
   2. **无右子**：替换为左子树。
@@ -2139,10 +2139,235 @@ int main()
     
     return 0;
 }
-}
 ```
 > **引用**： 头文件 `tree_container` 命名空间
 
+---
+### AVL树
+### `avl_tree`
+### 类概述
+* `avl_tree` 类是一个模板化的平衡二叉搜索树实现（`AVL` 树），支持键值对存储和自动平衡功能。`AVL` 树通过旋转操作保持平衡性质：任意节点的左右子树高度差不超过 1，确保了插入、删除和查找操作的平均时间复杂度为 `O (log n)`。该类实现了完整的迭代器系统、平衡旋转算法和异常处理机制。
+
+#### **类及其函数定义**
+
+```cpp
+template <typename avl_tree_type_k,typename avl_tree_type_v,
+          typename container_imitate_function = template_container::imitation_functions::less<avl_tree_type_k>,
+          typename avl_tree_node_pair = template_container::practicality::pair<avl_tree_type_k,avl_tree_type_v>>
+class avl_tree 
+{
+private:
+    class avl_tree_type_node 
+    {
+    public:
+        avl_tree_node_pair _data;               // 键值对数据
+        avl_tree_type_node* _left;              // 左子树指针
+        avl_tree_type_node* _right;             // 右子树指针
+        avl_tree_type_node* _parent;            // 父节点指针
+        int _balance_factor;                    // 平衡因子：右子高 - 左子高
+
+        explicit avl_tree_type_node(const avl_tree_type_k& key = avl_tree_type_k(),const avl_tree_type_v& val = avl_tree_type_v());
+        explicit avl_tree_type_node(const avl_tree_node_pair& pair_data);
+    };
+
+    using container_node = avl_tree_type_node;
+    container_node* _root;                      // 树根
+    container_imitate_function function_policy;  // 键比较策略
+
+    // 旋转操作
+    void left_revolve(container_node*& subtree);
+    void right_revolve(container_node*& subtree);
+    void left_right_revolve(container_node*& subtree);
+    void right_left_revolve(container_node*& subtree);
+
+    // 插入与删除辅助
+    bool insert_node(container_node*& subtree, container_node* parent, const avl_tree_node_pair& pr);
+    container_node* remove_node(container_node*& subtree, const avl_tree_type_k& key, bool& erased);
+
+    // 非递归遍历
+    void interior_pre_order_traversal(container_node* start);
+    void interior_middle_order_traversal(container_node* start);
+
+    // 资源清理
+    void clear_tree(container_node* node) noexcept;
+
+public:
+    using iterator = avl_tree_iterator<avl_tree_node_pair, avl_tree_node_pair&, avl_tree_node_pair*>;
+    using const_iterator = avl_tree_iterator<avl_tree_node_pair, const avl_tree_node_pair&, const avl_tree_node_pair*>;
+    using reverse_iterator = avl_tree_reverse_iterator<iterator>;
+    using const_reverse_iterator = avl_tree_reverse_iterator<const_iterator>;
+
+    // 构造与析构
+    avl_tree();  // 空树
+    explicit avl_tree(const avl_tree_node_pair& pr, container_imitate_function comp = container_imitate_function());
+    avl_tree(const avl_tree_type_k& key, const avl_tree_type_v& val = avl_tree_type_v(), container_imitate_function comp = container_imitate_function());
+    avl_tree(std::initializer_list<avl_tree_node_pair> init, container_imitate_function comp = container_imitate_function());
+    avl_tree(const avl_tree& other);  // 深拷贝
+    avl_tree(avl_tree&& other) noexcept;  // 移动
+    ~avl_tree() noexcept;
+
+    // 核心操作
+    bool push(const avl_tree_node_pair& pr);  // 插入键值对
+    bool push(const avl_tree_type_k& key, const avl_tree_type_v& val = avl_tree_type_v());
+    bool pop(const avl_tree_type_k& key);   // 删除指定键
+    avl_tree_node_pair* find(const avl_tree_type_k& key);  // 查找
+
+    // 信息查询
+    [[nodiscard]] size_t size() const;  // 总节点数
+    [[nodiscard]] bool empty() const;   // 是否为空
+
+    // 遍历
+    iterator begin();  // 中序首
+    iterator end();    // 中序尾
+    const_iterator cbegin() const;
+    const_iterator cend() const;
+    reverse_iterator rbegin();
+    reverse_iterator rend();
+    const_reverse_iterator crbegin() const;
+    const_reverse_iterator crend() const;
+
+    // 赋值运算符
+    avl_tree& operator=(const avl_tree& other);
+    avl_tree& operator=(avl_tree&& other) noexcept;
+};
+```
+
+#### **作用描述**
+**模板参数**
+* `avl_tree_type_k`：键的类型（用于排序和查找）
+* `avl_tree_type_v`：值的类型（与键关联的数据）
+* `container_imitate_function`：键的比较器（默认：`less<avl_tree_type_k>`）
+* `avl_tree_node_pair`：键值对类型（默认：`pair<avl_tree_type_k, avl_tree_type_v>`）
+
+ **构造与析构**
+
+   * **空构造**：`avl_tree()` 初始化 `_root=nullptr`，无内存分配。
+   * **键值对构造**：`avl_tree(pr)` 在空树创建根节点，`_balance_factor=0`。
+   * **键/值构造**：`avl_tree(key,val)` 同上，可指定初始键值。
+   * **初始化列表**：依次调用 `push` 对每个元素执行插入并自动平衡。
+   * **拷贝构造**：递归或显式栈深拷贝所有节点与平衡因子。
+   * **移动构造**：直接接管 `other._root` 与 `other.function_policy`，清空源。
+   * **析构**：调用 `clear_tree(_root)` 释放所有节点。
+
+**插入 (`push`)**
+
+   * **查重**：若在定位过程中遇 `comp(a,b)==false && comp(b,a)==false` 则为重复，返回 `false`。
+   * **节点创建**：新节点 `_balance_factor=0`，父指针指向插入位置。
+   * **回溯更新**：从插入节点沿父链向上更新 `_balance_factor`：右插增+1，左插减-1。
+   * **失衡检测**：当因子绝对值>1，识别为 LL/RR/LR/RL 失衡并调用相应旋转：
+
+     * **LL**：`right_revolve`
+     * **RR**：`left_revolve`
+     * **LR**：`left_revolve(left child)` 后 `right_revolve`
+     * **RL**：`right_revolve(right child)` 后 `left_revolve`
+   * **因子修正**：旋转后子树高度恢复，更新相关因子。
+
+ **删除 (`pop`)**
+
+   * **定位**：类似 `find` 查找节点。
+   * **三种删除情况**：
+
+     1. **叶节点**：直接删除并将父链接置 `nullptr`。
+     2. **单子**：用唯一子节点替代被删除节点。
+     3. **双子**：查找右子树最左（中序后继），交换数据并删除该后继。
+   * **回溯平衡**：从删除点父节点起向上更新因子并执行旋转。
+
+ **查找 (`find`)**
+
+   * 自 `_root` 比较 `key` 与 `node->_data.first`，左滑或右滑直至命中或 `nullptr`。
+
+ **查询 (`size`/`empty`)**
+
+   * `empty()`：`O(1)` 检查 `_root==nullptr`。
+   * `size()`：`O(n)` 通过 `_size()` 递归或迭代统计。
+
+ **遍历接口**
+
+   * **中序**：`begin()`、`end()` 生成正序迭代器，内部调 `interior_middle_order_traversal`。
+   * **逆序**：`rbegin()`、`rend()` 生成反向迭代器。
+   * **前序**：`interior_pre_order_traversal` 用于序列化或打印调试。
+
+#### **返回值说明**
+
+* `push(...)` → `bool`：成功插入并平衡返回 `true`；重复键返回 `false`。
+* `pop(key)` → `bool`：存在则删除并返回 `true`；不存在返回 `false`。
+* `find(key)` → `Pair*`：命中返回指针；未命中返回 `nullptr`。
+* `size()` → `size_t`：当前节点数。
+* `empty()` → `bool`：是否无节点。
+* 构造/析构/旋转/遍历 → `void` 或迭代器。
+
+#### **内部原理剖析**
+
+* **节点结构**：包含键值对 `_data`、四指针与 `_balance_factor`。
+* **平衡因子维护**：插入删除后更新并触发局部旋转。
+* **四种失衡与旋转**：LL/RR 用单旋，LR/RL 用双旋。
+* **旋转细节**：
+
+  1. **单旋**：重挂子指针，更新父子关系与因子。
+  2. **双旋**：先旋转子树，再旋转当前树。
+* **无递归遍历**：借助适配器 `stack_adapter::stack`，模拟系统栈。
+* **资源释放**：后序栈或递归，确保先删除子节点。
+
+#### **复杂度分析**
+
+* **时间**：插入/删除/查找 `O(log n)` 平均,`O(n)` 最坏。
+* **空间**：节点存储 `O(n)`，递归或栈辅助 `O(h)`，h=树高。
+* **遍历/清理**：`O(n)` 时间。
+
+#### **边界条件和错误处理**
+
+* 空树：`pop`/`find` 返回 `false`/`nullptr`；`size=0`。
+* 重复键：`push` 不插入，返回 `false`。
+* 内存不足：新节点分配时抛 `std::bad_alloc`。
+* 无效仿函数：若不满足严格弱序，行为未定义。
+
+#### **注意事项**
+
+* **线程安全**：非线程安全，需外部同步。
+* **迭代器失效**：树结构变更后所有迭代器失效。
+* **连续旋转性能**：频繁批量插入可能触发大量旋转。
+* **平衡因子同步**：任何指针操作后都需更新因子。
+
+#### **使用示例**
+
+```cpp
+using namespace template_container::tree_container;
+int main() 
+{
+    // 1. 构造AVL树
+    avl_tree<int, std::string> avl;
+    avl.push(5, "A");
+    avl.push(3, "B");
+    avl.push(7, "C");
+    avl.push(2, "D");
+    avl.push(4, "E");
+    
+    std::cout << "中序遍历: ";
+    avl.middle_order_traversal();  // 输出: 2 3 4 5 7
+    
+    // 2. 查找节点
+    auto node = avl.find(3);
+    if (node) 
+    {
+        std::cout << "\n找到键3的值: " << node->_data.second << std::endl;
+    }
+    
+    // 3. 删除节点
+    avl.pop(3);
+    std::cout << "删除3后中序遍历: ";
+    avl.middle_order_traversal();  // 输出: 2 4 5 7
+    
+    // 4. 迭代器遍历
+    std::cout << "\n迭代器遍历: ";
+    for (auto it = avl.begin(); it != avl.end(); ++it) 
+    {
+        std::cout << it->first<< " ";
+    }
+    
+    return 0;
+}
+```
+> **引用**：头文件 `tree_container` 命名空间。
 ---
 
 ### rb\_tree（红黑树）

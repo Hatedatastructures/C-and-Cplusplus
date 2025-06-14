@@ -1,6 +1,5 @@
 #include "../template_container.hpp"
 using namespace template_container::tree_container;
-
 int main() 
 {
     // 1. 构造二叉搜索树
