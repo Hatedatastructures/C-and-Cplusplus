@@ -5323,7 +5323,7 @@ namespace template_container
             }
             bool push(hash_table_type_value&& hash_table_value_data) noexcept
             {
-                if( find(hash_table_value_data).hash_table_iterator_node != nullptr)
+                if( find(hash_table_value_data).get_node() != nullptr)
                 {
                     return false;
                 }

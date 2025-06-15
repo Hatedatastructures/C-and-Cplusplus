@@ -63,7 +63,10 @@
         "mutex": "cpp",
         "condition_variable": "cpp",
         "fstream": "cpp",
-        "queue": "cpp"
+        "queue": "cpp",
+        "cerrno": "cpp",
+        "cfloat": "cpp",
+        "climits": "cpp"
     },
     "C_Cpp.errorSquiggles": "disabled",
     "Codegeex.CompletionDelay": 2,

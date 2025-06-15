@@ -35,10 +35,10 @@
      * [`binary_search_tree`](#binary_search_tree)
      * [`avl_tree`](#avl_tree)
 
- * ### [基类容器 `base_class_container`]()
-     * [`rb_tree`]()
-     * [`hash_table`]()
-     * [`bit_set`]()
+ * ### [基类容器 `base_class_container`](#基类容器-base_class_container)
+     * [`rb_tree`](#红黑树)
+     * [`hash_table`](#哈希表)
+     * [`bit_set`](#位图)
  * ### [关联式容器 `map_container` `set_container`]()
     * ### [`有序容器`]()
          #### [`tree_map`](#map_containertree_map)
@@ -2780,664 +2780,362 @@ public:
 #### **使用示例**
 * 当前类不推荐直接使用，建议使用上层容器
 > **引用** 头文件 `base_class_container` 命名空间
-
-
-### set\_container::tree\_set
-
-**定义位置**：
+---
+## 位图
+## `bit_set`
+### 类概述
+* `bit_set` 是一个高效的位集合实现，使用整数数组存储二进制位，支持位的设置、重置和查询操作。该类通过位运算实现紧凑的数据存储，
+每个 `int` 可存储 32 位，适合处理大量布尔值的场景（如位图索引、数据标记等）。
+#### **类及其函数定义**
 
 ```cpp
-namespace set_container
+class bit_set 
 {
-    template <typename set_type_val, typename external_compare = template_container::imitation_functions::less<set_type_val>>
-    class tree_set
+    template_container::vector_container::vector<int> vector_bit_set;
+    size_t _size;
+public:
+    bit_set();
+    explicit bit_set(const size_t& new_capacity);
+    void resize(const size_t& new_capacity);
+    bit_set(const bit_set& other);
+    bit_set& operator=(const bit_set& other);
+    void set(const size_t& value);
+    void reset(const size_t& value);
+    [[nodiscard]] size_t size() const;
+    bool test(const size_t& value);
+};
+```
+
+#### **作用描述**\*\*
+
+1. **构造与析构**
+
+   * `bit_set()`：创建空位集，内部不分配额外空间。
+   * `bit_set(new_capacity)`：根据 `new_capacity`（可表示的最大值），分配 `((new_capacity/32)+1)` 个 `int` 元素，每个 `int` 管理 32 位。
+   * `resize(new_capacity)`：同构造体，根据新容量重置内部存储并清空已设置位。
+   * 默认拷贝/赋值：深复制底层数组和已设置计数。
+
+2. **设置位 (`set`)**
+
+   * 计算索引：`block = value/32`，`bit = value%32`。
+   * 在对应 `vector_bit_set[block]` 上做按位或：`|= (1 << bit)`，将该位置 `1`。
+   * 更新 `_size++`，代表总设置位数加一。
+
+3. **重置位 (`reset`)**
+
+   * 同理计算 `block` 和 `bit`。
+   * 在对应整型上做按位与取反：`&= ~(1 << bit)`，将该位清 `0`。
+   * 更新 `_size--`，代表总设置位数减一。
+
+4. **测试位 (`test`)**
+
+   * 若 `_size==0`，快速返回 `false`（无任何位被设置）。
+   * 计算 `block` 和 `bit` 后，返回 `vector_bit_set[block] & (1 << bit) != 0`。
+
+5. **查询**
+
+   * `size()`：返回当前被设置的位数。
+
+#### **返回值说明**
+
+* `set(value)` → `void`：将指定 `value` 的位标记为 1，并增加总计数。
+* `reset(value)` → `void`：将指定 `value` 的位清零，并减少总计数。
+* `test(value)` → `bool`：检查指定 `value` 的位是否被设置。
+* `size()` → `size_t`：返回已设置位的数量。
+* 构造、赋值 → 无返回。
+
+#### **内部原理剖析**
+
+* **底层存储**：
+  使用 `vector<int>` 将位划分为若干个 `int`（32 位）块。索引计算为整除 32 得到块下标，取模 32 得到块内位偏移。
+
+* **位操作**：
+
+  * `|`：位或，将目标位设置为 1，不影响其他位。
+  * `& ~`：先对掩码取反生成全 1 除目标位为 0，然后与原值按位与，清除目标位，不影响其他位。
+
+* **大小维护**：
+  `_size` 追踪目前被设置的位总数，仅在 `set` 与 `reset` 中更新；不检查重复 `set` 可能导致计数不准。
+
+#### **复杂度分析**
+
+* **时间**：
+
+  * `set`/`reset`/`test`：`O(1)`。
+  * `resize`：O(n)（`n` 为新数组长度）。
+
+* **空间**：
+  `O(cap/32)` 个 `int`，其中 `cap` 为可表示的最大值。
+
+#### **边界条件和错误处理**
+
+* **越界访问**：
+  未对 `value` 范围检查，用户须确保 `value < capacity*32`。
+* **重复 `set`**：
+  未检查是否已设置，相同 `value` 重复调用会导致 `_size` 溢出计数不准确。
+* **`reset` 未测试**：
+  若位未被设置即调用 `reset`，`_size` 会错误减少。
+
+#### **注意事项**
+
+* **线程安全**：
+  非线程安全，需外部同步。
+* **计数一致性**：
+  建议在 `set` 前 `test`，在 `reset` 前检查 `test`，以保证 `_size` 正确。
+* **容量管理**：
+  `resize` 会清空所有设置，慎用。
+> **引用** 头文件 `base_class_container` 命名空间
+---
+## 关联式容器
+### `map`
+### tree_map 
+### 类概述
+* `tree_map` 是一个基于红黑树`（rb_Tree）`实现的有序映射容器，存储键值对并按键的顺序维护元素。
+该容器支持高效的插入、删除和查找操作，所有操作的时间复杂度均为 `O (log n)`。元素始终按键的升序排列，遍历时将按此顺序返回元素。
+#### **类及其函数定义**
+
+```cpp
+namespace map_container 
+{
+  template <typename map_type_k,typename map_type_v,
+            typename comparators = template_container::imitation_functions::less<map_type_k>>
+  class tree_map 
+  {
+  private:
+    using key_val_type = template_container::practicality::pair<map_type_k,map_type_v>;
+    struct key_val 
     {
-        using key_val_type = set_type_val;
-        using instance_rb = base_class_container::rb_tree<set_type_val, set_type_val, /*key_extractor*/ ???, external_compare>;
-        instance_rb instance_tree_set;
-    public:
-        using iterator = typename instance_rb::iterator;
-        using const_iterator = typename instance_rb::const_iterator;
-        using reverse_iterator = typename instance_rb::reverse_iterator;
-        using const_reverse_iterator = typename instance_rb::const_reverse_iterator;
-        tree_set();
-        ~tree_set() = default;
-        tree_set(const tree_set& other);
-        tree_set(tree_set&& other) noexcept;
-        explicit tree_set(const key_val_type& data);
-        explicit tree_set(key_val_type&& data) noexcept;
-        tree_set(const std::initializer_list<key_val_type>& list);
-        tree_set& operator=(const tree_set& other);
-        tree_set& operator=(tree_set&& other) noexcept;
-        tree_set& operator=(const std::initializer_list<key_val_type>& list);
-        iterator push(const key_val_type& data);
-        set_iterator push(key_val_type&& data) noexcept;
-        iterator pop(const key_val_type& data);
-        iterator find(const key_val_type& data);
-        void middle_order_traversal();
-        void pre_order_traversal();
-        [[nodiscard]] size_t size() const;
-        bool empty();
-        iterator begin();
-        iterator end();
-        const_iterator cbegin();
-        const_iterator cend();
-        reverse_iterator rbegin();
-        reverse_iterator rend();
-        const_reverse_iterator crbegin();
-        const_reverse_iterator crend();
-        iterator operator[](const key_val_type& data);
+       const map_type_k& operator()(const key_val_type& kv);
     };
+    using instance_rb = base_class_container::rb_tree<map_type_k,key_val_type,key_val,comparators>;
+    instance_rb instance_tree_map;
+
+  public:
+    using iterator = typename instance_rb::iterator;
+    using const_iterator = typename instance_rb::const_iterator;
+    using reverse_iterator = typename instance_rb::reverse_iterator;
+    using const_reverse_iterator = typename instance_rb::const_reverse_iterator;
+    using map_iterator = template_container::practicality::pair<iterator,bool>;
+
+    tree_map();
+    explicit tree_map(const key_val_type& kv);
+    tree_map(std::initializer_list<key_val_type> il);
+    tree_map(const tree_map& other);
+    tree_map(tree_map&& other) noexcept;
+    ~tree_map() = default;
+
+    tree_map& operator=(const tree_map& other);
+    tree_map& operator=(tree_map&& other) noexcept;
+
+    map_iterator push(const key_val_type& kv);
+    map_iterator push(key_val_type&& kv) noexcept;
+    map_iterator pop(const key_val_type& kv);
+    iterator find(const key_val_type& kv);
+
+    void middle_order_traversal();
+    void pre_order_traversal();
+
+    [[nodiscard]] size_t size() const;
+    bool empty() const;
+
+    iterator begin();
+    iterator end();
+    const_iterator cbegin() const;
+    const_iterator cend() const;
+    reverse_iterator rbegin();
+    reverse_iterator rend();
+    const_reverse_iterator crbegin() const;
+    const_reverse_iterator crend() const;
+
+    iterator operator[](const key_val_type& kv);
+  };
 }
 ```
 
-* **引用**：
+#### **作用描述**
 
-#### 数据结构与原理
+* **映射类型**：基于红黑树（`base_class_container::rb_tree`），按键有序存储 `pair<key,value>`。
+* **模板参数**：
 
-* 内部使用 `rb_tree<set_type_val, set_type_val, key_extractor, Compare>`，其中 `key_extractor(value) -> const value&`。
-* 元素按值排序，不存储重复元素。
+  * `map_type_k`：键类型，决定排序。
+  * `map_type_v`：值类型。
+  * `comparators`：键比较仿函数。
+* **核心接口**：
 
-#### 接口详解
+  * `push(kv)`：插入/更新键值对，返回迭代器及插入标志。
+  * `pop(kv)`：删除指定键对应节点，返回删除状态。
+  * `find(kv)`：按键查找节点迭代器。
+  * `operator[](kv)`：访问节点或插入默认值。
+* **遍历**：
 
-* 与 `tree_map` 相似，但 `value` 与 `key` 相同，仅一个类型。
-* **插入** `iterator push(const set_type_val& data)`：插入新元素，若已存在返回 end() 或现有 iterator；需参考实现。
-* **删除** `iterator pop(const set_type_val& data)`: 删除元素，返回下一个或特定标志；文档需说明具体行为。
-* **查找** `iterator find(const set_type_val& data)`: 返回 iterator 或 end()。
-* **operator\[]**：意义不明显，对 set 通常不提供 operator\[]；但头文件中定义，可能用于查找或插入，需查看实现并严格说明。
-* 其他同 `tree_map`。
+  * 中序 `begin()/end()`：按键升序。
+  * 反序 `rbegin()/rend()`：按键降序。
+  * `middle_order_traversal()`、`pre_order_traversal()` 调试或打印。
+* **容量检查**：
 
-#### 复杂度
+  * `size()` 返回元素数；`empty()` 检测是否为空。
 
-* 插入/删除/查找 O(log n)。
-* 遍历 O(n)。
+#### **返回值说明**
 
-#### 示例
+* `push` → `map_iterator`：
+
+  * `.first`：指向对应节点。
+  * `.second`：`true` 插入了新节点，`false` 已存在更新。
+* `pop` → `map_iterator.second`：
+
+  * `true`：节点删除成功；`false`：键不存在。
+* `find` → `iterator`：
+
+  * 命中返回节点；否则 `end()`。
+* `size()` → `size_t`。
+* `empty()` → `bool`。
+
+#### **内部原理**
+
+* **红黑树存储**：
+
+  * 键值对自定义为 `key_val_type`。
+  * `key_val` 提取器将 `pair.first` 作为树节点关键字。
+  * 树的所有平衡与遍历由底层 `rb_tree` 完成。
+
+#### **复杂度分析**
+
+* **插入/删除/查找**：平均与最坏均 `O(log n)`。
+* **遍历**：中/前序 `O(n)`。
+* **空间**：`O(n)` 节点。
+
+#### **注意事项**
+
+* 非线程安全。
+* `operator[](kv)` 若键不存在可能插入默认值。
+* 底层 `rb_tree` 异常将向上传递。
+
+#### **使用示例**
 
 ```cpp
-template_container::set_container::tree_set<int> s;
-s.push(5);
-s.push(3);
-if(s.find(4) == s.end()) {
-    std::cout << "4 不存在\n";
+using namespace template_container;
+int main()
+{
+    map_container::tree_map<int,std::string> m;
+    m.push({1,"one"});
+    m.push({2,"two"});
+    for(auto it=m.begin(); it!=m.end(); ++it)
+    {
+        std::cout<<it->first<<":"<<it->second<<" ";
+    }
+    return 0;
 }
-for(auto it : s) { std::cout << it << " "; }
-s.pop(3);
 ```
 
 ---
 
-### hash\_map 容器
-
-**定义位置**：
+### hash_map 
+### 类概述
+* `hash_map` 是一个基于哈希表实现的无序映射容器，存储键值对并通过哈希函数快速定位元素。
+该容器支持高效的插入、删除和查找操作，平均时间复杂度为 `O (1)`。遍历时元素顺序不确定（按插入顺序）
+#### **类及其函数定义**
 
 ```cpp
-namespace map_container
+namespace map_container 
 {
-    template <typename hash_map_type_key,
-              typename hash_map_type_value,
-              typename first_external_hash_functions = template_container::imitation_functions::hash_imitation_functions,
-              typename second_external_hash_functions = template_container::imitation_functions::hash_imitation_functions>
-    class hash_map
-    {
-        using key_val_type = template_container::practicality::pair<hash_map_type_key, hash_map_type_value>;
-        struct key_val
-        {
-            const hash_map_type_key& operator()(const key_val_type& key_value) { return key_value.first; }
-        };
-        class inbuilt_map_hash_functor
-        {
-        private:
-            first_external_hash_functions  first_hash_functions_object;
-            second_external_hash_functions second_hash_functions_object;
-        public:
-            size_t operator()(const key_val_type& key_value) noexcept;
-        };
-        using hash_table = base_class_container::hash_table<hash_map_type_key, key_val_type, key_val, inbuilt_map_hash_functor>;
-        hash_table instance_hash_map;
-    public:
-        using iterator = typename hash_table::iterator;
-        using const_iterator = typename hash_table::const_iterator;
-        hash_map();
-        ~hash_map() = default;
-        explicit hash_map(const key_val_type& key_value);
-        hash_map(const hash_map& other);
-        hash_map(hash_map&& other) noexcept;
-        bool push(const key_val_type& key_value);
-        bool pop(const key_val_type& key_value);
-        iterator find(const key_val_type& key_value);
-        [[nodiscard]] size_t size() const;
-        bool empty();
-        size_t capacity();
-        iterator begin();
-        iterator end();
-        const_iterator cbegin();
-        const_iterator cend();
-        iterator operator[](const key_val_type& key_value);
-    };
+  template <typename hash_map_type_key,typename hash_map_type_value,
+            typename first_hash = template_container::imitation_functions::hash_imitation_functions,
+            typename second_hash = template_container::imitation_functions::hash_imitation_functions>
+  class hash_map 
+  {
+  private:
+    using key_val_type = template_container::practicality::pair<hash_map_type_key,hash_map_type_value>;
+    struct key_val { const hash_map_type_key& operator()(const key_val_type& kv); };
+    class inbuilt_map_hash_functor { /* 组合键值哈希 */ };
+    using hash_table = base_class_container::hash_table<hash_map_type_key,key_val_type,key_val,inbuilt_map_hash_functor>;
+    hash_table instance_hash_map;
+  public:
+    using iterator = typename hash_table::iterator;
+    using const_iterator = typename hash_table::const_iterator;
+
+    hash_map();
+    explicit hash_map(const key_val_type& kv);
+    hash_map(const hash_map& other);
+    hash_map(hash_map&& other) noexcept;
+    ~hash_map() = default;
+
+    bool push(const key_val_type& kv);
+    bool push(key_val_type&& kv) noexcept;
+    bool pop(const key_val_type& kv);
+    iterator find(const key_val_type& kv);
+
+    size_t size() const;
+    size_t capacity() const;
+    bool empty() const;
+
+    iterator begin();
+    iterator end();
+    const_iterator cbegin() const;
+    const_iterator cend() const;
+
+    iterator operator[](const key_val_type& kv);
+  };
 }
 ```
 
-* **引用**：
+#### **作用描述**
 
-#### 内部数据结构
+* **映射类型**：基于底层 `hash_table`，通过复合哈希函数按插入顺序索引键值对。
+* **模板参数**：
+  * `ash_map_type_key`：键的类型（必须支持哈希函数）
+  * `hash_map_type_value`：值的类型
+  * `first_external_hash_functions`：键的哈希函数（默认使用 `hash_imitation_functions`）
+  * `second_external_hash_functions`：值的哈希函数（默认使用 `hash_imitation_functions`）
+* **核心接口**：
 
-* 基于 `base_class_container::hash_table`，用链表或其它结构解决冲突，并维护插入顺序或其他额外链表指针（头文件实现中有 `overall_list_head_node`, `overall_list_next` 等，用于保留元素插入顺序遍历）。
-* `key_extractor` 提取 key；`inbuilt_map_hash_functor` 结合两个散列函数对 `(key, value)` 进行散列。
+  * `push(kv)`、`pop(kv)`、`find(kv)`。
+  * `operator[](kv)`：访问或插入。
+* **遍历**：
 
-#### 核心操作
+  * `begin()/end()` 按全局链表插入顺序。
 
-1. **插入 `bool push(const key_val_type& kv)`**
+#### **返回值说明**
 
-    * 计算 hash：`size_t h = functor(kv)`，取模桶数得到 `index`。
-    * 遍历链表：若存在相同 key，更新 value 或不插入根据实现；头文件逻辑需严格说明。
-    * 否则在桶头或尾插入新节点，调整全局链表指针保持插入顺序；`_size++`。
-    * 可能触发 rehash（当 load factor 超过某阈值时），重新分配更大桶表并重新插入所有元素。
-    * **返回值**：`true` 表示插入成功；若重复键且不更新，返回 `false`；若更新，则视设计可返回 `true`。
-    * **复杂度**：平均 O(1)，最坏 O(n)（冲突严重或 rehash）。
+* `push`/`pop` → `bool`。
+* `find`/`operator[]` → `iterator`。
+* `size()`/`capacity()` → `size_t`。
+* `empty()` → `bool`。
 
-2. **删除 `bool pop(const key_val_type& kv)`**
+#### **内部原理**
 
-    * 计算 hash，定位桶链；遍历链表查找匹配 key；
-    * 若找到，调整链表指针（桶链与全局链表），删除节点，`_size--`，返回 `true`。
-    * 否则返回 `false`。
-    * **参考头文件实现**：详见链式删除逻辑片段 。
+* **复合哈希**：将键与值哈希值混合，增强分布。
+* **底层哈希表**：使用 `instance_hash_map` 管理存储与顺序。
 
-3. **查找 `iterator find(const key_val_type& kv)`**
+#### **复杂度分析**
 
-    * 计算 hash，遍历桶链，若匹配返回 iterator；否则返回 end()。
-    * **引用**：
+* 平均 O(1)，最坏 O(n)。
 
-4. **迭代器、遍历**
+#### **注意事项**
 
-    * 内部维护全局链表（双向链表）记录插入顺序，迭代器按该顺序遍历所有元素。
-    * `begin()` 返回全局链表头；`end()` 表示尾后位置。
-    * **示例**
+* 非线程安全。
+* 重复键 `push` 返回 `false`。
+* 底层扩容影响迭代器有效性。
 
-      ```cpp
-      template_container::map_container::hash_map<int, std::string> hm;
-      hm.push({1, "a"});
-      hm.push({2, "b"});
-      for(auto it = hm.begin(); it != hm.end(); ++it) {
-          auto [k, v] = *it;
-          std::cout << k << " -> " << v << std::endl;
-      }
-      ```
-
-5. **其他**
-
-    * `size()`, `empty()`, `capacity()`：`capacity` 返回当前桶数组长度。
-    * `operator[](const key_val_type& kv)`: 查找或插入新元素，返回 iterator 到对应元素，可用于访问或插入默认值：`hm[{key, default_value}]`。
-    * **示例**
-
-      ```cpp
-      auto it = hm[{3, "default"}]; // 若 key=3 不存在，插入 {3,"default"} 并返回 iterator
-      ```
-    * **注意**：对 `operator[]` 的具体行为需参照头文件实现细节并严格说明。
-
-#### rehash 机制
-
-* **阈值**：当 `_size / bucket_count` 超过某 load factor（如 0.75）时，扩容至更大素数或两倍大小。
-* **过程**：
-
-    1. 分配更大桶数组，初始为空。
-    2. 遍历旧全局链表，将每个元素重新计算 hash 并插入新桶。
-    3. 更新 `vector_hash_table`、`hash_capacity`、`Load_factor` 等。
-* **复杂度**：rehash O(n)。插入时偶发，摊销成本较小。
-
-#### 复杂度
-
-* 插入/删除/查找：平均 O(1)，最坏 O(n)。
-* 迭代遍历：O(n)。
-* 空间：O(n + bucket\_count)。
-
-#### 示例
+#### **使用示例**
 
 ```cpp
-template_container::map_container::hash_map<std::string,int> hm;
-hm.push({"apple",10});
-if(hm.pop({"banana",0})) { /* 删除成功 */ }
-auto it = hm.find({"apple",0});
-if(it != hm.end()) {
-    std::cout << it->second;
+using namespace template_container;
+int main()
+{
+    map_container::hash_map<int,std::string,template_container::imitation_functions::hash_imitation_functions,std::hash<std::string>> hm;
+    hm.push({1,"one"});
+    hm.push({2,"two"});
+    for(auto it=hm.begin(); it!=hm.end(); ++it)
+    {
+        std::cout<<*it<<" ";
+    }
+    return 0;
 }
 ```
-
 ---
-
-### set\_container::hash\_set
-
-**定义位置**：
-
-```cpp
-namespace set_container
-{
-    template <typename set_type_val, typename external_hash_functions = template_container::imitation_functions::hash_imitation_functions>
-    class hash_set
-    {
-        using key_val_type = set_type_val;
-        class inbuilt_set_hash_functor
-        {
-        private:
-            external_hash_functions hash_functions_object;
-        public:
-            size_t operator()(const key_val_type& key_value) { return hash_functions_object(key_value)* 131; }
-        };
-        class key_val { public: const key_val_type& operator()(const key_val_type& key_value) { return key_value; } };
-        using hash_table = template_container::base_class_container::hash_table<set_type_val, key_val_type, key_val, inbuilt_set_hash_functor>;
-        hash_table instance_hash_set;
-    public:
-        using iterator = typename hash_table::iterator;
-        using const_iterator = typename hash_table::const_iterator;
-        hash_set();
-        ~hash_set() = default;
-        explicit hash_set(const key_val_type& data);
-        hash_set(const hash_set& other);
-        hash_set(hash_set&& other) noexcept;
-        bool push(const key_val_type& data);
-        bool pop(const key_val_type& data);
-        iterator find(const key_val_type& data);
-        size_t size();
-        bool empty();
-        size_t capacity();
-        iterator begin();
-        iterator end();
-        const_iterator cbegin();
-        const_iterator cend();
-        iterator operator[](const key_val_type& data);
-        // initializer_list 构造与赋值
-    };
-}
-```
-
-* **引用**：
-
-#### 说明
-
-* 与 `hash_map` 类似，但只存储键，不存储值；若需要关联值，可使用 `hash_map`。
-* `push` 插入元素，返回 `true` 若插入成功；重复时返回 `false`。
-* `pop` 删除；`find` 查找；`operator[]` 可插入并返回 iterator 或仅查找行为，需严格按实现说明。
-* 迭代器遍历顺序为插入顺序（由全局链表维护）。
-* 复杂度同 `hash_map`。
-* **示例**
-
-  ```cpp
-  template_container::set_container::hash_set<int> hs;
-  hs.push(5);
-  if(hs.find(5) != hs.end()) { /* 存在 */ }
-  hs.pop(5);
-  ```
-
----
-
-## 基础哈希表实现 `base_class_container::hash_table`
-
-**定义位置**：
-
-```cpp
-namespace template_container::base_class_container
-{
-    template <typename Key, typename Value, typename KeyExtractor, typename HashFunctor>
-    class hash_table
-    {
-        struct container_node
-        {
-            Value _data;
-            container_node* _next; // 同一桶内链表
-            container_node* overall_list_prev; // 全局双向链表用于遍历
-            container_node* overall_list_next;
-            explicit container_node(const Value& data);
-        };
-        using hash_table_type_value = Value;
-        using hash_table_type_key = typename std::decay<decltype(std::declval<KeyExtractor>()(std::declval<Value>()))>::type;
-        HashFunctor hash_function_object;
-        size_t _size;
-        size_t hash_capacity;
-        std::vector<container_node*> vector_hash_table;
-        // 全局链表头尾指针 maintained via container_node::overall_list_prev/next
-        container_node* overall_list_head_node;
-        container_node* overall_list_before_node;
-    public:
-        using iterator = Hash_iterator<...>;
-        using const_iterator = Hash_iterator<...>;
-        hash_table();
-        ~hash_table();
-        bool push(const Value& value_data);
-        bool pop(const Value& value_data);
-        iterator find(const Value& value_data);
-        [[nodiscard]] size_t size() const;
-        bool empty() const;
-        size_t capacity() const;
-        iterator begin();
-        iterator end();
-        const_iterator cbegin() const;
-        const_iterator cend() const;
-        iterator operator[](const Value& value_data);
-        // 可能其他成员：load_factor调整、rehash、resize等
-    };
-}
-```
-
-* **引用**：
-
-#### 数据结构
-
-* **桶数组** `vector<container_node*> vector_hash_table`，长度 `hash_capacity`，初始可能为某常数。
-* **桶链**：每个 `vector_hash_table[i]` 指向该桶链表头，通过 `container_node::_next` 链接同一桶内元素。
-* **全局链表**：通过 `container_node::overall_list_prev/next` 维护元素插入顺序，便于按插入顺序遍历；`overall_list_head_node`、`overall_list_before_node` 分别指向全局链表头和尾。
-* **成员**
-
-    * `size_t _size`：当前元素数。
-    * `size_t hash_capacity`：当前桶数组大小。
-    * `HashFunctor hash_function_object`：计算 `Key` 的哈希值。
-    * `KeyExtractor element`：提取 `Key` 用于比较。
-
-#### 构造与析构
-
-* **构造** `hash_table()`：初始化 `_size = 0`，`hash_capacity` 设初始值（如 16 或根据实现），分配 `vector_hash_table` 并填充 `nullptr`，`overall_list_head_node = overall_list_before_node = nullptr`。
-* **析构**：遍历全局链表释放所有节点，或遍历每桶链；释放资源。
-
-#### 插入 `bool push(const Value& value_data)`
-
-* **流程**：
-
-    1. 计算 `size_t hv = hash_function_object(value_data)`；
-    2. `index = hv % hash_capacity`;
-    3. 遍历桶链 `vector_hash_table[index]`：对每个节点 `n`，若 `KeyExtractor(n->_data) == KeyExtractor(value_data)`，视为重复：根据设计可能更新 `n->_data` 或不插入。头文件行为需严格引用；通常返回 `false`。
-    4. 若无重复，创建新节点 `new container_node(value_data)`，将其插入桶链头或尾（头文件实现细节），并插入全局链表尾：
-
-        * 若 `overall_list_before_node == nullptr`（空表），则 `overall_list_head_node = overall_list_before_node = new_node`；
-        * 否则 `overall_list_before_node->overall_list_next = new_node; new_node->overall_list_prev = overall_list_before_node; overall_list_before_node = new_node;`
-        * `new_node->_next` 指向原桶链头或 nullptr，根据实现。
-    5. `_size++`。
-    6. 若插入后 `_size / hash_capacity > load_factor`，触发 rehash：重新分配更大 `vector_hash_table`，遍历旧全局链重新插入。
-* **返回值**：
-
-    * `true` 插入成功；
-    * `false` 重复时不插入。
-* **复杂度**：
-
-    * 平均 O(1)，最坏 O(n)（长链或 rehash）。
-
-#### 删除 `bool pop(const Value& value_data)`
-
-* **流程**：
-
-    1. 若 `_size == 0`，直接返回 `false`。
-    2. 计算 `hv = hash_function_object(value_data)`, `index = hv % hash_capacity`;
-    3. 遍历桶链：使用双指针 `parent`, `current`；若 `KeyExtractor(current->_data) == KeyExtractor(value_data)`：
-
-        * 调整桶链指针：
-
-            * 如果 `current` 在链头：`vector_hash_table[index] = current->_next`;
-            * 否则：`parent->_next = current->_next`;
-        * 调整全局链表：参见头文件删除逻辑 ：
-
-            * 如果删除节点为全局链表头或尾，更新 `overall_list_head_node` / `overall_list_before_node`；否则调整前后指针链接。
-        * `delete current; _size--; return true;`
-    4. 遍历结束未找到，返回 `false`.
-* **示例**引用删除片段：
-* **复杂度**：平均 O(1)，最坏 O(n)。
-
-#### 查找 `iterator find(const Value& value_data)`
-
-* **流程**：
-
-    * 如插入，相同哈希定位桶链，遍历链查找匹配，返回 iterator 或 end()。
-* **返回值**：iterator 指向节点或 end()。
-* **复杂度**：平均 O(1)，最坏 O(n)。
-* **引用**：
-
-#### 迭代器实现
-
-* 迭代器内部持有 `container_node* current`；
-* `operator++`：沿全局链表 `overall_list_next` 前进；`operator--`：沿 `overall_list_prev` 后退；
-* `begin()` 返回 `overall_list_head_node`; `end()` 返回 `nullptr` 或特定哨兵；
-* **失效规则**：插入操作可能使 rehash 重新分配桶数组，但全局链表节点不变，迭代器只关注全局链表，通常不影响；删除或清空使相关迭代器失效。
-
-#### 大小与容量
-
-* `size()` 返回 `_size`；`empty()` 判断 `_size == 0`；
-* `capacity()` 返回 `hash_capacity`；
-* `load_factor()`: 若实现，返回 `_size / hash_capacity`；
-
-#### rehash / resize
-
-* 暴露接口如 `resize(const size_t& new_capacity)` 或 `Change_Load_factor`，可手动调整桶大小或负载因子阈值；头文件若未公开，仅内部使用。
-* **示例**：若头文件提供 `Change_Load_factor(const size_t& new_load)`:
-
-  ```cpp
-  hm.Change_Load_factor(2); // 设置负载因子阈值为 2.0
-  ```
-* **复杂度**：rehash O(n)。
-
-#### 异常与安全
-
-* 内存分配失败应抛 `customize_exception`；需保证状态一致或回滚。
-* 多线程：非线程安全；并行修改需同步；并行遍历与修改需谨慎。
-
----
-
-## 位集合容器 `base_class_container::bit_set`
-
-**定义位置**：
-
-```cpp
-namespace template_container::base_class_container
-{
-    class bit_set
-    {
-        template_container::vector_container::vector<int> vector_bit_set;
-        size_t _size;
-    public:
-        bit_set();
-        explicit bit_set(const size_t& new_capacity);
-        void resize(const size_t& new_capacity);
-        bit_set(const bit_set& other);
-        bit_set& operator=(const bit_set& other);
-        void set(const size_t& value_data);
-        void reset(const size_t& value_data);
-        [[nodiscard]] size_t size() const;
-        bool test(const size_t& value_data);
-    };
-}
-```
-
-* **引用**：
-
-#### 数据结构
-
-* 使用底层 `vector<int>` 存储多个 `int` 作为位块，每个 `int` 包含 32 位（假设 `int` 为 32 位）。
-* `_size` 记录已置位的总数或容量？根据实现，`_size` 更新逻辑：
-
-    * 构造或 `resize` 时 `_size = 0`，表示当前置位数量为 0。
-    * 每次 `set(value_data)` 时 `_size++`；`reset(value_data)` 时 `_size--`。
-    * 注意：若对同一位置重复 `set`，可能导致 `_size` 计数不准确；头文件实现简单地 `_size++`，调用者需避免重复 `set` 同一位，或文档中需特别说明：若多次 `set` 相同索引，`_size` 会累加，需谨慎。
-
-#### 构造与析构
-
-* `bit_set()`: `_size = 0; vector_bit_set` 为空或容量 0。
-* `explicit bit_set(const size_t& new_capacity)`:
-
-    * `_size = 0; vector_bit_set.resize((new_capacity / 32) + 1, 0);`
-    * 分配足够 `int` 存储索引 `0 ... new_capacity-1`。
-* `void resize(const size_t& new_capacity)`: 重置 `_size = 0; vector_bit_set.resize((new_capacity / 32) + 1, 0);`
-* 拷贝构造、赋值：深拷贝 `vector_bit_set`，复制 `_size`。
-
-#### 位操作
-
-1. `void set(const size_t& value_data)`
-
-    * 计算 `mapping_bit = value_data / 32; value_bit = value_data % 32;`
-    * `vector_bit_set[mapping_bit] |= (1 << value_bit);`
-    * `_size++`;
-    * **注意**：无重复检测，若该位已为 1，仍 `_size++`；使用者需确保不重复调用，或文档提醒此实现缺陷。
-    * **示例**
-
-      ```cpp
-      bit_set bs(100);
-      bs.set(5); // 将第 5 位置 1
-      ```
-    * **复杂度**：O(1)。
-
-2. `void reset(const size_t& value_data)`
-
-    * `mapping_bit = value_data / 32; value_bit = value_data % 32;`
-    * `vector_bit_set[mapping_bit] &= ~(1 << value_bit);`
-    * `_size--`;
-    * **同样无检测**：若该位已为 0，多次 reset 导致 `_size` 可能错误；文档需明确。
-    * **示例**
-
-      ```cpp
-      bs.reset(5);
-      ```
-    * **复杂度**：O(1)。
-
-3. `bool test(const size_t& value_data)`
-
-    * 若 `_size == 0`，直接返回 `false`；否则
-    * `mapping_bit = value_data / 32; value_bit = value_data % 32;`
-    * `return (vector_bit_set[mapping_bit] & (1 << value_bit)) != 0;`
-    * **示例**
-
-      ```cpp
-      if(bs.test(5)) { /* 位已置 */ }
-      ```
-    * **复杂度**：O(1)。
-    * **注意**：若 `_size` 仅作为置位次数计数，不代表容量，test 时需关注索引是否超出 `vector_bit_set` 大小；若超出，程序可能越界访问，需文档中提醒：使用前确保 `value_data < capacity`。
-
-4. `size_t size() const`
-
-    * 返回 `_size`，表示置位总数（但且仅在无重复 set/reset 情形下正确）。
-    * **复杂度**：O(1)。
-
-#### 边界与错误
-
-* **索引范围**：`value_data` 超出 `new_capacity` 范围时，访问 `vector_bit_set[mapping_bit]` 越界，导致未定义行为。
-* 文档中应提示：使用前需确保 `value_data` 在 `[0, capacity())` 区间；如需安全，可在外层封装或在头文件中自行添加检查并抛 `customize_exception`。
-* **重复 set/reset**：可能导致 `_size` 不准确；调用方应注意。
-* **多线程**：非线程安全；并发修改应外部同步。
-
-#### 应用场景
-
-* **位图**：快速表示集合成员存在/不存在，空间紧凑。
-* **布隆过滤器**：`bloom_filter` 中用作底层位集。
-* **位运算加速**：可用于快速检查、大规模标记等。
-* **示例**
-
-  ```cpp
-  // 标记 0..999 是否出现
-  bit_set visitor(1000);
-  for(int x : data) {
-      if(visitor.test(x)) {
-          std::cout << x << " 重复出现\n";
-      } else {
-          visitor.set(x);
-      }
-  }
-  ```
-* **容量扩展**：调用 `resize(new_capacity)` 重置位集，清空已有标记。
-
----
-
-## 布隆过滤器 `bloom_filter_container::bloom_filter`
-
-**定义位置**：
-
-```cpp
-namespace bloom_filter_container
-{
-    template <typename bloom_filter_type_value,typename bloom_filter_hash_functor = template_container::algorithm::hash_algorithm::hash_function<bloom_filter_type_value>>
-    class bloom_filter
-    {
-        bloom_filter_hash_functor hash_functions_object;
-        using bit_set = template_container::base_class_container::bit_set;
-        bit_set instance_bit_set;
-        size_t _capacity;
-    public:
-        bloom_filter();
-        explicit bloom_filter(const size_t& Temp_Capacity);
-        [[nodiscard]] size_t size() const;
-        [[nodiscard]] size_t capacity() const;
-        bool test(const bloom_filter_type_value& TempVal);
-        void set(const bloom_filter_type_value& TempVal);
-        // 不支持删除
-    };
-}
-```
-
-
-#### 概述
-
-* 布隆过滤器是一种基于位集和多重散列的概率型数据结构，用于测试元素是否“可能存在”集合中，不允许删除操作（只支持插入和查询）。
-* 返回 `test(...)` 为 `true` 时，表示“可能存在”；返回 `false` 时，表示“一定不存在”。
-* 具有空间效率高、插入和查询时间 O(k)（k: 散列函数数量）；存在一定误判率。
-
-#### 构造与初始化
-
-1. `bloom_filter()`：
-
-    * 默认 `_capacity = 1000`。
-    * `instance_bit_set.resize(_capacity);` 分配位集长度 `_capacity`。
-2. `explicit bloom_filter(const size_t& Temp_Capacity)`：
-
-    * `_capacity = Temp_Capacity; instance_bit_set.resize(_capacity);`
-3. **注意**：`capacity` 表示位数组长度；位数组越大，误判率越低，但占用更多内存。
-
-#### 成员方法
-
-1. `[[nodiscard]] size_t size() const`
-
-    * 返回 `instance_bit_set.size()`，即当前置位总数（非布隆过滤器元素数量，仅指已 set 的位数，且由于重复 set 计数行为，此值可能大于实际置位位数）。
-    * **用途**：可用作统计位集置位情况，用于估算负载；但对于误判率计算，实际需要统计置位位数而非重复 set 计数，此实现不精确，调用者需注意。
-
-2. `[[nodiscard]] size_t capacity() const`
-
-    * 返回 `_capacity`，表示位集长度。
-    * **用途**：用于计算理论误判率：约 `(1 - e^{-kn/m})^k`，其中 n: 插入元素数，m: 位数组大小，k: 散列函数数量（此实现使用固定 3 个哈希函数）。
-
-3. `bool test(const bloom_filter_type_value& TempVal)`
-
-    * 计算三个哈希值：
-
-        * `primary_mapping_location = hash_functions_object.hash_sdmmhash(TempVal) % _capacity;`
-        * `secondary_mapping_location = hash_functions_object.hash_djbhash(TempVal) % _capacity;`
-        * `tertiary_mapping_location = hash_functions_object.hash_pjwhash(TempVal) % _capacity;`
-        * **引用**：多种哈希函数实现来源于 `hash_algorithm::hash_function<T>`&#x20;
-    * 检查 `instance_bit_set.test(...)` 三个位是否都为 `true`；若都为 `true`，返回 `true`；否则返回 `false`。
-    * **含义**：若任一位未置，则该元素一定不存在；若三位都置，则可能存在（存在误判可能）。
-    * **复杂度**：每次哈希计算时间 O(len)，再三次位测试 O(1)，总体 O(k \* len)。
-
-4. `void set(const bloom_filter_type_value& TempVal)`
-
-    * 计算三哈希索引，同 `test`：
-    * `instance_bit_set.set(primary_mapping_location); instance_bit_set.set(secondary_mapping_location); instance_bit_set.set(tertiary_mapping_location);`
-    * **注意**：`bit_set.set` 会 `_size++`，但重复 set 同一位会错误累计 `_size`；布隆过滤器实际不需要维护准确置位计数，仅需置位位本身；因头文件实现限制，重复 set 会导致 `_size` 错误，文档需说明此局限。
-    * **调用示例**
-
-      ```cpp
-      template_container::bloom_filter_container::bloom_filter<std::string> bf(10000);
-      bf.set("hello");
-      if(bf.test("hello")) { /* 可能存在 */ }
-      if(!bf.test("world")) { /* 一定不存在 */ }
-      ```
-
-5. **删除不支持**：头文件注释中明确“布隆过滤器只支持插入和查找，不支持删除”。
-
-#### 误判率与参数选择
-
-* **理论**：误判率约 `(1 - e^{-kn/m})^k`，k=3（这里使用三个哈希函数）。插入 n 个不同元素后，位被置位概率、误判率可计算；实际使用时，需根据预计 n 和可接受误判率选择位数组大小 m。
-* **示例计算**：
-
-    * 若预计 n=1000，m=10000，k=3，则误判率约 `(1 - e^{-3*1000/10000})^3 ≈ (1 - e^{-0.3})^3 ≈ (1 - 0.7408)^3 ≈ 0.2592^3 ≈ 0.0174`（约 1.74%）。
-* **文档建议**：提供示例代码或公式，帮助用户选择适当 `_capacity`。
-* **注意**：头文件实现 `size()` 返回实际 `_size`（重复 set 问题），并非 n；需用户自行维护插入元素数以估算误判率。
-
-#### 边界与错误
-
-* **索引越界**：确保 `_capacity > 0`，`value_data` 可哈希后取模；哈希函数应返回非负数(size_t类型)。
-* **多线程**：并发插入/测试位竞争可能导致数据不一致；可在外部加锁或改进 `bit_set` 的原子位操作。
-* **哈希函数安全**：若 `hash_function<T>` 对输入产生不均匀哈希，可能导致高冲突；可自定义 `bloom_filter_hash_functor` 传入更合适哈希。
+### `set`
+### `tree_set`
+### 类概述
 
 ---
 
@@ -3445,7 +3143,7 @@ namespace bloom_filter_container
 
 ### 红黑树 vs avl 树
 
-* **插入/删除频率 vs. 查找需求**
+* **插入/删除频率 vs 查找需求**
 
     * avl 更严格平衡，查询速度略优（高度更小），但插入/删除旋转次数更多。
     * rb 树平衡松散，插入/删除旋转次数较少，常用于通用关联容器。
@@ -3453,7 +3151,7 @@ namespace bloom_filter_container
 
 ### 哈希表设计
 
-* **负载因子**：需根据应用场景设置，文件中阈值为 0.75；过高导致冲突增多；过低浪费空间，函数接口change_load_factor()可以调节。
+* **负载因子**：需根据应用场景设置，文件中阈值为 0.7；过高导致冲突增多；过低浪费空间，函数接口change_load_factor()可以调节。
 * **桶数量**：通常取素数或 2 的幂，见头文件实现；可提供 `resize` 接口，允许用户手动调整。
 * **冲突解决**：链式散列（Chaining），实现简单；也可开放地址法，但头文件使用链表，如果及其特殊情况下挂红黑树。
 * **再哈希（Rehash）**：扩容时重新分配桶数组，并重新插入所有元素，临时开销大，留意在高实时要求场景下可能引发卡顿。
