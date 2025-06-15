@@ -2888,7 +2888,7 @@ public:
 ---
 ## 关联式容器
 ### `map`
-### tree_map 
+### `tree_map` 
 ### 类概述
 * `tree_map` 是一个基于红黑树`（rb_Tree）`实现的有序映射容器，存储键值对并按键的顺序维护元素。
 该容器支持高效的插入、删除和查找操作，所有操作的时间复杂度均为 `O (log n)`。元素始终按键的升序排列，遍历时将按此顺序返回元素。
@@ -3026,10 +3026,10 @@ int main()
     return 0;
 }
 ```
-
+> **引用** 头文件 `template_container::map_container` 命名空间
 ---
 
-### hash_map 
+### `hash_map` 
 ### 类概述
 * `hash_map` 是一个基于哈希表实现的无序映射容器，存储键值对并通过哈希函数快速定位元素。
 该容器支持高效的插入、删除和查找操作，平均时间复杂度为 `O (1)`。遍历时元素顺序不确定（按插入顺序）
@@ -3132,11 +3132,286 @@ int main()
     return 0;
 }
 ```
+> **引用** 头文件 `template_container::map_container` 命名空间
 ---
 ### `set`
 ### `tree_set`
 ### 类概述
+* `tree_set` 是一个基于红黑树`（rb_Tree`）`实现的有序集合容器，存储唯一元素并按键的顺序维护。
+该容器支持高效的插入、删除和查找操作，所有操作的时间复杂度均为 `O (log n)`。元素始终按升序排列，遍历时将按此顺序返回元素，适用于需要有序且唯一元素存储的场景。
+#### **类及其函数定义**
 
+```cpp
+namespace set_container 
+{
+  template <typename set_type,typename comparators = template_container::imitation_functions::less<set_type>>
+  class tree_set 
+  {
+  private:
+    using key_val_type = set_type;
+    struct key_val 
+    {
+      const set_type& operator()(const key_val_type& kv) { return kv; }
+    };
+    using instance_rb = base_class_container::rb_tree<set_type,key_val_type,key_val,comparators>;
+    instance_rb instance_tree_set;
+
+  public:
+    using iterator = typename instance_rb::iterator;
+    using const_iterator = typename instance_rb::const_iterator;
+    using reverse_iterator = typename instance_rb::reverse_iterator;
+    using const_reverse_iterator = typename instance_rb::const_reverse_iterator;
+    using set_iterator = template_container::practicality::pair<iterator,bool>;
+
+    tree_set();
+    explicit tree_set(const key_val_type& v);
+    tree_set(std::initializer_list<key_val_type> il);
+    tree_set(const tree_set& other);
+    tree_set(tree_set&& other) noexcept;
+    ~tree_set() = default;
+
+    tree_set& operator=(const tree_set& other);
+    tree_set& operator=(tree_set&& other) noexcept;
+    tree_set& operator=(std::initializer_list<key_val_type> il);
+
+    set_iterator push(const key_val_type& v);
+    set_iterator push(key_val_type&& v) noexcept;
+    set_iterator pop(const key_val_type& v);
+    iterator find(const key_val_type& v);
+
+    void middle_order_traversal();
+    void pre_order_traversal();
+
+    [[nodiscard]] size_t size() const;
+    bool empty() const;
+
+    iterator begin();
+    iterator end();
+    const_iterator cbegin() const;
+    const_iterator cend() const;
+    reverse_iterator rbegin();
+    reverse_iterator rend();
+    const_reverse_iterator crbegin() const;
+    const_reverse_iterator crend() const;
+
+    iterator operator[](const key_val_type& v);
+  };
+}
+```
+
+#### **作用描述**
+
+* 基于红黑树 `rb_tree`，存储唯一 `set_type` 元素，有序且不重复。
+* **模板参数**：
+
+  * `set_type`：元素类型。
+  * `comparators`：元素比较策略。
+* **核心方法**：
+
+  * `push` 插入元素，返回迭代器和是否插入标志。
+  * `pop` 删除指定元素。
+  * `find` 查找元素。
+  * `operator[]` 访问元素（存在即返回迭代器）。
+* **遍历接口**：
+
+  * `begin/end`：中序正序访问。
+  * `rbegin/rend`：中序逆序访问。
+  * `middle_order_traversal`/`pre_order_traversal`：打印或调试。
+* **查询接口**：
+
+  * `size()`：元素数量。
+  * `empty()`：是否为空。
+
+#### **返回值说明**
+
+* `push(...)` → `set_iterator`：
+
+  * `.first`：指向插入或已存在元素。
+  * `.second`：`true` 表示新插入；`false` 已存在。
+* `pop(...)` → `set_iterator.second`：
+
+  * `true` 删除成功；`false` 未找到。
+* `find(...)` → `iterator`：命中或 `end()`。
+* `operator[](...)` → `iterator`。
+* `size()` → `size_t`。
+* `empty()` → `bool`。
+
+#### **内部原理剖析**
+
+* 采用底层 `rb_tree` 实现红黑树插入、删除与平衡。
+* 提取器 `key_val` 将元素自身作为键。
+* 所有平衡、旋转由 `rb_tree` 完成。
+
+#### **复杂度分析**
+
+* 插入/删除/查找：平均与最坏 `O(log n)`。
+* 遍历：`O(n)`。
+
+#### **注意事项**
+
+* 非线程安全。
+* `operator[]` 仅用于存在元素访问，不插入。
+* 异常由底层 `rb_tree` 抛出。
+
+#### **使用示例**
+
+```cpp
+using namespace template_container::set_container;
+int main()
+{
+    tree_set<int> ts = {3, 1, 2, 4};
+
+    // 2. 插入元素
+    ts.push(5);
+    // 3. 查找元素
+    auto it = ts.find(2);
+    if (it != ts.end()) 
+    {
+        std::cout << "找到元素: " << *it << std::endl;  // 输出: 2
+    }
+    // 4. 中序遍历（按升序）
+    std::cout << "中序遍历结果: ";
+    ts.middle_order_traversal();  // 输出: 1 2 3 4 5
+    // 5. 删除元素
+    ts.pop(3);
+    std::cout << "\n删除后大小: " << ts.size() << std::endl;  // 输出: 4
+    return 0;
+}
+```
+> **引用** 头文件 `template_container::set_container` 命名空间
+---
+
+### `hash_set` 
+
+#### **类及其函数定义**
+#### 类概述
+* `hash_set` 是一个基于哈希表实现的无序集合容器，存储唯一元素并通过哈希函数快速定位。该容器支持高效的插入、删除和查找操作，平均时间复杂度为` O (1)`。
+遍历时元素顺序不确定（按插入顺序），适用于需要快速查找唯一元素的场景。
+```cpp
+namespace set_container 
+{
+  template <typename set_type_val,typename external_hash_functions = template_container::imitation_functions::hash_imitation_functions>
+  class hash_set 
+  {
+  private:
+    using key_val_type = set_type_val;
+    class inbuilt_set_hash_functor 
+    {
+    private:
+      external_hash_functions hash_functions_object;
+    public:
+      size_t operator()(const key_val_type& key) const { return hash_functions_object(key) * 131; }
+    };
+    struct key_val 
+    {
+      const key_val_type& operator()(const key_val_type& kv) { return kv; }
+    };
+    using hash_table = base_class_container::hash_table<set_type_val,key_val_type,key_val,nbuilt_set_hash_functor>;
+    hash_table instance_hash_set;
+
+  public:
+    using iterator = typename hash_table::iterator;
+    using const_iterator = typename hash_table::const_iterator;
+
+    hash_set();
+    explicit hash_set(const key_val_type& v);
+    hash_set(const hash_set& other);
+    hash_set(hash_set&& other) noexcept;
+    ~hash_set() = default;
+
+    bool push(const key_val_type& v);
+    bool push(key_val_type&& v) noexcept;
+    bool pop(const key_val_type& v);
+    iterator find(const key_val_type& v);
+
+    size_t size() const;
+    bool empty() const;
+    size_t capacity() const;
+
+    iterator begin();
+    iterator end();
+    const_iterator cbegin() const;
+    const_iterator cend() const;
+
+    iterator operator[](const key_val_type& v);
+  };
+}
+```
+
+#### **作用描述**
+
+* 基于哈希表 `hash_table`，存储唯一 `set_type_val` 元素，使用外部哈希仿函数。
+* **模板参数**：
+
+  * `set_type_val`：元素类型。
+  * `external_hash_functions`：哈希仿函数。
+* **核心方法**：
+
+  * `push` 插入元素。
+  * `pop` 删除元素。
+  * `find` 查找元素。
+* **遍历接口**：
+
+  * `begin/end`：按插入顺序遍历。
+
+#### **返回值说明**
+
+* `push(...)` → `bool`：`true` 新插入；`false` 已存在。
+* `pop(...)` → `bool`：`true` 删除成功；`false` 未找到。
+* `find(...)` → `iterator`：命中或 `end()`。
+* `size()` → `size_t`。
+* `empty()` → `bool`。
+* `capacity()` → `size_t`。
+
+#### **内部原理剖析**
+
+* 结合 `external_hash_functions` 生成哈希值后头插桶链。
+* 底层 `hash_table` 管理存储与全局顺序。
+
+#### **复杂度分析**
+
+* 平均 `O(1)`，最坏 `O(n)`。
+
+#### **注意事项**
+
+* 非线程安全。
+* 扩容后迭代器失效。
+* 重复 `push` 返回 `false`。
+
+#### **使用示例**
+
+```cpp
+using namespace template_container::set_container;
+int main()
+{
+    // 1. 创建hash_set并初始化
+    hash_set<int> hs = {3, 1, 2, 4};
+    
+    // 2. 插入元素
+    hs.push(5);
+    
+    // 3. 查找元素
+    auto it = hs.find(2);
+    if (it != hs.end()) 
+    {
+        std::cout << "找到元素: " << *it << std::endl;  // 输出: 2
+    }
+    
+    // 4. 遍历元素（按插入顺序）
+    std::cout << "遍历元素: ";
+    for (auto it = hs.begin(); it != hs.end(); ++it) \
+    {
+        std::cout << *it << " ";
+    }
+    // 输出: 3 1 2 4 5（顺序可能不同）
+    
+    // 5. 删除元素
+    hs.pop(3);
+    std::cout << "\n删除后大小: " << hs.size() << std::endl;  // 输出: 4
+    return 0;
+}
+```
+> **引用** 头文件 `template_container::set_container` 命名空间
 ---
 
 ## 算法细节与性能分析
