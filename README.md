@@ -39,16 +39,17 @@
      * [`rb_tree`](#红黑树)
      * [`hash_table`](#哈希表)
      * [`bit_set`](#位图)
- * ### [关联式容器 `map_container` `set_container`]()
-    * ### [`有序容器`]()
-         #### [`tree_map`](#map_containertree_map)
-         #### [`tree_set`](#tree_set-容器)
-    * ### [`无序容器`]()
-        #### [`hash_map`](#set_containertree_set)
-        #### [`hash_set`](#hash_set-容器)
- * ### [布隆过滤器 `bloom_filter_container`]()
-    * ### [`bloom_filter`]()
+ * ### [关联式容器 `map_container` `set_container`](#关联式容器)
+    * ### [`有序容器`](#rb_tree)
+         #### [`tree_map`](#tree_map)
+         #### [`tree_set`](#tree_set)
+    * ### [`无序容器`](#hash_table)
+        #### [`hash_map`](#hash_map)
+        #### [`hash_set`](#hash_set)
+ * ### [布隆过滤器 `bloom_filter_container`](#布隆过滤器)
+    * ### [`bloom_filter`](#布隆过滤器)
 ## [算法细节与性能分析](#算法细节与性能分析)
+## [新命名空间](#新命名空间)
 
 ---
 ## `说明`
@@ -3413,10 +3414,132 @@ int main()
 ```
 > **引用** 头文件 `template_container::set_container` 命名空间
 ---
+## 布隆过滤器
+### bloom_filter
+### 类概述
+* `bloom_filter` 是一个布隆过滤器实现，用于高效判断元素是否在集合中。布隆过滤器是一种空间效率高的概率性数据结构，
+通过多个哈希函数将元素映射到位集合中，支持快速插入和查询操作，但存在一定的误判率（可能误判元素存在，但不会误判元素不存在）。
+#### **类及其函数定义**
+
+```cpp
+namespace bloom_filter_container 
+{
+  template <typename bloom_filter_type_value,
+    typename bloom_filter_hash_functor = template_container::algorithm::hash_algorithm::hash_function<bloom_filter_type_value>>
+  class bloom_filter 
+  {
+  private:
+    bloom_filter_hash_functor hash_functions_object;  // 提供多种哈希算法
+    using bit_set = template_container::base_class_container::bit_set;
+    bit_set instance_bit_set;                        // 位集合存储
+    size_t _capacity;                                // 位数组容量
+  public:
+    bloom_filter();
+    explicit bloom_filter(const size_t& Temp_Capacity);
+    [[nodiscard]] size_t size() const;
+    [[nodiscard]] size_t capacity() const;
+    bool test(const bloom_filter_type_value& TempVal);
+    void set(const bloom_filter_type_value& TempVal);
+  };
+}
+```
+
+#### **作用描述**
+
+* **布隆过滤器**：利用多哈希和位集合进行空间高效的概率集合测试。
+* **模板参数**：
+
+  * `bloom_filter_type_value`：元素类型。
+  * `bloom_filter_hash_functor`：哈希函数对象，自定义函数需提供 `hash_sdmmhash`, `hash_djbhash`, `hash_pjwhash` 的只定义哈希函数方法。
+* **核心方法**：
+
+  * `set(TempVal)`：将元素映射到三个哈希值对应位并置为 1。
+  * `test(TempVal)`：检查三个映射位是否全为 1，若是则可能存在，否则一定不存在。
+  * `size()`：返回已置位总数（布隆过滤器并不精确反映元素个数）。
+  * `capacity()`：返回位集合容量。
+
+#### **返回值说明**
+
+* `set(...)` → `void`：插入元素。
+* `test(...)` → `bool`：
+
+  * `true`：元素 **可能** 存在（存在误报概率）。
+  * `false`：元素 **一定** 不存在。
+* `size()` → `size_t`：当前置位数量，仅供监测位占用。
+* `capacity()` → `size_t`：位数组长度。
+
+#### **内部原理剖析**
+
+* 位集合 `instance_bit_set` 使用 `bit_set` 底层阵列，每个位代表哈希映射位置。
+* 三次独立哈希：
+
+  1. `primary = hash_sdmmhash(TempVal) % _capacity`
+  2. `secondary = hash_djbhash(TempVal) % _capacity`
+  3. `tertiary = hash_pjwhash(TempVal) % _capacity`
+* **插入**：对三个映射位置调用 `bit_set::set`，以标记存在。
+* **查询**：仅当三个位都为 1 时返回 `true`，否则 `false`。
+* 无删除操作，释放冲突处理由位重置不可行。
+
+#### **复杂度分析**
+
+* **时间**：
+
+  * `set` / `test`：`O(1)` 三次哈希及三次位操作。
+  * 构造：`O(capacity/32)` 位数组分配。
+* **空间**：`O(capacity/32)` 整型块。
+
+#### **边界条件和错误处理**
+
+* **容量**：
+
+  * 默认容量 1000 位；可自定义。
+* **哈希函数依赖**：
+
+  * 必须实现 `hash_sdmmhash`, `hash_djbhash`, `hash_pjwhash`，否则编译错误。
+* **误报率**：
+
+  * 随容量/哈希数量不同，存在可计算的误报概率。
+
+#### **注意事项**
+
+* 非线程安全，需外部同步。
+* 不支持删除操作；无法清除位会导致误报增加。
+* 位集合增长需重建过滤器；`resize` 仅重置空位集合并丢弃先前数据。
+
+#### **使用示例**
+
+```cpp
+using namespace template_container;
+int main() 
+{
+    // 1. 创建容量为10000的布隆过滤器
+    bloom_filter_container::bloom_filter<std::string,template_container::
+    algorithm::hash_algorithm::hash_function<std::string, std::hash<std::string> > > bf(10000);
+    
+    // 2. 插入元素
+    bf.set("apple");
+    bf.set("banana");
+    bf.set("cherry");
+    
+    // 3. 查询元素
+    std::cout << "查询 'apple': "  << (bf.test("apple")  ? "可能存在" : "一定不存在") << std::endl;
+    std::cout << "查询 'cherry': " << (bf.test("cherry") ? "可能存在" : "一定不存在") << std::endl;
+    std::cout << "查询 'grape': "  << (bf.test("grape")  ? "可能存在" : "一定不存在") << std::endl;
+    
+    // 4. 查看容量和大小
+    std::cout << "布隆过滤器容量: " << bf.capacity() << std::endl;
+    std::cout << "已使用位数: " << bf.size() << std::endl;
+    
+    return 0;
+}
+```
+> **引用** 头文件 `template_container::bloom_filter_container` 命名空间
+
+---
 
 ## 算法细节与性能分析
 
-### 红黑树 vs avl 树
+### 红黑树 vs AVL 树
 
 * **插入/删除频率 vs 查找需求**
 
@@ -3447,4 +3570,13 @@ int main()
 * `shared_ptr` 内部用于多线程安全的引用计数需谨慎，避免死锁。
 * 析构与资源释放需 noexcept。
 * `weak_ptr.lock()` 需原子检查并增加计数。
-
+### 哈希
+* 本文件`哈希函数`高度自定义，可以传任意自定义类型
+--- 
+## 新命名空间
+### `con`
+* 容器集合
+### `ptr`
+* 智能指针集合
+### `exc`
+* 异常集合
