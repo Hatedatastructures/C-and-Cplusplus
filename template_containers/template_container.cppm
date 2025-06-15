@@ -335,7 +335,7 @@ namespace template_container
         template <typename source_sequence_copy,typename target_sequence_copy>
         constexpr target_sequence_copy* copy(source_sequence_copy begin,source_sequence_copy end,target_sequence_copy first) noexcept
         {
-            target_sequence_copy* return_first = first;
+            target_sequence_copy* return_first = &first;
             while(begin != end)
             {
                 *first = *begin;
@@ -680,7 +680,7 @@ namespace template_container
             // {
             //     //查找子串
             // }
-            string& prepend(const char*& sub_string)
+            string& prepend(const char* sub_string)
             {
                 //前duan插入子串
                 size_t len = strlen(sub_string);
@@ -697,7 +697,7 @@ namespace template_container
                 delete [] temporary_buffers;
                 return *this;
             }
-            string& insert_sub_string(const char*& sub_string,const size_t& start_position)
+            string& insert_sub_string(const char* sub_string,const size_t& start_position)
             {
                 try
                 {
@@ -843,8 +843,8 @@ namespace template_container
                 {
                     return *this;
                 }
-                size_t len = strlen( temporary_str_ptr_data );
-                size_t new_container_capacity = len + _size ;
+                const size_t len = strlen( temporary_str_ptr_data );
+                const size_t new_container_capacity = len + _size ;
                 if(new_container_capacity >_capacity)
                 {
                    allocate_resources(new_container_capacity);
@@ -1163,7 +1163,6 @@ namespace template_container
             {
                 return _size_pointer;
             }
-
             [[nodiscard]] size_t size() const  noexcept
             {
                 return _data_pointer ? (_size_pointer - _data_pointer) : 0;
@@ -1535,7 +1534,7 @@ namespace template_container
                 using reference = Ref ;
                 using pointer   = Ptr ;
                 container_node* _node;
-                explicit list_iterator(container_node* node) noexcept
+                list_iterator(container_node* node) noexcept
                 :_node(node)
                 {
                     ;//拿一个指针来构造迭代器
@@ -1590,7 +1589,7 @@ namespace template_container
                 using  const_reverse_list_iterator = reverse_list_iterator<iterator>;
             public:
                 iterator _it;
-                explicit reverse_list_iterator(iterator it) noexcept
+                reverse_list_iterator(iterator it) noexcept
                 :_it(it)
                 {
                     ;
@@ -1949,12 +1948,13 @@ namespace template_container
                 }
                 _head->_next = _head->_prev = _head;
             }
-            list& operator=(list<list_type> list_data) noexcept
+            list& operator=(const list<list_type>& list_data) noexcept
             {
                 //拷贝赋值
                 if( this != &list_data)
                 {
-                    swap(list_data);
+                    list<list_type> copy_list_object (list_data);
+                    swap(copy_list_object);
                 }
                 return *this;
             }
@@ -1972,7 +1972,8 @@ namespace template_container
                 if( this != &list_data)
                 {
                     _head = std::move(list_data._head);
-                    list_data._head = nullptr;
+                    list_data.create_head();
+                    //防止移动之后类判空空指针
                 }
                 return *this;
             }
@@ -2150,7 +2151,7 @@ namespace template_container
                 list_object = queue_data.list_object;
             }
 
-            explicit queue(queue<queue_type>&& queue_type_data) noexcept
+            queue(queue<queue_type>&& queue_type_data) noexcept
             {
                 //移动构造
                 list_object = std::forward<list_based_queue>(queue_type_data.list_object);
@@ -2448,6 +2449,7 @@ namespace template_container
             // 构造函数，使用初始化列表来初始化二叉搜索树
             binary_search_tree(std::initializer_list<binary_search_tree_type> lightweight_container)
             {
+                _root =  nullptr;
                 for(auto& chained_values:lightweight_container)
                 {
                     push(chained_values);
@@ -3601,11 +3603,11 @@ namespace template_container
                 container_node* reference_node = _root;
                 while(reference_node != nullptr)
                 {
-                    if(reference_node->_data == key_data)
+                    if(reference_node->_data.first == key_data)
                     {
                         break;
                     }
-                    else if (function_policy(reference_node->_data,key_data))
+                    else if (function_policy(reference_node->_data.first,key_data))
                     {
                         reference_node = reference_node->_right;
                     }
@@ -3624,6 +3626,8 @@ namespace template_container
                 }
                 container_node* reference_node = _root;
                 container_node* parent_node = nullptr;
+                
+                // 查找要删除的节点
                 while(reference_node != nullptr)
                 {
                     if(!function_policy(key_data,reference_node->_data.first) && !function_policy(reference_node->_data.first,key_data))
@@ -3640,139 +3644,165 @@ namespace template_container
                         reference_node = reference_node->_left;
                     }
                 }
+                
                 if(reference_node == nullptr)
                 {
-                    return *this;
-                    //没有找到
+                    return *this; // 没有找到
                 }
-                //三种情况：左空，右空，左右都不空
+                
+                // 记录被删除节点是其父节点的左子树还是右子树
+                bool isleft_child = (parent_node != nullptr) && (parent_node->_left == reference_node);
+                
+                // 三种情况：左空，右空，左右都不空
                 if (reference_node->_left == nullptr) 
                 {
-                    if (reference_node->_right != nullptr) 
+                    container_node* child = reference_node->_right;
+                    if (child != nullptr) 
                     {
-                        reference_node->_right->_parent = parent_node;
+                        child->_parent = parent_node;
                     }
+                    
                     if (parent_node == nullptr) 
                     {
-                        _root = reference_node->_right;
+                        _root = child;
                     } 
                     else 
                     {
-                        if (parent_node->_left == reference_node) 
+                        if (isleft_child) 
                         {
-                            parent_node->_left = reference_node->_right;
+                            parent_node->_left = child;
                         } 
                         else 
                         {
-                            parent_node->_right = reference_node->_right;
+                            parent_node->_right = child;
                         }
-                    }
-                    delete reference_node;
-                    reference_node = nullptr;
-                }            
-                else if (reference_node->_right == nullptr)
-                {
-                    if(reference_node->_left != nullptr)
-                    {
-                        reference_node->_left->_parent = parent_node;
-                    }
-                    if(parent_node == nullptr)
-                    {
-                        _root = reference_node->_left;
-                    }
-                    else
-                    {
-                        if(parent_node->_left == reference_node)
-                        {
-                            parent_node->_left = reference_node->_left;
-                        }
-                        else
-                        {
-                            parent_node->_right = reference_node->_left; 
-                        }
-                        if(reference_node->_left!= nullptr)
-                        {
-                            reference_node->_left->_parent = parent_node;
-                        }
-                        //更新父节点
                     }
                     delete reference_node;
                     reference_node = nullptr;
                 }
-                else if(reference_node->_right != nullptr && reference_node->_left != nullptr)
+                else if (reference_node->_right == nullptr)
                 {
-                    //找右子树最左节点
+                    container_node* child = reference_node->_left;
+                    if(child != nullptr)
+                    {
+                        child->_parent = parent_node;
+                    }
+                    
+                    if(parent_node == nullptr)
+                    {
+                        _root = child;
+                    }
+                    else
+                    {
+                        if (isleft_child) 
+                        {
+                            parent_node->_left = child;
+                        } 
+                        else 
+                        {
+                            parent_node->_right = child;
+                        }
+                    }
+                    delete reference_node;
+                    reference_node = nullptr;
+                }
+                else // 左右子树都不为空
+                {
+                    // 找右子树最左节点
                     container_node* right_subtree_smallest_node = reference_node->_right;
                     container_node* smallest_parent_node = reference_node;
+                    
                     while(right_subtree_smallest_node->_left != nullptr)
                     {
                         smallest_parent_node = right_subtree_smallest_node;
                         right_subtree_smallest_node = right_subtree_smallest_node->_left;
                     }
-                    template_container::algorithm::swap(right_subtree_smallest_node->_data,reference_node->_data);
-                    if (smallest_parent_node == reference_node) 
+                    
+                    // 交换数据
+                    template_container::algorithm::swap(right_subtree_smallest_node->_data, reference_node->_data);
+                    
+                    // 更新要删除的节点信息
+                    reference_node = right_subtree_smallest_node;
+                    parent_node = smallest_parent_node;
+                    isleft_child = (parent_node->_left == reference_node);
+                    
+                    // 删除右子树最左节点
+                    container_node* child = reference_node->_right;
+                    if (child != nullptr) 
                     {
-                        smallest_parent_node->_right = (right_subtree_smallest_node->_right != nullptr) ? right_subtree_smallest_node->_right : nullptr;
+                        child->_parent = parent_node;
+                    }
+                    
+                    if (parent_node->_left == reference_node) 
+                    {
+                        parent_node->_left = child;
                     } 
                     else 
                     {
-                        smallest_parent_node->_left = (right_subtree_smallest_node->_right != nullptr) ? right_subtree_smallest_node->_right : nullptr;
+                        parent_node->_right = child;
                     }
-                    if (right_subtree_smallest_node->_right != nullptr) 
-                    {
-                        right_subtree_smallest_node->_right->_parent = smallest_parent_node;
-                    }
-                    delete right_subtree_smallest_node;
-                    right_subtree_smallest_node = nullptr;         
+                    
+                    delete reference_node;
+                    reference_node = nullptr;
                 }
-                //更新平衡因子
-                container_node* parent_bf = parent_node;
-                while(parent_bf != nullptr)
+                
+                // 更新平衡因子
+                container_node* current = parent_node;
+                while(current != nullptr)
                 {
-                    if(parent_bf->_left == reference_node)
+                    // 根据之前记录的子树关系更新平衡因子
+                    if (isleft_child)
                     {
-                        --parent_bf->_balance_factor;
+                        ++current->_balance_factor;
                     }
                     else
                     {
-                        ++parent_bf->_balance_factor;
+                        --current->_balance_factor;
                     }
-                    if(parent_bf->_balance_factor == 0)
+                    
+                    // 平衡因子调整逻辑
+                    if(current->_balance_factor == 0)
                     {
+                        // 高度未变，不需要继续调整
                         break;
                     }
-                    else if(parent_bf->_balance_factor == 1 || parent_bf->_balance_factor == -1)
+                    else if(current->_balance_factor == 1 || current->_balance_factor == -1)
                     {
-                        reference_node = parent_bf;
-                        parent_bf = parent_bf->_parent;
+                        // 高度变化，但不需要旋转，继续向上调整
+                        isleft_child = (current->_parent != nullptr) && (current->_parent->_left == current);
+                        current = current->_parent;
                     }
-                    else if(parent_bf->_balance_factor == 2 || parent_bf->_balance_factor == -2)
+                    else if(current->_balance_factor == 2 || current->_balance_factor == -2)
                     {
-                        if(parent_bf->_balance_factor == 2)
+                        // 需要旋转调整
+                        if(current->_balance_factor == 2)
                         {
-                            if(reference_node->_balance_factor == 1)
+                            container_node* child = current->_right;
+                            if(child->_balance_factor == 1)
                             {
-                                left_revolve(parent_bf);
+                                left_revolve(current);
                             }
                             else
                             {
-                                right_left_revolve(parent_bf);
+                                right_left_revolve(current);
                             }
                         }
-                        else if(parent_bf->_balance_factor == -2)
+                        else // current->_balance_factor == -2
                         {
-                            if(reference_node->_balance_factor == -1)
+                            container_node* child = current->_left;
+                            if(child->_balance_factor == -1)
                             {
-                                right_revolve(parent_bf);
+                                right_revolve(current);
                             }
                             else
                             {
-                                left_right_revolve(parent_bf);
+                                left_right_revolve(current);
                             }
                         }
-                        parent_bf = parent_bf->_parent;
-                        reference_node = parent_bf;
-                        //双旋的情况，先调整该节点，再调整整体
+                        
+                        // 旋转后继续向上调整
+                        isleft_child = (current->_parent != nullptr) && (current->_parent->_left == current);
+                        current = current->_parent;
                     }
                 }
                 return *this;
@@ -5293,7 +5323,7 @@ namespace template_container
             }
             bool push(hash_table_type_value&& hash_table_value_data) noexcept
             {
-                if( find(hash_table_value_data).hash_table_iterator_node != nullptr)
+                if( find(hash_table_value_data).get_node() != nullptr)
                 {
                     return false;
                 }

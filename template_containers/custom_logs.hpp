@@ -6,10 +6,10 @@ namespace file_log
     class log
     {
     private:
-        using log_string = template_container::string_container::string;
+        using log_string = con::string;
         using log_file   = std::ofstream;
         log_string file_name;
-        log_file file;
+        log_file file;          //文件对象
     public:
         log() = default;
         log(const log& rhs) = delete;
@@ -17,24 +17,23 @@ namespace file_log
         log& operator=(const log& rhs) = delete;
         log& operator=(log&& rhs) = delete;
 
-        explicit log(const char* str_data)
+        explicit log(const char* str_log)
         {
-            file_name = str_data;
+            file_name = str_log;
             file.open(file_name.c_str());
         }
-
-        explicit log(const log_string& string_data)
+        explicit log(const log_string& customize_string_log)
         {
-            file_name = string_data;
+            file_name = customize_string_log;
             file.open(file_name.c_str());
         }
-        virtual void write_file(const log_string& string_data)
+        void wield_file(const char* str_log)
         {
-            file << string_data << std::endl;
+            file << str_log << std::endl;
         }
-        virtual void wield_file(const char str_data)
+        void write_file(const log_string& customize_string_log)
         {
-            file << str_data << std::endl;
+            file << customize_string_log << std::endl;
         }
         virtual ~log()
         {

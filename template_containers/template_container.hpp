@@ -1129,7 +1129,7 @@ namespace template_container
             }
             return string_istream;
         }
-        inline std::ostream& operator<<(std::ostream& string_ostream,const string &str_data)
+        inline std::ostream& operator<<(std::ostream& string_ostream,const string& str_data)
         {
             for(const char start_position : str_data)
             {
