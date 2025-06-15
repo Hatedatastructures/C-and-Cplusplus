@@ -32,8 +32,8 @@
      * [`priority_queue`](#queue_adapterpriority_queue)
  * ### [树形容器 `tree_container`](#树形容器基础-tree_container)
 
-     * [`binary_search_tree`](#binary_search_tree二叉搜索树)
-     * [`avl_tree`](#avl-树若有对比说明)
+     * [`binary_search_tree`](#binary_search_tree)
+     * [`avl_tree`](#avl_tree)
 
  * ### [基类容器 `base_class_container`]()
      * [`rb_tree`]()
@@ -2369,362 +2369,418 @@ int main()
 ```
 > **引用**：头文件 `tree_container` 命名空间。
 ---
+## 基类容器 `base_class_container`
+## 红黑树 
+## `rb_tree`
+### 类概述
+* `rb_tree` 类是一个模板化的红黑树实现，支持键值对存储和自动平衡功能。
+红黑树通过颜色标记和旋转操作保持平衡，确保插入、删除和查找操作的平均时间复杂度为 O (log n)。该类实现了完整的迭代器系统、红黑树调整算法和异常处理机制。
+#### **类及其函数定义**
+```cpp
+template <typename rb_tree_type_key,typename rb_tree_type_value,typename container_imitate_function_visit,
+    typename container_imitate_function = template_container::imitation_functions::less<rb_tree_type_key>>
+class rb_tree 
+{
+private:
+    enum rb_tree_color 
+    { red, black };
 
-### rb\_tree（红黑树）
+    class rb_tree_node 
+    {
+    public:
+        rb_tree_type_value _data;
+        rb_tree_node*      _left;
+        rb_tree_node*      _right;
+        rb_tree_node*      _parent;
+        rb_tree_color      _color;
 
-**定义位置**：
+        explicit rb_tree_node(const rb_tree_type_value& val_data = rb_tree_type_value());
+        explicit rb_tree_node(rb_tree_type_value&& val_data) noexcept;
+    };
+
+    using container_node = rb_tree_node;
+    container_node*                 _root;
+    container_imitate_function_visit element;
+    container_imitate_function      function_policy;
+
+    // 核心旋转方法
+    void left_revolve(container_node* x);
+    void right_revolve(container_node* x);
+    // 删除平衡
+    void delete_adjust(container_node* x, container_node* parent);
+
+    // 清理与遍历
+    void clear(container_node* node) noexcept;
+    void interior_middle_order_traversal(container_node* node);
+    void interior_pre_order_traversal(container_node* node);
+    size_t _size() const;
+
+public:
+    using iterator = rb_tree_iterator<rb_tree_type_value, rb_tree_type_value&, rb_tree_type_value*>;
+    using const_iterator = rb_tree_iterator<rb_tree_type_value const, rb_tree_type_value const&, rb_tree_type_value const*>;
+    using reverse_iterator = rb_tree_reverse_iterator<iterator>;
+    using const_reverse_iterator = rb_tree_reverse_iterator<const_iterator>;
+    using return_pair_value = template_container::practicality::pair<iterator, bool>;
+
+    // 构造与析构
+    rb_tree();
+    explicit rb_tree(const rb_tree_type_value& data);
+    explicit rb_tree(rb_tree_type_value&& data) noexcept;
+    rb_tree(const rb_tree& other);
+    rb_tree(rb_tree&& other) noexcept;
+    ~rb_tree() noexcept;
+
+    // 核心操作
+    return_pair_value push(const rb_tree_type_value& v);
+    return_pair_value push(rb_tree_type_value&& v) noexcept;
+    return_pair_value pop(const rb_tree_type_value& v);
+    iterator           find(const rb_tree_type_value& v);
+
+    // 查询与遍历
+    size_t            size() const;
+    bool              empty() const;
+    void              middle_order_traversal();
+    void              pre_order_traversal();
+    iterator          begin();
+    iterator          end();
+    const_iterator    cbegin() const;
+    const_iterator    cend() const;
+    reverse_iterator  rbegin();
+    reverse_iterator  rend();
+    const_reverse_iterator crbegin() const;
+    const_reverse_iterator crend() const;
+
+    // 运算符
+    iterator operator[](const rb_tree_type_value& v);
+    rb_tree& operator=(const rb_tree other);
+    rb_tree& operator=(rb_tree&& other) noexcept;
+};
+```
+#### **作用描述**
+* **模板参数** 
+* `rb_tree_type_key`：键的类型（用于排序和查找）
+* `rb_tree_type_value`：值的类型（与键关联的数据）
+* `container_imitate_function_visit`：值访问器（用于从值中提取键）
+* `container_imitate_function`：键的比较器（默认：`less<rb_tree_type_key>`）
+
+* **构造与析构**：
+
+  * `rb_tree()`：创建空树，`_root=nullptr`。
+  * `rb_tree(data)`：根节点为黑色新节点。
+  * 拷贝/移动构造：复制或接管节点和颜色。
+  * `~rb_tree()`：后序调用 `clear(_root)` 释放节点。
+
+* **插入 (`push`)**：
+
+  1. **定位**：按 `function_policy` 比较沿左右子树查找插入位置，若遇相等则返回 `.second = false`。
+  2. **插入**：新节点 `_color = red`，挂接父指针。
+  3. **修正红黑性质**：从新节点向上迭代：
+
+     * 若父黑，终止。
+     * 若父和叔叔均为红：父、叔改黑，祖父改红，继续向上。
+     * 否则执行旋转
+
+       * **LL**：`right_revolve(祖父)`；
+       * **RR**：`left_revolve(祖父)`；
+       * **LR**：`left_revolve(父)` 后 `right_revolve(祖父)`；
+       * **RL**：`right_revolve(父)` 后 `left_revolve(祖父)`。
+     * 每次旋转后调整节点颜色，确保子树平衡。
+  4. **根染黑**。
+
+* **删除 (`pop`)**：
+
+  1. **查找**：`find` 定位目标节点，若未找到返回 `.second = false`。
+  2. **删除**：
+
+     * **单/双子**：参照 BST 删除；双子先用中序后继替换。
+     * 保留被删除节点原始颜色至 `orig_color`。
+  3. **平衡调整**：若 `orig_color` 为 `black`，调用 `delete_adjust(node, parent)`：(因为是黑色节点删除的话会失衡：从任意节点到其所有后代叶节点的路径上，包含的黑色节点数量相同)
+
+     * **兄弟为红**：对 `parent` 做旋转，交换 `parent` 与兄弟颜色，刷新兄弟。
+     * **兄弟与子皆黑**：兄弟染红，继续向上修正。
+     * **兄弟为黑，近侧子红**：先旋转兄弟使远侧子成为兄弟，再归入下一情况。
+     * **兄弟为黑，远侧子红**：对 `parent` 做一次旋转，根据方向将兄弟和其子调整颜色，结束平衡。
+  4. **根染黑**。
+
+* **查找 (`find`)**：
+
+  * 从 `_root` 开始，比较值后沿左右子树移动，返回节点迭代器或 `end()`。
+
+* **遍历**：
+
+  * **中序**：`middle_order_traversal` 使用显式栈保证顺序输出。
+  * **前序**：`interior_pre_order_traversal` 同理实现。
+  * 迭代器 `begin/end`、`rbegin/rend` 对应最左/最右节点。
+
+* **查询**：
+
+  * `empty()`：O(1) 检查 `_root == nullptr`。
+  * `size()`：O(n) 调用 `_size()` 递归统计。
+
+#### **返回值说明**
+
+* `push` → `return_pair_value`：
+
+  * `.first`：指向插入或已存在节点。
+  * `.second`：`true` 插入并平衡；`false` 已存在。
+* `pop` → `return_pair_value`：
+
+  * `.first`：指向被删除节点后继或 `end()`。
+  * `.second`：`true` 删除并平衡；`false` 未找到。
+* `find` → `iterator`：命中返回节点；否则 `end()`。
+* `size()` → `size_t`。
+* `empty()` → `bool`。
+
+#### **内部原理剖析**
+
+* **节点颜色与路径**：
+
+  * 红节点不能有红子节点。
+  * 根到叶所有路径黑节点数相等。
+
+* **`left_revolve(x)`**：
+
+  * 设 `y=x->_right`。将 `y->_left` 赋给 `x->_right`，更新父指；将 `x` 设为 `y->_left`。
+  * 调整 `x`, `y` 父指和 `_root` 链接；将 `y->_color=x_color`，并将 `x->_color=red`。
+
+* **`right_revolve(x)`**：
+
+  * 对称于 `left_revolve`，以 `y=x->_left`。
+
+* **`delete_adjust(x, parent)`**：
+
+  * 以 `x`（可能 `nullptr`）和其父为起点，修复双黑差：
+
+    1. **兄弟红**：旋转 `parent`，交换颜色，刷新兄弟。
+    2. **兄弟及兄弟子黑**：兄弟染红，继续向上。
+    3. **兄弟黑且近侧子红**：旋转兄弟，交换颜色，转为第四种。
+    4. **兄弟黑且远侧子红**：旋转 `parent`，兄弟与 `parent` 颜色互换，远侧子染黑。
+
+* **遍历清理**：
+
+  * 使用 `stack_adapter::stack` 显式管理栈，用后序方式释放。
+
+#### **复杂度分析**
+
+* 插入/删除/查找：平均与最坏均 O(log n)。
+* 遍历/清理：O(n)，辅助 O(h) 栈空间。
+
+#### **边界条件和错误处理**
+
+* 空树：`push` 创建根；`pop`/`find` `.second=false`/返回 `end()`。
+* 重复值：`push` 返回 `.second=false`。
+* 内存不足：抛 `std::bad_alloc`。
+* 比较函数须严格弱序。
+
+#### **注意事项**
+
+* 非线程安全。
+* 结构修改后迭代器失效。
+* 确保每次插入删除后根为黑。
+
+#### **使用示例**
+* 当前类不推荐直接使用，建议使用上层容器
+
+> **引用** 头文件 `base_class_container` 命名空间
+
+
+---
+## 哈希表
+## `hash_table`
+### 类概述
+* `hash_table` 是一个模板化的哈希表实现，采用链地址法（拉链法）解决哈希冲突，支持键值对的高效存储与查询。
+该类通过维护全局插入顺序链表和桶内链表，实现了快速哈希查找和有序遍历的双重功能，并具备动态扩容机制以保持高效性能。 
+
+#### **类及其函数定义**
 
 ```cpp
-namespace tree_container
+template <typename hash_table_type_key,typename hash_table_type_value,typename container_imitate_function,
+          typename hash_function = std::hash<hash_table_type_value>>
+class hash_table 
 {
-    template <typename rb_tree_type_key,
-              typename rb_tree_type_value,
-              typename key_extractor,  // 从 value 提取用于比较的 key
-              typename Compare = template_container::imitation_functions::less<rb_tree_type_key>>
-    class rb_tree
+private:
+    class hash_table_node 
+    {
+    public:
+        hash_table_type_value _data;                // 存储的值
+        hash_table_node*      _next;                // 桶内链指针
+        hash_table_node*      overall_list_prev;    // 全局链表前向指针
+        hash_table_node*      overall_list_next;    // 全局链表后向指针
+
+        explicit hash_table_node(const hash_table_type_value& v);
+        explicit hash_table_node(hash_table_type_value&& v) noexcept;
+    };
+
+    using container_node = hash_table_node;
+    container_imitate_function         value_imitation_functions; // 键比较仿函数
+    hash_function                      hash_function_object;    // 哈希函数
+
+    size_t _size;          // 当前元素数量
+    size_t load_factor;    // 负载因子阈值*10
+    size_t hash_capacity;  // 桶数量
+
+    template_container::vector_container::vector<container_node*> vector_hash_table; // 桶数组
+    container_node* overall_list_head_node;   // 全局插入链表头
+    container_node* overall_list_before_node; // 全局插入链表尾
+
+    // 链调整辅助
+    void hash_chain_adjustment(container_node*& parent, container_node*& node, size_t index);
+
+    // 全局链表及桶重建辅助（扩容时使用）
+
+public:
+    template <typename K, typename V>
+    class hash_iterator 
     {
     private:
-        enum Color { red, black };
-        struct container_node
-        {
-            rb_tree_type_value _data;
-            container_node* _left;
-            container_node* _right;
-            container_node* _parent;
-            Color _color;
-            explicit container_node(const rb_tree_type_value& data);
-            explicit container_node(rb_tree_type_value&& data) noexcept;
-        };
-        container_node* _root;
-        Compare function_policy;
-        key_extractor element;  // 提取 key：operator()(const value&) -> const key&
-        // 可能有其他成员，如哨兵 nil 节点、size 统计等
+        container_node* ptr;
     public:
-        using iterator = rb_tree_iterator<...>;
-        using const_iterator = rb_tree_iterator<...>;
-        using reverse_iterator = rb_tree_reverse_iterator<iterator>;
-        using const_reverse_iterator = rb_tree_reverse_iterator<const_iterator>;
-        using return_pair_value = template_container::practicality::pair<iterator, bool>;
-        rb_tree();
-        explicit rb_tree(const rb_tree_type_value& data);
-        explicit rb_tree(rb_tree_type_value&& data) noexcept;
-        rb_tree(rb_tree&& data) noexcept;
-        rb_tree(const rb_tree& data);
-        ~rb_tree();
-        return_pair_value push(const rb_tree_type_value& data);
-        return_pair_value push(rb_tree_type_value&& data) noexcept;
-        iterator pop(const rb_tree_type_value& key);
-        container_node* find(const rb_tree_type_value& key) const;
-        void middle_order_traversal() const;
-        size_t size() const;
-        // 其他辅助函数：旋转、修正颜色、平衡插入/删除逻辑
+        explicit hash_iterator(container_node* p);
+        V& operator*() const;
+        V* operator->() const;
+        hash_iterator& operator++();   // 顺序遍历整体链表
+        hash_iterator operator++(int);
+        bool operator==(const hash_iterator& o) const;
+        bool operator!=(const hash_iterator& o) const;
     };
-}
+
+    using iterator = hash_iterator<hash_table_type_key, hash_table_type_value>;
+    using const_iterator = hash_iterator<const hash_table_type_key, const hash_table_type_value>;
+
+    // 构造与析构
+    hash_table();
+    explicit hash_table(size_t initial_capacity);
+    hash_table(const hash_table& other);
+    hash_table(hash_table&& other) noexcept;
+    ~hash_table() noexcept;
+
+    // 核心操作
+    bool change_load_factor(size_t new_load_factor);
+    bool push(const hash_table_type_value& v);
+    bool push(hash_table_type_value&& v) noexcept;
+    bool pop(const hash_table_type_value& v);
+    iterator find(const hash_table_type_value& v);
+
+    // 查询接口
+    size_t size() const;
+    bool empty() const;
+    size_t capacity() const;
+
+    iterator begin();
+    const_iterator cbegin() const;
+    static iterator end();
+    static const_iterator cend();
+
+    // 全局顺序遍历（按插入顺序）
+
+    // 运算符重载
+    iterator operator[](const hash_table_type_key& key);
+    hash_table& operator=(const hash_table& other);
+    hash_table& operator=(hash_table&& other) noexcept;
+};
 ```
 
-* **引用**：
+#### **作用描述**
 
-#### 红黑树性质
+1. **模板参数**
 
-1. 每个节点或红或黑。
-2. 根节点为黑。
-3. 每个叶节点（nil 节点）为黑。
-4. 若一个节点为红，则其子节点均为黑。
-5. 对每个节点，从该节点到其所有叶子节点的简单路径上，均包含相同数目的黑节点。
+   * `hash_table_type_key`：用于查找的键类型。
+   * `hash_table_type_value`：存储的值类型。
+   * `container_imitate_function`：键比较或提取仿函数。
+   * `hash_function`：对值或键生成桶索引的哈希函数。
 
-这些性质保证树高度 O(log n)，插入/删除后通过旋转和重新着色修复性质。
+2. **构造与析构**
 
-#### 插入操作 `pair<iterator,bool> push(const V& data)`
+   * `hash_table()`：使用默认容量 `10`，负载因子 `7` (即 0.7) 初始化桶数组。
+   * `hash_table(cap)`：使用指定 `cap` 大小初始化。
+   * `hash_table(const other)`：深拷贝所有节点、桶结构和全局链表顺序。
+   * `hash_table(hash_table&&)`：移动构造，接管内部容器与链表指针。
+   * `~hash_table()`：遍历所有桶，删除每个节点。
 
-* **查找插入位置**：与 BST 类似，根据 `key_extractor(data)` 提取 key，通过 `function_policy` 比较，定位插入叶子位置，创建新节点，初始颜色为红。
+3. **插入 (`push`)**
 
-* **修正红黑性质**：插入新红节点可能破坏性质，需执行以下步骤（经典 CLRS 插入修正算法）：
+   1. **重复检测**：调用 `find` 查找值是否已存在，若存在返回 `false`。
+   2. **扩容判断**：若 `_size * 10 >= hash_capacity * load_factor`，则：
 
-    1. 若插入节点为根，直接着色为黑，完成。
-    2. 若父节点为黑，无需调整，完成。
-    3. 若父节点为红，需根据叔叔节点颜色和位置进行修正：
+      * 计算新容量 `new_cap = max(10, 2*hash_capacity)`。
+      * 重新分配新桶数组，并遍历全局链表按插入顺序重建桶链和全局链。
+   3. **插入操作**：
 
-        * **情况1**：叔叔节点存在且为红。将父、叔叔着色为黑，祖父着色为红，将当前节点指向祖父，继续循环检查。
-        * **情况2/3**：叔叔为黑或不存在，根据当前节点在父/祖父的左/右位置分为“外侧插入”或“内侧插入”：
+      * 计算 `h = hash_function_object(v) % hash_capacity`。
+      * 在桶链头部执行头插：`new_node->_next = vector_hash_table[h]`，`vector_hash_table[h] = new_node`。
+      * 在全局链表尾追加：链接 `overall_list_before_node` → `new_node`。
+      * 更新 `_size++`。
+   4. **返回**：插入成功返回 `true`。
 
-            * 若为“内侧插入”，先对父进行旋转（左右旋转），转换为“外侧插入”情形，再执行下一步。
-            * 对祖父进行相反方向旋转，并交换颜色：祖父变红，父变黑。
-    4. 最后保证根为黑。
+4. **删除 (`pop`)**
 
-* **旋转操作**：
+   1. **查找节点**：计算 `h` 并遍历桶链，定位目标节点及其桶内父节点。
+   2. **全局链表移除**：根据节点在全局链表的头/中/尾位置，更新 `overall_list_*` 指针。
+   3. **桶链移除**：调用 `hash_chain_adjustment` 将父或桶头指向被删节点的下一个。
+   4. **释放节点**，`_size--`，返回 `true`；未找到返回 `false`。
 
-    * **左旋**（以 x 节点为中心）：
+5. **查找 (`find`)**
 
-        * 设 y = x->\_right，将 y 取代 x 位置，x->\_right = y->\_left，若 y->\_left 不为空，其父指向 x，y->\_left 置为 x，x->\_parent 更新为 y，更新祖父指向 y。
-        * 头文件可见 `rotate_left(container_node* x)` 实现，签名与实现严格对应。
-        * 参见示意图：![RB 左旋前](images/rb_left_before.png) / ![RB 左旋后](images/rb_left_after.png)。
-    * **右旋** 与左旋对称。
+   * 若 `_size==0` 返回 `end()`；否则计算 `h`，遍历桶链比较 `value_imitation_functions`。
 
-* **示意图引用**：
+6. **查询**
 
-    * 左旋前后示意图：
+   * `size()`、`empty()`、`capacity()` 直接返回内部字段。
+   * `begin()` / `end()`、`cbegin()` / `cend()` 在全局链表上按插入顺序遍历。
 
-      ```md
-      ![](images/rb_left_before.png)  
-      ![](images/rb_left_after.png)
-      ```
-    * 右旋前后示意图：
+#### **返回值说明**
 
-      ```md
-      ![](images/rb_right_before.png)  
-      ![](images/rb_right_after.png)
-      ```
-    * 确保上述图片路径正确。
+* `push(...)` → `bool`：
 
-* **返回值**
+  * `true`：新值已插入；
+  * `false`：值已存在。
+* `pop(...)` → `bool`：
 
-    * 返回 `pair<iterator, bool>`：`bool` 表示插入是否发生（若键已存在，可返回 false）；`iterator` 指向已插入或已存在节点。
+  * `true`：删除成功；
+  * `false`：未找到。
+* `find(...)` → `iterator`：
 
-* **复杂度**：O(log n) 时间，包括 BST 查找插入和插入后修正（旋转和重染色操作，常数次）。
+  * 指向目标；未找到为 `end()`。
+* `change_load_factor` → `bool`：
 
-* **边界与错误**：内存分配失败时抛出 `customize_exception`；插入重复键行为取决实现（通常不允许重复，直接返回对应 iterator 和 false）。
+  * `true`：新负载因子生效；
+  * `false`：输入无效。
+* `size()`, `capacity()` → `size_t`。
+* `empty()` → `bool`。
 
-#### 删除操作 `iterator pop(const V& key)` 或 `bool pop(const V& key)`
+#### **内部原理剖析**
 
-* **查找待删除节点**：BST 查找定位目标节点，若不存在直接返回 end() 或 false。
-* **删除流程**：
+* **桶数组**：`vector_hash_table` 存储每个桶的头节点指针，桶内使用单链 `_next` 处理冲突。
+* **全局链表**：`overall_list_head_node` 与 `overall_list_before_node` 串联所有节点，支持按插入顺序遍历。
+* **扩容**：依据负载因子动态触发；重建时保持全局插入顺序。
+* **链表移除**：
 
-    1. 若节点有两个非空子节点，找到后继节点（右子树最小），将后继节点的数据复制到当前节点，然后删除后继节点（后继节点最多一个子节点），将删除问题转换为删除后继节点；否则直接删除。
-    2. 实际删除时，若删除节点或其替代节点为黑色，删除会破坏红黑性质，需要执行删除修正算法：
+  * `hash_chain_adjustment` 检查父节点是否为空，若为空更新桶头，否则更新 `parent->_next`。
+  * 全局链表删除需要处理头/中/尾三类情况。
 
-        * 设 x 为替代节点（可能为 nullptr nil 节点）。
-        * 若 x 或其子节点为红，可通过重新着色解决；否则通过复杂的“借兄弟”或“旋转”方案修正双重黑问题（CLRS 中 delete-fixup 算法）。
-        * 旋转和重染色操作确保最终恢复红黑性质。
-* **示意图**：可绘制删除及修正流程示意，如兄弟节点不同情形。
-* **返回值**：按实现可能返回指向替代节点的 iterator，或 bool 表示成功；头文件具体签名需严格引用。
-* **复杂度**：O(log n)。
-* **边界**：删除根节点、叶子节点、仅有一个子节点或两个子节点情况均需考虑；若删除导致树空，应置 `_root = nullptr`。
+#### **复杂度分析**
 
-#### 查找 `container_node* find(const V& key) const`
+* `push` / `pop` / `find`：平均 `O(1)`，最坏 `O(n)`（全部冲突或重建时为 `O(n)`。
+* 扩容：`O(n)` 需遍历全局链表重建。
+* 空间：`O(n + cap)` 桶数组 + 全局链表。
 
-* 与 BST 查找类似，O(log n) 平均，O(n) 最坏（因红黑树保持平衡，实际最坏 O(log n)）。
-* 返回指向节点或 nullptr。
+#### **边界条件和错误处理**
 
-#### 遍历 `void middle_order_traversal() const`
+* **空表**：`find`、`pop` 安全返回；`push` 正常插入首节点。
+* **重复值**：`push` 返回 `false`。
+* **负载因子**：`change_load_factor` 保证新值 ≥ 1。
+* **内存不足**：节点分配或扩容时抛 `std::bad_alloc`。
 
-* 中序遍历输出有序序列。实现可类似 BST 中序遍历。
-* **用途**：打印或导出有序元素，验证结构正确。
+#### **注意事项**
 
-#### size() `size_t size() const`
+* 非线程安全，需外部同步。
+* 扩容过程中，原节点不失序；中途异常会导致部分重建，可考虑事务回滚。
+* 全局链表内存管理需与桶链同步。
 
-* 可维护 `_size` 成员以 O(1) 返回当前节点数；若无，则每次遍历统计，O(n)。头文件中可能使用辅助函数 `_size()` 通过迭代器统计，成本 O(n)；若维护成员，更新插入/删除时增减，可 O(1)。
-* **引用**：
+#### **使用示例**
+* 当前类不推荐直接使用，建议使用上层容器
+> **引用** 头文件 `base_class_container` 命名空间
 
-#### 旋转示意与图解
-
-* **左旋**：参见 AVL 左旋相似逻辑，但需额外颜色调整；示意图同前。
-* **右旋**：对称。
-* **伪代码**（摘自 CLRS，结合头文件实现顺序）：
-
-  ```text
-  rotate_left(x):
-      y = x.right
-      x.right = y.left
-      if y.left != nil:
-          y.left.parent = x
-      y.parent = x.parent
-      if x.parent == nil:
-          root = y
-      else if x == x.parent.left:
-          x.parent.left = y
-      else:
-          x.parent.right = y
-      y.left = x
-      x.parent = y
-  ```
-
-  对于红黑树插入/删除修正，旋转后通常还需交换颜色等。
-* **引用实现**：头文件中 `rotate_left(container_node* x)`, `rotate_right(container_node* x)` 等，签名严格按照头文件定义。
-
-#### 复杂度与平衡性
-
-* 插入/删除后修正保证树高度在 `2*log(n+1)` 内，故查找、插入、删除均 O(log n)。
-* 空间：节点额外存储颜色位和父指针。
-
-#### 边界与异常
-
-* 内存分配失败需抛出异常并处理回滚。
-* 旋转与修正过程中需保证指针正确指向；错误可能导致内存泄漏或非法访问。
-* 多线程：非线程安全，若并发多线程修改同一树，需外部同步。
-
----
-
-### AVL 树（若在头文件中有实现或对比说明）
-
-头文件中若提供 AVL 树实现，可与红黑树对比。若无，可仅在文档中做对比说明：
-
-* **AVL 树**：严格平衡，任何节点左右子树高度之差 ≤ 1；查询性能更优，插入/删除修正（旋转）更频繁。
-* **红黑树**：相对松散的平衡条件，插入/删除较少旋转，维护成本稍低，适用于关联容器 STL。
-* **示意图**：前面已生成 AVL 左旋/右旋示意图：
-
-  ```md
-  ![](images/avl_left_before.png)
-  ![](images/avl_left_after.png)
-  ![](images/avl_right_before.png)
-  ![](images/avl_right_after.png)
-  ```
-* **旋转逻辑**：与红黑树旋转类似，但无需额外颜色调整，仅更新高度。
-* **插入/删除修正**：需在每次插入/删除后，沿路径更新高度，若高度差超限，进行 LL、RR、LR、RL 四种旋转或双旋。
-* **签名**：若有 `avl_tree` 类，函数 `push`, `pop`, `find`, `middle_order_traversal`, `pre_order_traversal`, `size` 等；具体签名请参照头文件。
-
-> 若头文件无 AVL 实现，此处仅做理论对比，不生成不一致签名。
-
----
-
-## 关联容器
-
-### map\_container::tree\_map
-
-**定义位置**：
-
-```cpp
-namespace map_container
-{
-    template <typename map_type_k, typename map_type_v, typename comparators = template_container::imitation_functions::less<map_type_k>>
-    class tree_map
-    {
-        using key_val_type = template_container::practicality::pair<map_type_k,map_type_v>;
-        struct key_val
-        {
-            const map_type_k& operator()(const key_val_type& key_value) { return key_value.first; }
-        };
-        using instance_rb = base_class_container::rb_tree<map_type_k, key_val_type, key_val, comparators>;
-        instance_rb instance_tree_map;
-    public:
-        using iterator = typename instance_rb::iterator;
-        using const_iterator = typename instance_rb::const_iterator;
-        using reverse_iterator = typename instance_rb::reverse_iterator;
-        using const_reverse_iterator = typename instance_rb::const_reverse_iterator;
-        using map_iterator = template_container::practicality::pair<iterator,bool>;
-        tree_map();
-        ~tree_map() = default;
-        tree_map(const tree_map& other);
-        tree_map(tree_map&& other) noexcept;
-        explicit tree_map(const key_val_type& data);
-        explicit tree_map(key_val_type&& data) noexcept;
-        tree_map(const std::initializer_list<key_val_type>& list);
-        tree_map& operator=(const tree_map& other);
-        tree_map& operator=(tree_map&& other) noexcept;
-        tree_map& operator=(const std::initializer_list<key_val_type>& list);
-        map_iterator push(const key_val_type& data);
-        map_iterator push(key_val_type&& data) noexcept;
-        map_iterator pop(const key_val_type& data);
-        iterator find(const key_val_type& data);
-        void middle_order_traversal();
-        void pre_order_traversal();
-        [[nodiscard]] size_t size() const;
-        bool empty();
-        iterator begin();
-        iterator end();
-        const_iterator cbegin();
-        const_iterator cend();
-        reverse_iterator rbegin();
-        reverse_iterator rend();
-        const_reverse_iterator crbegin();
-        const_reverse_iterator crend();
-        iterator operator[](const key_val_type& data);
-    };
-}
-```
-
-* **引用**：
-
-#### 数据结构
-
-* 内部使用 `rb_tree<map_type_k, key_val_type, key_val, comparators>`。
-* `key_extractor` 为 `key_val`，通过 `operator()(pair)` 返回 `first` 作为用于比较的 key；value 存储在 `_data.second`。
-
-#### 接口详解
-
-1. **构造与析构**
-
-    * 默认构造：创建空红黑树。
-    * 拷贝/移动：对应复制或接管内部红黑树。
-    * 从单元素或初始化列表构造：依次插入元素。
-    * 析构：默认析构，内部 `rb_tree` 负责节点释放。
-2. **插入 `map_iterator push(const key_val_type& data)`**
-
-    * 调用内部 `instance_tree_map.push(data)`，若键不存在插入并返回 `<iterator,true>`，若已存在不插入返回 `<iterator,false>`。
-    * **示例**
-
-      ```cpp
-      template_container::map_container::tree_map<int, std::string> m;
-      auto [it, ok] = m.push({1, "one"});
-      if(!ok) { /* 已存在键 1 */ }
-      ```
-    * **复杂度**：O(log n)。
-3. **删除 `map_iterator pop(const key_val_type& data)`**
-
-    * 删除指定键，对应内部 `rb_tree.pop(...)`，返回 iterator（可能特殊含义）。
-    * **使用注意**：若键不存在，可能返回 end()；文档需说明其行为。
-4. **查找 `iterator find(const key_val_type& data)`**
-
-    * 内部 `rb_tree.find`：O(log n)。
-    * **示例**
-
-      ```cpp
-      auto it = m.find({1, ""});
-      if(it != m.end()) {
-          std::cout << it->second;
-      }
-      ```
-5. **访问或插入 `iterator operator[](const key_val_type& data)`**
-
-    * 若键存在，返回对应 iterator；若不存在，插入新键，其 value 默构造或传入的 `data.second`？需参考实现：头文件签名为 `operator[](const key_val_type& tree_map_data)`，可能表示插入 data.second 或默认值；文档中应说明实际行为。
-    * **引用**：请依据头文件实现逻辑说明。
-6. **遍历**
-
-    * `middle_order_traversal()`, `pre_order_traversal()`: 调用内部 `rb_tree` 对应遍历，输出键值对 `{key, value}`，以某种格式打印。
-    * **示例**
-
-      ```cpp
-      m.middle_order_traversal(); // 以中序输出所有键值对
-      ```
-7. **大小与状态**
-
-    * `size() const`: 返回元素数量。
-    * `empty()`: 返回是否为空。
-8. **迭代器**
-
-    * `begin()/end()`, `cbegin()/cend()`, `rbegin()/rend()`, `crbegin()/crend()`: 支持范围 for、STL 兼容算法。
-    * **迭代器类型**：内部 `rb_tree` 提供双向迭代器，可增量/减量访问下一个/上一个元素。
-    * **失效规则**：插入/删除可能使迭代器失效；文档应说明。
-
-#### 内部原理剖析
-
-* 以红黑树组织元素，按 key 排序。
-* 查找、插入、删除操作同红黑树逻辑，保证平衡。
-* `value` 存储在节点中，与 key 一起。
-* 迭代器通过中序遍历实现“下一个”指针，通常用栈或 parent 指针实现。
-
-#### 复杂度
-
-* 插入/删除/查找：O(log n)。
-* 遍历：O(n)。
-* 空间：O(n) 节点，节点额外存储 parent 指针、color、value、key。
-
-#### 示例
-
-```cpp
-template_container::map_container::tree_map<std::string,int> dict;
-dict.push({"apple", 5});
-dict.push({"banana", 3});
-auto it = dict.find({"apple",0});
-if(it != dict.end()) {
-    std::cout << "apple count: " << it->second << std::endl;
-}
-for(auto it2 = dict.begin(); it2 != dict.end(); ++it2) {
-    std::cout << it2->first << " -> " << it2->second << std::endl;
-}
-dict.pop({"banana",0});
-```
-
----
 
 ### set\_container::tree\_set
 
