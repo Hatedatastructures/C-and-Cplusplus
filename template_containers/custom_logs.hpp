@@ -8,103 +8,99 @@ namespace custom_log
 {
     using custom_string = con::string;
     using log_timestamp_class = std::chrono::system_clock;  //时间戳类
-    [[nodiscard]] bool file_exists(const std::string& path)
+    [[nodiscard]] inline bool file_exists(const std::string& path)
     {
         std::ifstream status_judgment(path);
         return status_judgment.good();
     }
-    [[nodiscard]] bool file_exists(const custom_string& path)
+    [[nodiscard]] inline bool file_exists(const custom_string& path)
     {
         std::ifstream status_judgment(path.c_str());
         return status_judgment.good();
     }
-    [[nodiscard]] bool file_exists(const char* path)
+    [[nodiscard]] inline bool file_exists(const char* path)
     {
         std::ifstream status_judgment(path);
         return status_judgment.good();
     }
-    enum security_level
+    enum class SeverityLevel 
     {
-        
+        TRIVIAL = 0,    // 轻微问题，不影响系统运行
+        MINOR = 1,      // 次要问题，可能需要注意
+        MODERATE = 2,   // 中等问题，需要处理
+        MAJOR = 3,      // 主要问题，影响系统功能
+        CRITICAL = 4,   // 严重问题，导致部分功能失效
+        BLOCKER = 5,    // 阻塞问题，系统无法正常运行
+        FATAL = 6       // 致命错误，系统崩溃或数据丢失
     };
     class information
     {
+        #define DECLARE_INFO_INPUT(type)template<typename T>\
+        void type##_message_input(const T& data){type##_information = to_custom_string(data);} 
+    protected:
+        static custom_string to_custom_string(const std::string& string_value) 
+        {
+            return custom_string(string_value.c_str());
+        }
+        static custom_string to_custom_string(const custom_string& string_value)
+        {
+            return string_value;
+        }
+        static custom_string to_custom_string(const char* string_value)
+        {
+            return custom_string(string_value);
+        }
     public:
         custom_string debugging_information;        //调试信息
         custom_string general_information;          //一般信息
-        custom_string warning_messages;             //警告信息
-        custom_string error_messages;               //错误信息
-        custom_string critical_misinformations;     //严重错误信息
+        custom_string warning_information;          //警告信息
+        custom_string error_information;            //错误信息
+        custom_string serious_error_information;    //严重错误信息
         information() = default;
         information(const information& rhs) = delete;
         information(information&& rhs) = delete;
         information& operator=(const information& rhs) = delete;
         information& operator=(information&& rhs) = delete;
         ~information() = default;
-        void debugging_information_input(const custom_string& information_data)
-        {
-            debugging_information = information_data;
-        }
-        void debugging_information_input(const std::string& information_data)
-        {
-            debugging_information = information_data.c_str();
-        }
-        void debugging_information_input(const char* information_data)
-        {
-            debugging_information = information_data;
-        }
-        void general_information_input(const custom_string& information_data)
-        {
-            general_information = information_data;
-        }
-        void general_information_input(const std::string& information_data)
-        {
-            general_information = information_data.c_str();
-        }
-        void general_information_input(const char* information_data)
-        {
-            general_information = information_data;
-        }
-        void warning_messages_input(const custom_string& information_data)
-        {
-            warning_messages = information_data;
-        }
-        void warning_messages_input(const std::string& information_data)
-        {
-            warning_messages = information_data.c_str();
-        }
-        void warning_messages_input(const char* information_data)
-        {
-            warning_messages = information_data;
-        }
-        void error_messages_input(const custom_string& information_data)
-        {
-            error_messages = information_data;
-        }
-        void error_messages_input(const std::string& information_data)
-        {
-            error_messages = information_data.c_str();
-        }
-        void error_messages_input(const char* information_data)
-        {
-            error_messages = information_data;
-        }
-        void critical_misinformations_input(const custom_string& information_data)
-        {
-            critical_misinformations = information_data;
-        }
-        void critical_misinformations_input(const std::string& information_data)
-        {
-            critical_misinformations = information_data.c_str();
-        }
-        void critical_misinformations_input(const char* information_data)
-        {
-            critical_misinformations = information_data;
-        }
+        DECLARE_INFO_INPUT(debugging)
+        DECLARE_INFO_INPUT(general)
+        DECLARE_INFO_INPUT(warning)
+        DECLARE_INFO_INPUT(error)
+        DECLARE_INFO_INPUT(serious_error)
     };
     // 定义一个名为file_foundation_log的类
     class file_foundation_log
     {
+    protected:
+        const char* convert_to_cstr(const std::string& string_value)        {return string_value.c_str();}
+        const char* convert_to_cstr(const custom_string& string_value)      {return string_value.c_str();}
+        const char* convert_to_cstr(const char* str_value)                  {return str_value;}
+        const char* convert_to_string(const custom_string& string_value)    {return string_value.c_str(); }
+        const char* convert_to_string(const std::string& string_value)      {return string_value.c_str(); }
+        const char* convert_to_string(const char* str_value)                {return str_value; }
+        con::string format_time(const std::chrono::system_clock::time_point& time_value) 
+        {
+            auto time_t = std::chrono::system_clock::to_time_t(time_value);
+            std::tm* local_time = std::localtime(&time_t);
+            std::ostringstream oss;
+            oss << std::put_time(local_time, "%Y-%m-%d %H:%M:%S");
+            return oss.str().c_str();
+        }
+        template<typename file_open>
+        void open_file(const file_open& file_name) 
+        {
+            file_ofstream.open(convert_to_cstr(file_name));
+        }
+        con::string format_information(const information& information_value) 
+        {
+            std::ostringstream oss;
+            oss << "[DEBUG]("    << information_value.debugging_information     << ") " 
+                << "[INFO]("     << information_value.general_information       << ") " 
+                << "[WARNING]("  << information_value.warning_information       << ") "
+                << "[ERROR]("    << information_value.error_information         << ") "
+                << "[CRITICAL](" << information_value.serious_error_information << ") ";
+            return oss.str().c_str();
+        }
     public:
         using inbuilt_documents = std::ofstream;
         inbuilt_documents file_ofstream;
@@ -113,52 +109,28 @@ namespace custom_log
         file_foundation_log(file_foundation_log&& rhs) = delete;
         file_foundation_log& operator=(const file_foundation_log& rhs) = delete;
         file_foundation_log& operator=(file_foundation_log&& rhs) = delete;
-        ~file_foundation_log()
+        ~file_foundation_log()      {file_ofstream.close();}
+        template<typename structure>
+        file_foundation_log(const structure& file_name) 
         {
-            file_ofstream.close();
+            open_file(file_name);
         }
-        file_foundation_log(const custom_string& file_name)
+        template<typename file_write>
+        void write(const file_write& file_value) 
         {
-            file_ofstream.open(file_name.c_str());
+            file_ofstream << convert_to_string(file_value);
         }
-        file_foundation_log(const char* file_name)
+        void write(const std::chrono::system_clock::time_point& time_value)
         {
-            file_ofstream.open(file_name);
+            file_ofstream << "[" << std::chrono::system_clock::to_time_t(time_value) << "] " ;
         }
-        file_foundation_log(const std::string& file_name)
+        void write(const information& information_value) 
         {
-            file_ofstream.open(file_name.c_str());
+            file_ofstream << format_information(information_value).c_str();
         }
-        void write(const custom_string& data)
+        void data(const std::chrono::system_clock::time_point& time) 
         {
-            file_ofstream << data.c_str();
-        }
-        void write(const std::string& data)
-        {
-            file_ofstream << data.c_str();
-        }
-        void write(const std::chrono::_V2::system_clock::time_point& time)
-        {
-             std::time_t time_t_value = std::chrono::system_clock::to_time_t(time);
-            file_ofstream <<"[" << time_t_value << "]:";
-        }
-        void write(const char* data)
-        {
-            file_ofstream << data;
-        }
-        void write(const information& data)
-        {
-            file_ofstream << "[DEBUG]"   << " (" << data.debugging_information    << ") " 
-                          << "[INFO]"    << " (" << data.general_information      << ") " 
-                          << "[WARNING]" << " (" << data.warning_messages         << ") "
-                          << "[ERROR]"   << " (" << data.error_messages           << ") "
-                          << "[CRITICAL]"<< " (" << data.critical_misinformations << ") ";
-        }
-        void data(const std::chrono::_V2::system_clock::time_point& time)
-        {
-            std::time_t time_t_value = std::chrono::system_clock::to_time_t(time);
-            std::tm* local_time = std::localtime(&time_t_value);
-            file_ofstream << " 运行时间: " << std::put_time(local_time, "%Y-%m-%d %H:%M:%S") << std::endl;
+            file_ofstream << "[运行时间]" << format_time(time).c_str() << std::endl;
         }
     };
     class function_stacks //作为高级日志中控调用
@@ -183,7 +155,7 @@ namespace custom_log
         {
             function_log_stacks.push(function_name);
         }
-        con::string top()
+        con::string top() const
         {
             return function_log_stacks.top();
         }
@@ -191,7 +163,7 @@ namespace custom_log
         {
             return function_log_stacks.size();
         }
-        bool empty()
+        bool empty() const
         {
             return function_log_stacks.empty();
         }
@@ -211,25 +183,41 @@ namespace custom_log
         foundation_log& operator=(foundation_log&& rhs) = delete;
         ~foundation_log() = default;
         foundation_log(const custom_string& log_file_name)
-        :log_file(log_file_name)
-        {
-        
-        }
+        :log_file(log_file_name){}
         foundation_log(const std::string& log_file_name)
-        :log_file(log_file_name.c_str())
-        {
-        
-        }
+        :log_file(log_file_name.c_str()){}
         foundation_log(const char* log_file_name)
-        : log_file(log_file_name)
-        {
-           
-        }
-        void write_file(const information& log_information,const std::chrono::_V2::system_clock::time_point& time)
+        : log_file(log_file_name){}
+        virtual void write_file(const information& log_information,const std::chrono::_V2::system_clock::time_point& time)
         {
             log_file.write(time);
             log_file.write(log_information);
             log_file.data(time);
         }
+    };
+    class log : private custom_log::foundation_log
+    {
+    private:
+        function_stacks function_call_stack;
+    public:
+        log(const std::string& log_file_name)
+        :foundation_log(log_file_name)
+        {
+
+        }
+        log(const custom_string& log_file_name)
+        :foundation_log(log_file_name)
+        {
+
+        }
+        log(const char* log_file_name)
+        :foundation_log(log_file_name)
+        {
+
+        }
+        // virtual void write_file(const information& log_information,const std::chrono::_V2::system_clock::time_point& time) override
+        // {
+
+        // }
     };
 }

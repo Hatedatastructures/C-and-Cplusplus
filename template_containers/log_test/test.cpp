@@ -19,13 +19,12 @@ int main()
     con::string count;
     std::cout << "输出count:" << count << std::endl;
     {
-        con::string file_name = "日志文件.txt"; 
-        if(custom_log::file_exists(file_name))
+        if(con::string name = "日志文件.txt"; custom_log::file_exists(name))
         {
-            custom_log::foundation_log test_log (file_name);
+            custom_log::foundation_log test_log (name);
             custom_log::information temp_information;
-            temp_information.debugging_information_input("测试日志,进入作用域");
-            temp_information.warning_messages_input("非法操作");
+            temp_information.debugging_message_input("测试日志,进入作用域");
+            temp_information.warning_message_input("非法操作");
 
             test_log.write_file(temp_information,custom_log::log_timestamp_class::now());
         }
