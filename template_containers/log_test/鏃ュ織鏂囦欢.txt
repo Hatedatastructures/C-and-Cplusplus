@@ -1,5 +1,1 @@
-This is a foundation_log string
-This is a foundation_log string
-文件测试
-This is a foundation_log string
-This is a storehouse foundation_log string当前时间: 2025-06-16 13:48:40
+[1750062862]:[DEBUG] (测试日志,进入作用域) [INFO] ( ) [WARNING] (非法操作) [ERROR] ( ) [CRITICAL] ( )  运行时间: 2025-06-16 16:34:22

@@ -4,10 +4,10 @@
 #include <chrono>
 #include <iomanip>
 #include <ctime>
-using custom_string = con::string;
-using log_timestamp_class = std::chrono::system_clock;  //时间戳类
 namespace custom_log
 {
+    using custom_string = con::string;
+    using log_timestamp_class = std::chrono::system_clock;  //时间戳类
     [[nodiscard]] bool file_exists(const std::string& path)
     {
         std::ifstream status_judgment(path);
@@ -26,33 +26,6 @@ namespace custom_log
     enum security_level
     {
         
-    };
-    class file_foundation_log
-    {
-    public:
-        using inbuilt_documents = std::ofstream;
-        inbuilt_documents file_ofstream;
-        file_foundation_log() = default;
-        file_foundation_log(const file_foundation_log& rhs) = delete;
-        file_foundation_log(file_foundation_log&& rhs) = delete;
-        file_foundation_log& operator=(const file_foundation_log& rhs) = delete;
-        file_foundation_log& operator=(file_foundation_log&& rhs) = delete;
-        ~file_foundation_log()
-        {
-            file_ofstream.close();
-        }
-        file_foundation_log(const custom_string& file_name)
-        {
-            file_ofstream.open(file_name.c_str());
-        }
-        file_foundation_log(const char* file_name)
-        {
-            file_ofstream.open(file_name);
-        }
-        file_foundation_log(const std::string& file_name)
-        {
-            file_ofstream.open(file_name.c_str());
-        }
     };
     class information
     {
@@ -129,7 +102,66 @@ namespace custom_log
             critical_misinformations = information_data;
         }
     };
-    class function_stacks
+    // 定义一个名为file_foundation_log的类
+    class file_foundation_log
+    {
+    public:
+        using inbuilt_documents = std::ofstream;
+        inbuilt_documents file_ofstream;
+        file_foundation_log() = default;
+        file_foundation_log(const file_foundation_log& rhs) = delete;
+        file_foundation_log(file_foundation_log&& rhs) = delete;
+        file_foundation_log& operator=(const file_foundation_log& rhs) = delete;
+        file_foundation_log& operator=(file_foundation_log&& rhs) = delete;
+        ~file_foundation_log()
+        {
+            file_ofstream.close();
+        }
+        file_foundation_log(const custom_string& file_name)
+        {
+            file_ofstream.open(file_name.c_str());
+        }
+        file_foundation_log(const char* file_name)
+        {
+            file_ofstream.open(file_name);
+        }
+        file_foundation_log(const std::string& file_name)
+        {
+            file_ofstream.open(file_name.c_str());
+        }
+        void write(const custom_string& data)
+        {
+            file_ofstream << data.c_str();
+        }
+        void write(const std::string& data)
+        {
+            file_ofstream << data.c_str();
+        }
+        void write(const std::chrono::_V2::system_clock::time_point& time)
+        {
+             std::time_t time_t_value = std::chrono::system_clock::to_time_t(time);
+            file_ofstream <<"[" << time_t_value << "]:";
+        }
+        void write(const char* data)
+        {
+            file_ofstream << data;
+        }
+        void write(const information& data)
+        {
+            file_ofstream << "[DEBUG]"   << " (" << data.debugging_information    << ") " 
+                          << "[INFO]"    << " (" << data.general_information      << ") " 
+                          << "[WARNING]" << " (" << data.warning_messages         << ") "
+                          << "[ERROR]"   << " (" << data.error_messages           << ") "
+                          << "[CRITICAL]"<< " (" << data.critical_misinformations << ") ";
+        }
+        void data(const std::chrono::_V2::system_clock::time_point& time)
+        {
+            std::time_t time_t_value = std::chrono::system_clock::to_time_t(time);
+            std::tm* local_time = std::localtime(&time_t_value);
+            file_ofstream << " 运行时间: " << std::put_time(local_time, "%Y-%m-%d %H:%M:%S") << std::endl;
+        }
+    };
+    class function_stacks //作为高级日志中控调用
     {
         con::stack<con::string> function_log_stacks;
     public:
@@ -171,17 +203,33 @@ namespace custom_log
     class foundation_log
     {
     private:
-        std::chrono::_V2::system_clock::time_point foundation_log_timestamp;
+        file_foundation_log log_file;
     public:
-        foundation_log() = default;
         foundation_log(const foundation_log& rhs) = delete;
         foundation_log(foundation_log&& rhs) = delete;
         foundation_log& operator=(const foundation_log& rhs) = delete;
         foundation_log& operator=(foundation_log&& rhs) = delete;
         ~foundation_log() = default;
-        void timestamp_acquisition(const std::chrono::_V2::system_clock::time_point& timestamp_data) noexcept
+        foundation_log(const custom_string& log_file_name)
+        :log_file(log_file_name)
         {
-            foundation_log_timestamp = timestamp_data;
+        
+        }
+        foundation_log(const std::string& log_file_name)
+        :log_file(log_file_name.c_str())
+        {
+        
+        }
+        foundation_log(const char* log_file_name)
+        : log_file(log_file_name)
+        {
+           
+        }
+        void write_file(const information& log_information,const std::chrono::_V2::system_clock::time_point& time)
+        {
+            log_file.write(time);
+            log_file.write(log_information);
+            log_file.data(time);
         }
     };
 }
