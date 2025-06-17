@@ -8,6 +8,7 @@ namespace custom_log
 {
     using custom_string = con::string;
     using log_timestamp_class = std::chrono::system_clock;  //时间戳类
+    using log_timestamp_type = std::chrono::system_clock::time_point;
     [[nodiscard]] inline bool file_exists(const std::string& path)
     {
         std::ifstream status_judgment(path);
@@ -23,7 +24,7 @@ namespace custom_log
         std::ifstream status_judgment(path);
         return status_judgment.good();
     }
-    enum class SeverityLevel 
+    enum class severity_level 
     {
         TRIVIAL = 0,    // 轻微问题，不影响系统运行
         MINOR = 1,      // 次要问题，可能需要注意
@@ -35,8 +36,8 @@ namespace custom_log
     };
     class information
     {
-        #define DECLARE_INFO_INPUT(type)template<typename T>\
-        void type##_message_input(const T& data){type##_information = to_custom_string(data);} 
+        #define DECLARE_INFO_INPUT(type)template<typename macro_parameters>\
+        void type##_message_input(const macro_parameters& data){type##_information = to_custom_string(data);} 
     protected:
         static custom_string to_custom_string(const std::string& string_value) 
         {
@@ -78,7 +79,7 @@ namespace custom_log
         const char* convert_to_string(const custom_string& string_value)    {return string_value.c_str(); }
         const char* convert_to_string(const std::string& string_value)      {return string_value.c_str(); }
         const char* convert_to_string(const char* str_value)                {return str_value; }
-        con::string format_time(const std::chrono::system_clock::time_point& time_value) 
+        con::string format_time(const log_timestamp_type& time_value) 
         {
             auto time_t = std::chrono::system_clock::to_time_t(time_value);
             std::tm* local_time = std::localtime(&time_t);
@@ -91,7 +92,7 @@ namespace custom_log
         {
             file_ofstream.open(convert_to_cstr(file_name));
         }
-        con::string format_information(const information& information_value) 
+        con::string format_information(const information& information_value)const
         {
             std::ostringstream oss;
             oss << "[DEBUG]("    << information_value.debugging_information     << ") " 
@@ -120,7 +121,7 @@ namespace custom_log
         {
             file_ofstream << convert_to_string(file_value);
         }
-        void write(const std::chrono::system_clock::time_point& time_value)
+        void write(const log_timestamp_type& time_value)
         {
             file_ofstream << "[" << std::chrono::system_clock::to_time_t(time_value) << "] " ;
         }
@@ -128,9 +129,15 @@ namespace custom_log
         {
             file_ofstream << format_information(information_value).c_str();
         }
-        void data(const std::chrono::system_clock::time_point& time) 
+        void data(const log_timestamp_type& time) 
         {
-            file_ofstream << "[运行时间]" << format_time(time).c_str() << std::endl;
+            file_ofstream << "[运行时间]" << format_time(time).c_str() << std::endl << std::endl;
+        }   //让结构更清晰
+        con::string get_string_str(const information& information_value)const
+        {
+            con::string temporary_string;
+            temporary_string = format_information(information_value);
+            return temporary_string;
         }
     };
     class function_stacks //作为高级日志中控调用
@@ -155,27 +162,22 @@ namespace custom_log
         {
             function_log_stacks.push(function_name);
         }
-        con::string top() const
-        {
-            return function_log_stacks.top();
-        }
-        size_t size()
-        {
-            return function_log_stacks.size();
-        }
-        bool empty() const
-        {
-            return function_log_stacks.empty();
-        }
-        void pop()
-        {
-            function_log_stacks.pop();
-        }
+        con::string top() const {return function_log_stacks.top();}
+        size_t size()           {return function_log_stacks.size();}
+        bool empty() const      {return function_log_stacks.empty();}
+        void pop()              {function_log_stacks.pop();}
     };
     class foundation_log
     {
+        using foundation_log_type = con::pair<con::string,log_timestamp_type>;
     private:
         file_foundation_log log_file;
+        con::vector<foundation_log_type> temporary_string_buffer;
+        foundation_log_type temporary_caching(const information& log_information,const log_timestamp_type& time = log_timestamp_class::now())
+        {
+            con::string temporary_string_caching = log_file.get_string_str(log_information);
+            return foundation_log_type(temporary_string_caching,time);
+        }
     public:
         foundation_log(const foundation_log& rhs) = delete;
         foundation_log(foundation_log&& rhs) = delete;
@@ -188,11 +190,26 @@ namespace custom_log
         :log_file(log_file_name.c_str()){}
         foundation_log(const char* log_file_name)
         : log_file(log_file_name){}
-        virtual void write_file(const information& log_information,const std::chrono::_V2::system_clock::time_point& time)
+        virtual void write_file(const information& log_information,const log_timestamp_type& time = log_timestamp_class::now())
         {
             log_file.write(time);
             log_file.write(log_information);
             log_file.data(time);
+        }
+        virtual void staging(const information& log_information,const log_timestamp_type& time = log_timestamp_class::now())
+        {
+            temporary_string_buffer.push_back(temporary_caching(log_information,time));
+        }
+        virtual void push_to_file()
+        {
+            con::vector<foundation_log_type> new_temporary_string_buffer;
+            for(auto& cushioningp : temporary_string_buffer)
+            {
+                log_file.write(cushioningp.second);
+                log_file.write(cushioningp.first);
+                log_file.data(cushioningp.second);
+            }
+            new_temporary_string_buffer.swap(temporary_string_buffer);
         }
     };
     class log : private custom_log::foundation_log
@@ -200,24 +217,15 @@ namespace custom_log
     private:
         function_stacks function_call_stack;
     public:
-        log(const std::string& log_file_name)
-        :foundation_log(log_file_name)
+        template <typename file_name>
+        log(const file_name& file)
         {
-
+            log::foundation_log::foundation_log(file);
         }
-        log(const custom_string& log_file_name)
-        :foundation_log(log_file_name)
-        {
-
-        }
-        log(const char* log_file_name)
-        :foundation_log(log_file_name)
-        {
-
-        }
-        // virtual void write_file(const information& log_information,const std::chrono::_V2::system_clock::time_point& time) override
+        // virtual write_file(const information& log_information,constlog_timestamp_type& time = log_timestamp_class::now()) override
         // {
 
         // }
+        ~log() = default;
     };
 }
