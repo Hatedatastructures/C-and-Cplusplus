@@ -2,6 +2,7 @@
 #include "../template_container.hpp"
 #include "windows.h"
 #include <random>
+#include <thread>
 size_t generate_random_size_t(size_t min, size_t max) 
 {
     std::random_device rd;
@@ -55,7 +56,7 @@ int main()
     {"ERR_DB_CONN_001","000","Excel文件解析失败","0x00000709","Operation not permitted"};
     {
         custom_log::foundation_log test_log(file_name);
-        for(size_t list = 0; list < 1000; list++)
+        for(size_t list = 0; list < 10; list++)
         {
             custom_log::information temp_information;
             temp_information.debugging_message_input(debugging[generate_random_size_t(1763824,347632485789)% debugging.size()]);
@@ -63,12 +64,16 @@ int main()
             temp_information.general_message_input(general[generate_random_size_t(1763824,347632485789)% general.size()]);
             temp_information.error_message_input(error[generate_random_size_t(1763824,347632485789)% error.size()]);
             temp_information.serious_error_message_input(serious_error[generate_random_size_t(1763824,347632485789)% serious_error.size()]);
-            Sleep(generate_random_size_t(46,87));
+            Sleep(generate_random_size_t(6,37));
             test_log.staging(temp_information,custom_log::log_timestamp_class::now());
-            std::cout << "###进度 :" << static_cast<double>(list)/10 << "% / 100%" << "..." << std::endl;
+            std::cout << "###进度 :" << static_cast<double>(list)/0.1 << "% / 100%" << "..." << std::endl;
         }
         test_log.push_to_file();
     }
+    system("pause");
+    std::thread test([&]    {   std::cout << "hello,word!" << file_name << std::endl;   } );
+    test.join();
+    std::cout << "程序结束" << std::endl;
     system("pause");
     return 0;
 }

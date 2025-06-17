@@ -69,8 +69,7 @@ namespace custom_log
         DECLARE_INFO_INPUT(error)
         DECLARE_INFO_INPUT(serious_error)
     };
-    // 定义一个名为file_foundation_log的类
-    class file_foundation_log
+    class file_configurator //文件配置器
     {
     protected:
         const char* convert_to_cstr(const std::string& string_value)        {return string_value.c_str();}
@@ -95,24 +94,24 @@ namespace custom_log
         con::string format_information(const information& information_value)const
         {
             std::ostringstream oss;
-            oss << "[DEBUG]("    << information_value.debugging_information     << ") " 
-                << "[INFO]("     << information_value.general_information       << ") " 
-                << "[WARNING]("  << information_value.warning_information       << ") "
-                << "[ERROR]("    << information_value.error_information         << ") "
-                << "[CRITICAL](" << information_value.serious_error_information << ") ";
+            oss << "[DEBUG]"    << information_value.debugging_information     << " " 
+                << "[INFO]"     << information_value.general_information       << " " 
+                << "[WARNING]"  << information_value.warning_information       << " "
+                << "[ERROR]"    << information_value.error_information         << " "
+                << "[CRITICAL]" << information_value.serious_error_information << " ";
             return oss.str().c_str();
         }
     public:
         using inbuilt_documents = std::ofstream;
         inbuilt_documents file_ofstream;
-        file_foundation_log() = default;
-        file_foundation_log(const file_foundation_log& rhs) = delete;
-        file_foundation_log(file_foundation_log&& rhs) = delete;
-        file_foundation_log& operator=(const file_foundation_log& rhs) = delete;
-        file_foundation_log& operator=(file_foundation_log&& rhs) = delete;
-        ~file_foundation_log()      {file_ofstream.close();}
+        file_configurator() = default;
+        file_configurator(const file_configurator& rhs) = delete;
+        file_configurator(file_configurator&& rhs) = delete;
+        file_configurator& operator=(const file_configurator& rhs) = delete;
+        file_configurator& operator=(file_configurator&& rhs) = delete;
+        ~file_configurator()      {file_ofstream.close();}
         template<typename structure>
-        file_foundation_log(const structure& file_name) 
+        file_configurator(const structure& file_name) 
         {
             open_file(file_name);
         }
@@ -123,7 +122,7 @@ namespace custom_log
         }
         void write(const log_timestamp_type& time_value)
         {
-            file_ofstream << "[" << std::chrono::system_clock::to_time_t(time_value) << "] " ;
+            file_ofstream << "[" << std::chrono::system_clock::to_time_t(time_value) << "]: " ;
         }
         void write(const information& information_value) 
         {
@@ -131,7 +130,7 @@ namespace custom_log
         }
         void data(const log_timestamp_type& time) 
         {
-            file_ofstream << "[运行时间]" << format_time(time).c_str() << std::endl << std::endl;
+            file_ofstream << "[时间]" << format_time(time).c_str() << std::endl << std::endl;
         }   //让结构更清晰
         con::string get_string_str(const information& information_value)const
         {
@@ -139,6 +138,10 @@ namespace custom_log
             temporary_string = format_information(information_value);
             return temporary_string;
         }
+    };
+    class console_configurator //控制台配置器
+    {
+
     };
     class function_stacks //作为高级日志中控调用
     {
@@ -171,7 +174,7 @@ namespace custom_log
     {
         using foundation_log_type = con::pair<con::string,log_timestamp_type>;
     private:
-        file_foundation_log log_file;
+        file_configurator log_file;
         con::vector<foundation_log_type> temporary_string_buffer;
         foundation_log_type temporary_caching(const information& log_information,const log_timestamp_type& time = log_timestamp_class::now())
         {
