@@ -1,42 +1,37 @@
-#include <iostream>
 #include <windows.h>
-#include <fcntl.h>
-#include <io.h>
+#include <iostream>
+#include <string>
+#include <thread>
+#include <mutex>
 
-// 函数用于创建新控制台并返回输出流指针
-FILE* createNewConsole(const char* title) 
+std::mutex consoleMutex;
+
+void createLogWindow(const std::string& title, const std::string& logContent) 
 {
     // 创建新的控制台窗口
     AllocConsole();
-    SetConsoleTitleA(title);
+    SetConsoleTitleA(title.c_str());
     
-    // 将标准输出重定向到新控制台
-    FILE* fp;
-    freopen_s(&fp, "CONOUT$", "w", stdout);
-    _setmode(_fileno(stdout), _O_U16TEXT); // 设置为Unicode模式（可选）
+    // 重定向标准输出
+    freopen("CONOUT$", "w", stdout);
     
-    return fp;
+    // 输出日志内容
+    std::lock_guard<std::mutex> lock(consoleMutex);
+    std::cout << logContent << std::endl;
+    
+    // 这里可以添加更多日志输出逻辑
 }
 
 int main() 
 {
-    // 主控制台输出
-    std::cout << "这是主控制台输出" << std::endl;
-    AllocConsole();AllocConsole();AllocConsole();AllocConsole();
-    // 创建新控制台
-    FILE* newConsole = createNewConsole("子控制台");
+    // 创建多个日志窗口
+    std::thread logWindow1(createLogWindow, "日志窗口1", "这是窗口1的日志内容...");
+    std::thread logWindow2(createLogWindow, "日志窗口2", "这是窗口2的日志内容...");
+    std::thread logWindow3(createLogWindow, "错误日志", "错误信息: 文件未找到!");
     
-    // 在新控制台输出
-    std::wcout << L"这是新控制台的输出" << std::endl;
-    
-    // 主控制台继续输出
-    std::cout << "主控制台继续执行..." << std::endl;
-    
-    // 等待用户输入以保持控制台打开
-    std::cin.get();
-    
-    // 释放新控制台
-    FreeConsole();
-    
+    logWindow1.join();
+    logWindow2.join();
+    logWindow3.join();
+    system("pause");
     return 0;
 }

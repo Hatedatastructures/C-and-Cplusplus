@@ -4,6 +4,7 @@
 #include <chrono>
 #include <iomanip>
 #include <ctime>
+// 添加模板,全局设置,如何设计？？
 namespace custom_log
 {
     using custom_string = con::string;
