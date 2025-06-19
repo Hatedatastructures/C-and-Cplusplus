@@ -10,6 +10,22 @@ size_t generate_random_size_t(size_t min, size_t max)
     std::uniform_int_distribution<> dis(min, max);
     return dis(gen);
 }
+using log_one =  con::pair<custom_log::custom_string,size_t>;
+class test_log
+{
+public:
+    test_log() : test_log_pair(log_one(con::string(""), 0), 0) {}
+    test_log(const con::string& test,const size_t& one,const size_t& two )
+    {
+        test_log_pair = con::pair<log_one,size_t>(log_one(test,one),two);
+    }
+    con::pair<log_one,size_t> test_log_pair;
+    char* c_str()const
+    {
+        return test_log_pair.first.first.c_str();
+        // BUG
+    }
+};
 
 int main()
 {
@@ -56,7 +72,7 @@ int main()
     {"ERR_DB_CONN_001","000","Excel文件解析失败","0x00000709","Operation not permitted"};
     {
         custom_log::foundation_log test_log(file_name);
-        for(size_t list = 0; list <= 10; list++)
+        for(size_t list = 0; list <= 100; list++)
         {
             custom_log::information::information temp_information;
             temp_information.debugging_message_input(debugging[generate_random_size_t(1763824,347632485789)% debugging.size()]);
@@ -64,16 +80,27 @@ int main()
             temp_information.general_message_input(general[generate_random_size_t(1763824,347632485789)% general.size()]);
             temp_information.error_message_input(error[generate_random_size_t(1763824,347632485789)% error.size()]);
             temp_information.serious_error_message_input(serious_error[generate_random_size_t(1763824,347632485789)% serious_error.size()]);
-            Sleep(generate_random_size_t(6,37));
+            // Sleep(generate_random_size_t(6,37));
             test_log.staging(temp_information,custom_log::log_timestamp_class::now());
-            std::cout << "###进度 :" << static_cast<double>(list)/0.1 << "% / 100%" << "..." << std::endl;
+            std::cout << "###进度 :" << static_cast<double>(list)/1 << "% / 100%" << "..." << std::endl;
         }
         test_log.push_to_file();
     }
-    system("pause");
-    std::thread test([&]    {   std::cout << "hello,word!" << file_name << std::endl;   } );
-    test.join();
-    std::cout << "程序结束" << std::endl;
-    system("pause");
+    {
+        test_log v1_(con::string("测试日志,进入作用域"),1,2);
+        std::cout << v1_.c_str();
+        std::cout << "前阶段完成" << std::endl;
+        custom_log::foundation_log<test_log> two_test_log(file_name);
+        custom_log::information::information<test_log> temp_information;
+        temp_information.custom_log_message_input(test_log(con::string("测试日志,进入作用域"),1,2));
+        //字符管理问题？？
+        std::cout << temp_information.to_custom_string() << std::endl;
+        two_test_log.staging(temp_information,custom_log::log_timestamp_class::now());
+    }
+    // system("pause");
+    // std::thread test([&]    {   std::cout << "hello,word!" << file_name << std::endl;   } );
+    // test.join();
+    // std::cout << "程序结束" << std::endl;
+    // system("pause");
     return 0;
 }

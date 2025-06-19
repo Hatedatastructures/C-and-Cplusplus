@@ -4,7 +4,7 @@
 #include <chrono>
 #include <iomanip>
 #include <ctime>
-// 添加模板,全局设置,如何设计？？
+// 只定义类型转换出现乱码，，减少类型转换次数
 namespace custom_log
 {
     using custom_string = con::string;
@@ -71,6 +71,10 @@ namespace custom_log
             {
                 custom_log_information = data;
             }
+            custom_string to_custom_string()
+            {   //自定义信息类须重载c_str函数，，返回char*类型支付串
+                return custom_string(custom_log_information.c_str());
+            }
         };
     }
     namespace configurator
@@ -81,6 +85,7 @@ namespace custom_log
         inline custom_string error_information_prefix         = "[ERROR]";
         inline custom_string serious_error_information_prefix = "[CRITICAL]";
         inline custom_string custom_log_information_prefix    = "[DEFAULT]";
+        inline custom_string log_timestamp                    = "[TIME]";
         template<typename custom_information_type = custom_string>
         class file_configurator //文件配置器
         {
@@ -131,22 +136,36 @@ namespace custom_log
                 open_file(file_name);
             }
             template<typename file_write>
-            void write(const file_write& file_value) 
+            void ordinary_type_write(const file_write& file_value)
             {
                 file_ofstream << convert_to_string(file_value);
             }
-            void write(const log_timestamp_type& time_value)
+            void timestamp_write(const log_timestamp_type& time_value)
             {
-                file_ofstream << "[" << std::chrono::system_clock::to_time_t(time_value) << "]: " ;
+                file_ofstream << "[" << std::chrono::system_clock::to_time_t(time_value) << "] " ;
             }
-            void write(const information_type& information_value) 
+            void default_type_write(const information_type& information_value) 
             {
                 file_ofstream << format_information(information_value).c_str();
             }
-            void data(const log_timestamp_type& time) 
+            void custom_type_write(const custom_information_type& foundation_log_value)
             {
-                file_ofstream << "[时间]" << format_time(time).c_str() << std::endl << std::endl;
-            }   //让结构更清晰
+                file_ofstream << custom_log_information_prefix << foundation_log_value.c_str() << " ";
+            }
+            void time_characters(const log_timestamp_type& time) 
+            {
+                file_ofstream << log_timestamp  << format_time(time).c_str() << std::endl << std::endl;
+            }           
+            void overall_information_write(const information_type& information_value)
+            {
+                custom_type_write(information_value.custom_log_information);
+                default_type_write(information_value);
+            }
+            void write(const information_type& information_value,const log_timestamp_type& time_value)
+            {
+                overall_information_write(information_value);
+                timestamp_write(time_value);
+            }
             con::string get_string_str(const information_type& information_value)const
             {
                 con::string temporary_string = format_information(information_value);
@@ -213,9 +232,9 @@ namespace custom_log
         : log_file(log_file_name){}
         virtual void write_file(const information_type& log_information,const log_timestamp_type& time = log_timestamp_class::now())
         {
-            log_file.write(time);
-            log_file.write(log_information);
-            log_file.data(time);
+            log_file.timestamp_write(time);
+            log_file.default_type_write(log_information);
+            log_file.time_characters(time);
         }
         virtual void staging(const information_type& log_information,const log_timestamp_type& time = log_timestamp_class::now())
         {
@@ -226,12 +245,21 @@ namespace custom_log
             con::vector<foundation_log_type> new_temporary_string_buffer;
             for(auto& cushioningp : temporary_string_buffer)
             {
-                log_file.write(cushioningp.second);
-                log_file.write(cushioningp.first);
-                log_file.data(cushioningp.second);
+                log_file.timestamp_write(cushioningp.second);
+                log_file. ordinary_type_write(cushioningp.first);
+                log_file.time_characters(cushioningp.second);
             }
             new_temporary_string_buffer.swap(temporary_string_buffer);
         }
+        // virtual void push_custom_type_to_file()
+        // {
+        //     con::vector<foundation_log_type> new_temporary_string_buffer;
+        //     for(auto& cushioningp : temporary_string_buffer)
+        //     {
+        //         //新开辟节点
+        //     }
+        //     new_temporary_string_buffer.swap(temporary_string_buffer);
+        // }
     };
     template <typename custom_log_type>
     class log : private custom_log::foundation_log<custom_log_type>
