@@ -35,149 +35,165 @@ namespace custom_log
         BLOCKER = 5,    // 阻塞问题，系统无法正常运行
         FATAL = 6       // 致命错误，系统崩溃或数据丢失
     };
-    class information
+    namespace information
     {
-        #define DECLARE_INFO_INPUT(type)template<typename macro_parameters>\
-        void type##_message_input(const macro_parameters& data){type##_information = to_custom_string(data);} 
-    protected:
-        static custom_string to_custom_string(const std::string& string_value) 
+        template<typename custom_information_type = custom_string>
+        class information
         {
-            return custom_string(string_value.c_str());
-        }
-        static custom_string to_custom_string(const custom_string& string_value)
-        {
-            return string_value;
-        }
-        static custom_string to_custom_string(const char* string_value)
-        {
-            return custom_string(string_value);
-        }
-    public:
-        custom_string debugging_information;        //调试信息
-        custom_string general_information;          //一般信息
-        custom_string warning_information;          //警告信息
-        custom_string error_information;            //错误信息
-        custom_string serious_error_information;    //严重错误信息
-        information() = default;
-        information(const information& rhs) = delete;
-        information(information&& rhs) = delete;
-        information& operator=(const information& rhs) = delete;
-        information& operator=(information&& rhs) = delete;
-        ~information() = default;
-        DECLARE_INFO_INPUT(debugging)
-        DECLARE_INFO_INPUT(general)
-        DECLARE_INFO_INPUT(warning)
-        DECLARE_INFO_INPUT(error)
-        DECLARE_INFO_INPUT(serious_error)
-    };
-    class file_configurator //文件配置器
+            #define DECLARE_INFO_INPUT(type)template<typename macro_parameters>\
+            void type##_message_input(const macro_parameters& data){type##_information = to_custom_string(data);} 
+        protected:
+            static custom_string to_custom_string(const std::string& string_value) 
+            {   return custom_string(string_value.c_str()); }
+            static custom_string to_custom_string(const custom_string& string_value)
+            {   return string_value;    }
+            static custom_string to_custom_string(const char* string_value)
+            {   return custom_string(string_value); }
+        public:
+            custom_information_type custom_log_information;     //自定义信息
+            custom_string debugging_information;                //调试信息
+            custom_string general_information;                  //一般信息
+            custom_string warning_information;                  //警告信息
+            custom_string error_information;                    //错误信息
+            custom_string serious_error_information;            //严重错误信息
+            information() = default;
+            information(const information& rhs) = delete;
+            information(information&& rhs) = delete;
+            information& operator=(const information& rhs) = delete;
+            information& operator=(information&& rhs) = delete;
+            ~information() = default;
+            DECLARE_INFO_INPUT(debugging)
+            DECLARE_INFO_INPUT(general)
+            DECLARE_INFO_INPUT(warning)
+            DECLARE_INFO_INPUT(error)
+            DECLARE_INFO_INPUT(serious_error)
+            void custom_log_message_input(const custom_information_type& data)
+            {
+                custom_log_information = data;
+            }
+        };
+    }
+    namespace configurator
     {
-    protected:
-        const char* convert_to_cstr(const std::string& string_value)        {return string_value.c_str();}
-        const char* convert_to_cstr(const custom_string& string_value)      {return string_value.c_str();}
-        const char* convert_to_cstr(const char* str_value)                  {return str_value;}
-        const char* convert_to_string(const custom_string& string_value)    {return string_value.c_str(); }
-        const char* convert_to_string(const std::string& string_value)      {return string_value.c_str(); }
-        const char* convert_to_string(const char* str_value)                {return str_value; }
-        con::string format_time(const log_timestamp_type& time_value) 
+        inline custom_string debugging_information_prefix     = "[DEBUG]";
+        inline custom_string general_information_prefix       = "[INFO]";
+        inline custom_string warning_information_prefix       = "[WARNING]";
+        inline custom_string error_information_prefix         = "[ERROR]";
+        inline custom_string serious_error_information_prefix = "[CRITICAL]";
+        inline custom_string custom_log_information_prefix    = "[DEFAULT]";
+        template<typename custom_information_type = custom_string>
+        class file_configurator //文件配置器
         {
-            auto time_t = std::chrono::system_clock::to_time_t(time_value);
-            std::tm* local_time = std::localtime(&time_t);
-            std::ostringstream oss;
-            oss << std::put_time(local_time, "%Y-%m-%d %H:%M:%S");
-            return oss.str().c_str();
-        }
-        template<typename file_open>
-        void open_file(const file_open& file_name) 
-        {
-            file_ofstream.open(convert_to_cstr(file_name));
-        }
-        con::string format_information(const information& information_value)const
-        {
-            std::ostringstream oss;
-            oss << "[DEBUG]"    << information_value.debugging_information     << " " 
-                << "[INFO]"     << information_value.general_information       << " " 
-                << "[WARNING]"  << information_value.warning_information       << " "
-                << "[ERROR]"    << information_value.error_information         << " "
-                << "[CRITICAL]" << information_value.serious_error_information << " ";
-            return oss.str().c_str();
-        }
-    public:
-        using inbuilt_documents = std::ofstream;
-        inbuilt_documents file_ofstream;
-        file_configurator() = default;
-        file_configurator(const file_configurator& rhs) = delete;
-        file_configurator(file_configurator&& rhs) = delete;
-        file_configurator& operator=(const file_configurator& rhs) = delete;
-        file_configurator& operator=(file_configurator&& rhs) = delete;
-        ~file_configurator()      {file_ofstream.close();}
-        template<typename structure>
-        file_configurator(const structure& file_name) 
-        {
-            open_file(file_name);
-        }
-        template<typename file_write>
-        void write(const file_write& file_value) 
-        {
-            file_ofstream << convert_to_string(file_value);
-        }
-        void write(const log_timestamp_type& time_value)
-        {
-            file_ofstream << "[" << std::chrono::system_clock::to_time_t(time_value) << "]: " ;
-        }
-        void write(const information& information_value) 
-        {
-            file_ofstream << format_information(information_value).c_str();
-        }
-        void data(const log_timestamp_type& time) 
-        {
-            file_ofstream << "[时间]" << format_time(time).c_str() << std::endl << std::endl;
-        }   //让结构更清晰
-        con::string get_string_str(const information& information_value)const
-        {
-            con::string temporary_string;
-            temporary_string = format_information(information_value);
-            return temporary_string;
-        }
-    };
-    class console_configurator //控制台配置器
-    {
+            using information_type = information::information<custom_information_type>;
+        protected:
+            static const char* convert_to_cstr(const std::string& string_value)        {return string_value.c_str();}
+            static const char* convert_to_cstr(const custom_string& string_value)      {return string_value.c_str();}
+            static const char* convert_to_cstr(const char* str_value)                  {return str_value;}
+            static const char* convert_to_string(const custom_string& string_value)    {return string_value.c_str(); }
+            static const char* convert_to_string(const std::string& string_value)      {return string_value.c_str(); }
+            static const char* convert_to_string(const char* str_value)                {return str_value; }
+            static con::string format_time(const log_timestamp_type& time_value)
+            {
+                const auto time_t = std::chrono::system_clock::to_time_t(time_value);
+                const std::tm* local_time = std::localtime(&time_t);
+                std::ostringstream oss;
+                oss << std::put_time(local_time, "%Y-%m-%d %H:%M:%S");
+                return oss.str().c_str();
+            }
+            template<typename file_open>
+            void open_file(const file_open& file_name) 
+            {
+                file_ofstream.open(convert_to_cstr(file_name));
+            }
 
-    };
-    class function_stacks //作为高级日志中控调用
-    {
-        con::stack<con::string> function_log_stacks;
-    public:
-        function_stacks() = default;
-        function_stacks(const function_stacks& rhs) = delete;
-        function_stacks(function_stacks&& rhs) = delete;
-        function_stacks& operator=(const function_stacks& rhs) = delete;
-        function_stacks& operator=(function_stacks&& rhs) = delete;
-        ~function_stacks() = default;
-        void push (const custom_string& function_name)
+            static con::string format_information(const information_type& information_value)
+            {
+                std::ostringstream oss;
+                oss << debugging_information_prefix     << information_value.debugging_information     << " " 
+                    << general_information_prefix       << information_value.general_information       << " " 
+                    << warning_information_prefix       << information_value.warning_information       << " "
+                    << error_information_prefix         << information_value.error_information         << " "
+                    << serious_error_information_prefix << information_value.serious_error_information << " ";
+                return oss.str().c_str();
+            }
+        public:
+            using inbuilt_documents = std::ofstream;
+            inbuilt_documents file_ofstream;
+            file_configurator() = default;
+            file_configurator(const file_configurator& rhs) = delete;
+            file_configurator(file_configurator&& rhs) = delete;
+            file_configurator& operator=(const file_configurator& rhs) = delete;
+            file_configurator& operator=(file_configurator&& rhs) = delete;
+            ~file_configurator()      {file_ofstream.close();}
+            template<typename structure>
+            file_configurator(const structure& file_name) 
+            {
+                open_file(file_name);
+            }
+            template<typename file_write>
+            void write(const file_write& file_value) 
+            {
+                file_ofstream << convert_to_string(file_value);
+            }
+            void write(const log_timestamp_type& time_value)
+            {
+                file_ofstream << "[" << std::chrono::system_clock::to_time_t(time_value) << "]: " ;
+            }
+            void write(const information_type& information_value) 
+            {
+                file_ofstream << format_information(information_value).c_str();
+            }
+            void data(const log_timestamp_type& time) 
+            {
+                file_ofstream << "[时间]" << format_time(time).c_str() << std::endl << std::endl;
+            }   //让结构更清晰
+            con::string get_string_str(const information_type& information_value)const
+            {
+                con::string temporary_string = format_information(information_value);
+                return temporary_string;
+            }
+        };
+        class console_configurator //控制台配置器
         {
-            function_log_stacks.push(function_name);
-        }
-        void push(const std::string& function_name)
+
+        };
+        class function_stacks //作为高级日志中控调用
         {
-            function_log_stacks.push(function_name.c_str());
-        }
-        void push(const char* function_name)
-        {
-            function_log_stacks.push(function_name);
-        }
-        con::string top() const {return function_log_stacks.top();}
-        size_t size()           {return function_log_stacks.size();}
-        bool empty() const      {return function_log_stacks.empty();}
-        void pop()              {function_log_stacks.pop();}
-    };
+            con::stack<con::string> function_log_stacks;
+        public:
+            function_stacks() = default;
+            function_stacks(const function_stacks& rhs) = delete;
+            function_stacks(function_stacks&& rhs) = delete;
+            function_stacks& operator=(const function_stacks& rhs) = delete;
+            function_stacks& operator=(function_stacks&& rhs) = delete;
+            ~function_stacks() = default;
+            void push (const custom_string& function_name)
+            {
+                function_log_stacks.push(function_name);
+            }
+            void push(const std::string& function_name)
+            {
+                function_log_stacks.push(function_name.c_str());
+            }
+            void push(const char* function_name)
+            {
+                function_log_stacks.push(function_name);
+            }
+            con::string top() const {return function_log_stacks.top();}
+            size_t size()           {return function_log_stacks.size();}
+            bool empty() const      {return function_log_stacks.empty();}
+            void pop()              {function_log_stacks.pop();}
+        };
+    }
+    template<typename custom_foundation_log_type = custom_string>
     class foundation_log
     {
+        using information_type = information::information<custom_foundation_log_type>; 
         using foundation_log_type = con::pair<con::string,log_timestamp_type>;
     private:
-        file_configurator log_file;
+        configurator::file_configurator<custom_foundation_log_type> log_file;
         con::vector<foundation_log_type> temporary_string_buffer;
-        foundation_log_type temporary_caching(const information& log_information,const log_timestamp_type& time = log_timestamp_class::now())
+        foundation_log_type temporary_caching(const information_type& log_information,const log_timestamp_type& time = log_timestamp_class::now())
         {
             con::string temporary_string_caching = log_file.get_string_str(log_information);
             return foundation_log_type(temporary_string_caching,time);
@@ -187,20 +203,21 @@ namespace custom_log
         foundation_log(foundation_log&& rhs) = delete;
         foundation_log& operator=(const foundation_log& rhs) = delete;
         foundation_log& operator=(foundation_log&& rhs) = delete;
-        ~foundation_log() = default;
+
+        virtual ~foundation_log() = default;
         foundation_log(const custom_string& log_file_name)
         :log_file(log_file_name){}
         foundation_log(const std::string& log_file_name)
         :log_file(log_file_name.c_str()){}
         foundation_log(const char* log_file_name)
         : log_file(log_file_name){}
-        virtual void write_file(const information& log_information,const log_timestamp_type& time = log_timestamp_class::now())
+        virtual void write_file(const information_type& log_information,const log_timestamp_type& time = log_timestamp_class::now())
         {
             log_file.write(time);
             log_file.write(log_information);
             log_file.data(time);
         }
-        virtual void staging(const information& log_information,const log_timestamp_type& time = log_timestamp_class::now())
+        virtual void staging(const information_type& log_information,const log_timestamp_type& time = log_timestamp_class::now())
         {
             temporary_string_buffer.push_back(temporary_caching(log_information,time));
         }
@@ -216,20 +233,22 @@ namespace custom_log
             new_temporary_string_buffer.swap(temporary_string_buffer);
         }
     };
-    class log : private custom_log::foundation_log
+    template <typename custom_log_type>
+    class log : private custom_log::foundation_log<custom_log_type>
     {
     private:
-        function_stacks function_call_stack;
+        configurator::function_stacks function_call_stack;
     public:
         template <typename file_name>
-        log(const file_name& file)
+        log(const file_name& file): foundation_log<custom_log_type>()
         {
             log::foundation_log::foundation_log(file);
         }
+
         // virtual write_file(const information& log_information,constlog_timestamp_type& time = log_timestamp_class::now()) override
         // {
 
         // }
-        ~log() = default;
+        ~log() override = default;
     };
 }

@@ -33,7 +33,7 @@ int main()
         if(con::string name = "text_log_.txt"; custom_log::file_exists(name))
         {
             custom_log::foundation_log test_log (name);
-            custom_log::information temp_information;
+            custom_log::information::information temp_information;
             temp_information.debugging_message_input("测试日志,进入作用域");
             temp_information.warning_message_input("非法操作");
 
@@ -56,9 +56,9 @@ int main()
     {"ERR_DB_CONN_001","000","Excel文件解析失败","0x00000709","Operation not permitted"};
     {
         custom_log::foundation_log test_log(file_name);
-        for(size_t list = 0; list < 10; list++)
+        for(size_t list = 0; list <= 10; list++)
         {
-            custom_log::information temp_information;
+            custom_log::information::information temp_information;
             temp_information.debugging_message_input(debugging[generate_random_size_t(1763824,347632485789)% debugging.size()]);
             temp_information.warning_message_input(warning[generate_random_size_t(1763824,347632485789)% warning.size()]);
             temp_information.general_message_input(general[generate_random_size_t(1763824,347632485789)% general.size()]);
