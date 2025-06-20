@@ -9,7 +9,7 @@
 #define default_timestamp_macros std::chrono::system_clock::now()
 #define default_custom_information_input_macros_t(value,type) custom_log::information::information<type>().custom_log_macro_function_input(value)
 #define default_custom_information_input_macros(value) custom_log::information::information<built_types>().custom_log_macro_function_input(value)
-// 只定义类型转换出现乱码，，减少类型转换次数
+//函数宏，行数宏，文件宏
 namespace custom_log
 {
     using custom_string = con::string;
@@ -277,7 +277,7 @@ namespace custom_log
         {
             log::foundation_log::foundation_log(file);
         }
-        virtual void staging()
+
         ~log() override = default;
     };
 }

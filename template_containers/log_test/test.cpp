@@ -56,7 +56,7 @@ int main()
         }
         else
         {
-            std::cout << "文件不存在" << std::endl << ERRO;
+            std::cout << "文件不存在" << std::endl ;
         }
     }
     con::vector<con::string> debugging = 

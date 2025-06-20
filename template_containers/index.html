@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C++ Template Library - 现代化模板容器库</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #1d1d1f;
+            background: #fff;
+            overflow-x: hidden;
+        }
+
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="%23ffffff" stroke-width="0.5" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>') repeat;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        @keyframes float 
+        {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 800px;
+            padding: 0 20px;
+        }
+
+        .hero h1 {
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 700;
+            color: white;
+            margin-bottom: 1rem;
+            opacity: 0;
+            animation: fadeInUp 1s ease-out 0.5s forwards;
+        }
+
+        .hero p {
+            font-size: clamp(1.2rem, 3vw, 1.8rem);
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 2rem;
+            opacity: 0;
+            animation: fadeInUp 1s ease-out 0.8s forwards;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 16px 32px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+            opacity: 0;
+            animation: fadeInUp 1s ease-out 1.1s forwards;
+        }
+
+        .cta-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Navigation */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            z-index: 1000;
+            padding: 1rem 0;
+            transition: all 0.3s ease;
+        }
+
+        .nav.scrolled {
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1d1d1f;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #1d1d1f;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #667eea;
+        }
+
+        /* Sections */
+        .section {
+            padding: 100px 0;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding-left: 20px;
+            padding-right: 20px;
+        }
+
+        .section h2 {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 700;
+            margin-bottom: 2rem;
+            text-align: center;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 3rem;
+            margin-top: 4rem;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #1d1d1f;
+        }
+
+        .feature-card p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .code-preview {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 1rem;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            border: 1px solid #e9ecef;
+        }
+
+        .code-preview code {
+            color: #495057;
+        }
+
+        /* API Documentation */
+        .api-section {
+            background: #f8f9fa;
+            padding: 100px 0;
+        }
+
+        .api-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .api-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .api-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .api-card h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #1d1d1f;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 0.5rem;
+        }
+
+        .api-card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .api-card li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #f0f0f0;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9rem;
+            color: #495057;
+        }
+
+        .api-card li:last-child {
+            border-bottom: none;
+        }
+
+        /* Footer */
+        .footer {
+            background: #1d1d1f;
+            color: white;
+            text-align: center;
+            padding: 3rem 0;
+        }
+
+        .footer p {
+            opacity: 0.8;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .api-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Scroll animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav" id="navbar">
+        <div class="nav-container">
+            <div class="logo">C++ Template Library</div>
+            <ul class="nav-links">
+                <li><a href="#features">特性</a></li>
+                <li><a href="#api">API文档</a></li>
+                <li><a href="#examples">示例</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>现代化 C++ 模板库</h1>
+            <p>高性能、类型安全的容器与日志系统</p>
+            <a href="#features" class="cta-button">探索功能</a>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="section" id="features">
+        <h2 class="fade-in">核心特性</h2>
+        <div class="features-grid">
+            <div class="feature-card fade-in">
+                <div class="feature-icon">🧠</div>
+                <h3>智能指针管理</h3>
+                <p>提供完整的智能指针实现，包括 smart_ptr、unique_ptr、shared_ptr 和 weak_ptr，确保内存安全和资源管理。</p>
+                <div class="code-preview">
+                    <code>smart_pointer::unique_ptr&lt;int&gt; ptr(new int(42));<br>
+auto value = *ptr; // 安全访问</code>
+                </div>
+            </div>
+            
+            <div class="feature-card fade-in">
+                <div class="feature-icon">⚡</div>
+                <h3>高性能容器</h3>
+                <p>自定义实现的模板容器，包括字符串容器、配对类型和各种算法，针对性能进行了优化。</p>
+                <div class="code-preview">
+                    <code>template_container::string str("Hello World");<br>
+auto pair = template_container::make_pair(1, "value");</code>
+                </div>
+            </div>
+            
+            <div class="feature-card fade-in">
+                <div class="feature-icon">🛡️</div>
+                <h3>异常安全</h3>
+                <p>自定义异常类提供详细的错误信息，包括函数名和行号，便于调试和错误追踪。</p>
+                <div class="code-preview">
+                    <code>try {<br>
+    // 可能抛出异常的代码<br>
+} catch(const customize_exception& e) {<br>
+    std::cout &lt;&lt; e.what() &lt;&lt; std::endl;<br>
+}</code>
+                </div>
+            </div>
+            
+            <div class="feature-card fade-in">
+                <div class="feature-icon">📝</div>
+                <h3>强大的日志系统</h3>
+                <p>多级别日志记录，支持文件输出、时间戳、自定义格式，提供完整的调试和监控解决方案。</p>
+                <div class="code-preview">
+                    <code>custom_log::foundation_log logger("app.log");<br>
+logger.write_file(info, timestamp);</code>
+                </div>
+            </div>
+            
+            <div class="feature-card fade-in">
+                <div class="feature-icon">🔧</div>
+                <h3>算法工具集</h3>
+                <p>包含常用算法如复制、查找、交换，以及多种哈希算法实现，提供完整的工具链。</p>
+                <div class="code-preview">
+                    <code>template_container::algorithm::copy(begin, end, dest);<br>
+auto result = template_container::algorithm::find(begin, end, value);</code>
+                </div>
+            </div>
+            
+            <div class="feature-card fade-in">
+                <div class="feature-icon">🎯</div>
+                <h3>类型安全</h3>
+                <p>充分利用 C++ 模板系统，提供编译时类型检查，确保代码的安全性和性能。</p>
+                <div class="code-preview">
+                    <code>template&lt;typename T&gt;<br>
+constexpr void swap(T& a, T& b) noexcept {<br>
+    T temp = a; a = b; b = temp;<br>
+}</code>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- API Documentation -->
+    <section class="api-section" id="api">
+        <div class="api-container">
+            <h2 class="fade-in">API 文档</h2>
+            <div class="api-grid">
+                <div class="api-card fade-in">
+                    <h3>智能指针 API</h3>
+                    <ul>
+                        <li>smart_ptr&lt;T&gt;(T* ptr)</li>
+                        <li>unique_ptr&lt;T&gt;(T* ptr)</li>
+                        <li>shared_ptr&lt;T&gt;(T* ptr)</li>
+                        <li>weak_ptr&lt;T&gt;(shared_ptr&lt;T&gt;&)</li>
+                        <li>T& operator*()</li>
+                        <li>T* operator->()</li>
+                        <li>T* get_ptr() const</li>
+                    </ul>
+                </div>
+                
+                <div class="api-card fade-in">
+                    <h3>容器 API</h3>
+                    <ul>
+                        <li>string(const char* str)</li>
+                        <li>pair&lt;T,K&gt;(const T&, const K&)</li>
+                        <li>make_pair(const T&, const K&)</li>
+                        <li>iterator begin() const</li>
+                        <li>iterator end() const</li>
+                        <li>size_t size() const</li>
+                        <li>bool empty() const</li>
+                    </ul>
+                </div>
+                
+                <div class="api-card fade-in">
+                    <h3>算法 API</h3>
+                    <ul>
+                        <li>copy(InputIt first, InputIt last, OutputIt d_first)</li>
+                        <li>find(InputIt first, InputIt last, const T& value)</li>
+                        <li>swap(T& a, T& b)</li>
+                        <li>hash_function&lt;T&gt;::hash_sdmmhash(const T&)</li>
+                        <li>hash_function&lt;T&gt;::hash_bkdrhash(const T&)</li>
+                        <li>hash_function&lt;T&gt;::hash_djbhash(const T&)</li>
+                    </ul>
+                </div>
+                
+                <div class="api-card fade-in">
+                    <h3>日志系统 API</h3>
+                    <ul>
+                        <li>foundation_log(const string& filename)</li>
+                        <li>write_file(const information&, timestamp)</li>
+                        <li>staging(const information&, timestamp)</li>
+                        <li>push_to_file()</li>
+                        <li>severity_level enum</li>
+                        <li>file_configurator&lt;T&gt;</li>
+                        <li>function_stacks</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2024 C++ Template Library. 现代化、高性能的 C++ 开发工具集。</p>
+    </footer>
+
+    <script>
+        // Navbar scroll effect
+        window.addEventListener('scroll', () => {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Intersection Observer for animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        // Observe all fade-in elements
+        document.querySelectorAll('.fade-in').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Parallax effect for hero section
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const hero = document.querySelector('.hero');
+            if (hero) {
+                hero.style.transform = `translateY(${scrolled * 0.5}px)`;
+            }
+        });
+    </script>
+</body>
+</html>
