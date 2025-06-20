@@ -4,6 +4,11 @@
 #include <chrono>
 #include <iomanip>
 #include <ctime>
+#define built_types con::string
+#define default_document_checking_macros(macros_file_name) custom_log::file_exists(macros_file_name)
+#define default_timestamp_macros std::chrono::system_clock::now()
+#define default_custom_information_input_macros_t(value,type) custom_log::information::information<type>().custom_log_macro_function_input(value)
+#define default_custom_information_input_macros(value) custom_log::information::information<built_types>().custom_log_macro_function_input(value)
 // 只定义类型转换出现乱码，，减少类型转换次数
 namespace custom_log
 {
@@ -44,11 +49,11 @@ namespace custom_log
             void type##_message_input(const macro_parameters& data){type##_information = to_custom_string(data);} 
         protected:
             static custom_string to_custom_string(const std::string& string_value) 
-            {   return custom_string(string_value.c_str()); }
+            {   return {string_value.c_str()}; }
             static custom_string to_custom_string(const custom_string& string_value)
             {   return string_value;    }
             static custom_string to_custom_string(const char* string_value)
-            {   return custom_string(string_value); }
+            {   return {string_value}; }
         public:
             custom_information_type custom_log_information;     //自定义信息
             custom_string debugging_information;                //调试信息
@@ -70,6 +75,11 @@ namespace custom_log
             void custom_log_message_input(const custom_information_type& data)
             {
                 custom_log_information = data;
+            }
+            information<custom_information_type>& custom_log_macro_function_input(const custom_information_type& data)
+            {
+                custom_log_information = data;
+                return *this;
             }
             custom_string to_custom_string()
             {   //自定义信息类须重载c_str函数，，返回char*类型支付串
@@ -114,6 +124,10 @@ namespace custom_log
             static con::string format_information(const information_type& information_value)
             {
                 std::ostringstream oss;
+                if(information_value.custom_log_information.c_str() != " ")
+                {
+                    oss << custom_log_information_prefix << information_value.custom_log_information.c_str() << "";
+                }
                 oss << debugging_information_prefix     << information_value.debugging_information     << " " 
                     << general_information_prefix       << information_value.general_information       << " " 
                     << warning_information_prefix       << information_value.warning_information       << " "
@@ -131,7 +145,7 @@ namespace custom_log
             file_configurator& operator=(file_configurator&& rhs) = delete;
             ~file_configurator()      {file_ofstream.close();}
             template<typename structure>
-            file_configurator(const structure& file_name) 
+            file_configurator(const structure& file_name)
             {
                 open_file(file_name);
             }
@@ -198,9 +212,9 @@ namespace custom_log
             {
                 function_log_stacks.push(function_name);
             }
-            con::string top() const {return function_log_stacks.top();}
+            [[nodiscard]] con::string top() const {return function_log_stacks.top();}
             size_t size()           {return function_log_stacks.size();}
-            bool empty() const      {return function_log_stacks.empty();}
+            [[nodiscard]] bool empty() const      {return function_log_stacks.empty();}
             void pop()              {function_log_stacks.pop();}
         };
     }
@@ -246,20 +260,11 @@ namespace custom_log
             for(auto& cushioningp : temporary_string_buffer)
             {
                 log_file.timestamp_write(cushioningp.second);
-                log_file. ordinary_type_write(cushioningp.first);
+                log_file.ordinary_type_write(cushioningp.first);
                 log_file.time_characters(cushioningp.second);
             }
             new_temporary_string_buffer.swap(temporary_string_buffer);
         }
-        // virtual void push_custom_type_to_file()
-        // {
-        //     con::vector<foundation_log_type> new_temporary_string_buffer;
-        //     for(auto& cushioningp : temporary_string_buffer)
-        //     {
-        //         //新开辟节点
-        //     }
-        //     new_temporary_string_buffer.swap(temporary_string_buffer);
-        // }
     };
     template <typename custom_log_type>
     class log : private custom_log::foundation_log<custom_log_type>
@@ -272,11 +277,7 @@ namespace custom_log
         {
             log::foundation_log::foundation_log(file);
         }
-
-        // virtual write_file(const information& log_information,constlog_timestamp_type& time = log_timestamp_class::now()) override
-        // {
-
-        // }
+        virtual void staging()
         ~log() override = default;
     };
 }

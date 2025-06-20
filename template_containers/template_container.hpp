@@ -572,9 +572,9 @@ namespace template_container
                 return _capacity;
             }
 
-            [[nodiscard]] char* c_str()const noexcept
+            [[nodiscard]] const char* c_str()const noexcept
             {
-                return static_cast<char*> (_data);
+                return static_cast<const char*> (_data);
             } //返回C风格字符串
 
             [[nodiscard]] char back()const noexcept

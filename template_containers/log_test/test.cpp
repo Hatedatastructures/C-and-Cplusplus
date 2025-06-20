@@ -20,10 +20,9 @@ public:
         test_log_pair = con::pair<log_one,size_t>(log_one(test,one),two);
     }
     con::pair<log_one,size_t> test_log_pair;
-    char* c_str()const
+    [[nodiscard]] const char* c_str()const
     {
-        return test_log_pair.first.first.c_str();
-        // BUG
+        return test_log_pair.first.first.c_str();//管理未知数组
     }
 };
 
@@ -57,7 +56,7 @@ int main()
         }
         else
         {
-            std::cout << "文件不存在" << std::endl;
+            std::cout << "文件不存在" << std::endl << ERRO;
         }
     }
     con::vector<con::string> debugging = 
@@ -92,15 +91,18 @@ int main()
         std::cout << "前阶段完成" << std::endl;
         custom_log::foundation_log<test_log> two_test_log(file_name);
         custom_log::information::information<test_log> temp_information;
-        temp_information.custom_log_message_input(test_log(con::string("测试日志,进入作用域"),1,2));
+        test_log test_(con::string("测试日志,进入作用域"),1,2);
+        temp_information.custom_log_message_input(test_); //问题
         //字符管理问题？？
         std::cout << temp_information.to_custom_string() << std::endl;
-        two_test_log.staging(temp_information,custom_log::log_timestamp_class::now());
+        two_test_log.staging(temp_information,default_timestamp_macros);
+        two_test_log.push_to_file();
     }
     // system("pause");
     // std::thread test([&]    {   std::cout << "hello,word!" << file_name << std::endl;   } );
     // test.join();
     // std::cout << "程序结束" << std::endl;
     // system("pause");
+    
     return 0;
 }
