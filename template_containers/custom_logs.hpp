@@ -89,13 +89,16 @@ namespace custom_log
     }
     namespace configurator
     {
-        inline custom_string debugging_information_prefix     = "[DEBUG]";
-        inline custom_string general_information_prefix       = "[INFO]";
-        inline custom_string warning_information_prefix       = "[WARNING]";
-        inline custom_string error_information_prefix         = "[ERROR]";
-        inline custom_string serious_error_information_prefix = "[CRITICAL]";
-        inline custom_string custom_log_information_prefix    = "[DEFAULT]";
-        inline custom_string log_timestamp                    = "[TIME]";
+        namespace placeholders
+        {
+            inline custom_string debugging_information_prefix     = "[DEBUG]";
+            inline custom_string general_information_prefix       = "[INFO]";
+            inline custom_string warning_information_prefix       = "[WARNING]";
+            inline custom_string error_information_prefix         = "[ERROR]";
+            inline custom_string serious_error_information_prefix = "[CRITICAL]";
+            inline custom_string custom_log_information_prefix    = "[DEFAULT]";
+            inline custom_string log_timestamp                    = "[TIME]";
+        }
         template<typename custom_information_type = custom_string>
         class file_configurator //文件配置器
         {
@@ -126,13 +129,13 @@ namespace custom_log
                 std::ostringstream oss;
                 if(information_value.custom_log_information.c_str() != " ")
                 {
-                    oss << custom_log_information_prefix << information_value.custom_log_information.c_str() << "";
+                    oss << placeholders::custom_log_information_prefix << information_value.custom_log_information.c_str() << "";
                 }
-                oss << debugging_information_prefix     << information_value.debugging_information     << " " 
-                    << general_information_prefix       << information_value.general_information       << " " 
-                    << warning_information_prefix       << information_value.warning_information       << " "
-                    << error_information_prefix         << information_value.error_information         << " "
-                    << serious_error_information_prefix << information_value.serious_error_information << " ";
+                oss << placeholders::debugging_information_prefix     << information_value.debugging_information     << " " 
+                    << placeholders::general_information_prefix       << information_value.general_information       << " " 
+                    << placeholders::warning_information_prefix       << information_value.warning_information       << " "
+                    << placeholders::error_information_prefix         << information_value.error_information         << " "
+                    << placeholders::serious_error_information_prefix << information_value.serious_error_information << " ";
                 return oss.str().c_str();
             }
         public:
@@ -164,11 +167,11 @@ namespace custom_log
             }
             void custom_type_write(const custom_information_type& foundation_log_value)
             {
-                file_ofstream << custom_log_information_prefix << foundation_log_value.c_str() << " ";
+                file_ofstream << placeholders::custom_log_information_prefix << foundation_log_value.c_str() << " ";
             }
             void time_characters(const log_timestamp_type& time) 
             {
-                file_ofstream << log_timestamp  << format_time(time).c_str() << std::endl << std::endl;
+                file_ofstream << placeholders::log_timestamp  << format_time(time).c_str() << std::endl << std::endl;
             }           
             void overall_information_write(const information_type& information_value)
             {
@@ -267,8 +270,8 @@ namespace custom_log
         }
     };
     template <typename custom_log_type>
-    class log : private custom_log::foundation_log<custom_log_type>
-    {
+    class log : public custom_log::foundation_log<custom_log_type>
+    {   //改为公有继承
     private:
         configurator::function_stacks function_call_stack;
     public:
@@ -278,6 +281,10 @@ namespace custom_log
             log::foundation_log::foundation_log(file);
         }
 
-        ~log() override = default;
+        virtual ~log() override = default;
     };
+}
+namespace rec
+{
+    using namespace custom_log;
 }
