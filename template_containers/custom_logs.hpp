@@ -9,7 +9,12 @@
 #define default_timestamp_macros std::chrono::system_clock::now()
 #define default_custom_information_input_macros_t(value,type) custom_log::information::information<type>().custom_log_macro_function_input(value)
 #define default_custom_information_input_macros(value) custom_log::information::information<built_types>().custom_log_macro_function_input(value)
-//函数宏，行数宏，文件宏
+//函数宏，行数宏，文件宏,自动捕获行号....
+//中控类，控制台，等级过滤，控制台颜色标记，默认参数宏调用
+//写链表数组，减少扩容拷贝的时间，，提前为每个数组分配一千个内存空间，减少扩容次数
+//按照阶段存储，，超过1万条放到，链表数组里
+//添加队列缓存区，减少io时间，，超过n条会输出到文件中去，n可控制
+//输出完毕后刷新队列，防止数据丢失，，双队列缓冲来提高性能
 namespace custom_log
 {
     using custom_string = con::string;
@@ -229,6 +234,7 @@ namespace custom_log
     private:
         configurator::file_configurator<custom_foundation_log_type> log_file;
         con::vector<foundation_log_type> temporary_string_buffer;
+        con::list<con::vector<foundation_log_type>> temporary_string_buffer_list; // 减少时间开销，增加空间开销
         foundation_log_type temporary_caching(const information_type& log_information,const log_timestamp_type& time = log_timestamp_class::now())
         {
             con::string temporary_string_caching = log_file.get_string_str(log_information);
