@@ -1,9 +1,12 @@
 #pragma once
-#include "template_container.hpp"
-#include <fstream>
-#include <chrono>
-#include <iomanip>
-#include <ctime>
+#include "template_container.hpp" //自定义模板容器
+#include <fstream>                //文件操作
+#include <chrono>                 //时间操作
+#include <iomanip>                //格式化输出
+#include <ctime>                  //时间戳
+#include <thread>                 //多线程
+#include <atomic>                 //原子操作
+#include <condition_variable>     //条件变量
 #define built_types con::string
 #define default_document_checking_macros(macros_file_name) custom_log::file_exists(macros_file_name)
 #define default_timestamp_macros std::chrono::system_clock::now()
@@ -87,8 +90,138 @@ namespace custom_log
                 return *this;
             }
             custom_string to_custom_string()
-            {   //自定义信息类须重载c_str函数，，返回char*类型支付串
+            {   //自定义信息类须重载c_str函数，，返回char*类型支符串
                 return custom_string(custom_log_information.c_str());
+            }
+        };
+    }
+    namespace buffer_queues
+    {
+        class double_buffer_queue   //双队列缓冲区
+        {   //只接受con::string类型
+            size_t buffer_size = 0;
+            std::mutex switch_mutex;
+            std::condition_variable cv;
+            con::queue<con::string> produce_queue;
+            con::queue<con::string> consume_queue;
+            std::atomic<con::queue<con::string>*> read_queue;
+            std::atomic<con::queue<con::string>*> write_queue;
+            std::ofstream& file;
+            void switch_queues() 
+            {
+                std::lock_guard<std::mutex> lock(switch_mutex); //RAII
+                // 交换读写队列指针
+                con::queue<con::string>* temp_atomic_queue_data = read_queue.load();
+                read_queue.store(write_queue.load());
+                write_queue.store(temp_atomic_queue_data);
+                // 唤醒等待的消费者
+                cv.notify_one();
+            }
+            void buffer_files(std::ofstream& file)
+            {
+                size_t buffer_file_size = buffer_size;
+                while(buffer_file_size && !read_queue.load()->empty())
+                {
+                    con::string temp_string_data;
+                    dequeue(temp_string_data);
+                    file << temp_string_data.c_str();
+                    std::cout << temp_string_data << std::endl;
+                    --buffer_file_size;
+                    std::cout << "当前日志数" << buffer_file_size << std::endl;
+                }
+            }
+        public:
+            static inline size_t produce_payload_size = 1000;
+            double_buffer_queue(std::ofstream& external_file)
+            :file(external_file)
+            {
+                read_queue.store(&produce_queue);
+                write_queue.store(&consume_queue);
+
+            }
+            double_buffer_queue(const double_buffer_queue& rhs) = delete;
+            double_buffer_queue(double_buffer_queue&& rhs) = delete;
+            double_buffer_queue& operator=(const double_buffer_queue& rhs) = delete;
+            double_buffer_queue& operator=(double_buffer_queue&& rhs) = delete;
+            ~double_buffer_queue()
+            {
+                for(size_t pair = 0; pair <= 1; ++pair)
+                {
+                    if(!write_queue.load()->empty())
+                    {
+                        switch_queues();
+                        buffer_files(file);
+                        std::cout << "调用过析构" << std::endl;
+                    }
+                }
+            }
+            void enqueue(const con::string& built_string_data)
+            {
+                if( buffer_size >= produce_payload_size)
+                {
+                    if(!switch_queues_with_timeout(10))
+                    {
+                        throw exc::customize_exception("交换失败","enqueue",__LINE__);
+                    }
+                    else
+                    {
+                        buffer_size = 0;
+                        std::thread background_threads([&]{buffer_files(file);});
+                        background_threads.detach(); //分离线程
+                    }
+                }
+                write_queue.load()->push(built_string_data);
+                ++buffer_size;
+            }
+            void enqueue(con::string&& built_string_data)
+            {
+                if( buffer_size >= produce_payload_size)
+                {
+                    if(!switch_queues_with_timeout(10))
+                    {
+                        throw exc::customize_exception("交换失败","enqueue",__LINE__);
+                    }
+                    else
+                    {
+                        buffer_size = 0;
+                        std::thread background_threads([&]{buffer_files(file);});
+                        background_threads.detach(); //分离线程
+                    }
+                }
+                write_queue.load()->push(std::move(built_string_data));
+                ++buffer_size;
+            }
+            bool dequeue(con::string& result) 
+            {
+                auto* atomic_queue_data = read_queue.load();
+                std::lock_guard<std::mutex> lock(switch_mutex);
+                
+                if (atomic_queue_data->empty())
+                {
+                    return false; //判断队列为不为空
+                }
+                result = std::move(atomic_queue_data->front());
+                atomic_queue_data->pop();
+                return true;
+            }
+            bool switch_queues_with_timeout(int milliseconds) //超时等待
+            {
+                std::unique_lock<std::mutex> lock(switch_mutex);
+                
+                if (cv.wait_for(lock, std::chrono::milliseconds(milliseconds), [this] { return true; })) 
+                {
+                    switch_queues();
+                    return true;
+                }
+                return false;
+            }
+            size_t write_size() const 
+            {
+                return write_queue.load()->size();
+            }
+            size_t read_size() const 
+            {
+                return read_queue.load()->size();
             }
         };
     }
@@ -109,12 +242,12 @@ namespace custom_log
         {
             using information_type = information::information<custom_information_type>;
         protected:
-            static const char* convert_to_cstr(const std::string& string_value)        {return string_value.c_str();}
-            static const char* convert_to_cstr(const custom_string& string_value)      {return string_value.c_str();}
-            static const char* convert_to_cstr(const char* str_value)                  {return str_value;}
-            static const char* convert_to_string(const custom_string& string_value)    {return string_value.c_str(); }
-            static const char* convert_to_string(const std::string& string_value)      {return string_value.c_str(); }
-            static const char* convert_to_string(const char* str_value)                {return str_value; }
+            static const con::string convert_to_cstr(const std::string& string_value)        {return string_value.c_str();}
+            static const con::string convert_to_cstr(const custom_string& string_value)      {return string_value;}
+            static const con::string convert_to_cstr(const char* str_value)                  {return str_value;}
+            static const con::string convert_to_string(const custom_string& string_value)    {return string_value; }
+            static const con::string convert_to_string(const std::string& string_value)      {return string_value.c_str();}
+            static const con::string convert_to_string(const char* str_value)                {return str_value;}
             static con::string format_time(const log_timestamp_type& time_value)
             {
                 const auto time_t = std::chrono::system_clock::to_time_t(time_value);
@@ -126,7 +259,7 @@ namespace custom_log
             template<typename file_open>
             void open_file(const file_open& file_name) 
             {
-                file_ofstream.open(convert_to_cstr(file_name));
+                file_ofstream.open(convert_to_cstr(file_name).c_str());
             }
 
             static con::string format_information(const information_type& information_value)
@@ -146,7 +279,8 @@ namespace custom_log
         public:
             using inbuilt_documents = std::ofstream;
             inbuilt_documents file_ofstream;
-            file_configurator() = default;
+            buffer_queues::double_buffer_queue write_queue;
+            file_configurator() = delete;
             file_configurator(const file_configurator& rhs) = delete;
             file_configurator(file_configurator&& rhs) = delete;
             file_configurator& operator=(const file_configurator& rhs) = delete;
@@ -154,39 +288,37 @@ namespace custom_log
             ~file_configurator()      {file_ofstream.close();}
             template<typename structure>
             file_configurator(const structure& file_name)
+            :write_queue(file_ofstream)
             {
                 open_file(file_name);
             }
             template<typename file_write>
             void ordinary_type_write(const file_write& file_value)
             {
-                file_ofstream << convert_to_string(file_value);
-            }
-            void timestamp_write(const log_timestamp_type& time_value)
-            {
-                file_ofstream << "[" << std::chrono::system_clock::to_time_t(time_value) << "] " ;
+                write_queue.enqueue(convert_to_string(file_value));
             }
             void default_type_write(const information_type& information_value) 
             {
-                file_ofstream << format_information(information_value).c_str();
+                write_queue.enqueue(format_information(information_value));
             }
             void custom_type_write(const custom_information_type& foundation_log_value)
             {
-                file_ofstream << placeholders::custom_log_information_prefix << foundation_log_value.c_str() << " ";
+                write_queue.enqueue(placeholders::custom_log_information_prefix + con::string(foundation_log_value.c_str()));
             }
             void time_characters(const log_timestamp_type& time) 
             {
-                file_ofstream << placeholders::log_timestamp  << format_time(time).c_str() << std::endl << std::endl;
+                write_queue.enqueue(placeholders::log_timestamp + format_time(time));
             }           
             void overall_information_write(const information_type& information_value)
             {
-                custom_type_write(information_value.custom_log_information);
-                default_type_write(information_value);
+                con::string temp_value = placeholders::custom_log_information_prefix + information_value.custom_log_information;
+                write_queue.enqueue(temp_value + format_information(information_value));
             }
             void write(const information_type& information_value,const log_timestamp_type& time_value)
             {
-                overall_information_write(information_value);
-                timestamp_write(time_value);
+                con::string temp_value = placeholders::custom_log_information_prefix + information_value.custom_log_information;
+                con::string tiem_value_string  = placeholders::log_timestamp + format_time(time_value);
+                write_queue.enqueue(temp_value + format_information(information_value) + tiem_value_string);
             }
             con::string get_string_str(const information_type& information_value)const
             {
@@ -255,7 +387,6 @@ namespace custom_log
         : log_file(log_file_name){}
         virtual void write_file(const information_type& log_information,const log_timestamp_type& time = log_timestamp_class::now())
         {
-            log_file.timestamp_write(time);
             log_file.default_type_write(log_information);
             log_file.time_characters(time);
         }
@@ -268,7 +399,6 @@ namespace custom_log
             con::vector<foundation_log_type> new_temporary_string_buffer;
             for(auto& cushioningp : temporary_string_buffer)
             {
-                log_file.timestamp_write(cushioningp.second);
                 log_file.ordinary_type_write(cushioningp.first);
                 log_file.time_characters(cushioningp.second);
             }
