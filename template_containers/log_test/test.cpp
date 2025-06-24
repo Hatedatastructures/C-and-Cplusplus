@@ -71,7 +71,11 @@ int main()
     {"ERR_DB_CONN_001","000","Excel文件解析失败","0x00000709","Operation not permitted"};
     {
         custom_log::foundation_log test_log(file_name);
-        for(size_t list = 0; list <= 100; list++)
+        // if(test_log.file_buffer_adjustments(10))
+        // {
+        //     std::cout << "文件缓冲区调整成功" << std::endl;
+        // }
+        for(size_t list = 0; list <= 1000; list++)
         {
             custom_log::information::information temp_information;
             temp_information.debugging_message_input(debugging[generate_random_size_t(1763824,347632485789)% debugging.size()]);
@@ -83,21 +87,23 @@ int main()
             test_log.staging(temp_information,custom_log::log_timestamp_class::now());
             std::cout << "###进度 :" << static_cast<double>(list)/1 << "% / 100%" << "..." << std::endl;
         }
+        std::cout << "暂存没问题" << std::endl;
         test_log.push_to_file();
+        std::cout << "写入文件成功" << std::endl;
     }
-    {
-        test_log v1_(con::string("测试日志,进入作用域"),1,2);
-        std::cout << v1_.c_str();
-        std::cout << "前阶段完成" << std::endl;
-        custom_log::foundation_log<test_log> two_test_log(file_name);
-        custom_log::information::information<test_log> temp_information;
-        test_log test_(con::string("测试日志,进入作用域"),1,2);
-        temp_information.custom_log_message_input(test_); //问题
-        //字符管理问题？？
-        std::cout << temp_information.to_custom_string() << std::endl;
-        two_test_log.staging(temp_information,default_timestamp_macros);
-        two_test_log.push_to_file();
-    }
+    // {
+    //     test_log v1_(con::string("测试日志,进入作用域"),1,2);
+    //     std::cout << v1_.c_str();
+    //     std::cout << "前阶段完成" << std::endl;
+    //     custom_log::foundation_log<test_log> two_test_log(file_name);
+    //     custom_log::information::information<test_log> temp_information;
+    //     test_log test_(con::string("测试日志,进入作用域"),1,2);
+    //     temp_information.custom_log_message_input(test_); //问题
+    //     //字符管理问题？？
+    //     std::cout << temp_information.to_custom_string() << std::endl;
+    //     two_test_log.staging(temp_information,default_timestamp_macros);
+    //     two_test_log.push_to_file();
+    // }
     // system("pause");
     // std::thread test([&]    {   std::cout << "hello,word!" << file_name << std::endl;   } );
     // test.join();
