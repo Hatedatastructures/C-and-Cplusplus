@@ -17,7 +17,7 @@
 namespace custom_log
 {
     using custom_string = con::string;
-    using log_timestamp_class = std::chrono::system_clock;  //时间戳类
+    using log_timestamp_class = std::chrono::system_clock;              //时间戳类
     using log_timestamp_type = std::chrono::system_clock::time_point;
     [[nodiscard]] inline bool file_exists(const std::string& path)
     {
@@ -115,27 +115,25 @@ namespace custom_log
                 // 唤醒等待的消费者
                 conditional_control.notify_one();
             }
-            void buffer_files(std::ofstream& file)
+            void buffer_files()
             {
                 size_t buffer_file_size = buffer_size;
-                while(buffer_file_size && !read_queue.load()->empty())
+                while(!read_queue.load()->empty())
                 {
                     con::string temp_string_data;
                     dequeue(temp_string_data);
-                    file << temp_string_data; 
+                    file << temp_string_data << std::endl; 
                     std::cout << temp_string_data << std::endl;
-                    --buffer_file_size;
                     std::cout << "当前日志数" << buffer_file_size << std::endl;
                 }
             }
         public:
-            static inline size_t produce_payload_size = 10;
+            static inline size_t produce_payload_size = 100;
             double_buffer_queue(std::ofstream& external_file)
             :file(external_file)
             {
                 read_queue.store(&produce_queue);
                 write_queue.store(&consume_queue);
-
             }
             double_buffer_queue(const double_buffer_queue& rhs) = delete;
             double_buffer_queue(double_buffer_queue&& rhs) = delete;
@@ -148,7 +146,7 @@ namespace custom_log
                     if(!write_queue.load()->empty())
                     {
                         switch_queues();
-                        buffer_files(file);
+                        buffer_files();
                     }
                 }
             }
@@ -158,8 +156,13 @@ namespace custom_log
                 {
                     switch_queues();
                     buffer_size = 0;
-                    background_threads = std::thread([&]{buffer_files(file);});
-                    background_threads.detach(); //分离线程
+                    // background_threads.join();
+                    background_threads = std::thread([&]{buffer_files();});
+                    // background_threads.detach(); //分离线程
+                    if(background_threads.joinable())
+                    {
+                        background_threads.join();
+                    }
                 }
                 write_queue.load()->push(built_string_data);
                 ++buffer_size;
@@ -170,8 +173,13 @@ namespace custom_log
                 {
                     switch_queues();
                     buffer_size = 0;
-                    background_threads = std::thread([&]{buffer_files(file);});
-                    background_threads.detach(); //分离线程
+                    // background_threads.join();
+                    background_threads = std::thread([&]{buffer_files();});
+                    // background_threads.detach(); //分离线程
+                    if(background_threads.joinable())
+                    {
+                        background_threads.join();
+                    }
                 }
                 write_queue.load()->push(std::move(built_string_data));
                 ++buffer_size;
@@ -183,7 +191,7 @@ namespace custom_log
                     if(!write_queue.load()->empty())
                     {
                         switch_queues();
-                        buffer_files(file);
+                        buffer_files();
                     }
                 }
             }
@@ -401,7 +409,7 @@ namespace custom_log
         }
         virtual void staging(const information_type& log_information,const log_timestamp_type& time = log_timestamp_class::now())
         {
-            if(second_level_cache_manager.size() >= 100)
+            if(second_level_cache_manager.size() > 100)
             {
                 con::vector<foundation_log_type> replacement_value;
                 replacement_value.swap(second_level_cache_manager);
@@ -426,12 +434,12 @@ namespace custom_log
                 }
             }
             if(!second_level_cache_manager.empty())
+            {
+                for(auto& second_level_cushioningp : second_level_cache_manager)
                 {
-                    for(auto& second_level_cushioningp : second_level_cache_manager)
-                    {
-                        log_file.write(second_level_cushioningp.first,second_level_cushioningp.second);
-                    }
+                    log_file.write(second_level_cushioningp.first,second_level_cushioningp.second);
                 }
+            }
             first_level_cache_manager.clear();
             con::vector<foundation_log_type> new_second_level_cache_manager;
             new_second_level_cache_manager.swap(second_level_cache_manager);

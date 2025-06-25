@@ -75,7 +75,7 @@ int main()
         // {
         //     std::cout << "文件缓冲区调整成功" << std::endl;
         // }
-        for(size_t list = 0; list <= 1000; list++)
+        for(size_t list = 0; list < 1000; list++)
         {
             custom_log::information::information temp_information;
             temp_information.debugging_message_input(debugging[generate_random_size_t(1763824,347632485789)% debugging.size()]);
