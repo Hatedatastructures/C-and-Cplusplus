@@ -1,23 +1,22 @@
 #pragma once
-#include "template_container.hpp" //自定义模板容器
-#include <fstream>                //文件操作
-#include <chrono>                 //时间操作
-#include <iomanip>                //格式化输出
-#include <ctime>                  //时间戳
-#include <thread>                 //多线程
-#include <atomic>                 //原子操作
-#include <condition_variable>     //条件变量
+#include "template_container.hpp" 
+#include <fstream>                
+#include <chrono>                 
+#include <iomanip>                
+#include <ctime>                  
+#include <thread>                 
+#include <atomic>                 
 #define built_types con::string
 #define default_document_checking_macros(macros_file_name) custom_log::file_exists(macros_file_name)
 #define default_timestamp_macros std::chrono::system_clock::now()
 #define default_custom_information_input_macros_t(value,type) custom_log::information::information<type>().custom_log_macro_function_input(value)
 #define default_custom_information_input_macros(value) custom_log::information::information<built_types>().custom_log_macro_function_input(value)
-//函数宏，行数宏，文件宏,自动捕获行号....
+//函数宏，行数宏，文件宏
 //中控类，控制台，等级过滤，控制台颜色标记，默认参数宏调用
 namespace custom_log
 {
     using custom_string = con::string;
-    using log_timestamp_class = std::chrono::system_clock;              //时间戳类
+    using log_timestamp_class = std::chrono::system_clock;              
     using log_timestamp_type = std::chrono::system_clock::time_point;
     [[nodiscard]] inline bool file_exists(const std::string& path)
     {
@@ -93,43 +92,46 @@ namespace custom_log
     }
     namespace buffer_queues
     {
-        class double_buffer_queue   //双队列缓冲区
-        {   //只接受con::string类型
-            size_t buffer_size = 0;
+        class double_buffer_queue
+        {
             std::ofstream& file;
-            std::mutex switch_mutex;
             std::mutex swap_locks;
+            std::mutex switch_mutex;
+            size_t file_buffer_size = 0;
+            size_t console_line_number = 1;
             std::thread background_threads;
-            std::condition_variable conditional_control;
             con::queue<con::string> produce_queue;
             con::queue<con::string> consume_queue;
-            std::atomic<con::queue<con::string>*> read_queue;
-            std::atomic<con::queue<con::string>*> write_queue;
+            std::atomic<con::queue<con::string>*> read_queue{};
+            std::atomic<con::queue<con::string>*> write_queue{};
             void switch_queues() 
             {
-                // 交换读写队列指针
                 std::lock_guard<std::mutex> lock(swap_locks);
                 con::queue<con::string>* temp_atomic_queue_data = read_queue.load();
                 read_queue.store(write_queue.load());
                 write_queue.store(temp_atomic_queue_data);
-                // 唤醒等待的消费者
-                conditional_control.notify_one();
             }
-            void buffer_files()
+            void file_buffer()
             {
-                size_t buffer_file_size = buffer_size;
                 while(!read_queue.load()->empty())
                 {
                     con::string temp_string_data;
                     dequeue(temp_string_data);
                     file << temp_string_data << std::endl; 
-                    std::cout << temp_string_data << std::endl;
-                    std::cout << "当前日志数" << buffer_file_size << std::endl;
+                }
+            }
+            void console_buffer()
+            {
+                while(!read_queue.load()->empty())
+                {
+                    con::string temp_string_data;
+                    dequeue(temp_string_data);
+                    std::cout << console_line_number << temp_string_data << std::endl;
                 }
             }
         public:
             static inline size_t produce_payload_size = 100;
-            double_buffer_queue(std::ofstream& external_file)
+            explicit double_buffer_queue(std::ofstream& external_file)
             :file(external_file)
             {
                 read_queue.store(&produce_queue);
@@ -146,43 +148,24 @@ namespace custom_log
                     if(!write_queue.load()->empty())
                     {
                         switch_queues();
-                        buffer_files();
+                        file_buffer();
                     }
                 }
-            }
-            void enqueue(const con::string& built_string_data)
-            {
-                if( buffer_size >= produce_payload_size)
-                {
-                    switch_queues();
-                    buffer_size = 0;
-                    // background_threads.join();
-                    background_threads = std::thread([&]{buffer_files();});
-                    // background_threads.detach(); //分离线程
-                    if(background_threads.joinable())
-                    {
-                        background_threads.join();
-                    }
-                }
-                write_queue.load()->push(built_string_data);
-                ++buffer_size;
             }
             void enqueue(con::string&& built_string_data)
             {
-                if( buffer_size >= produce_payload_size)
+                if( file_buffer_size >= produce_payload_size)
                 {
                     switch_queues();
-                    buffer_size = 0;
-                    // background_threads.join();
-                    background_threads = std::thread([&]{buffer_files();});
-                    // background_threads.detach(); //分离线程
+                    file_buffer_size = 0;
+                    background_threads = std::thread([&]{file_buffer();});
                     if(background_threads.joinable())
                     {
                         background_threads.join();
                     }
                 }
                 write_queue.load()->push(std::move(built_string_data));
-                ++buffer_size;
+                ++file_buffer_size;
             }
             void refresh_buffer_queue()
             {
@@ -191,7 +174,7 @@ namespace custom_log
                     if(!write_queue.load()->empty())
                     {
                         switch_queues();
-                        buffer_files();
+                        file_buffer();
                     }
                 }
             }
@@ -285,7 +268,7 @@ namespace custom_log
             file_configurator& operator=(file_configurator&& rhs) = delete;
             ~file_configurator()      {file_ofstream.close();}
             template<typename structure>
-            file_configurator(const structure& file_name)
+            explicit file_configurator(const structure& file_name)
             :write_queue(file_ofstream)
             {
                 open_file(file_name);
@@ -378,7 +361,7 @@ namespace custom_log
         using foundation_log_type = con::pair<con::string,log_timestamp_type>;
     private:
         configurator::file_configurator<custom_foundation_log_type> log_file;
-        con::list<con::vector<foundation_log_type>> first_level_cache_manager; // 减少时间开销，和用数组来比空间开销差不多
+        con::list<con::vector<foundation_log_type>> first_level_cache_manager; 
         con::vector<foundation_log_type> second_level_cache_manager;
         foundation_log_type temporary_caching(const information_type& log_information,const log_timestamp_type& time = log_timestamp_class::now())
         {
@@ -393,14 +376,14 @@ namespace custom_log
 
         virtual ~foundation_log() 
         {
-            push_to_file();
-            refresh_buffer();
+            foundation_log<custom_foundation_log_type>::push_to_file();
+            foundation_log<custom_foundation_log_type>::refresh_buffer();
         }
-        foundation_log(const custom_string& log_file_name)
+        explicit foundation_log(const custom_string& log_file_name)
         :log_file(log_file_name){}
-        foundation_log(const std::string& log_file_name)
+        explicit foundation_log(const std::string& log_file_name)
         :log_file(log_file_name.c_str()){}
-        foundation_log(const char* log_file_name)
+        explicit foundation_log(const char* log_file_name)
         : log_file(log_file_name){}
         virtual void write_file(const information_type& log_information,const log_timestamp_type& time = log_timestamp_class::now())
         {
@@ -456,7 +439,7 @@ namespace custom_log
         configurator::function_stacks function_call_stack;
     public:
         template <typename file_name>
-        log(const file_name& file): foundation_log<custom_log_type>()
+        explicit log(const file_name& file): foundation_log<custom_log_type>()
         {
             log::foundation_log::foundation_log(file);
         }
