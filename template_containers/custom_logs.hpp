@@ -464,11 +464,14 @@ namespace custom_log
                         }
                     }
                 }
+                std::cout << "一级暂存区输出完毕 当前一级暂存区大小为："<< first_level_cache_manager.size() << std::endl;
                 if(!second_level_cache_manager.empty())
                 {
                     for(auto& second_level_cushioningp : second_level_cache_manager)
                     {
+                        std::cout << "二级暂存区正常" << second_level_cache_manager.size() << std::endl;
                         temporary_expression(built_controller,second_level_cushioningp.first,second_level_cushioningp.second);
+                        //未调用
                     }
                 }
             }
