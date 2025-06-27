@@ -8,7 +8,8 @@
 ## 二、文件架构对比
 
 ### 1. [`template_container`](template_containers/template_container.md)
-### [**跳转详细文档**](template_containers/template_container.md)
+* ### [**跳转详细文档**](template_containers/template_container.md)
+* ### [**跳转到源代码**](custom_libraries/template_container.hpp)
 * **命名空间划分**：
 
   * `custom_exception`、`smart_pointer`、`practicality`、`imitation_functions`、`algorithm`、各类容器命名空间、`base_class_container`、`bloom_filter_container`、以及简化命名空间 `con`、`ptr`、`exc`
@@ -30,7 +31,8 @@
   8. 注意事项（线程安全、迭代器失效等）
 
 ### 2. [`custom_log`](template_containers/custom_logs.md)
-### [**跳转详细文档**](template_containers/custom_logs.md)
+* ### [**跳转详细文档**](template_containers/custom_logs.md)
+* ### [**跳转到源代码**](custom_libraries/custom_logs.hpp)
 * **命名空间划分**：
 
   * `information`（多级信息聚合）
