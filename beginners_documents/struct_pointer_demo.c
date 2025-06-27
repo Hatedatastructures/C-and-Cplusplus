@@ -1,6 +1,7 @@
 #include <stdio.h>  
   
-struct wang {  
+struct wang 
+{  
     char chuanganqi[10];  
     char pingmu[6];  
     char xinghao[8];  
@@ -21,7 +22,8 @@ void mac(struct wang *zhizhe) {
     printf("\n"); // 增加换行符以美观地分隔每组数据  
 }  
   
-void test(struct wang *wangren) { // 修改参数类型为 struct wang*  
+void test(struct wang *wangren) 
+{ // 修改参数类型为 struct wang*  
     printf("请输入传感器名字\n");  
     scanf("%9s", wangren->chuanganqi); // 去掉 &，并限制输入长度  
     printf("请输入屏幕品牌\n");  
@@ -38,7 +40,8 @@ void test(struct wang *wangren) { // 修改参数类型为 struct wang*
     scanf("%d", &wangren->jiage); // 对于 int 类型，需要使用 &  
 }  
   
-int main() {  
+int main() 
+{  
     struct wang wangren;  
     test(&wangren); // 传递结构体指针  
     mac(&wangren);  

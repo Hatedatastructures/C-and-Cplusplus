@@ -573,8 +573,7 @@ namespace custom_log
         }
         virtual void push()
         {
-            std::thread file_push_thread;
-            std::thread console_push_thread;
+            std::thread file_push_thread , console_push_thread;
             if(file_output_switch)      
             {   
                 file_push_thread = std::thread([&]{file_input();});          

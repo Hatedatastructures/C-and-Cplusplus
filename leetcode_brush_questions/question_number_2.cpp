@@ -5,7 +5,7 @@
 struct ListNode 
 {
     int val;
-    struct ListNode *next;
+    struct ListNode* next;
 };
 void push_back(struct ListNode** cur , int val )
  {

@@ -1,10 +1,9 @@
 #include <stdio.h>
 int wang  (int x,int y)//定义函数
 {
-       return   (x>y?x:y);
-       //如果 x 大于 y，则条件为真（true），此时整个表达式的结果为 x。
-       //如果 x 不大于 y（即小于或等于），则条件为假（false），此时整个表达式的结果为 y
-   
+    return   (x>y?x:y);
+    //如果 x 大于 y，则条件为真（true），此时整个表达式的结果为 x。
+    //如果 x 不大于 y（即小于或等于），则条件为假（false），此时整个表达式的结果为 y
 }
 int main()
 {

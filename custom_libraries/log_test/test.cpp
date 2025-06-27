@@ -3,6 +3,7 @@
 #include "windows.h"
 #include <random>
 #include <thread>
+#include <memory>
 size_t generate_random_size_t(size_t min, size_t max) 
 {
     std::random_device rd;
@@ -113,6 +114,8 @@ int main()
     test.join();
     std::cout << "程序结束" << std::endl;
     system("pause");
-    
+    std::unique_ptr<con::string> string_ptr(new con::string("hello,word!"));
+    //独占指针所有权
+    std::cout << *string_ptr << std::endl;
     return 0;
 }
