@@ -7,8 +7,8 @@
 | `custom_log`         | 提供可配置、异步、高性能日志系统 | 多级信息聚合、双缓冲异步写入、时间与前缀格式化、二级缓存推送、文件/控制台输出切换                                     |
 ## 二、文件架构对比
 
-### 1. [`template_container`](template_containers/template_container.md)
-* ### [**跳转详细文档**](template_containers/template_container.md)
+### 1. [`template_container`](custom_libraries/template_container.hpp)
+* ### [**跳转详细文档**](custom_libraries/template_container.md)
 * ### [**跳转到源代码**](custom_libraries/template_container.hpp)
 * **命名空间划分**：
 
@@ -30,8 +30,8 @@
   7. 边界条件与错误处理
   8. 注意事项（线程安全、迭代器失效等）
 
-### 2. [`custom_log`](template_containers/custom_logs.md)
-* ### [**跳转详细文档**](template_containers/custom_logs.md)
+### 2. [`custom_log`](custom_libraries/custom_logs.hpp)
+* ### [**跳转详细文档**](custom_libraries/custom_logs.md)
 * ### [**跳转到源代码**](custom_libraries/custom_logs.hpp)
 * **命名空间划分**：
 
