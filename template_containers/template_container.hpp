@@ -308,10 +308,6 @@ namespace template_container
             {
                 return static_cast<size_t>(data_unsigned);
             }
-            [[nodiscard]] size_t operator()(const unsigned long data_unsigned_long)const noexcept
-            {
-                return static_cast<size_t>(data_unsigned_long);
-            }
             [[nodiscard]] size_t operator()(const unsigned short data_unsigned_short)const noexcept
             {
                 return static_cast<size_t>(data_unsigned_short);
