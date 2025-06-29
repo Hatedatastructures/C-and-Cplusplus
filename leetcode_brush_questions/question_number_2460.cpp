@@ -48,7 +48,7 @@ namespace C
         return nums;
     }
 }
-namespace Cpp
+namespace CPP
 {
     class Solution 
     {
@@ -104,9 +104,9 @@ int main()
     }
     std::cout << std::endl;
     {
-        //Cpp
+        //CPP
         vector<int> test = {847,847,0,0,0,399,416,416,879,879,206,206,206,272};
-        Cpp::Solution sl;
+        CPP::Solution sl;
         vector<int> ret = sl.applyOperations(test);
         for(auto& e:ret)
         {

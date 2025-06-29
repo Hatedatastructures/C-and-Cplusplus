@@ -58,7 +58,7 @@ namespace C
         return ret;
     }
 }
-namespace Cpp
+namespace CPP
 {
     class Solution 
     {
