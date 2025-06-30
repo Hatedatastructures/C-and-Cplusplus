@@ -31,8 +31,8 @@
   8. 注意事项（线程安全、迭代器失效等）
 
 ### 2. [`custom_log`](custom_libraries/custom_logs.hpp)
-* ### [**跳转详细文档**](custom_libraries/custom_logs.md)
-* ### [**跳转到源代码**](custom_libraries/custom_logs.hpp)
+* ### [**跳转详细文档**](custom_libraries/custom_logs.md) 
+* ### [**跳转到源代码**](custom_libraries/custom_logs.hpp)(当前源码有BUG,暂时未修复)
 * **命名空间划分**：
 
   * `information`（多级信息聚合）
