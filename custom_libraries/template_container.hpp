@@ -6028,9 +6028,9 @@ namespace template_container
                 _capacity = 1000;
                 instance_bit_set.resize(_capacity);
             }
-            explicit bloom_filter(const size_t& Temp_Capacity)
+            explicit bloom_filter(const size_t& temp_capacity)
             {
-                _capacity = Temp_Capacity;
+                _capacity = temp_capacity;
                 instance_bit_set.resize(_capacity);
             }
             [[nodiscard]] size_t size() const
@@ -6041,11 +6041,11 @@ namespace template_container
             {
                 return _capacity;
             }
-            bool test(const bloom_filter_type_value& TempVal)
+            bool test(const bloom_filter_type_value& temp_bf_map_value)
             {
-                size_t primary_mapping_location   = hash_functions_object.hash_sdmmhash(TempVal) % _capacity;
-                size_t secondary_mapping_location = hash_functions_object.hash_djbhash (TempVal) % _capacity;
-                size_t tertiary_mapping_location  = hash_functions_object.hash_pjwhash (TempVal) % _capacity;
+                size_t primary_mapping_location   = hash_functions_object.hash_sdmmhash(temp_bf_map_value) % _capacity;
+                size_t secondary_mapping_location = hash_functions_object.hash_djbhash (temp_bf_map_value) % _capacity;
+                size_t tertiary_mapping_location  = hash_functions_object.hash_pjwhash (temp_bf_map_value) % _capacity;
                 if(instance_bit_set.test(primary_mapping_location) == true && instance_bit_set.test(secondary_mapping_location) == true && 
                 instance_bit_set.test(tertiary_mapping_location) == true)
                 {
@@ -6054,11 +6054,11 @@ namespace template_container
                 }
                 return false;
             }
-            void set(const bloom_filter_type_value& TempVal)
+            void set(const bloom_filter_type_value& temp_bf_map_value)
             {
-                size_t primary_mapping_location   = hash_functions_object.hash_sdmmhash(TempVal) % _capacity;
-                size_t secondary_mapping_location = hash_functions_object.hash_djbhash (TempVal) % _capacity;
-                size_t tertiary_mapping_location  = hash_functions_object.hash_pjwhash (TempVal) % _capacity;
+                size_t primary_mapping_location   = hash_functions_object.hash_sdmmhash(temp_bf_map_value) % _capacity;
+                size_t secondary_mapping_location = hash_functions_object.hash_djbhash (temp_bf_map_value) % _capacity;
+                size_t tertiary_mapping_location  = hash_functions_object.hash_pjwhash (temp_bf_map_value) % _capacity;
                 instance_bit_set.set(primary_mapping_location);
                 instance_bit_set.set(secondary_mapping_location);
                 instance_bit_set.set(tertiary_mapping_location);

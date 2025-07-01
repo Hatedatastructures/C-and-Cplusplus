@@ -1,5 +1,6 @@
 {
-    "files.associations": {
+    "files.associations": 
+    {
         "list": "cpp",
         "array": "cpp",
         "atomic": "cpp",
@@ -72,6 +73,7 @@
     "C_Cpp.errorSquiggles": "disabled",
     "Codegeex.CompletionDelay": 2,
     "Codegeex.GenerationPreference": "automatic",
+    "editor.fontWeight": "300", // 字体粗细,700变粗
     "workbench.editor.autoLockGroups": {
         "workbench.input.interactive": true,
         "mainThreadWebview-markdown.preview": true,
@@ -81,6 +83,16 @@
         "default": true,
         "hexEditor.hexedit": true,
         "imagePreview.previewEditor": true
+        
+    },
+    "workbench.colorCustomizations": 
+    {
+    // 行号默认颜色
+    "editorLineNumber.foreground": "#13a995",
+    
+    // 当前行的行号颜色
+    "editorLineNumber.activeForeground": "#cc00aa"
     },
     "Codegeex.RepoIndex": true
+    
 }
