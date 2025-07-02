@@ -85,7 +85,7 @@ int Three_middle(int*a , int left , int right)
 {
     //在三个数中找到中间值，以此来优化快速排序
     int mid = (left + right) / 2;//取中间值
-    if(left < right)
+    if(a[left] < a[right])
     {
         // 如果左边界值大于中间值，返回左边界索引
         if(a[left] > a[mid])
@@ -98,7 +98,7 @@ int Three_middle(int*a , int left , int right)
         }
         return mid;
     }
-    else if(left > right)
+    else if(a[left] > a[right])
     {
         if(a[left] < a[mid])
         {
@@ -190,10 +190,10 @@ int main()
 
     time_t end = clock();
 
-    for(int i = 0; i < N; i++)
-    {
-        printf("%d ", arr[i]);
-    }
+    // for(int i = 0; i < N; i++)
+    // {
+    //     printf("%d ", arr[i]);
+    // }
     
     printf("time:%lld\n", end - list);
     free(arr);
