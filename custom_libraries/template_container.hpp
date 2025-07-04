@@ -5101,7 +5101,7 @@ namespace template_container
                         }
                         last_in_bucket = new_structure_node;
         
-                        // 2.3 插入到“全局插入
+                        // 2.3 插入到全局插入
                         if(overall_list_before_node != nullptr)
                         {
                             overall_list_before_node->overall_list_next = new_structure_node;
