@@ -1,5 +1,5 @@
-gdb_debugging_test : debugging.c
-	gcc debugging.c -o gdb_debugging_test -g
+command_line_testing: command_line_testing.cpp
+	g++ $^ -o $@
 .PHONY : clean
 clean : 
-	rm -f gdb_debugging_test
+	rm -f command_line_testing
