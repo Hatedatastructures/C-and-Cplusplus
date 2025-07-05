@@ -127,3 +127,6 @@
     * `char* env[]`
     * `getenv()`
     * `extern char** environ`
+### 进程地址空间 **:**
+
+ <img src=./gallery/process_address_space.png#80% width = 80%>
