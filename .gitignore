@@ -2,7 +2,7 @@
 .DS_Store
 Thumbs.db
 # 默认忽略的文件
-# .vscode/# 编辑器配置文件
+.vscode/# 编辑器配置文件
 .idea/
 *.exe
 output/
