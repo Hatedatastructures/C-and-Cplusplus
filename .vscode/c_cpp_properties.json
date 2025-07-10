@@ -3,27 +3,19 @@
         {
             "name": "Linux g++-x64",
             "includePath": [
-                "${workspaceFolder}/**",
-                "/usr/include/opencv4"
+                // "${workspaceFolder}/**",
+                // "/usr/include/opencv4",
+                "${workspaceFolder}/**",      // 项目目录（默认）
+                "/usr/include/opencv4",       // OpenCV 库
+                "/usr/local/include"         // 系统本地库
+                // "/opt/my-library/include",    // 第三方库
+                // "${workspaceFolder}/include"  // 项目自定义头文件目录
             ],
             "defines": [],
-            "compilerPath": "/usr/bin/g++-11",
+            "compilerPath": "/usr/bin/g++",
             "cStandard": "c23",
             "cppStandard": "c++26",
             "intelliSenseMode": "linux-gcc-x64"
-        },
-        {
-          "name": "windows-gcc-x64",
-          "includePath": [
-              "${workspaceFolder}/**"
-          ],
-          "compilerPath": "C:\\msys64\\ucrt64\\bin\\gcc.exe",
-          "cStandard": "${default}",
-          "cppStandard": "${default}",
-          "intelliSenseMode": "windows-gcc-x64",
-          "compilerArgs": [
-              ""
-          ]
         }
     ],
     "version": 4
