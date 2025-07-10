@@ -56,5 +56,6 @@ int main()
         new_list = new_list->next;
     }
     cout << std::endl;
+    std::println("Hello World!\n");
     return 0;
 }

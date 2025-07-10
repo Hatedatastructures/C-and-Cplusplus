@@ -1,7 +1,8 @@
 #include <iostream>
 #include <unordered_map>
 using namespace std;
-namespace CPP
+// 题目：删除排序链表中的重复元素
+// https://leetcode.cn/problems/remove-duplicates-from-sorted-list/description/namespace CPP
 {
     struct ListNode
     {

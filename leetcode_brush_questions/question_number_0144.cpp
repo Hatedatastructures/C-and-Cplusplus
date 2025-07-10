@@ -44,6 +44,20 @@ namespace CPP
         }
     };
 }
+struct repeat_detect
+    {
+        char* first;
+        char* second;
+        char* third;
+        bool judgment()
+        {
+            if(*first == *second && *second == *third)
+            {
+                return true;
+            }
+            return false;
+        }
+    };
 int main()
 {
     // [1,2,3,4,5,null,8,null,null,6,7,9]
@@ -60,5 +74,13 @@ int main()
     {
         cout << " " << value;
     }
+    repeat_detect tmp;
+    tmp.first = "a";
+    tmp.second = "a";
+    tmp.third = "a";
+    std::cout << std::endl << tmp.judgment() << std::endl;
+    string s("泥嚎");
+    s.clear();
+    std::cout << s << std::endl;
     return 0;
 }
