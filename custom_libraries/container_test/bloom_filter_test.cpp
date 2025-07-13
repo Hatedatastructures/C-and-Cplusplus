@@ -3,8 +3,7 @@ using namespace template_container;
 int main() 
 {
     // 1. 创建容量为10000的布隆过滤器
-    bloom_filter_container::bloom_filter<std::string,template_container::
-    algorithm::hash_algorithm::hash_function<std::string, std::hash<std::string> > > bf(10000);
+    bloom_filter_container::bloom_filter<std::string,template_container::algorithm::hash_algorithm::hash_function<std::string, std::hash<std::string> > > bf(10000);
     
     // 2. 插入元素
     bf.set("apple");
