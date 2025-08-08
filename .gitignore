@@ -5,7 +5,7 @@ Thumbs.db
 .vscode/ 
 .idea/
 *.exe
-output/
+build/output/
 /shelf/
 /workspace.xml
 # 基于编辑器的 HTTP 客户端请求
