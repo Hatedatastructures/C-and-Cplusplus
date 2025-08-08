@@ -8,13 +8,14 @@ class client
 {
   std::shared_ptr<udp::socket> _socket;
   udp::endpoint _server_endpoint;
+  std::thread _thread;
 public:
   client(boost::asio::io_context& context,const std::string& server_ip,int server_port)
   :_socket(std::make_shared<udp::socket>(context,udp::endpoint(udp::v4(),0)))
   {
     udp::resolver resolver(context);
     _server_endpoint = *resolver.resolve(udp::v4(),server_ip,std::to_string(server_port)).begin();
-    std::thread([this](){thread_cin();}).detach();
+    _thread  = std::thread([this](){thread_cin();});
   }
   void send(const std::string& message)
   {
@@ -43,6 +44,6 @@ public:
   }
   ~client()
   {
-     std::cout << "客户端退出" << std::endl;
+    _thread.join();
   }
 };
