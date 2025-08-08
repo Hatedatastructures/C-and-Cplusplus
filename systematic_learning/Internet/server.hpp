@@ -25,5 +25,6 @@ public:
   {
     _socket = std::make_shared<udp::socket>(scheduler,udp::endpoint(udp::v4(),port));
     std::cout << "server port : " << port << std::endl;
+    start();
   }
 };
