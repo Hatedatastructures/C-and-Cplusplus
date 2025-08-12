@@ -6,6 +6,7 @@ int main()
     boost::asio::io_context io_context;
     std::unique_ptr<client> send(new client(io_context, "127.0.0.1", 6779));
     send->start();
+    send->send();
     io_context.run();
   }
   catch(std::exception &e)

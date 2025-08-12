@@ -7,55 +7,49 @@ class client
 {
   std::shared_ptr<udp::socket> _socket;
   udp::endpoint _server_endpoint;
-  std::thread _thread;
   std::atomic<uint64_t> _count{0};
   std::string send_information;
 public:
-  client(boost::asio::io_context& context,const std::string& server_ip,int server_port)
-  :_socket(std::make_shared<udp::socket>(context,udp::endpoint(udp::v4(),0)))
+  client(boost::asio::io_context &io_context, const std::string &ip, uint16_t port)
+  :_server_endpoint(address::from_string(ip), port)
   {
-    udp::resolver resolver(context);
-    _server_endpoint = *resolver.resolve(udp::v4(),server_ip,std::to_string(server_port)).begin();
-    _thread  = std::thread([this](){thread_cin();});
-  }
-  void send(const std::string& message)
-  {
-    auto call_back = [this](boost::system::error_code error, uint64_t bytes_size)
-    {
-      if(!error)
-      {
-        _count = _count.load() + bytes_size;
-      }
-    };
-    _socket->async_send_to(boost::asio::buffer(message),_server_endpoint,call_back);
+    _socket = std::make_shared<udp::socket>(io_context,udp::endpoint(udp::v4(),0));
+    send_information.resize(1024);
+    std::cout << "远程地址: " << ip << std::endl;
   }
   void start()
   {
-    auto call_back = [this](boost::system::error_code error, uint64_t bytes_size)
+    //1.启动接受处理
+    auto callock = [this](boost::system::error_code s,uint64_t byte_size)
     {
-      if(!error)
+      if(!s)
       {
+        _count = _count + byte_size;
         std::cout << send_information << std::endl;
-        std::fflush(stdout);
-        send_information.clear();
-        start();
+      }
+    }; //接收信息
+    _socket->async_receive_from(boost::asio::buffer(send_information), _server_endpoint,callock);
+  }
+  void send()
+  {
+    auto run_thread = [this]()
+    {
+      std::cout << "[@" << _server_endpoint.address().to_string() << " # " << _server_endpoint.port() << "] ";
+      while(std::getline(std::cin,send_information))
+      {
+        if(send_information == "exit")
+        {
+          break;
+        } //发送
+        _socket->send_to(boost::asio::buffer(send_information),_server_endpoint,0);
+        std::cout << "[@" << _server_endpoint.address().to_string() << " # " << _server_endpoint.port() << "] ";
       }
     };
-    _socket->async_receive_from(boost::asio::buffer(send_information,1024),_server_endpoint,call_back);
-  }
-  void thread_cin()
-  {
-    std::string message;
-    auto local_ip = _socket->local_endpoint();
-    std::cout << "[" << local_ip.address().to_string() << " "  << local_ip.port() << "]";
-    while(std::getline(std::cin,message))
-    {
-      send(message);
-      std::cout << "[" << local_ip.address().to_string() << " "  << local_ip.port() << "]";
-    }
+    std::thread real_time(run_thread);
+    real_time.join();
   }
   ~client()
   {
-    _thread.join();
+    std::cout << "共计接收了: " << _count << "个字节" << std::endl;
   }
 };
