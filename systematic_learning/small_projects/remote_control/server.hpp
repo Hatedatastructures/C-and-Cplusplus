@@ -37,7 +37,7 @@ class server
       {
         if(!erro)
         {
-          std::cout << "[" << _sender_message.address().to_string() << "] : " <<  " [字节数 : " << bytes_transferred  << "] "<< _command << std::endl;
+          std::cout << "[连接方ip: " << _sender_message.address().to_string() << "] : " <<  " [发送字节数 : " << bytes_transferred  << "]  命令："<< _command << std::endl;
         } //记录发送端ip行为
       };
       _connect_socket->async_send_to(boost::asio::buffer(output_commands),_sender_message,call_back_);
@@ -60,8 +60,7 @@ public:
       {
         _command = _data.substr(0,bytes_transferred);
         conmmand_func(_command);
-        start();
-        _data.clear();
+        start(); //递归调用，等待下一次接收
       }
     };
     _connect_socket->async_receive_from(boost::asio::buffer(_data,1024),_sender_message,call_back);
