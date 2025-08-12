@@ -9,6 +9,7 @@ class client
   udp::endpoint _server_endpoint;
   std::thread _thread;
   std::atomic<uint64_t> _count{0};
+  std::string send_information;
 public:
   client(boost::asio::io_context& context,const std::string& server_ip,int server_port)
   :_socket(std::make_shared<udp::socket>(context,udp::endpoint(udp::v4(),0)))
@@ -19,17 +20,24 @@ public:
   }
   void send(const std::string& message)
   {
-    (void)_socket->async_send_to(boost::asio::buffer(message),_server_endpoint);
+    auto call_back = [this](boost::system::error_code error, uint64_t bytes_size)
+    {
+      if(!error)
+      {
+        _count = _count.load() + bytes_size;
+      }
+    };
+    _socket->async_send_to(boost::asio::buffer(message),_server_endpoint,call_back);
   }
   void start()
   {
-    std::string send_information;
-    auto call_back = [this,&send_information](boost::system::error_code error, uint64_t bytes_size)
+    auto call_back = [this](boost::system::error_code error, uint64_t bytes_size)
     {
       if(!error)
       {
         std::cout << send_information << std::endl;
-        _count = _count.load() + bytes_size;
+        std::fflush(stdout);
+        send_information.clear();
         start();
       }
     };

@@ -16,9 +16,14 @@ class server
     auto call_back = [this,&command]
     {
       FILE* fp = popen(command.c_str(),"r");
-      if(fp == nullptr)  std::cout << "临时进程创建失败"  << std::endl;
+      if(fp == nullptr) 
+      {
+        std::cout << "临时进程创建失败: " << command << std::endl;
+        return; // 提前返回，避免后续操作空指针
+      }
       std::string output_commands;
-      char buffer[1024];
+      memset(buffer,sizeof(buffer),0);
+      memset(buffer, 0, sizeof(buffer));  // 修正memset参数顺序
       while(fgets(buffer,sizeof(buffer),fp))
       {
         output_commands += buffer;
