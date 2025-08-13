@@ -221,12 +221,12 @@ namespace con
      * @return `std::future<return_type>` 任务结果
      */
     template <class... Args, std::invocable<Args...> func>
-    auto submit(func &&task_value, Args &&...args)
+    auto submit(func &&task_body, Args &&...args)
     -> std::future<std::invoke_result_t<func, Args...>>
     {
       using return_type = std::invoke_result_t<func, Args...>;
       auto task = std::make_shared<std::packaged_task<return_type()>>(
-        std::bind(std::forward<func>(task_value), std::forward<Args>(args)...));
+        std::bind(std::forward<func>(task_body), std::forward<Args>(args)...));
       std::future<return_type> result = task->get_future();
       _tasks.push([task](){ (*task)(); });
       _condtion.notify_one();

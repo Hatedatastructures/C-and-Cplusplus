@@ -19,12 +19,14 @@ namespace con
   template<typename object_type>
   class pro_con_queue
   {
-  private:
-    std::atomic<uint64_t> _producer;
-    std::atomic<uint64_t> _consumer;
-    const uint64_t _current_capacity;
     static constexpr uint64_t _default_capacity = 10;
-    alignas(CACHE_ALIGNMENT) std::vector<object_type> _shared_circular_queue;
+  private:
+    std::atomic<uint64_t> _producer; // 生产者位置
+    std::atomic<uint64_t> _consumer; // 消费者位置
+
+    const uint64_t _current_capacity; // 当前容量
+
+    alignas(CACHE_ALIGNMENT) std::vector<object_type> _shared_circular_queue; // 环形队列
     uint64_t compute_position(uint64_t index) const
     { 
       return index % _current_capacity;
@@ -45,6 +47,7 @@ namespace con
     {
       const uint64_t current_producer = _producer.fetch_add(1,std::memory_order_relaxed);
       const uint64_t position = compute_position(current_producer);
+
       if(current_producer - _consumer.load(std::memory_order_acquire) >= _current_capacity)
       {
         _producer.fetch_sub(1,std::memory_order_release);
@@ -63,6 +66,7 @@ namespace con
     {
       const uint64_t current_consumer = _consumer.fetch_add(1,std::memory_order_relaxed);
       const uint64_t position = compute_position(current_consumer);
+
       if(current_consumer >= _producer.load(std::memory_order_acquire))
       {
         _consumer.fetch_sub(1,std::memory_order_release);
@@ -94,12 +98,16 @@ namespace con
   {
     static constexpr uint64_t _default_capacity = 10;
   private:
-    mutable std::mutex _access_mutex;
-    uint64_t _current_capacity;
-    std::atomic<bool> _close_id = false;
-    std::condition_variable _produce_condition;
-    std::condition_variable _consume_condition;
-    alignas(CACHE_ALIGNMENT) std::queue<object_type> _shared_queue;
+    mutable std::mutex _access_mutex; // 访问锁
+
+    uint64_t _current_capacity; // 当前容量
+
+    std::atomic<bool> _close_id = false; // 关闭标识
+
+    std::condition_variable _produce_condition; // 生产者条件变量
+    std::condition_variable _consume_condition; // 消费者条件变量
+
+    alignas(CACHE_ALIGNMENT) std::queue<object_type> _shared_queue; // 共享队列
     /**
      * @brief 判断队列是否满
      * @return 满返回 `true`，否则返回 `false`
@@ -252,6 +260,7 @@ namespace con
       if(_close_id) return;
       _close_id.store(true,std::memory_order_release);
       access_lock.unlock();
+
       _produce_condition.notify_all();
       _consume_condition.notify_all();
     }
@@ -270,6 +279,7 @@ namespace con
       if(!_close_id) return;
       _close_id.store(false,std::memory_order_release);
       access_lock.unlock();
+
       _produce_condition.notify_all();
       _consume_condition.notify_all();
     }
@@ -311,13 +321,23 @@ namespace con
   {
     static constexpr uint64_t _default_capacity = 10;
   private: 
-    uint64_t _current_capacity;
-    std::thread _supporting_thread;
-    std::atomic<bool> _close_id,_switch_id;
-    std::mutex _produce_mutex,_consume_mutex;
-    std::condition_variable _produce_condition,_consume_condition;
-    std::atomic<std::queue<object_type>*> _produce,_consume;
-    alignas(CACHE_ALIGNMENT) std::queue<object_type> _produce_pipe,_consume_pipe;
+    uint64_t _current_capacity;  //当前容量
+    std::thread _supporting_thread;  //后台辅助线程
+
+    std::atomic<bool> _close_id;    //关闭标志
+    std::atomic<bool> _switch_id;   //交换标志
+
+    std::mutex _produce_mutex;  //生产者互斥锁
+    std::mutex _consume_mutex;  //消费者互斥锁
+
+    std::condition_variable _produce_condition;  //生产者条件变量
+    std::condition_variable _consume_condition;  //消费者条件变量
+
+    std::atomic<std::queue<object_type>*> _produce;  //生产者队列
+    std::atomic<std::queue<object_type>*> _consume;  //消费者队列
+
+    alignas(CACHE_ALIGNMENT) std::queue<object_type> _produce_pipe;  //原生生产者队列
+    alignas(CACHE_ALIGNMENT) std::queue<object_type> _consume_pipe;  //原生消费者队列
     /**
      * @brief #### 检测队列是否为空
      * @note - 队列空时，交换队列
@@ -327,6 +347,7 @@ namespace con
       if(_consume.load(std::memory_order_acquire)->empty())
       {
         auto tmp_produce = _produce.load(std::memory_order_relaxed);
+
         _produce.store(_consume.load(std::memory_order_relaxed),std::memory_order_release);
         _consume.store(tmp_produce,std::memory_order_release);
       }
@@ -352,6 +373,7 @@ namespace con
           swap_queue();
         }
         _switch_id.store(false,std::memory_order_release);
+
         _produce_condition.notify_all();
         _consume_condition.notify_one();
       }
@@ -365,10 +387,13 @@ namespace con
       {
         std::lock_guard<std::mutex> proudce_lock(_produce_mutex);
         std::lock_guard<std::mutex> consume_lock(_consume_mutex);
+
         _close_id.store(true,std::memory_order_release);
       }
+
       _produce_condition.notify_all();
       _consume_condition.notify_all();
+      
       if(_supporting_thread.joinable())
       {
         _supporting_thread.join();
@@ -455,6 +480,7 @@ namespace con
     void close()
     {
       _close_id.store(true,std::memory_order_release);
+
       _produce_condition.notify_all();
       _consume_condition.notify_all();
     }
@@ -490,19 +516,18 @@ namespace con
   template<typename object_type>
   class pro_con_semaphore_queue
   {
-  private:
-
     static constexpr uint64_t _largest_semaphore = 10ULL;
-    std::vector<object_type> _semaphore_queue;
+  private:
+    std::vector<object_type> _semaphore_queue; // 信号量队列
 
-    std::counting_semaphore<_largest_semaphore> _produce_semaphore;
-    std::counting_semaphore<_largest_semaphore> _consume_semaphore;
+    std::counting_semaphore<_largest_semaphore> _produce_semaphore; // 生产者信号量
+    std::counting_semaphore<_largest_semaphore> _consume_semaphore; // 消费者信号量
 
-    std::mutex _produce_mutex;
-    std::mutex _consume_mutex;
+    std::mutex _produce_mutex; // 生产者锁
+    std::mutex _consume_mutex; // 消费者锁
 
-    uint64_t _produce_location;
-    uint64_t _consume_location;
+    uint64_t _produce_location; // 生产者位置
+    uint64_t _consume_location; // 消费者位置
 
   public:
     pro_con_semaphore_queue()
