@@ -1,15 +1,17 @@
 #include "./client.hpp"
 #include <iostream>
+#include <windows.h>
 #include <string>
 #include <thread>
 #include <chrono>
 
 int main()
 {
+  SetConsoleCP(65001);
   try
   {
     boost::asio::io_context io_context;
-    const std::string server_ip = "127.0.0.1";
+    const std::string server_ip = "124.71.136.228";
     const uint16_t server_port = 6779;
     client client(io_context, server_ip, server_port);
     client.start();
