@@ -5,7 +5,7 @@ using namespace boost::asio::ip;
 class server
 {
   con::thread_pool _thread; // 动态线程池
-  tcp::acceptor _acceptor; //tcp接收器
+  tcp::acceptor _acceptor;  //tcp接收器
   void response_information(tcp::socket& socket,const std::string temp_data)
   {
     std::string response_data = "服务器收到数据 : " + temp_data;
@@ -20,21 +20,29 @@ class server
   }
   void information_stream(tcp::socket socket)
   { //接受数据流
-    tcp::socket client_socket = std::move(socket);
-    std::string data;
-    data.resize(1024);
-    auto process_stream = [this,&data,&client_socket](boost::system::error_code s,uint64_t len)
+    std::shared_ptr<tcp::socket> client_socket = std::make_shared<tcp::socket>(std::move(socket));
+    auto _data = std::make_shared<std::string>();
+    _data->resize(1024);
+    auto process_stream = [this,_data,client_socket](boost::system::error_code s,uint64_t len)
     {
       if(!s)
       {
-        std::cout << "收到来自 " << client_socket.remote_endpoint() << " 的数据长度为 : " << len 
-        << " 数据 : " << data.substr(0,len) << std::endl;
-        //回复客户端数据
-        response_information(client_socket,data.substr(0,len)); //回传数据
-        information_stream(std::move(client_socket)); //继续接受数据
+        if(len > 0)
+        {
+          std::cout << "收到来自 " << client_socket->remote_endpoint() << " 的数据长度为 : " << len 
+          << " 数据 : " << _data->substr(0,len) << std::endl;
+          //回复客户端数据
+          response_information(*client_socket,_data->substr(0,len)); //回传数据
+          information_stream(std::move(*client_socket)); //继续接受数据
+        }
+        // std::cout << "收到来自 " << client_socket->remote_endpoint() << " 的数据长度为 : " << len 
+        // << " 数据 : " << _data->substr(0,len) << std::endl;
+        // //回复客户端数据
+        // response_information(*client_socket,_data->substr(0,len)); //回传数据
+        // information_stream(std::move(*client_socket)); //继续接受数据
       }
     }; //异步执行
-    socket.async_read_some(boost::asio::buffer(data),process_stream);
+    client_socket->async_read_some(boost::asio::buffer(*_data),process_stream);
   }
   public:
   server(boost::asio::io_context& context,uint16_t port)

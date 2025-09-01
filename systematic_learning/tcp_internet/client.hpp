@@ -13,7 +13,7 @@ public:
   :_socket(io_context),_acceptor(tcp::endpoint(make_address(string_ip),port))
   {
     std::cout << "连接到的服务器端口号是：" << port << std::endl;
-    _data.reserve(1024);
+    _data.resize(1024);
   }
   void start()
   { 
@@ -21,7 +21,7 @@ public:
     {
       if(!ec)
       {
-        std::cout << "连接成功, 服务器地址" << _acceptor.address().to_string() << _acceptor.port() << std::endl;
+        std::cout << "连接成功, 服务器地址" << _acceptor.address().to_string() << " " << _acceptor.port() << std::endl;
         start_receive();
       }
       else
@@ -33,7 +33,7 @@ public:
   }
   void send_data(const std::string& message)
   { //外部处理发送数据
-    if(_socket.is_open())
+    if(!_socket.is_open()) //判断是否连接
     {
       std::cerr << "连接已关闭，无法发送" << std::endl;
       return;
