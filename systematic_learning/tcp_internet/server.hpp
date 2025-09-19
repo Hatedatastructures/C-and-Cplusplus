@@ -1,14 +1,58 @@
-#include "boost/asio.hpp"
-#include "Thread_pool.hpp"
+#include <boost/asio.hpp>
+#include "module/Thread_pool.hpp"
+#include <boost/beast/http.hpp>
 #include <iostream>
+#include <fstream>
+#include <ostream>
+#include <istream>
+
 using namespace boost::asio::ip;
+
+class html_data
+{
+  std::ifstream _html_stream; //html文件流
+public:
+  std::string _html_data; //html数据
+  std::uint64_t _html_size; //html文件大小
+  html_data(const std::string html_data)
+  {
+    _html_stream.open(html_data);
+    if (!_html_stream.is_open()) 
+    {
+      throw std::runtime_error("Failed to open HTML file: " + html_data);
+    }
+  }
+  bool read()
+  {
+    _html_stream.seekg(0, std::ios::end);
+    size_t size = _html_stream.tellg();
+    _html_stream.seekg(0, std::ios::beg);
+    
+    // 调整字符串大小并读取
+    _html_data.resize(size);
+    _html_stream.read(&_html_data[0], size);
+    
+    return _html_stream.gcount() > 0;
+  }
+  ~html_data()
+  {
+    _html_stream.close();
+  }
+};
 class server
 {
-  con::thread_pool _thread; // 动态线程池
+  std::unique_ptr<pool::thread_pool> _thread; // 动态线程池
   tcp::acceptor _acceptor;  //tcp接收器
+  std::string _html; //html数据
   void response_information(tcp::socket& socket,const std::string temp_data)
   {
-    std::string response_data = "服务器收到数据 : " + temp_data;
+    // std::string response_data = "服务器收到数据 : " + temp_data;
+    (void)(temp_data);
+    std::string http_header = "HTTP/1.1 200 OK\r\n";
+    http_header += "Content-Type: text/html; charset=utf-8\r\n";  // 声明内容为HTML
+    http_header += "Content-Length: " + std::to_string(_html.size()) + "\r\n";  // 内容长度
+    http_header += "\r\n";  // 空行分隔头和体
+    std::string response_data = http_header + _html;
     auto response_func = [this](boost::system::error_code s,uint64_t len)
     {
       if(s)
@@ -46,8 +90,15 @@ class server
   }
   public:
   server(boost::asio::io_context& context,uint16_t port)
-  :_thread(10,2ULL),_acceptor(context,tcp::endpoint(tcp::v4(),port))
+  :_acceptor(context,tcp::endpoint(tcp::v4(),port))
   {
+    _thread = con::make_lightweight_pool(10);
+    _thread->start();
+    html_data html_data(std::string("Foundation.html"));
+    if(html_data.read())
+    {
+      _html = html_data._html_data;
+    }
     std::cout << "当前tcp服务器端口号是 : " << port << std::endl;
   }
   void accptor()
@@ -67,7 +118,7 @@ class server
       {
         information_stream(std::move(*socket_ptr));
       };
-      _thread.submit(task); //调用线程池来执行任务
+      _thread->submit(task); //调用线程池来执行任务
     }
     else
     {

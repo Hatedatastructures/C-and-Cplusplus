@@ -13,5 +13,11 @@ int main()
   {
     std::cerr << "服务器异常: "<< e.what() << '\n';
   }
+  // {
+
+  //   html_data html (std::string("Foundation.html"));
+  //   html.read();
+  //   std::cout << html._html_data << std::endl;
+  // }
   return 0;
 }
