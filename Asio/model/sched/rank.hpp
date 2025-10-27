@@ -1018,16 +1018,3 @@ namespace internals::structure_r
     }
   }
 }
-namespace pool 
-{
-  using internals::structure_r::make_rank;
-
-  using internals::structure_r::make_rank_standard;
-  using internals::structure_r::make_rank_priority;
-  using internals::structure_r::make_rank_deferred;
-
-  using internals::structure_r::rank_ordinary;
-  using internals::structure_r::rank_priority;
-  using internals::structure_r::rank_deferred;
-  using internals::structure_r::rank_standard;
-}

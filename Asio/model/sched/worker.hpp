@@ -390,13 +390,3 @@ class worker_ordinary
     return std::make_unique<worker_ordinary>(worker_name, std::move(worker_rank));
   }
 }
-
-namespace pool 
-{
-  using internals::structure_w::worker_adaptive;
-  using internals::structure_w::worker_ordinary;
-
-  using internals::structure_w::make_worker_adaptive;
-  using internals::structure_w::make_worker_ordinary;
-
-}

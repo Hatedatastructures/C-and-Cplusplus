@@ -425,8 +425,3 @@ namespace internals::structure_s
     return std::make_unique<scheduler_ordinary>(std::move(rank),policy,expansion_strategy);
   }
 }
-namespace pool 
-{
-  using internals::structure_s::scheduler_ordinary;
-  using internals::structure_s::make_scheduler_ordinary;
-}

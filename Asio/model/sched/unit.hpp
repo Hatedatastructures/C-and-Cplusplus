@@ -882,16 +882,3 @@ namespace internals
     }
   }
 }
-
-namespace pool 
-{
-  using internals::structure_u::unit_ordinary;
-  using internals::structure_u::unit_standard;
-  using internals::structure_u::unit_overtime;
-  using internals::structure_u::unit_reliance;
-
-  using internals::structure_u::make_unit_ordinary;
-  using internals::structure_u::make_unit_standard;
-  using internals::structure_u::make_unit_overtime;
-  using internals::structure_u::make_unit_reliance;
-}

@@ -41,6 +41,7 @@ task func()
   co_await std::suspend_always{}; // 挂起协程
   std::cout << std::string("2") << std::endl;
 }
+
 int main()
 {
   task value = func(); // 获取协程句柄
