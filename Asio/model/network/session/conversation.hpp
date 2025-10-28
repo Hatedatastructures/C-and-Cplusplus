@@ -260,13 +260,29 @@ namespace conversation
       if(!_running.load())
       {
         _running.store(true);
-        if(_start_thread_pool())
+        // 如果线程池未运行则尝试启动；已经运行也视为成功
+        if(!_thread_pool_running.load())
         {
-          _start_cleanup_timer();
-          return true;
+          // 若此前尚未创建或已停止，尝试初始化/启动
+          if(!_thread_pool)
+          {
+            if(!_initialize_thread_pool())
+            {
+              _running.store(false);
+              return false;
+            }
+          }
+          else if(!_start_thread_pool())
+          {
+            _running.store(false);
+            return false;
+          }
         }
+        _start_cleanup_timer();
+        return true;
       }
-      return false;
+      // 已在运行，视为成功
+      return true;
     }
     /**
      * @brief 停止会话管理

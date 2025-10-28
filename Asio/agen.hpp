@@ -20,20 +20,23 @@ private:
   std::shared_ptr<business::transponder<>> transponder; // 转发器
   std::shared_ptr<boost::asio::ip::tcp::acceptor> acceptor; // 监听器
   std::shared_ptr<session::session_management<http::request<>,http::response<>>> session_management; // 会话管理器
-public: 
-  agent_service(boost::asio::io_context &io_context,std::shared_ptr<pool::thread_pool> stream_pool)
-   :thread_pool(stream_pool), transponder(std::make_shared<business::transponder<>>(io_context)),
-   acceptor(std::make_shared<boost::asio::ip::tcp::acceptor>(io_context, 
-    boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), 0))),
-    session_management(std::make_shared<session::session_management<http::request<>,http::response<>>>(io_context)) 
+public:
+  // 构造时仅创建对象，不主动打开/绑定监听器，避免重复 open 导致的异常
+  agent_service(boost::asio::io_context &io_context, std::shared_ptr<pool::thread_pool> stream_pool)
+    : thread_pool(stream_pool),
+      transponder(std::make_shared<business::transponder<>>(io_context)),
+      acceptor(std::make_shared<boost::asio::ip::tcp::acceptor>(io_context)),
+      session_management(std::make_shared<session::session_management<http::request<>, http::response<>>>(io_context))
   {}
-  
-  agent_service(boost::asio::io_context &io_context, std::uint16_t port )
-   :transponder(std::make_shared<business::transponder<>>(io_context)),
-   acceptor(std::make_shared<boost::asio::ip::tcp::acceptor>(io_context, 
-    boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), port))),
-   session_management(std::make_shared<session::session_management<http::request<>,http::response<>>>(io_context)) 
-   {acceptor->listen();}
+
+  // 提供带端口的构造重载，内部调用 bind_port 做安全绑定
+  agent_service(boost::asio::io_context &io_context, std::uint16_t port)
+    : transponder(std::make_shared<business::transponder<>>(io_context)),
+      acceptor(std::make_shared<boost::asio::ip::tcp::acceptor>(io_context)),
+      session_management(std::make_shared<session::session_management<http::request<>, http::response<>>>(io_context))
+  {
+    bind_port(port);
+  }
 
   /**
    * @brief 增加上游代理端点
@@ -47,11 +50,24 @@ public:
    * @brief 绑定监听端口并进入监听状态
    * @param port 监听端口
    */
-  void bind_port(std::uint16_t port)
+  bool bind_port(std::uint16_t port)
   {
-    acceptor->open(boost::asio::ip::tcp::v4());
-    acceptor->bind(boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), port));
-    acceptor->listen(); // 进入监听状态
+    boost::system::error_code ec;
+    if (acceptor->is_open())
+      acceptor->close(ec); // 重新绑定前确保关闭
+
+    acceptor->open(boost::asio::ip::tcp::v4(), ec);
+    if (ec) return false;
+
+    // 复用地址，避免 TIME_WAIT 等导致的 bind 失败
+    acceptor->set_option(boost::asio::socket_base::reuse_address(true), ec);
+    if (ec) return false;
+
+    acceptor->bind(boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), port), ec);
+    if (ec) return false;
+
+    acceptor->listen(boost::asio::socket_base::max_listen_connections, ec);
+    return !ec;
   }
 
   auto transponder_ptr()
@@ -85,7 +101,14 @@ public:
   void CA_path(std::string path)
   {
     transponder->set_ssl_ca_file(path);
-    transponder->set_ssl_insecure_skip_verify(true);
+    // 默认启用证书校验以避免中间人攻击；如需跳过校验，提供专门的接口。
+    transponder->set_ssl_insecure_skip_verify(false);
+  }
+
+  // 可选：显式设置是否跳过证书校验（谨慎使用）
+  void set_insecure_skip_verify(bool enable)
+  {
+    transponder->set_ssl_insecure_skip_verify(enable);
   }
 
   void set_reception_processing(std::function<void(session_ptr, std::string_view)> processing)
@@ -98,12 +121,31 @@ public:
    */
   bool start()
   {
-    if(thread_pool && thread_pool->start() && session_management && session_management->start())
+    if (!(acceptor && acceptor->is_open()))
+      return false; // 未绑定端口
+
+    if (thread_pool && session_management)
     {
-      enter_monitoring();
-      return true;
+      const bool pool_ok = (thread_pool->is_running() || thread_pool->start());
+      const bool sm_ok   = session_management->start();
+      if (pool_ok && sm_ok)
+      {
+        enter_monitoring();
+        return true;
+      }
     }
     return false;
+  }
+
+  void stop()
+  {
+    boost::system::error_code ec;
+    if (acceptor && acceptor->is_open())
+      acceptor->close(ec);
+    if (session_management)
+      session_management->stop();
+    if (thread_pool)
+      thread_pool->stop();
   }
 
   void enter_monitoring()
@@ -133,12 +175,16 @@ public:
         std::cerr << "accept error: " << ec.message() << std::endl; // 监听错误
       enter_monitoring();
     };
-    acceptor->async_accept(std::move(monitoring_function));
+    if (acceptor && acceptor->is_open())
+      acceptor->async_accept(std::move(monitoring_function));
   }
   void forward_processing(boost::asio::ip::tcp::socket&& socket)
   {
     auto pair = session_management->create_server_session(std::move(socket));
-    pair.second->set_reception_processing(reception_processing);
+    if (!pair.second)
+      return; // 创建会话失败
+    if (reception_processing)
+      pair.second->set_reception_processing(reception_processing);
     pair.second->start();
   }
 };
