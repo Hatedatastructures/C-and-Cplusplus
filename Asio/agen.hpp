@@ -105,7 +105,6 @@ public:
     transponder->set_ssl_insecure_skip_verify(false);
   }
 
-  // 可选：显式设置是否跳过证书校验（谨慎使用）
   void set_insecure_skip_verify(bool enable)
   {
     transponder->set_ssl_insecure_skip_verify(enable);
@@ -156,7 +155,7 @@ public:
       {
         boost::system::error_code re_ec;
         auto ep = socket.remote_endpoint(re_ec); // 获取客户端 ip 地址 信息
-        if(!re_ec)
+        if(!re_ec) // 输出日志
           std::cout << std::format("[{:%Y-%m-%d %H:%M:%S}] [conversationss : {}] Accepted connection from: {}:{}\n",
           std::chrono::system_clock::now(),session_management->get_session_count(), ep.address().to_string(), ep.port());
         else
@@ -164,12 +163,12 @@ public:
             std::chrono::system_clock::now(), session_management->get_session_count());
         // 捕获到共享指针，保证任务可复制以适配 std::function 存储
         auto self = this->shared_from_this();
-        auto sock_ptr = std::make_shared<boost::asio::ip::tcp::socket>(std::move(socket));
-        auto task = [self, sock_ptr]() mutable 
+        auto socket_ptr = std::make_shared<boost::asio::ip::tcp::socket>(std::move(socket));
+        auto task = [self, socket_ptr]() mutable 
         {
-          self->forward_processing(std::move(*sock_ptr));
+          self->forward_processing(std::move(*socket_ptr));
         };
-        thread_pool->submit(std::move(task)); // 直接提交可调用对象，无额外形参
+        thread_pool->submit(std::move(task)); // 直接提交可调用对象，防止形参无法进行资源移动
       }
       else
         std::cerr << "accept error: " << ec.message() << std::endl; // 监听错误
