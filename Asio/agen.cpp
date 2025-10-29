@@ -83,18 +83,71 @@ int main()
     // session->async_send_response(*cached_response,log_function);
 
     http::request<boost::beast::http::string_body> req;
-    req.from_string(data);
-    req.base().set(http::field::host, "www.baidu.com");
-    auto req_value = agent->transponder_ptr()->forward_async((std::move(req)));
-    if(!req_value.valid())
+    if(!req.from_string(data))
     {
-      std::cerr << std::format("forward_async failed") << std::endl;
+      std::cerr << std::format("from_string failed: {}", data) << std::endl;
       return;
     }
-    session->async_send_response(req_value.get());
-    // std::cout << std::format("{} \n {}", std::string("转发成功"),req_value.get().to_string()) << std::endl;
-    std::cout << std::format("{}", std::string("转发成功")) << std::endl;
-    // std::cout << std::format("{} \n {}", std::string("转发成功"),req.to_string()) << std::endl;
+    req.base().set(http::field::host, "www.baidu.com");
+
+    auto forward_function = [agent, session, req = std::move(req)]() mutable 
+    {
+      try
+      {
+        // 响应过滤器：拦截 3xx 重定向并改写 Location 到本机 6779 端口
+        auto response_filter = [](http::response<boost::beast::http::string_body>& resp)
+        {
+          namespace http_ns = boost::beast::http;
+          auto status = resp.base().result();
+          bool is_redirect =
+            status == http_ns::status::moved_permanently ||
+            status == http_ns::status::found ||
+            status == http_ns::status::see_other ||
+            status == http_ns::status::temporary_redirect ||
+            status == http_ns::status::permanent_redirect;
+          if (!is_redirect)
+            return;
+
+          auto it = resp.base().find(http_ns::field::location);
+          if (it == resp.base().end())
+            return;
+
+          std::string loc = std::string(it->value());
+          const std::string proxy_host = "localhost";
+          const std::uint16_t proxy_port = 6779;
+
+          auto scheme_pos = loc.find("://");
+          if (scheme_pos != std::string::npos)
+          {
+            auto path_pos = loc.find('/', scheme_pos + 3);
+            std::string path = path_pos != std::string::npos ? loc.substr(path_pos) : std::string("/");
+            loc = std::string("http://") + proxy_host + ":" + std::to_string(proxy_port) + path;
+          }
+          else
+          {
+            if (!loc.empty() && loc.front() == '/')
+              loc = std::string("http://") + proxy_host + ":" + std::to_string(proxy_port) + loc;
+            else
+              loc = std::string("http://") + proxy_host + ":" + std::to_string(proxy_port) + "/" + loc;
+          }
+
+          resp.base().set(http_ns::field::location, loc);
+          resp.base().set(http_ns::field::connection, "keep-alive");
+        };
+
+        auto fut = agent->transponder_ptr()->forward_async(std::move(req), {}, response_filter);
+        auto res = fut.get(); // 完整解包需要 Brotli 算法
+        std::cout << std::format("{}", res.to_string()) << std::endl;
+        session->async_send_response(res);
+        std::cout << std::format("{}", std::string("转发成功")) << std::endl;
+      }
+      catch(const std::exception& e)
+      {
+        std::cerr << std::format("forward_async task error: {}", e.what()) << std::endl;
+        session->close();
+      }
+    };
+    agent->execution_stream()->submit(forward_function);
   };
   agent->set_reception_processing(reception_processing);
   // 启动服务器并运行 IO 事件循环
@@ -103,6 +156,7 @@ int main()
     std::cerr << std::format("agent start failed (acceptor not open or worker start failure)") << std::endl;
     return 1;
   }
-  io_context.run();
+  std::jthread run([&io_context](){io_context.run();});
   return 0;
 }
+// 问题 ：转发中会出现超时

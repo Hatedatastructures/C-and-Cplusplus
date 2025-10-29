@@ -472,7 +472,7 @@ namespace represents
 
       request sending = req;
       if (sending.base().find(http::field::connection) == sending.base().end())
-        sending.base().set(http::field::connection, "close");
+        sending.base().set(http::field::connection, "keep-alive");
       sp->set_reception_processing(response_value);
       sp->start(); // 启动读取循环
       boost::system::error_code ec = sp->send_request(sending);
