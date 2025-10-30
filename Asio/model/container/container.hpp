@@ -17,5 +17,9 @@
 
 namespace wan
 {
+  /**
+   * @brief 容器模块
+   * @note 提供标准容器的模拟实现
+   */
   namespace scl = standard_con;
 }

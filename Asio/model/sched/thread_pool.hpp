@@ -1647,7 +1647,10 @@ namespace internals::structure_t
 
 namespace wan
 {
-
+  /**
+   * @brief 线程池模块
+   * @note 提供线程池的创建、管理、监控等功能
+   */
   namespace pool
   {
     using internals::structure_t::make_thread_pool;

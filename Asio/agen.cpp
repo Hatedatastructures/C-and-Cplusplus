@@ -7,6 +7,8 @@
 
 static const std::string html_path = {"C:\\Users\\C1373\\Desktop\\thread_pool.html"};
 
+// bug 多次重定向
+
 int main()
 {
   boost::asio::io_context io_context;

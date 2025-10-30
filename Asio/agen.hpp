@@ -6,7 +6,8 @@
 #include <string>
 #include <iostream>
 
-using namespace wan;
+using namespace wan; 
+using namespace wan::network;
 
 class agent_service : public std::enable_shared_from_this<agent_service>
 {

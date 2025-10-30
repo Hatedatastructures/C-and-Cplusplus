@@ -23,9 +23,9 @@
 namespace wan
 {
   /**
- * @namespace thread_pool::concurrent_containers
+ * @namespace 
  * 
- * @brief 线程安全并发容器命名空间
+ * @brief 线程安全容器
  * 
  * 该命名空间包含一系列线程安全的并发容器实现，基于`C++`标准库容器封装，提供多生产者-多消费者场景下的安全访问接口
  * 
