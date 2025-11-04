@@ -1,4 +1,4 @@
-#include "model/network/network.hpp"
+#include "../model/network/network.hpp"
 
 #include <iostream>
 #include <string>
@@ -9,7 +9,7 @@
 #include <boost/asio.hpp>
 
 using namespace wan::network;
-const std::string html_path = "C:\\Users\\C1373\\Desktop\\thread_pool.html";
+const std::string html_path = "index.html";
 /**
  * @brief 简单的http静态网页服务器
  */
@@ -52,6 +52,10 @@ private:
 						  std::cout << std::format("{} session id :{} send response error: {}",print(),
 							sess_ptr->get_session_id(),ec.message()) << std::endl;
 					};
+					// 构建请求
+          auto request = http::request<>{};
+          request.from_string(data);
+
 					auto response = http::response<>{};
 					response.result(boost::beast::http::status::ok);
 					response.base().set(http::field::content_type, "text/html");
