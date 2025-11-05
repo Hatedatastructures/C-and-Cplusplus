@@ -12,4 +12,5 @@ build/output/
 /httpRequests/
 # Datasource local storage ignored files
 /dataSources/
-/dataSources.local.xml
+/dataSources.local.
+*.mod
