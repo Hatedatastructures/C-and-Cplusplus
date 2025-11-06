@@ -18,6 +18,7 @@ int main()
     std::cout << std::format("{}", str) << std::endl; // 基于范围的打印，迭代器思维
     std::cout << std::format("{}", s) << std::endl;
     std::cout << std::format("{}", std::next(umap.begin())->second) << std::endl;
+    std::cout << std::format("{}", std::next(umap.begin(), 2)->second) << std::endl;
   }
   return 0;
 }

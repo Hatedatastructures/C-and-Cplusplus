@@ -46,4 +46,14 @@ func main() {
 		fmt.Println(t.Month())
 		fmt.Println(t)
 	}
+	{
+		const (
+			n1 int = iota
+			n2
+			n3
+		)
+		fmt.Println(n1, n2, n3)
+	}
+	const name string = "hello world"
+	fmt.Println(name)
 }
