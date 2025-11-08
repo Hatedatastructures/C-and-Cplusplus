@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"math"
+	"strconv"
 	"strings"
 	"time"
 	"unsafe"
@@ -96,10 +97,20 @@ func main() {
 			string_arr := strings.Split(str, "1")
 			fmt.Print("源字符串：", str, "分割完成->")
 			fmt.Print(string_arr)
+			// 字符串拼接
 			fmt.Print("Join 函数操作：\n")
 			value := strings.Join(string_arr, "->")
 			fmt.Print("Join 函数操作结果：", value, "\n")
+			// 检查字符串包含  Contains 函数 调用
+			test_str1 := "hello world"
+			test_str2 := "hello"
+			if strings.Contains(test_str1, test_str2) {
+				fmt.Print("找到了，里面包含", test_str2, "字符串")
+			} else {
+				fmt.Print("没有找到，里面不包含", test_str2, "字符串")
+			}
 		}
+		fmt.Println("")
 		{
 			// 切片定义
 			arr := []string{"C++", "Java", "Go", "Python", "JavaScript"}
@@ -107,6 +118,85 @@ func main() {
 			// 和strings包联动
 			value := strings.Join(arr, "-")
 			fmt.Println("Join 函数操作结果：", value, "value长度大小:", len(value))
+		}
+		{
+			string_t := "192.168.127.1"
+			print(string_t) // go 内置函数
+		}
+		{
+			fmt.Println("\n字符串转切片")
+			chin_string := "你好"
+			str := []rune(chin_string)
+			fmt.Printf("%s", string(str))
+		}
+		{
+			fmt.Println()
+			value, _ := strconv.ParseInt("123", 10, 64) // 字符串转int
+			test_value := 123
+			fmt.Println("数字转换为字符串：", strconv.FormatInt(int64(test_value), 10))
+			fmt.Println("value = ", value)
+		}
+		{
+			number := 1234
+			number++ // ++ 只能单独使用
+			fmt.Println(number)
+			// fmt.Println(number--) // 错误
+		}
+		{
+			// 循环
+			var sum uint64 = 0
+			j := uint64(1000000000)
+			for i := uint64(0); i <= j; i++ {
+				sum += i
+			}
+			fmt.Println(j, "连续相加结果：", sum)
+		}
+		{
+			name_test := "这是个中文字符串,hello,world"
+			for k, value := range name_test {
+				fmt.Printf("字符位置：%d,字符值：%c\n", k, value)
+			}
+		}
+		{
+			// switch
+			switch string_test {
+			case "nihao":
+				fmt.Println("nihao world")
+				fmt.Println("nihao world")
+				fallthrough // case 穿透 能继续执行 并且只能穿透一层
+			case "hello":
+				fmt.Println("hello world")
+			default:
+				fmt.Println("default")
+			}
+		}
+		{
+			// 数组
+			arrtest := [...]string{"hello", "world", "nihao", "hello"}
+			for k, value := range arrtest {
+				fmt.Printf("数组位置：%d,数组值：%s\n", k, value)
+			}
+			for i := 0; i < len(arrtest); i++ {
+				fmt.Println(arrtest[i])
+			}
+		}
+		{
+			// 多维数组
+			arrtest := [...][2]string{
+				{"hello", "world"},
+				{"nihao", "hello"},
+			}
+			// 按数组遍历
+			fmt.Println("按数组遍历")
+			for k, v := range arrtest {
+				fmt.Println("二维数组位置：", k, "二维数组值：", v)
+			}
+			fmt.Println("按值遍历")
+			for k, v := range arrtest {
+				for i, value := range v {
+					fmt.Printf("二维数组位置：%d,%d,二维数组值：%s\n", k, i, value)
+				}
+			}
 		}
 	}
 }
