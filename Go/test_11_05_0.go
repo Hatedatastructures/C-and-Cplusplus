@@ -198,5 +198,41 @@ func main() {
 				}
 			}
 		}
+		{
+			// 切片
+			arrstring := []string{"hello", "world", "nihao", "hello"}
+			test_arr_string := [5]string{"hello", "world", "nihao", "hello", "test"}
+			fmt.Println("切片打印->", arrstring)
+			// 从切片构建切片
+			arr1_string := arrstring[1:3] // 从1开始到3结束 “world" ~ "nihao" 左闭右开
+			fmt.Println("从切片构建的切片打印->", arr1_string)
+			// 从数组构建切片
+			arr2_string := test_arr_string[1:4] // 构建切片，同上
+			fmt.Println("从数组构建切片打印：->", arr2_string)
+		}
+	}
+	{
+		{
+			// 切片的追加
+			var arr []string
+			arr = append(arr, "nihao")
+			fmt.Println("切片扩容：", arr)
+			// 切片和切片的追加
+			arr1 := []string{"hello", "world"}
+			arr = append(arr, arr1...)
+			fmt.Println("切片和切片的追加：", arr)
+		}
+		{
+			// 切片创建和声明
+			arr := make([]string, 8, 18)
+			fmt.Println("切片创建和声明：", arr)
+			// 切片修改
+			fmt.Println("切片修改前：", arr)
+			arr[0] = "nihao"
+			arr[7] = "world"
+			// arr = append(arr, "hello")
+			fmt.Println("切片修改后：", arr)
+
+		}
 	}
 }
