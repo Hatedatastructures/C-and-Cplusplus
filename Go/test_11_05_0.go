@@ -234,5 +234,12 @@ func main() {
 			fmt.Println("切片修改后：", arr)
 
 		}
+		{
+			// 无序 map
+			map_test := map[string]string{"你好": "hello", "世界": "world", "nihao": "hello"}
+			fmt.Println("map_test:", map_test)
+			map_test["nihao"] = "world"
+			fmt.Println("nihao:", map_test["nihao"])
+		}
 	}
 }
