@@ -14,3 +14,4 @@ build/output/
 /dataSources/
 /dataSources.local.
 *.mod
+.trae/

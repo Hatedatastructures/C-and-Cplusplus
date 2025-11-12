@@ -7,6 +7,7 @@ int main()
 {
   boost::asio::io_context io_context;
   server server(io_context,8080);
+  server.set_web_root("./webroot");
   server.start();
   std::jthread thread([&io_context]()
   {
