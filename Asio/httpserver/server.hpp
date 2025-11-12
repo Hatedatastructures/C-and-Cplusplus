@@ -17,22 +17,22 @@ using namespace wan::network;
 
 using request_processing_fn = std::function<http::response<>(const http::request<>&)>;
 
-static constexpr const char *INDEX_HTML_PATH = "./webroot/index.html";
+static const std::string INDEX_HTML_PATH = "index.html";
 
 struct format_time
 {
-  static constexpr std::string format_print()
+  static std::string format_print()
   {
     return std::format("[{:%Y-%m-%d %H:%M:%S}]", std::chrono::system_clock::now());
   }
 
-  static constexpr std::string format_print(const std::string &msg)
+  static std::string format_print(const std::string &msg)
   {
     return std::format("[{:%Y-%m-%d %H:%M:%S}] {}", std::chrono::system_clock::now(), msg);
   }
 
   template <typename... strings>
-  static constexpr std::string format_print(const std::string &msg, strings... args)
+  static std::string format_print(const std::string &msg, strings... args)
   {
     return std::format(format_time::format_print(msg), args...);
   }
@@ -47,7 +47,7 @@ struct format_time
 template <typename... strings>
 std::string format_print(const std::string &msg, strings... args)
 {
-  return std::format(format_time::format_print(msg), args...);
+  return std::vformat(format_time::format_print(msg), std::make_format_args(args...));
 }
 
 struct asset
@@ -190,7 +190,7 @@ private:
   {
     auto target_sv = request.target();
     std::string target{target_sv.data(), target_sv.size()};
-    bool keep = request.keep_alive();
+    // bool keep = request.keep_alive();
 
     if (target == "/api/health")
     {
@@ -218,11 +218,11 @@ private:
           throw std::runtime_error("path out of root");
       }
       if (std::filesystem::exists(full) && std::filesystem::is_regular_file(full))
-        return make_static_response(full.string(), keep);
+        return make_static_response(full.string(), false);
     }
     catch (...)
     {
-      return make_404_response(keep);
+      return make_404_response(false);
     }
 
     return make_404_response(false);
@@ -282,9 +282,9 @@ private:
           auto call = [&, sess_ptr = ptr](boost::system::error_code ec)
           {
             if (!ec)
-              std::cout << format_print(" send response success :{},{}", sess_ptr->get_session_id(), ec.message()) << std::endl;
+              std::cout << format_print("send response success :{}", sess_ptr->get_session_id()) << std::endl;
             else
-              std::cout << format_print(" send response error :{},{}", sess_ptr->get_session_id(), ec.message()) << std::endl;
+              std::cout << format_print("send response error :{},{}", sess_ptr->get_session_id(), ec.message()) << std::endl;
           };  // end Lambda call
 
           // 解析请求
@@ -300,6 +300,7 @@ private:
           try
           {
             http::response<> res = default_handle_request(request);
+            std::cout << format_print("request success,from ip:{},port:{}",ptr->get_remote_address(),ptr->get_remote_port()) << std::endl;
             ptr->async_send_response(res, call);
           }
           catch (const std::exception &e)
@@ -314,7 +315,7 @@ private:
         std::cout << format_print("connection successful,from ip {},port:{}",
               socket.remote_endpoint().address().to_string(), socket.remote_endpoint().port()) << std::endl;
         auto value = session_management.create_server_session(std::move(socket));
-        std::cout << format_print("{} create session success,id:{} ", socket.remote_endpoint().address().to_string(), 
+        std::cout << format_print("{} create session success,id:{} ", value.second->get_remote_address(), 
               value.first) << std::endl;
 
         value.second->set_reception_processing(func);

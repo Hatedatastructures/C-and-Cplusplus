@@ -2,12 +2,13 @@
 
 #include <iostream>
 #include <thread>
+#include <filesystem>
 
 int main()
 {
   boost::asio::io_context io_context;
   server server(io_context,8080);
-  server.set_web_root("./webroot");
+  server.set_web_root((std::filesystem::path(__FILE__).parent_path() / "webroot").string());
   server.start();
   std::jthread thread([&io_context]()
   {

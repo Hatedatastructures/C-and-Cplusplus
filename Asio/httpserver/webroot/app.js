@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const music = document.getElementById('bgMusic');
 
   const messages = [
-    '图图真棒', '图图真乖', '你超棒的', '图图加油！', '图图今天也要开心', '图图记得锻炼', '图图不要熬夜', '早点休息', '图图帮我肝原神', '保持热爱'
+    '自己是最棒的', '好好努力', '你超棒的', '加油！', '今天也要开心', '记得锻炼', '不要熬夜', '早点休息', '天天开心', '保持热爱'
   ];
   const themes = [
     'theme-blue', 'theme-green', 'theme-orange', 'theme-purple', 'theme-pink', 'theme-yellow', 'theme-cyan', 'theme-lime', 'theme-red', 'theme-teal', 'theme-indigo', 'theme-amber', 'theme-rose', 'theme-mint', 'theme-peach', 'theme-lavender', 'theme-coral', 'theme-sky', 'theme-lemon'
