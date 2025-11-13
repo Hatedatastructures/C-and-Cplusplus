@@ -11,6 +11,7 @@
 #include <optional>
 #include <unordered_map>
 #include <boost/asio.hpp>
+#include <atomic>
 
 
 using namespace wan::network;
@@ -108,6 +109,7 @@ class server
   boost::asio::ip::tcp::endpoint endpoint;                                           // tcp端点
   boost::asio::ip::tcp::acceptor acceptor;                                           // tcp监听器
   session::session_management<http::request<>, http::response<>> session_management; // 会话连接管理
+  std::atomic<bool> server_running{false};
 private:
 
   /**
@@ -190,7 +192,7 @@ private:
   {
     auto target_sv = request.target();
     std::string target{target_sv.data(), target_sv.size()};
-    // bool keep = request.keep_alive();
+    bool keep = request.keep_alive();
 
     if (target == "/api/health")
     {
@@ -218,7 +220,7 @@ private:
           throw std::runtime_error("path out of root");
       }
       if (std::filesystem::exists(full) && std::filesystem::is_regular_file(full))
-        return make_static_response(full.string(), false);
+        return make_static_response(full.string(),keep);
     }
     catch (...)
     {
@@ -262,11 +264,22 @@ private:
     return notf;
   }
 
+  static void log_send_result(const std::shared_ptr<session::session<http::request<>, http::response<>>>& sess_ptr,
+    const boost::system::error_code& ec)
+  {
+    if (!ec)
+      std::cout << format_print("send response success :{}", sess_ptr->get_session_id()) << std::endl;
+    else
+      std::cout << format_print("send response error :{},{}", sess_ptr->get_session_id(), ec.message()) << std::endl;
+  }
+
   /**
    * @brief 接受新的tcp连接并处理请求响应数据
    */
   void socket_accept()
   {
+    if (!server_running.load() || !acceptor.is_open())
+      return;
     // 处理新连接
     auto handle_function = [&](boost::system::error_code ec, boost::asio::ip::tcp::socket socket)
     {
@@ -275,16 +288,13 @@ private:
         using session_ptr = std::shared_ptr<session::session<http::request<>, http::response<>>>;
 
         // 接受数据的处理
-        auto func = [&](session_ptr ptr, std::string_view data)
+        auto func = [this](session_ptr ptr, std::string_view data)
         {
 
           // 处理响应发送回调
-          auto call = [&, sess_ptr = ptr](boost::system::error_code ec)
+          auto call = [sess_ptr = ptr](boost::system::error_code ec)
           {
-            if (!ec)
-              std::cout << format_print("send response success :{}", sess_ptr->get_session_id()) << std::endl;
-            else
-              std::cout << format_print("send response error :{},{}", sess_ptr->get_session_id(), ec.message()) << std::endl;
+            server::log_send_result(sess_ptr, ec);
           };  // end Lambda call
 
           // 解析请求
@@ -293,7 +303,12 @@ private:
           {
             http::response<> bad = make_404_response(false);
             std::cout << format_print(" parsing failed ip:{},port:{}",ptr->get_remote_address(),ptr->get_remote_port()) << std::endl;
-            ptr->async_send_response(bad, call);
+            auto send_and_close = [sess_ptr = ptr](boost::system::error_code ec)
+            {
+              server::log_send_result(sess_ptr, ec);
+              sess_ptr->close();
+            };
+            ptr->async_send_response(bad, send_and_close);
             return;
           }
 
@@ -307,8 +322,13 @@ private:
           {
             http::response<> err = make_500_response(false);
             std::cout << format_print(" server error :{},{}",ptr->get_session_id(),e.what()) << std::endl;
-            ptr->async_send_response(err, call);
-          }
+            auto send_and_close = [sess_ptr = ptr](boost::system::error_code ec)
+            {
+              server::log_send_result(sess_ptr, ec);
+              sess_ptr->close();
+            };
+            ptr->async_send_response(err, send_and_close); 
+          } // end try
 
         }; // end Lambda func
 
@@ -322,8 +342,11 @@ private:
         value.second->start();
       }
       else
-        std::cout << format_print("{} accept error:{} \n", socket.remote_endpoint().address().to_string(), ec.message()) << std::endl;
-      socket_accept();
+      {
+        std::cout << format_print("accept error:{}", ec.message()) << std::endl;
+      }
+      if (server_running.load() && acceptor.is_open())
+        socket_accept();
     }; // end Lambda handle_function
     acceptor.async_accept(handle_function);
   }
@@ -349,6 +372,7 @@ public:
 
   void start()
   {
+    server_running.store(true);
     acceptor.open(endpoint.protocol());
     acceptor.bind(endpoint);
     acceptor.listen(boost::asio::socket_base::max_listen_connections);
@@ -358,7 +382,16 @@ public:
 
   ~server()
   {
-    acceptor.close();
+    stop();
+  }
+
+  void stop()
+  {
+    server_running.store(false);
+    boost::system::error_code ec;
+    acceptor.cancel(ec); // 取消当前正在进行的接受操作
+    acceptor.close(ec);
+    session_management.stop();
   }
 
 }; // end class server
