@@ -35,27 +35,19 @@
 //	}
 package main
 
-import (
-	"c_and_cplusplus/Go/lib"
-	"c_and_cplusplus/Go/lib/stringt"
-	"c_and_cplusplus/Go/lib/vector"
-	"fmt"
-	"time"
-)
+// func test_func(val int) {
+// 	fmt.Println("test func", val)
+// 	// time.Sleep(time.Millisecond * 100)
+// 	// fmt.Println("test func", val)
+// }
+// func main() {
 
-func test_func(val int) {
-	fmt.Println("test func", val)
-	// time.Sleep(time.Millisecond * 100)
-	// fmt.Println("test func", val)
-}
-func main() {
+// 	for i := range 1000000 {
+// 		go test_func(i)
+// 	}
+// 	time.Sleep(time.Second * 10)
+// 	lib.Lib()
+// 	stringt.Stringcount()
+// 	vector.Vector()
 
-	for i := range 1000000 {
-		go test_func(i)
-	}
-	time.Sleep(time.Second * 10)
-	lib.Lib()
-	stringt.Stringcount()
-	vector.Vector()
-
-}
+// }
