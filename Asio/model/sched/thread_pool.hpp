@@ -508,7 +508,7 @@ namespace internals::structure_t
           }
       );
 
-      auto future = std::move(execution_unit->get_future());
+      auto future = execution_unit->get_future();
 
       // 提交延迟任务到调度器
       if (!submit_unit_internal(execution_unit))

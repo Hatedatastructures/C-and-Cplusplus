@@ -419,12 +419,12 @@ namespace internals
         return false;
       }
 
-      constexpr bool operator<(const unit_ordinary& other) const noexcept
+      bool operator<(const unit_ordinary& other) const noexcept
       {
         return this->get_priority() < other.get_priority();
       }
 
-      constexpr bool operator>(const unit_ordinary& other) const noexcept
+      bool operator>(const unit_ordinary& other) const noexcept
       {
         return this->get_priority() > other.get_priority();
       }
@@ -536,7 +536,7 @@ namespace internals
         {
           if constexpr (std::is_void_v<result>)
           {
-            _future.get();
+            _future.get(); 
             return derivation();
           }
           else
@@ -553,6 +553,20 @@ namespace internals
         {
           throw execution_exception("获取任务结果失败: 未知错误", get_identifier());
         }
+      }
+
+      bool cancel() override
+      {
+        current_status expected = current_status::pending;
+        if (_state.compare_exchange_strong(expected, current_status::cancelled, std::memory_order_acq_rel))
+        {
+          try { _promise.set_exception(std::make_exception_ptr(execution_exception("任务已取消", get_identifier()))); } catch (...) {}
+          _ready_state.store(true, std::memory_order_release);
+          std::lock_guard<std::mutex> lock(_state_mutex);
+          _state_cv.notify_all();
+          return true;
+        }
+        return false;
       }
     };
 
@@ -589,6 +603,8 @@ namespace internals
       {
         if(unit_ordinary::mark_timeout())
         {
+          try { this->_promise.set_exception(std::make_exception_ptr(execution_exception("任务执行超时", this->get_identifier()))); } catch (...) {}
+          this->_ready_state.store(true, std::memory_order_release);
           handle_timeout();
           return true;
         }

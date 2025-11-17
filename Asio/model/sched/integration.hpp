@@ -7,6 +7,7 @@
 #include <chrono>
 #include <atomic>
 #include <string>
+#include <algorithm>
 /**
  * @brief #### 时间转换工具类
  */
@@ -545,6 +546,8 @@ public:
 
   std::atomic<std::size_t> queue_length{0};          // 队列长度
   std::atomic<std::size_t> active_threads{0};        // 活跃线程数
+  std::atomic<std::size_t> total_threads{0};         // 总线程数
+  std::atomic<std::size_t> queue_capacity{0};        // 队列容量（支持动态调整）
 
   std::chrono::steady_clock::time_point last_update; // 最后更新时间
 
@@ -560,6 +563,8 @@ public:
 
     queue_length.store(0, std::memory_order_relaxed);
     active_threads.store(0, std::memory_order_relaxed);
+    total_threads.store(0, std::memory_order_relaxed);
+    queue_capacity.store(0, std::memory_order_relaxed);
 
     last_update = std::chrono::steady_clock::now();
   }
@@ -570,12 +575,21 @@ public:
    */
   double calculate_load_score() const
   {
-    auto cpu = cpu_utilization.load(std::memory_order_relaxed);
-    auto memory = memory_usage.load(std::memory_order_relaxed);
-    auto queue_factor = std::min(queue_length.load(std::memory_order_relaxed) / 100.0, 1.0);
+    // 使用线程利用率与队列使用率作为主要负载信号，适配动态队列容量
+    auto qlen = queue_length.load(std::memory_order_relaxed);
+    auto qcap = queue_capacity.load(std::memory_order_relaxed);
+    auto act  = active_threads.load(std::memory_order_relaxed);
+    auto tot  = total_threads.load(std::memory_order_relaxed);
 
-    // 加权计算综合负载分数
-    return 0.4 * cpu + 0.3 * memory + 0.3 * queue_factor;
+    if (tot == 0) tot = 1;
+    if (qcap == 0) qcap = std::max<std::size_t>(qlen, 1);
+
+    double utilization_threads = static_cast<double>(act) / static_cast<double>(tot);
+    double utilization_queue   = std::min(static_cast<double>(qlen) / static_cast<double>(qcap), 1.0);
+
+    // 基础负载分数：线程繁忙度与队列占用度各占一半，范围 [0,1]
+    double base_score = 0.5 * utilization_threads + 0.5 * utilization_queue;
+    return std::clamp(base_score, 0.0, 1.0);
   }
 };
 class scaling_config

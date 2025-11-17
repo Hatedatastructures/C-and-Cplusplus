@@ -11,6 +11,7 @@
 #include <vector>
 #include <unordered_map>
 #include <functional>
+#include <algorithm>
 
 namespace internals
 {
@@ -48,6 +49,14 @@ namespace internals::structure_s
     std::chrono::steady_clock::time_point _start_time;       // 启动时间
     std::atomic<std::uint64_t> _total_tasks_scheduled{0};    // 总调度任务数
     std::atomic<std::uint64_t> _total_scaling_operations{0}; // 总扩缩容操作数
+    /**
+     * @brief 负载平滑与抗抖动状态
+     */
+    double _ema_load{0.0};                                    // 指数滑动平均负载
+    std::size_t _last_queue_length{0};                        // 上次队列长度
+    std::size_t _up_window_count{0};                          // 扩容滞后窗口计数
+    std::size_t _down_window_count{0};                        // 缩容滞后窗口计数
+    std::chrono::steady_clock::time_point _last_scale_time{}; // 上次扩缩容时间
   public:
     scheduler_ordinary(safety_rank_pointer rank, scheduling_tactics policy = scheduling_tactics::adaptive,
       expansion_strategy scaling_policy = expansion_strategy::reactive)
@@ -236,6 +245,10 @@ namespace internals::structure_s
     {
       scale_down();
     }
+    /**
+     * @brief 手动缩放线程池，减少工作线程数量
+     * @param count 要减少的线程数量
+     */
     void manual_scale_downs(std::size_t count)
     {
       auto scale_threads = get_thread_count() - _scaling_config.min_threads;
@@ -351,8 +364,27 @@ namespace internals::structure_s
     }
     virtual void update_metrics()
     {
-      _metrics.queue_length.store(_unit_rank->size(), std::memory_order_relaxed);
+      auto current_len = _unit_rank->size();
+      _metrics.queue_length.store(current_len, std::memory_order_relaxed);
+
       _metrics.active_threads.store(get_active_thread_count(), std::memory_order_relaxed);
+      _metrics.total_threads.store(get_thread_count(), std::memory_order_relaxed);
+
+      // 采集队列容量（支持动态队列）
+      std::size_t capacity = 0;
+      if (_unit_rank)
+      {
+        auto transition_state = std::dynamic_pointer_cast<internals::structure_r::rank_ordinary>(_unit_rank);
+        if (transition_state.get() != nullptr)
+          capacity = transition_state->get_max_size();
+      }
+      if (capacity == 0)
+      {
+        // 回退：若无法获取容量，使用当前线程数近似倍数，避免除数为0
+        capacity = std::max<std::size_t>(current_len, 1);
+      }
+      _metrics.queue_capacity.store(capacity, std::memory_order_relaxed);
+
       _metrics.last_update = std::chrono::steady_clock::now();
       // 子类可以重写此方法添加更多指标
     }
@@ -360,18 +392,75 @@ namespace internals::structure_s
     {
       // 子类可以重写此方法
     }
+    /**
+     * @brief 评估缩放策略
+     */
     virtual void evaluate_scaling()
     {
-      auto load_score = _metrics.calculate_load_score();
-      auto current_threads = get_thread_count();
+      // 基础负载分数（线程繁忙度 + 队列占用度）
+      const double base_score = _metrics.calculate_load_score();
 
-      if (load_score > _scaling_config.scale_up_threshold && current_threads < _scaling_config.max_threads)
+      // 队列增长压力项（仅正增长计入），归一化到容量
+      auto current_len   = _metrics.queue_length.load(std::memory_order_relaxed);
+      auto capacity      = std::max<std::size_t>(_metrics.queue_capacity.load(std::memory_order_relaxed), 1);
+      auto total_threads = std::max<std::size_t>(_metrics.total_threads.load(std::memory_order_relaxed), 1);
+      auto active_threads= _metrics.active_threads.load(std::memory_order_relaxed);
+
+      double growth_norm = 0.0;
+      if (current_len > _last_queue_length)
+      {
+        growth_norm = std::min(static_cast<double>(current_len - _last_queue_length) / static_cast<double>(capacity), 1.0);
+      }
+
+      // 即时负载分数（加入增长压力项）
+      double instant_load = std::clamp(base_score + 0.2 * growth_norm, 0.0, 1.0);
+
+      // 指数滑动平均，增强抗抖动
+      constexpr double alpha = 0.3;
+      _ema_load = alpha * instant_load + (1.0 - alpha) * _ema_load;
+      _last_queue_length = current_len;
+
+      const auto now = std::chrono::steady_clock::now();
+      const auto since_last_scale = (_last_scale_time.time_since_epoch().count() == 0)
+        ? std::chrono::milliseconds::max()
+        : std::chrono::duration_cast<std::chrono::milliseconds>(now - _last_scale_time);
+
+      // 滞后窗口与冷却时间，避免频繁扩缩容
+      const std::size_t up_required_windows = 2;   // 连续窗口数触发扩容
+      const std::size_t down_required_windows = 3; // 连续窗口数触发缩容
+
+      if (_ema_load > _scaling_config.scale_up_threshold)
+        ++_up_window_count; else _up_window_count = 0;
+
+      if (_ema_load < _scaling_config.scale_down_threshold)
+        ++_down_window_count; else _down_window_count = 0;
+
+      auto current_threads = total_threads;
+
+      // 扩容条件：负载高、队列高占用或增长、达到滞后窗口、冷却期结束
+      bool can_scale_up = (since_last_scale >= _scaling_config.scale_up_delay) &&
+                          (_up_window_count >= up_required_windows) &&
+                          (current_threads < _scaling_config.max_threads);
+
+      // 缩容条件：负载低、队列低占用、线程空闲、达到滞后窗口、冷却期结束
+      double queue_util = std::min(static_cast<double>(current_len) / static_cast<double>(capacity), 1.0);
+      double thread_util = std::min(static_cast<double>(active_threads) / static_cast<double>(total_threads), 1.0);
+      bool can_scale_down = (since_last_scale >= _scaling_config.scale_down_delay) &&
+                            (_down_window_count >= down_required_windows) &&
+                            (current_threads > _scaling_config.min_threads) &&
+                            (queue_util < 0.15) && (thread_util < 0.30) && (growth_norm <= 0.0);
+
+      if (can_scale_up)
       {
         scale_up();
+        _last_scale_time = now;
+        _up_window_count = 0;
       }
-      else if (load_score < _scaling_config.scale_down_threshold && current_threads > _scaling_config.min_threads)
+      else if (can_scale_down)
       {
         scale_down();
+        _last_scale_time = now;
+        _down_window_count = 0;
       }
     }
     virtual void scale_up()

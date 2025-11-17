@@ -35,6 +35,7 @@ namespace internals::structure_w
 class worker_ordinary
   {
   protected:
+    /// @brief 
     std::unique_ptr<std::jthread> _worker_thread; // 线程对象
 
     std::atomic<bool> _stop{false}; // 停止标志
