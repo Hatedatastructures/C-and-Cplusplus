@@ -15,20 +15,20 @@ struct task
       _handle = std::coroutine_handle<promise_type>::from_promise(*this);
       return task{_handle};
     }
-    std::suspend_never initial_suspend() noexcept { return {}; } // 初始挂起，立即返回
-    std::suspend_always final_suspend() noexcept { return {}; } // 最终挂起，立即返回
-    void return_void() {}
-    void unhandled_exception() {}
+    static std::suspend_never initial_suspend() noexcept { return {}; } // 初始挂起，立即返回
+    static std::suspend_always final_suspend() noexcept { return {}; } // 最终挂起，立即返回
+    static void return_void() {}
+    static void unhandled_exception() {}
   };
   std::coroutine_handle<promise_type> _handle; 
-  task(std::coroutine_handle<promise_type> handle) : _handle(handle)  {}
+  explicit task(const std::coroutine_handle<promise_type> handle) : _handle(handle)  {}
   ~task() {if(_handle) _handle.destroy();}
-  bool done()  { return _handle.done(); }
-  void resume() { if(_handle && !_handle.done()) _handle.resume(); }
+  [[nodiscard]] bool done() const  { return _handle.done(); }
+  void resume() const { if(_handle && !_handle.done()) _handle.resume(); }
   task(const task&) = delete;
   task& operator=(const task&) = delete;
-  task(task&& other) : _handle(std::exchange(other._handle, {})) {}
-  task& operator=(task&& other)
+  task(task&& other) noexcept : _handle(std::exchange(other._handle, {})) {}
+  task& operator=(task&& other)noexcept
   {
     if(_handle) _handle.destroy(); //先销毁当前句柄
     _handle = std::exchange(other._handle, {}); // 重新获取其他句柄

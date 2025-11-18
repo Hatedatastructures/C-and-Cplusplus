@@ -1,3 +1,4 @@
+#pragma once
 #include "../model/network/network.hpp"
 
 #include <iostream>
@@ -63,7 +64,7 @@ struct asset
     return data;
   }
   asset() = default;
-  asset(std::string html_path) : file_data(read_file(html_path)) {}
+  asset(const std::string &html_path) : file_data(read_file(html_path)) {}
 };
 struct status_response
 {
@@ -334,7 +335,7 @@ private:
 
         std::cout << format_print("connection successful,from ip {},port:{}",
               socket.remote_endpoint().address().to_string(), socket.remote_endpoint().port()) << std::endl;
-        auto value = session_management.create_server_session(std::move(socket));
+        const auto value = session_management.create_server_session(std::move(socket));
         std::cout << format_print("{} create session success,id:{} ", value.second->get_remote_address(), 
               value.first) << std::endl;
 

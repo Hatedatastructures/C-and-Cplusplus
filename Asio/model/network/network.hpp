@@ -15,13 +15,12 @@
 
 #include "./business/forwarder.hpp" // 服务端http / https 代理类
 
-namespace wan
-{
+
   /**
    * @brief 网络模块
    * @note 该模块提供网络协议、加密、会话管理、转发劫持等功能
    */
-  namespace network
+  namespace wan::network
   {
     /**
      * @brief 协议模块
@@ -80,4 +79,3 @@ namespace wan
       using namespace represents;
     } // end namespace business
   } // end namespace wan
-}

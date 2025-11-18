@@ -15,3 +15,4 @@ build/output/
 /dataSources.local.
 *.mod
 .trae/
+*.o
