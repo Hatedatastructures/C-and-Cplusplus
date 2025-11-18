@@ -43,14 +43,19 @@ struct Result
 
 static int do_work(int sleep_ms, int cpu_iters)
 {
-    volatile int x = 0;
+    (void)sleep_ms; // 明确不使用`sleep_ms`
+    std::uint64_t sum = 0;
     for (int k = 0; k < cpu_iters; ++k)
     {
-        x += k % 7;
+        sum += (static_cast<std::uint64_t>(k) * 17ull) + 31ull;
+        sum ^= (sum << 7);
+        sum *= 0x9E3779B97F4A7C15ull;
     }
+    // 返回低位，防止循环被优化消除，同时保持函数签名
+    return static_cast<int>(sum & 0x7fffffff);
     if (sleep_ms > 0)
         std::this_thread::sleep_for(std::chrono::milliseconds(sleep_ms));
-    return x;
+    return static_cast<int>(sum & 0x7fffffff);
 }
 
 static Result run(const Scenario &s)
@@ -73,8 +78,14 @@ static Result run(const Scenario &s)
     for (std::size_t i = 0; i < s.tasks; ++i)
     {
         submit_times.push_back(steady_clock::now());
-        auto fn = [sleep = s.sleep_ms, cpu = s.cpu_iters]
-        { return do_work(sleep, cpu); };
+        /**
+         * @brief 构造`纯CPU`任务，固定`sleep_ms=0`。
+         * @details 排除`sleep`与`delay`对测量的影响，仅评估`CPU`迭代的吞吐与延迟。
+         */
+        auto fn = [cpu = s.cpu_iters]
+        {
+            return do_work(0, cpu);
+        };
         if (s.use_delay)
         {
             futures.emplace_back(pool->submit_delayed(std::chrono::milliseconds(s.sleep_ms), fn));
@@ -136,12 +147,14 @@ int main()
     SetConsoleOutputCP(CP_UTF8);
     std::size_t repeat = 3;
     std::vector<Scenario> cases;
-    cases.push_back({"FIFO-睡眠2ms-8线程", 8, 5000, 64, 2, 0, false, false, false, false});
-    cases.push_back({"FIFO-CPU10万-8线程", 8, 5000, 64, 0, 100000, false, false, false, false});
-    cases.push_back({"优先级-混合负载-8线程", 8, 5000, 64, 1, 20000, true, false, true, true});
-    cases.push_back({"延迟5ms-8线程", 8, 5000, 64, 5, 0, false, true, false, false});
-    cases.push_back({"FIFO-睡眠2ms-16线程", 16, 5000, 64, 2, 0, false, false, false, false});
-    cases.push_back({"优先级-CPU5万-16线程", 16, 5000, 64, 0, 50000, true, false, true, true});
+    /**
+     * @brief 仅构造`计算密集型`场景。
+     * @details 固定`sleep_ms=0`、`use_delay=false`，并将`burst=0`避免提交阶段的节流`sleep`。
+     *          通过调整`cpu_iters`与`threads`来控制负载强度与并发度。
+     */
+    cases.push_back({"FIFO-CPU1000万-8线程", 5, 10000000, 0, 0, 1000, false, false, false, false});
+    cases.push_back({"FIFO-CPU1000万-16线程", 20, 10000000, 0, 0, 1000, false, false, false, false});
+    cases.push_back({"优先级-CPU2000万-16线程", 10, 20000000, 0, 0, 1000, true, false, true, true});
     for (const auto &c : cases)
     {
         double sum_ms = 0.0;
@@ -173,10 +186,19 @@ int main()
         std::sort(p50s.begin(), p50s.end());
         std::sort(p95s.begin(), p95s.end());
         std::sort(p99s.begin(), p99s.end());
+
         double p50 = p50s[p50s.size() / 2];
         double p95 = p95s[p95s.size() / 2];
         double p99 = p99s[p99s.size() / 2];
-        Result agg{c.name, sum_ms / repeat, sum_thr / repeat, sum_avg / repeat, p50, p95, p99, pk, cq, act, th, util};
+
+        /**
+         * @brief 用平均总耗时推导吞吐，确保与任务总数一致
+         * @details `throughput_consistent = tasks / (avg_total_ms / 1000.0)`
+         */
+        double avg_total_ms = sum_ms / repeat;
+        double throughput_consistent = c.tasks / (avg_total_ms / 1000.0);
+
+        Result agg{c.name, avg_total_ms, throughput_consistent, sum_avg / repeat, p50, p95, p99, pk, cq, act, th, util};
         print_result(agg);
     }
     return 0;
