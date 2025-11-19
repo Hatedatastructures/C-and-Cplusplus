@@ -236,16 +236,16 @@ private:
    * @param keep_alive 是否保持连接
    * @return `http::response<>` 响应
    */
-  http::response<> make_404_response(bool keep_alive)
+  http::response<> make_404_response(bool keep_alive) const
   {
-    http::response<> notf;
-    notf.result(boost::beast::http::status::not_found);
-    notf.base().set(http::field::content_type, "text/html; charset=UTF-8");
-    notf.body() = status_htmlresponses.html_404.file_data;
-    notf.keep_alive(keep_alive);
-    notf.base().content_length(notf.body().size());
-    notf.prepare_payload();
-    return notf;
+    http::response<> response;
+    response.result(boost::beast::http::status::not_found);
+    response.base().set(http::field::content_type, "text/html; charset=UTF-8");
+    response.body() = status_htmlresponses.html_404.file_data;
+    response.keep_alive(keep_alive);
+    response.base().content_length(response.body().size());
+    response.prepare_payload();
+    return response;
   }
 
   /**
@@ -253,16 +253,16 @@ private:
    * @param keep_alive 是否保持连接
    * @return `http::response<>` 响应
    */
-  http::response<> make_500_response(bool keep_alive)
+  http::response<> make_500_response(bool keep_alive) const
   {
-    http::response<> notf;
-    notf.result(boost::beast::http::status::internal_server_error);
-    notf.base().set(http::field::content_type, "text/html; charset=UTF-8");
-    notf.body() = status_htmlresponses.html_500.file_data;
-    notf.keep_alive(keep_alive);
-    notf.base().content_length(notf.body().size());
-    notf.prepare_payload();
-    return notf;
+    http::response<> response;
+    response.result(boost::beast::http::status::internal_server_error);
+    response.base().set(http::field::content_type, "text/html; charset=UTF-8");
+    response.body() = status_htmlresponses.html_500.file_data;
+    response.keep_alive(keep_alive);
+    response.base().content_length(response.body().size());
+    response.prepare_payload();
+    return response;
   }
 
   static void log_send_result(const std::shared_ptr<session::session<http::request<>, http::response<>>>& sess_ptr,
@@ -289,7 +289,7 @@ private:
         using session_ptr = std::shared_ptr<session::session<http::request<>, http::response<>>>;
 
         // 接受数据的处理
-        auto func = [this](session_ptr ptr, std::string_view data)
+        auto func = [this](const session_ptr& ptr, std::string_view data)
         {
 
           // 处理响应发送回调
